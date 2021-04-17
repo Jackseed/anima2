@@ -9,6 +9,7 @@ import {
 import { BoardViewComponent } from './board/board-view/board-view.component';
 import { GameGuard } from './games/guards/games.guard';
 import { ActiveUserGuard } from './auth/guards/active-user.guard';
+import { ActiveGameGuard } from './games/guards/active-game.guard';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['welcome']);
 
@@ -25,7 +26,12 @@ const routes: Routes = [
   },
   {
     path: 'games/:id',
-    canActivate: [AngularFireAuthGuard, GameGuard, ActiveUserGuard],
+    canActivate: [
+      ActiveGameGuard,
+      AngularFireAuthGuard,
+      GameGuard,
+      ActiveUserGuard,
+    ],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
     component: BoardViewComponent,
   },

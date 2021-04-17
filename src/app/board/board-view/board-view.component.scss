@@ -1,12 +1,11 @@
 .main {
   --s: 7.4vw; /* size of a hexagon */
   --m: 0.3vw; /* space between each heaxgon */
-  --r: calc(var(--s)*3*1.1547/2 + 4*var(--m)  - 2px);
+  --r: calc(var(--s) * 3 * 1.1547 / 2 + 4 * var(--m) - 2px);
   display: flex;
-
 }
 
-.container  {
+.container {
   font-size: 0; /*disable white space between inline block element */
 }
 .container div {
@@ -33,29 +32,28 @@
   background: #f58787;
   cursor: pointer;
 }
-
-.⬜ {
+.blank {
   background: #ffffff;
 }
-.⬜:hover {
+.blank:hover {
   background: #ffffff !important;
   cursor: auto !important;
 }
-.🏝️ {
+.island {
   background: #d9e6f6;
 }
-.🪨 {
+.rockies {
   background: #fcefdd;
 }
-.⛰️ {
+.mountains {
   background: #f9d1c3;
 }
-.🌳 {
+.forest {
   background: #d5e4e0;
 }
-.🟣 {
+.swamps {
   background: #eee0ef;
 }
-.🟨 {
+.plains {
   background: #f8ebcd;
 }

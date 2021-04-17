@@ -10,6 +10,14 @@ import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
+import { GamesModule } from './games/games.module';
+import { TilesModule } from './board/tiles/tiles.module';
+import { AuthModule } from './auth/auth.module';
+import { BoardModule } from './board/board.module';
+import { GameGuard } from './games/guards/games.guard';
+import { ActiveGameGuard } from './games/guards/active-game.guard';
+import { ActiveUserGuard } from './auth/guards/active-user.guard';
+import { AngularFireAuthGuard } from '@angular/fire/auth-guard';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,10 +27,19 @@ import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
     FlexLayoutModule,
     AkitaNgRouterStoreModule,
     AngularFirestoreModule,
+    GamesModule,
+    TilesModule,
+    AuthModule,
+    BoardModule,
     AngularFireModule.initializeApp(environment.firebase),
     environment.production ? [] : AkitaNgDevtools.forRoot(),
   ],
-  providers: [],
+  providers: [
+    AngularFireAuthGuard,
+    ActiveUserGuard,
+    GameGuard,
+    ActiveGameGuard,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
