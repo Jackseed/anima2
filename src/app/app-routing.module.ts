@@ -7,6 +7,8 @@ import {
   redirectUnauthorizedTo,
 } from '@angular/fire/auth-guard';
 import { BoardViewComponent } from './board/board-view/board-view.component';
+import { GameGuard } from './games/guards/games.guard';
+import { ActiveUserGuard } from './auth/guards/active-user.guard';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['welcome']);
 
@@ -17,13 +19,13 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    canActivate: [AngularFireAuthGuard],
+    canActivate: [AngularFireAuthGuard, GameGuard, ActiveUserGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
     component: HomepageComponent,
   },
   {
     path: 'games/:id',
-    canActivate: [AngularFireAuthGuard],
+    canActivate: [AngularFireAuthGuard, GameGuard, ActiveUserGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
     component: BoardViewComponent,
   },
