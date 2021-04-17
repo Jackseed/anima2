@@ -7,10 +7,19 @@ import { AppComponent } from './app.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 import { environment } from '../environments/environment';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, FlexLayoutModule, environment.production ? [] : AkitaNgDevtools.forRoot()],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FlexLayoutModule,
+    AngularFirestoreModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    environment.production ? [] : AkitaNgDevtools.forRoot(),
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
