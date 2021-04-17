@@ -22,7 +22,9 @@ const routes: Routes = [
     component: HomepageComponent,
   },
   {
-    path: 'game',
+    path: 'games/:id',
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
     component: BoardViewComponent,
   },
   {

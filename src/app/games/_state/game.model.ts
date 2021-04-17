@@ -1,9 +1,12 @@
 export interface Game {
-  id: number | string;
+  id?: string;
+  name?: string;
 }
 
-export function createGame(params: Partial<Game>) {
+export function createGame(params: Partial<Game> = {}): Game {
   return {
-
-  } as Game;
+    id: params.id,
+    name: params.name,
+    ...params,
+  };
 }
