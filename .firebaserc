@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "anima-f51c8"
+  },
+  "targets": {
+    "anima-f51c8": {
+      "hosting": {
+        "anima2": [
+          "anima-f51c8"
+        ]
+      }
+    }
   }
 }

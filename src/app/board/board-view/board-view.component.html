@@ -1,0 +1,16 @@
+<div class="main">
+  <div class="container">
+    <div
+      *ngFor="let tile of tiles$ | async"
+      [ngClass]="{
+        blank: tile.type === 'blank',
+        island: tile.type === 'island',
+        mountains: tile.type === 'mountains',
+        rockies: tile.type === 'rockies',
+        plains: tile.type === 'plains',
+        swamps: tile.type === 'swamps',
+        forest: tile.type === 'forest'
+      }"
+    ></div>
+  </div>
+</div>
