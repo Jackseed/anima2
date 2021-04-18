@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
-import { cols, GameQuery, max } from 'src/app/games/_state';
+import { GameQuery } from 'src/app/games/_state';
 import {
+  cols,
+  max,
   createTile,
   forestIds,
   islandIds,
@@ -44,7 +46,6 @@ export class TileService extends CollectionService<TileState> {
             if (swampsIds.includes(tileId)) type = 'swamps';
             if (forestIds.includes(tileId)) type = 'forest';
             const tile = createTile(tileId, j, i, type);
-            console.log(tile);
             tiles.push(tile);
           }
         }
@@ -52,5 +53,13 @@ export class TileService extends CollectionService<TileState> {
 
       this.store.set(tiles);
     }
+  }
+
+  public select(tileId: number) {
+    this.store.setActive(tileId.toString());
+  }
+
+  public removeActive(id: number) {
+    this.store.removeActive(id.toString());
   }
 }
