@@ -46,7 +46,6 @@ export class TileService extends CollectionService<TileState> {
             if (swampsIds.includes(tileId)) type = 'swamps';
             if (forestIds.includes(tileId)) type = 'forest';
             const tile = createTile(tileId, j, i, type);
-            console.log(tile);
             tiles.push(tile);
           }
         }
@@ -54,5 +53,9 @@ export class TileService extends CollectionService<TileState> {
 
       this.store.set(tiles);
     }
+  }
+
+  public select(tileId: number) {
+    this.store.setActive(tileId.toString());
   }
 }

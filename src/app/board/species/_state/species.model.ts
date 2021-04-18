@@ -1,9 +1,20 @@
 export interface Species {
-  id: number | string;
+  id?: string;
+  tileIds?: number[];
+  playerId?: string;
+  isDead?: boolean;
 }
 
-export function createSpecies(params: Partial<Species>) {
+export function createSpecies(
+  id?: string,
+  playerId?: string,
+  tileIds?: number[],
+  params?: Partial<Species>
+): Species {
   return {
-
-  } as Species;
+    id,
+    playerId,
+    tileIds,
+    ...params,
+  };
 }

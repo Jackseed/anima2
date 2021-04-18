@@ -57,3 +57,35 @@
 .plains {
   background: #f8ebcd;
 }
+
+.tile {
+  position: relative;
+}
+
+.species {
+  background-image: url("/assets/blob.png");
+  background-position: center;
+  background-size: 50%;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.species-quantity {
+  position: absolute;
+
+  z-index: 1;
+  font-size: 13px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 100%;
+}
+
+.selected {
+  filter: brightness(100%);
+  animation: blinker 1s linear infinite;
+}
+@keyframes blinker {
+  50% {
+    opacity: 0.5;
+  }
+}

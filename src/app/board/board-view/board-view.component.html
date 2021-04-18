@@ -1,7 +1,7 @@
 <div class="main">
   <div class="container">
     <div
-      *ngFor="let tile of tiles$ | async"
+      *ngFor="let tile of tiles$ | async; let i = index"
       [ngClass]="{
         blank: tile.type === 'blank',
         island: tile.type === 'island',
@@ -9,8 +9,20 @@
         rockies: tile.type === 'rockies',
         plains: tile.type === 'plains',
         swamps: tile.type === 'swamps',
-        forest: tile.type === 'forest'
+        forest: tile.type === 'forest',
+        selected: isActive(tile.id)
       }"
-    ></div>
+      class="tile"
+      (click)="select(i)"
+    >
+      <div [ngClass]="{ species: (species$ | async)[0]?.tileIds.includes(i) }">
+        <div
+          class="species-quantity"
+          *ngIf="(species$ | async)[0]?.tileIds.includes(i)"
+        >
+          {{ countSpeciesOnTile((species$ | async)[0]?.tileIds, i) }}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
