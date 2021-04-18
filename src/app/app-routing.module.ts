@@ -10,6 +10,7 @@ import { BoardViewComponent } from './board/board-view/board-view.component';
 import { GameGuard } from './games/guards/games.guard';
 import { ActiveUserGuard } from './auth/guards/active-user.guard';
 import { ActiveGameGuard } from './games/guards/active-game.guard';
+import { SpeciesGuard } from './board/species/guards/species.guard';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['welcome']);
 
@@ -22,18 +23,22 @@ const routes: Routes = [
     path: 'home',
     canActivate: [AngularFireAuthGuard, GameGuard, ActiveUserGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
+    canDeactivate: [GameGuard, ActiveUserGuard],
     component: HomepageComponent,
   },
   {
     path: 'games/:id',
-    canActivate: [
-      ActiveGameGuard,
-      AngularFireAuthGuard,
-      GameGuard,
-      ActiveUserGuard,
-    ],
+    canActivate: [ActiveGameGuard, AngularFireAuthGuard, ActiveUserGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
-    component: BoardViewComponent,
+    canDeactivate: [ActiveGameGuard, ActiveUserGuard],
+    children: [
+      {
+        path: '',
+        canActivate: [SpeciesGuard],
+        canDeactivate: [SpeciesGuard],
+        component: BoardViewComponent,
+      },
+    ],
   },
   {
     path: '',
