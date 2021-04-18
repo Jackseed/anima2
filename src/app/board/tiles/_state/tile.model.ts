@@ -1,5 +1,5 @@
 export interface Tile {
-  id?: number;
+  id: number;
   x?: number;
   y?: number;
   type?:
@@ -10,6 +10,7 @@ export interface Tile {
     | 'swamps'
     | 'forest'
     | 'blank';
+  isReachable?: boolean;
 }
 export const cols = 12;
 export const lines = 13;

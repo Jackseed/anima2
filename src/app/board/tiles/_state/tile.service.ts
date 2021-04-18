@@ -13,12 +13,17 @@ import {
   swampsIds,
   Tile,
 } from './tile.model';
+import { TileQuery } from './tile.query';
 import { TileStore, TileState } from './tile.store';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'tiles' })
 export class TileService extends CollectionService<TileState> {
-  constructor(store: TileStore, private gameQuery: GameQuery) {
+  constructor(
+    store: TileStore,
+    private query: TileQuery,
+    private gameQuery: GameQuery
+  ) {
     super(store);
   }
 
@@ -61,5 +66,21 @@ export class TileService extends CollectionService<TileState> {
 
   public removeActive(id: number) {
     this.store.removeActive(id.toString());
+  }
+
+  public markAdjacentReachableTiles(tileId: number) {
+    const rechableTileIds = this.query.getAdjacentTiles(tileId, 1);
+    this.markAsReachable(rechableTileIds);
+  }
+
+  public markAsReachable(tileIds: number[]) {
+    this.store.update(
+      tileIds.map((id) => id.toString()),
+      { isReachable: true }
+    );
+  }
+
+  public removeReachable() {
+    this.store.update(null, { isReachable: false });
   }
 }

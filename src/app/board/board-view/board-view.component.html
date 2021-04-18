@@ -10,7 +10,8 @@
         plains: tile.type === 'plains',
         swamps: tile.type === 'swamps',
         forest: tile.type === 'forest',
-        selected: isActive(tile.id)
+        selected: isActive(tile.id),
+        reachable: tile?.isReachable
       }"
       class="tile"
       (click)="play(i)"

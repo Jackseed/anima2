@@ -42,11 +42,15 @@ export class BoardViewComponent implements OnInit {
     if (activeSpecies.tileIds.includes(tileId)) {
       // then check if the tile was already selected
       if (this.isActive(tileId)) {
+        // if so, proliferates
         this.proliferate(activeSpecies, tileId);
         this.tileService.removeActive(tileId);
+        this.tileService.removeReachable();
         // else selects the tile
       } else {
+        this.tileService.removeReachable();
         this.tileService.select(tileId);
+        this.tileService.markAdjacentReachableTiles(tileId);
       }
     }
   }
