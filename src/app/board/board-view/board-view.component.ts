@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Species, SpeciesQuery } from '../species/_state';
+import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 
 @Component({
@@ -15,24 +15,44 @@ export class BoardViewComponent implements OnInit {
   constructor(
     private tileQuery: TileQuery,
     private tileService: TileService,
-    private SpeciesQuery: SpeciesQuery
+    private speciesQuery: SpeciesQuery,
+    private speciesService: SpeciesService
   ) {}
 
   ngOnInit(): void {
     this.tileService.setTiles();
     this.tiles$ = this.tileQuery.selectAll();
-    this.species$ = this.SpeciesQuery.selectAll();
+    this.species$ = this.speciesQuery.selectAll();
+    this.speciesService.setActive('3Dv7DnEp9Vmxsfgz2G0y');
   }
 
   public countSpeciesOnTile(speciesTileIds: number[], i: number): number {
     return speciesTileIds.filter((tileId) => tileId === i).length;
   }
 
-  public select(tileId: number) {
-    this.tileService.select(tileId);
+  public play(tileId: number) {
+    const activeSpecies = this.speciesQuery.getActive();
+    // checks if the tile includes an active species
+    if (activeSpecies.tileIds.includes(tileId)) {
+      // then check if the tile was already selected
+      if (this.isActive(tileId)) {
+        this.proliferate(activeSpecies, tileId);
+        this.tileService.removeActive(tileId);
+        // else selects the tile
+      } else {
+        this.tileService.select(tileId);
+      }
+    }
   }
 
   public isActive(tileId: number): boolean {
     return this.tileQuery.hasActive(tileId.toString());
+  }
+
+  public proliferate(species: Species, tileId: number) {
+    if (species.tileIds.filter((id) => id === tileId).length > 1) {
+      this.speciesService.addUnits(species.id, [tileId, tileId]);
+    }
+    console.log('proliferate');
   }
 }

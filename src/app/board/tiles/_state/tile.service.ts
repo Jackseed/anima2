@@ -58,4 +58,8 @@ export class TileService extends CollectionService<TileState> {
   public select(tileId: number) {
     this.store.setActive(tileId.toString());
   }
+
+  public removeActive(id: number) {
+    this.store.removeActive(id.toString());
+  }
 }

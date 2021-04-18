@@ -13,7 +13,7 @@
         selected: isActive(tile.id)
       }"
       class="tile"
-      (click)="select(i)"
+      (click)="play(i)"
     >
       <div [ngClass]="{ species: (species$ | async)[0]?.tileIds.includes(i) }">
         <div
