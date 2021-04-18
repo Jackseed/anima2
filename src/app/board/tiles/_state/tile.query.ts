@@ -14,16 +14,27 @@ export class TileQuery extends QueryEntity<TileState> {
     const tileIds: number[] = [];
     for (let x = -paramValue; x <= paramValue; x++) {
       for (let y = -paramValue; y <= paramValue; y++) {
-        const X = tile.x + x;
-        const Y = tile.y + y;
-        // verifies that the tile is inside the board
-        if (X < cols && X >= 0 && Y < cols && Y >= 0) {
-          const id = X + cols * Y;
-          tileIds.push(id);
+        // remove values for hexa grid, not needed for squares
+        if (!((x === 1 && y === -1) || (x === 1 && y === 1))) {
+          const X = tile.x + x;
+          const Y = tile.y + y;
+          // verifies that the tile is inside the board
+          if (X < cols && X >= 0 && Y < cols && Y >= 0) {
+            const id = X + cols * Y;
+            // verifies that the tile is not blank
+            if (!this.isBlank(id)) {
+              tileIds.push(id);
+            }
+          }
         }
       }
     }
     // remove the center tileId
     return tileIds.filter((id) => id !== tileId);
+  }
+
+  public isBlank(id: number): boolean {
+    const tile = this.getEntity(id.toString());
+    return tile.type === 'blank';
   }
 }
