@@ -18,6 +18,7 @@ import { GameGuard } from './games/guards/games.guard';
 import { ActiveGameGuard } from './games/guards/active-game.guard';
 import { ActiveUserGuard } from './auth/guards/active-user.guard';
 import { AngularFireAuthGuard } from '@angular/fire/auth-guard';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,6 +34,7 @@ import { AngularFireAuthGuard } from '@angular/fire/auth-guard';
     BoardModule,
     AngularFireModule.initializeApp(environment.firebase),
     environment.production ? [] : AkitaNgDevtools.forRoot(),
+    BrowserAnimationsModule,
   ],
   providers: [
     AngularFireAuthGuard,

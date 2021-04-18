@@ -1,5 +1,10 @@
+// Angular
 import { Component, OnInit } from '@angular/core';
+// Material
+import { MatSnackBar } from '@angular/material/snack-bar';
+// Rxjs
 import { Observable } from 'rxjs';
+// Components
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 
@@ -16,7 +21,8 @@ export class BoardViewComponent implements OnInit {
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
-    private speciesService: SpeciesService
+    private speciesService: SpeciesService,
+    private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -52,7 +58,9 @@ export class BoardViewComponent implements OnInit {
   public proliferate(species: Species, tileId: number) {
     if (species.tileIds.filter((id) => id === tileId).length > 1) {
       this.speciesService.addUnits(species.id, [tileId, tileId]);
+      this.snackbar.open('Prolifération !');
+    } else {
+      this.snackbar.open("Manque d'unités pour proliférer.");
     }
-    console.log('proliferate');
   }
 }
