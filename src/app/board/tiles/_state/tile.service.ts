@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
-import { cols, GameQuery, max } from 'src/app/games/_state';
+import { GameQuery } from 'src/app/games/_state';
 import {
+  cols,
+  max,
   createTile,
   forestIds,
   islandIds,
