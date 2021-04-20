@@ -92,6 +92,14 @@ export const forestIds: number[] = forestCoordinates.map(
   (coordinates) => coordinates[0] + coordinates[1] * cols
 );
 
+export const islandBridgeCoordinates: [x: number, y: number][] = [
+  [6, 5],
+  [7, 3],
+];
+export const islandBridgeIds: number[] = islandBridgeCoordinates.map(
+  (coordinates) => coordinates[0] + coordinates[1] * cols
+);
+
 export function createTile(
   id: number,
   x: number,

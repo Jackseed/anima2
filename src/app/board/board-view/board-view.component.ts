@@ -46,6 +46,7 @@ export class BoardViewComponent implements OnInit {
       this.colonize(activeSpecies.id, [Number(activeTileId)], tileId);
       this.tileService.removeActive(tileId);
       this.tileService.removeReachable();
+      return;
     }
     if (activeSpecies.tileIds.includes(tileId)) {
       // checks if the tile includes an active species
@@ -83,5 +84,6 @@ export class BoardViewComponent implements OnInit {
     newTileId: number
   ) {
     this.speciesService.moveUnits(speciesId, previousTileIds, newTileId);
+    this.snackbar.open('Colonisation !');
   }
 }

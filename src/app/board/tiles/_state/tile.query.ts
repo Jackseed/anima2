@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { QueryEntity } from '@datorama/akita';
-import { cols, Tile } from './tile.model';
+import { cols, islandBridgeIds, Tile } from './tile.model';
 import { TileStore, TileState } from './tile.store';
 
 @Injectable({ providedIn: 'root' })
@@ -14,7 +14,8 @@ export class TileQuery extends QueryEntity<TileState> {
     const tileIds: number[] = [];
     for (let x = -paramValue; x <= paramValue; x++) {
       for (let y = -paramValue; y <= paramValue; y++) {
-        // remove values for hexa grid, not needed for squares, different values depending on odd or even lines
+        // remove diagonal values for hexa grid
+        // different values depending on odd or even lines
         if (
           !(
             tile.y % 2 === 0 &&
@@ -38,6 +39,9 @@ export class TileQuery extends QueryEntity<TileState> {
         }
       }
     }
+    // adds the island bridge
+    if (islandBridgeIds.includes(tileId))
+      islandBridgeIds.forEach((id) => tileIds.push(id));
     // remove the center tileId
     return tileIds.filter((id) => id !== tileId);
   }
