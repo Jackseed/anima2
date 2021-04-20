@@ -1,5 +1,5 @@
 export interface Tile {
-  id?: number;
+  id: number;
   x?: number;
   y?: number;
   type?:
@@ -10,6 +10,7 @@ export interface Tile {
     | 'swamps'
     | 'forest'
     | 'blank';
+  isReachable?: boolean;
 }
 export const cols = 12;
 export const lines = 13;
@@ -88,6 +89,14 @@ export const forestCoordinates: [x: number, y: number][] = [
   [3, 9],
 ];
 export const forestIds: number[] = forestCoordinates.map(
+  (coordinates) => coordinates[0] + coordinates[1] * cols
+);
+
+export const islandBridgeCoordinates: [x: number, y: number][] = [
+  [6, 5],
+  [7, 3],
+];
+export const islandBridgeIds: number[] = islandBridgeCoordinates.map(
   (coordinates) => coordinates[0] + coordinates[1] * cols
 );
 

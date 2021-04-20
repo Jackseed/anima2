@@ -35,4 +35,25 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     newTileIds.forEach((tileId) => tileIds.push(tileId));
     await speciesDoc.update({ tileIds });
   }
+
+  public async moveUnits(
+    id: string,
+    previousTileIds: number[],
+    newTileId: number
+  ) {
+    const speciesDoc: AngularFirestoreDocument<Species> = this.afs.doc<Species>(
+      `games/${this.routerQuery.getParams().id}/species/${id}`
+    );
+    let tileIds = (await speciesDoc.get().toPromise()).data().tileIds;
+    previousTileIds.forEach((tileId) => {
+      // First removes the old one
+      const index = tileIds.indexOf(tileId);
+      if (index > -1) {
+        tileIds.splice(index, 1);
+      }
+      // then adds the new one
+      tileIds.push(newTileId);
+    });
+    await speciesDoc.update({ tileIds });
+  }
 }

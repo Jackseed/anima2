@@ -38,15 +38,29 @@ export class BoardViewComponent implements OnInit {
 
   public play(tileId: number) {
     const activeSpecies = this.speciesQuery.getActive();
-    // checks if the tile includes an active species
+    const tile = this.tileQuery.getEntity(tileId.toString());
+    // checks if a unit is active & tile reachable
+    if (this.tileQuery.hasActive() && tile.isReachable) {
+      const activeTileId = this.tileQuery.getActiveId();
+      // if so, colonizes
+      this.colonize(activeSpecies.id, [Number(activeTileId)], tileId);
+      this.tileService.removeActive(tileId);
+      this.tileService.removeReachable();
+      return;
+    }
     if (activeSpecies.tileIds.includes(tileId)) {
+      // checks if the tile includes an active species
       // then check if the tile was already selected
       if (this.isActive(tileId)) {
+        // if so, proliferates
         this.proliferate(activeSpecies, tileId);
         this.tileService.removeActive(tileId);
+        this.tileService.removeReachable();
         // else selects the tile
       } else {
+        this.tileService.removeReachable();
         this.tileService.select(tileId);
+        this.tileService.markAdjacentReachableTiles(tileId);
       }
     }
   }
@@ -62,5 +76,14 @@ export class BoardViewComponent implements OnInit {
     } else {
       this.snackbar.open("Manque d'unités pour proliférer.");
     }
+  }
+
+  public colonize(
+    speciesId: string,
+    previousTileIds: number[],
+    newTileId: number
+  ) {
+    this.speciesService.moveUnits(speciesId, previousTileIds, newTileId);
+    this.snackbar.open('Colonisation !');
   }
 }
