@@ -14,8 +14,17 @@ export class TileQuery extends QueryEntity<TileState> {
     const tileIds: number[] = [];
     for (let x = -paramValue; x <= paramValue; x++) {
       for (let y = -paramValue; y <= paramValue; y++) {
-        // remove values for hexa grid, not needed for squares
-        if (!((x === 1 && y === -1) || (x === 1 && y === 1))) {
+        // remove values for hexa grid, not needed for squares, different values depending on odd or even lines
+        if (
+          !(
+            tile.y % 2 === 0 &&
+            ((x === 1 && y === -1) || (x === 1 && y === 1))
+          ) &&
+          !(
+            tile.y % 2 !== 0 &&
+            ((x === -1 && y === -1) || (x === -1 && y === 1))
+          )
+        ) {
           const X = tile.x + x;
           const Y = tile.y + y;
           // verifies that the tile is inside the board
