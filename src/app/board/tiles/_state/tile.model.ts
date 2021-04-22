@@ -45,7 +45,6 @@ export const rockiesCoordinates: [x: number, y: number][] = [
   [4, 4],
   [6, 4],
   [3, 5],
-  [3, 4],
 ];
 export const rockiesIds: number[] = rockiesCoordinates.map(
   (coordinates) => coordinates[0] + coordinates[1] * cols
