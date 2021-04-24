@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import { QueryEntity } from '@datorama/akita';
+import { Order, QueryConfig, QueryEntity } from '@datorama/akita';
 import { cols, islandBridgeIds, Tile } from './tile.model';
 import { TileStore, TileState } from './tile.store';
 
 @Injectable({ providedIn: 'root' })
+@QueryConfig({
+  sortBy: 'id',
+  sortByOrder: Order.ASC,
+})
 export class TileQuery extends QueryEntity<TileState> {
   constructor(protected store: TileStore) {
     super(store);

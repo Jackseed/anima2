@@ -26,7 +26,6 @@ export class BoardViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.tileService.setTiles();
     this.tiles$ = this.tileQuery.selectAll();
     this.species$ = this.speciesQuery.selectAll();
     this.speciesService.setActive('mountains');

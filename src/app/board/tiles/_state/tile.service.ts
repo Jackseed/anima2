@@ -17,7 +17,7 @@ import { TileQuery } from './tile.query';
 import { TileStore, TileState } from './tile.store';
 
 @Injectable({ providedIn: 'root' })
-@CollectionConfig({ path: 'tiles' })
+@CollectionConfig({ path: 'games/:gameId/tiles' })
 export class TileService extends CollectionService<TileState> {
   constructor(
     store: TileStore,
@@ -27,9 +27,11 @@ export class TileService extends CollectionService<TileState> {
     super(store);
   }
 
-  public setTiles() {
+  public async setTiles(gameId: string): Promise<any> {
     const tiles: Tile[] = [];
     const game = this.gameQuery.getActive();
+    const collection = this.db.firestore.collection(`games/${gameId}/tiles`);
+    const batch = this.db.firestore.batch();
 
     if (game) {
       for (let i = 0; i < cols; i++) {
@@ -56,7 +58,12 @@ export class TileService extends CollectionService<TileState> {
         }
       }
 
-      this.store.set(tiles);
+      for (const tile of tiles) {
+        const ref = collection.doc(tile.id.toString());
+        batch.set(ref, tile);
+      }
+
+      return batch.commit().catch((error) => console.log(error));
     }
   }
 

@@ -11,6 +11,7 @@ import { GameGuard } from './games/guards/games.guard';
 import { ActiveUserGuard } from './auth/guards/active-user.guard';
 import { ActiveGameGuard } from './games/guards/active-game.guard';
 import { SpeciesGuard } from './board/species/guards/species.guard';
+import { TilesGuard } from './board/tiles/guards/tiles.guard';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['welcome']);
 
@@ -34,8 +35,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        canActivate: [SpeciesGuard],
-        canDeactivate: [SpeciesGuard],
+        canActivate: [SpeciesGuard, TilesGuard],
+        canDeactivate: [SpeciesGuard, TilesGuard],
         component: BoardViewComponent,
       },
     ],
