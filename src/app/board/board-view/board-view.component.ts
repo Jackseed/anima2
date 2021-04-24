@@ -29,7 +29,7 @@ export class BoardViewComponent implements OnInit {
     this.tileService.setTiles();
     this.tiles$ = this.tileQuery.selectAll();
     this.species$ = this.speciesQuery.selectAll();
-    this.speciesService.setActive('3Dv7DnEp9Vmxsfgz2G0y');
+    this.speciesService.setActive('mountains');
   }
 
   public countSpeciesOnTile(speciesTileIds: number[], i: number): number {
@@ -71,7 +71,7 @@ export class BoardViewComponent implements OnInit {
 
   public proliferate(species: Species, tileId: number) {
     if (species.tileIds.filter((id) => id === tileId).length > 1) {
-      this.speciesService.addUnits(species.id, [tileId, tileId]);
+      this.speciesService.proliferate(species.id, [tileId, tileId]);
       this.snackbar.open('Prolifération !');
     } else {
       this.snackbar.open("Manque d'unités pour proliférer.");

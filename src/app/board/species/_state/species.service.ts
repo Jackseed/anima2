@@ -5,7 +5,7 @@ import {
 } from '@angular/fire/firestore';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
-import { Species } from './species.model';
+import { neutrals, Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 
 @Injectable({ providedIn: 'root' })
@@ -19,6 +19,10 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     super(store);
   }
 
+  public setNeutrals(gameId: string) {
+    neutrals.forEach((species) => this.addSpecies(species, gameId));
+  }
+
   public setActive(id: string) {
     this.store.setActive(id);
   }
@@ -27,7 +31,15 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
-  public async addUnits(id: string, newTileIds: number[]) {
+  public async addSpecies(species: Species, gameId?: string) {
+    const gId = gameId ? gameId : this.routerQuery.getParams().id;
+    const speciesDoc: AngularFirestoreDocument<Species> = this.afs.doc<Species>(
+      `games/${gId}/species/${species.id}`
+    );
+    await speciesDoc.set(species);
+  }
+
+  public async proliferate(id: string, newTileIds: number[]) {
     const speciesDoc: AngularFirestoreDocument<Species> = this.afs.doc<Species>(
       `games/${this.routerQuery.getParams().id}/species/${id}`
     );

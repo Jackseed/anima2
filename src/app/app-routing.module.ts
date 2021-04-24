@@ -28,9 +28,9 @@ const routes: Routes = [
   },
   {
     path: 'games/:id',
-    canActivate: [ActiveGameGuard], // ActiveUserGuard, AngularFireAuthGuard
-    // data: { authGuardPipe: redirectUnauthorizedToLogin },
-    canDeactivate: [ActiveGameGuard], // ActiveUserGuard
+    canActivate: [ActiveGameGuard, ActiveUserGuard, AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    canDeactivate: [ActiveGameGuard, ActiveUserGuard],
     children: [
       {
         path: '',
