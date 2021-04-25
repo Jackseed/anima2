@@ -16,12 +16,11 @@
       class="tile"
       (click)="play(i)"
     >
-      <div [ngClass]="{ species: (species$ | async)[0]?.tileIds.includes(i) }">
-        <div
-          class="species-quantity"
-          *ngIf="(species$ | async)[0]?.tileIds.includes(i)"
-        >
-          {{ countSpeciesOnTile((species$ | async)[0]?.tileIds, i) }}
+      <div *ngIf="tile.speciesIds.length > 0">
+        <div [ngClass]="{ species: tile.speciesIds.length > 0 }">
+          <div class="species-quantity" *ngIf="tile.speciesIds.length > 0">
+            {{ tile.speciesIds.length }}
+          </div>
         </div>
       </div>
     </div>

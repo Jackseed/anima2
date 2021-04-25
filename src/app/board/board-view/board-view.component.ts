@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 // Rxjs
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 // Components
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
@@ -26,7 +27,9 @@ export class BoardViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.tiles$ = this.tileQuery.selectAll();
+    this.tiles$ = this.tileQuery
+      .selectAll()
+      .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
     this.species$ = this.speciesQuery.selectAll();
     this.speciesService.setActive('mountains');
   }

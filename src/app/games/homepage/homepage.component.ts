@@ -21,8 +21,8 @@ export class HomepageComponent implements OnInit {
 
   public async playNow() {
     const gameId = this.gameService.createNewGame('');
-    this.speciesService.setNeutrals(gameId);
     await this.tileService.setTiles(gameId);
+    this.speciesService.setNeutrals(gameId);
     this.router.navigate([`/games/${gameId}`]);
   }
 }

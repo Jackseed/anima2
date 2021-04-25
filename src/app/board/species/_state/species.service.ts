@@ -1,21 +1,15 @@
 import { Injectable } from '@angular/core';
-import {
-  AngularFirestore,
-  AngularFirestoreDocument,
-} from '@angular/fire/firestore';
+import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
+import { Tile } from '../../tiles/_state';
 import { neutrals, Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/species' })
 export class SpeciesService extends CollectionService<SpeciesState> {
-  constructor(
-    store: SpeciesStore,
-    private routerQuery: RouterQuery,
-    private afs: AngularFirestore
-  ) {
+  constructor(store: SpeciesStore, private routerQuery: RouterQuery) {
     super(store);
   }
 
@@ -31,16 +25,52 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
-  public async addSpecies(species: Species, gameId?: string) {
+  public async addSpecies(species: Species, gameId?: string): Promise<any> {
     const gId = gameId ? gameId : this.routerQuery.getParams().id;
-    const speciesDoc: AngularFirestoreDocument<Species> = this.afs.doc<Species>(
-      `games/${gId}/species/${species.id}`
-    );
-    await speciesDoc.set(species);
+    return this.db.firestore
+      .runTransaction(async (transaction) => {
+        // set species
+        const speciesCollection = this.db.firestore.collection(
+          `games/${gId}/species`
+        );
+        const speciesRef = speciesCollection.doc(species.id);
+
+        const tiles = [];
+        // get tiles from species
+        for (const tileId of species.tileIds) {
+          const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
+            `games/${gId}/tiles/${tileId.toString()}`
+          );
+          await transaction.get(tileDoc.ref).then((tileDoc) => {
+            if (!tileDoc.exists) {
+              throw 'Document does not exist!';
+            }
+            tiles.push(tileDoc.data());
+          });
+        }
+        // update tiles with speciesIds
+        for (const [i, tileId] of species.tileIds.entries()) {
+          const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
+            `games/${gId}/tiles/${tileId.toString()}`
+          );
+          let speciesIds = tiles[i].speciesIds;
+          // add this species to the tile
+          speciesIds.push(species.id);
+
+          transaction.update(tileDoc.ref, { speciesIds });
+          transaction.set(speciesRef, species);
+        }
+      })
+      .then(() => {
+        console.log('Transaction successfully committed!');
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
+      });
   }
 
   public async proliferate(id: string, newTileIds: number[]) {
-    const speciesDoc: AngularFirestoreDocument<Species> = this.afs.doc<Species>(
+    const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
       `games/${this.routerQuery.getParams().id}/species/${id}`
     );
     let tileIds = (await speciesDoc.get().toPromise()).data().tileIds;
@@ -53,7 +83,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     previousTileIds: number[],
     newTileId: number
   ) {
-    const speciesDoc: AngularFirestoreDocument<Species> = this.afs.doc<Species>(
+    const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
       `games/${this.routerQuery.getParams().id}/species/${id}`
     );
     let tileIds = (await speciesDoc.get().toPromise()).data().tileIds;

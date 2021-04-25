@@ -119,6 +119,7 @@ export function createTile(
     x,
     y,
     type,
+    speciesIds: [],
     ...params,
   };
 }
