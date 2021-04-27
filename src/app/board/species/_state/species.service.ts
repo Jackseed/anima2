@@ -11,7 +11,7 @@ import { SpeciesStore, SpeciesState } from './species.store';
 export class SpeciesService extends CollectionService<SpeciesState> {
   constructor(
     store: SpeciesStore,
-    private query: TileQuery,
+    private tileQuery: TileQuery,
     private routerQuery: RouterQuery
   ) {
     super(store);
@@ -29,7 +29,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
-  // TODO REMOVE GET & TRANSACTION
   public async addSpecies(species: Species, gameId?: string): Promise<any> {
     const gId = gameId ? gameId : this.routerQuery.getParams().id;
     return this.db.firestore
@@ -74,32 +73,12 @@ export class SpeciesService extends CollectionService<SpeciesState> {
             (tile) => tile.id === parseInt(tileId)
           );
           const tile = tiles[tileIndex];
-          let newSpecies = [];
 
-          // check if the tile already have species
-          if (tile.species) {
-            const speciesIndex = tile.species.findIndex(
-              (specie) => specie.id === species.id
-            );
-            //then if it had that species, if not add it
-            if (speciesIndex === -1) {
-              newSpecies = tile.species.concat({
-                id: species.id,
-                quantity: tileSpecies[tileId],
-              });
-              // if so, increment quantity
-            } else {
-              newSpecies = tile.species;
-              newSpecies[speciesIndex].quantity =
-                newSpecies[speciesIndex].quantity + tileSpecies[tileId];
-            }
-            // if the tile hadn't species object, adds it
-          } else {
-            newSpecies = tile.species.concat({
-              id: species.id,
-              quantity: tileSpecies[tileId],
-            });
-          }
+          let newSpecies = this.getUpdatedSpeciesOnTile(
+            tile,
+            species.id,
+            tileSpecies[tileId]
+          );
 
           transaction.update(tileDoc.ref, { species: newSpecies });
         }
@@ -113,13 +92,70 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       });
   }
 
+  public getUpdatedSpeciesOnTile(
+    tile: Tile,
+    speciesId: string,
+    quantity: number
+  ): { id: string; quantity: number }[] {
+    let updatedSpecies = [];
+    // check if the tile already have species
+    if (tile.species) {
+      const speciesIndex = tile.species.findIndex(
+        (specie) => specie.id === speciesId
+      );
+      //then if it had that species, if not add it
+      if (speciesIndex === -1) {
+        updatedSpecies = tile.species.concat({
+          id: speciesId,
+          quantity,
+        });
+        // if so, increment quantity
+      } else {
+        // copy tile species to be able to change it
+        updatedSpecies = [...tile.species].map((specie) => {
+          return { ...specie };
+        });
+        updatedSpecies[speciesIndex].quantity =
+          updatedSpecies[speciesIndex].quantity + quantity;
+      }
+      // if the tile hadn't species object, adds it
+    } else {
+      updatedSpecies = tile.species.concat({
+        id: speciesId,
+        quantity,
+      });
+    }
+    return updatedSpecies;
+  }
+
+  // TODO: mb change tileIds for quantity on species?
   public async proliferate(id: string, newTileIds: number[]) {
+    const batch = this.db.firestore.batch();
+    // update species tileIds
     const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
       `games/${this.routerQuery.getParams().id}/species/${id}`
     );
     let tileIds = (await speciesDoc.get().toPromise()).data().tileIds;
     newTileIds.forEach((tileId) => tileIds.push(tileId));
-    await speciesDoc.update({ tileIds });
+
+    batch.update(speciesDoc.ref, { tileIds });
+
+    // update tile species
+    const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
+      `games/${this.routerQuery.getParams().id}/tiles/${newTileIds[0]}`
+    );
+    const tile = this.tileQuery.getEntity(newTileIds[0].toString());
+    const species = this.getUpdatedSpeciesOnTile(tile, id, newTileIds.length);
+    batch.update(tileDoc.ref, { species });
+
+    batch
+      .commit()
+      .then(() => {
+        console.log('Transaction successfully committed!');
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
+      });
   }
 
   public async moveUnits(
@@ -127,6 +163,8 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     previousTileIds: number[],
     newTileId: number
   ) {
+    const batch = this.db.firestore.batch();
+    // update species tileIds
     const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
       `games/${this.routerQuery.getParams().id}/species/${id}`
     );
@@ -140,6 +178,43 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       // then adds the new one
       tileIds.push(newTileId);
     });
-    await speciesDoc.update({ tileIds });
+    batch.update(speciesDoc.ref, { tileIds });
+
+    // update previous tile species
+    const previousTileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
+      `games/${this.routerQuery.getParams().id}/tiles/${previousTileIds[0]}`
+    );
+    const previousTile = this.tileQuery.getEntity(
+      previousTileIds[0].toString()
+    );
+    const previousSpecies = this.getUpdatedSpeciesOnTile(
+      previousTile,
+      id,
+      -previousTileIds.length
+    );
+    console.log(previousSpecies);
+    batch.update(previousTileDoc.ref, { species: previousSpecies });
+
+    // update new tile species
+    const newTileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
+      `games/${this.routerQuery.getParams().id}/tiles/${newTileId}`
+    );
+    const tile = this.tileQuery.getEntity(newTileId.toString());
+    const newSpecies = this.getUpdatedSpeciesOnTile(
+      tile,
+      id,
+      previousTileIds.length
+    );
+    console.log(newSpecies);
+    batch.update(newTileDoc.ref, { species: newSpecies });
+
+    batch
+      .commit()
+      .then(() => {
+        console.log('Transaction successfully committed!');
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
+      });
   }
 }
