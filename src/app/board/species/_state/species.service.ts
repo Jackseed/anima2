@@ -2,14 +2,18 @@ import { Injectable } from '@angular/core';
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
-import { Tile } from '../../tiles/_state';
+import { Tile, TileQuery } from '../../tiles/_state';
 import { neutrals, Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/species' })
 export class SpeciesService extends CollectionService<SpeciesState> {
-  constructor(store: SpeciesStore, private routerQuery: RouterQuery) {
+  constructor(
+    store: SpeciesStore,
+    private query: TileQuery,
+    private routerQuery: RouterQuery
+  ) {
     super(store);
   }
 
@@ -25,6 +29,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
+  // TODO REMOVE GET & TRANSACTION
   public async addSpecies(species: Species, gameId?: string): Promise<any> {
     const gId = gameId ? gameId : this.routerQuery.getParams().id;
     return this.db.firestore
@@ -48,18 +53,53 @@ export class SpeciesService extends CollectionService<SpeciesState> {
             tiles.push(tileDoc.data());
           });
         }
+
+        // get intermediate object with species count per tileId
+        const tileSpecies = {};
+        species.tileIds.forEach((tileId) => {
+          tileSpecies.hasOwnProperty(tileId)
+            ? tileSpecies[tileId]++
+            : (tileSpecies[tileId] = 1);
+        });
+        // extract unique tile ids
+        const uniqueTileIds: string[] = Object.keys(tileSpecies);
+
         // update tiles with speciesIds
-        for (const [i, tileId] of species.tileIds.entries()) {
+        for (const tileId of uniqueTileIds) {
           const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
             `games/${gId}/tiles/${tileId.toString()}`
           );
-          let speciesIds = tiles[i].speciesIds;
-          // add this species to the tile
-          speciesIds.push(species.id);
+          const tile = this.query.getEntity(tileId);
+          let newSpecies = [];
 
-          transaction.update(tileDoc.ref, { speciesIds });
-          transaction.set(speciesRef, species);
+          // check if the tile already have species
+          if (tile.species) {
+            const speciesIndex = tile.species.findIndex(
+              (specie) => specie.id === species.id
+            );
+              //then if it had that species, if not add it
+            if (speciesIndex === -1) {
+              newSpecies = tile.species.concat({
+                id: species.id,
+                quantity: tileSpecies[tileId],
+              });
+              // if so, increment quantity
+            } else {
+              newSpecies = tile.species;
+              newSpecies[speciesIndex].quantity =
+                newSpecies[speciesIndex].quantity + tileSpecies[tileId];
+            }
+          // if the tile hadn't species object, adds it
+          } else {
+            newSpecies = tile.species.concat({
+              id: species.id,
+              quantity: tileSpecies[tileId],
+            });
+          }
+
+          transaction.update(tileDoc.ref, { species: newSpecies });
         }
+        transaction.set(speciesRef, species);
       })
       .then(() => {
         console.log('Transaction successfully committed!');

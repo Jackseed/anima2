@@ -10,7 +10,10 @@ export interface Tile {
     | 'swamps'
     | 'forest'
     | 'blank';
-  speciesIds?: string[];
+  species?: {
+    id: string;
+    quantity: number;
+  }[];
   isReachable?: boolean;
 }
 export const cols = 12;
@@ -119,7 +122,7 @@ export function createTile(
     x,
     y,
     type,
-    speciesIds: [],
+    species: [],
     ...params,
   };
 }

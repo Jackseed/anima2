@@ -16,10 +16,15 @@
       class="tile"
       (click)="play(i)"
     >
-      <div *ngIf="tile.speciesIds.length > 0">
-        <div [ngClass]="{ species: tile.speciesIds.length > 0 }">
-          <div class="species-quantity" *ngIf="tile.speciesIds.length > 0">
-            {{ tile.speciesIds.length }}
+      <div class="absolute" *ngIf="tile.species.length > 0">
+        <div class="absolute" *ngFor="let species of tile.species">
+          <div
+            [ngClass]="{ species: tile.species.length > 0 }"
+            *ngIf="species.quantity"
+          >
+            <div class="species-quantity">
+              {{ species.quantity }}
+            </div>
           </div>
         </div>
       </div>
