@@ -32,7 +32,6 @@ export class BoardViewComponent implements OnInit {
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
     this.species$ = this.speciesQuery.selectAll();
     this.speciesService.setActive('mountains');
-    this.tiles$.subscribe(console.log);
   }
 
   public countSpeciesOnTile(speciesTileIds: number[], i: number): number {

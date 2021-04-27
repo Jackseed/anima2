@@ -69,7 +69,11 @@ export class SpeciesService extends CollectionService<SpeciesState> {
           const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
             `games/${gId}/tiles/${tileId.toString()}`
           );
-          const tile = this.query.getEntity(tileId);
+
+          const tileIndex = tiles.findIndex(
+            (tile) => tile.id === parseInt(tileId)
+          );
+          const tile = tiles[tileIndex];
           let newSpecies = [];
 
           // check if the tile already have species
@@ -77,7 +81,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
             const speciesIndex = tile.species.findIndex(
               (specie) => specie.id === species.id
             );
-              //then if it had that species, if not add it
+            //then if it had that species, if not add it
             if (speciesIndex === -1) {
               newSpecies = tile.species.concat({
                 id: species.id,
@@ -89,7 +93,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
               newSpecies[speciesIndex].quantity =
                 newSpecies[speciesIndex].quantity + tileSpecies[tileId];
             }
-          // if the tile hadn't species object, adds it
+            // if the tile hadn't species object, adds it
           } else {
             newSpecies = tile.species.concat({
               id: species.id,
