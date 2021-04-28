@@ -29,11 +29,10 @@ export class TileService extends CollectionService<TileState> {
 
   public async setTiles(gameId: string): Promise<any> {
     const tiles: Tile[] = [];
-    const game = this.gameQuery.getActive();
     const collection = this.db.firestore.collection(`games/${gameId}/tiles`);
     const batch = this.db.firestore.batch();
 
-    if (game) {
+    if (gameId) {
       for (let i = 0; i < cols; i++) {
         for (let j = 0; j < cols; j++) {
           const tileId = j + cols * i;
@@ -62,8 +61,7 @@ export class TileService extends CollectionService<TileState> {
         const ref = collection.doc(tile.id.toString());
         batch.set(ref, tile);
       }
-
-      return batch.commit().catch((error) => console.log(error));
+      return batch.commit();
     }
   }
 

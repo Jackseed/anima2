@@ -46,7 +46,7 @@ export class BoardViewComponent implements OnInit {
       const activeTileId = this.tileQuery.getActiveId();
       // if so, colonizes
       this.colonize(activeSpecies.id, [Number(activeTileId)], tileId);
-      this.tileService.removeActive(tileId);
+      this.tileService.removeActive(Number(activeTileId));
       this.tileService.removeReachable();
       return;
     }
@@ -55,7 +55,7 @@ export class BoardViewComponent implements OnInit {
       // then check if the tile was already selected
       if (this.isActive(tileId)) {
         // if so, proliferates
-        this.proliferate(activeSpecies, tileId);
+        this.proliferate(activeSpecies.id, tileId);
         this.tileService.removeActive(tileId);
         this.tileService.removeReachable();
         // else selects the tile
@@ -71,8 +71,10 @@ export class BoardViewComponent implements OnInit {
     return this.tileQuery.hasActive(tileId.toString());
   }
 
-  public proliferate(species: Species, tileId: number) {
+  public proliferate(speciesId: string, tileId: number) {
+    const species = this.speciesQuery.getEntity(speciesId);
     if (species.tileIds.filter((id) => id === tileId).length > 1) {
+      console.log(species.tileIds.filter((id) => id === tileId));
       this.speciesService.proliferate(species.id, [tileId, tileId]);
       this.snackbar.open('Prolifération !');
     } else {

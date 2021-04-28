@@ -22,9 +22,14 @@ export class HomepageComponent implements OnInit {
 
   public async playNow() {
     resetStores({ exclude: ['game'] });
-    const gameId = this.gameService.createNewGame('');
-    await this.tileService.setTiles(gameId);
-    this.speciesService.setNeutrals(gameId);
-    this.router.navigate([`/games/${gameId}`]);
+    const gameId = await this.gameService.createNewGame('');
+    await this.tileService
+      .setTiles(gameId)
+      .then(() => {
+        console.log('Transaction successfully committed!');
+        this.speciesService.setNeutrals(gameId);
+        this.router.navigate([`/games/${gameId}`]);
+      })
+      .catch((error) => console.log(error));
   }
 }

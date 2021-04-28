@@ -10,11 +10,19 @@ export class GameService extends CollectionService<GameState> {
     super(store);
   }
 
-  createNewGame(name: string) {
+  public async createNewGame(name: string): Promise<string> {
     const id = this.db.createId();
     const game = createGame({ id, name });
     // Create the game
-    this.collection.doc(id).set(game);
+    await this.collection
+      .doc(id)
+      .set(game)
+      .then(() => {
+        console.log('Transaction successfully committed!');
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
+      });
     return id;
   }
 }

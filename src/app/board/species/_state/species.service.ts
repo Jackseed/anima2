@@ -31,7 +31,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
 
   public async addSpecies(species: Species, gameId?: string): Promise<any> {
     const gId = gameId ? gameId : this.routerQuery.getParams().id;
-    return this.db.firestore
+    await this.db.firestore
       .runTransaction(async (transaction) => {
         // set species
         const speciesCollection = this.db.firestore.collection(
@@ -192,7 +192,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       id,
       -previousTileIds.length
     );
-    console.log(previousSpecies);
     batch.update(previousTileDoc.ref, { species: previousSpecies });
 
     // update new tile species
@@ -205,7 +204,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       id,
       previousTileIds.length
     );
-    console.log(newSpecies);
     batch.update(newTileDoc.ref, { species: newSpecies });
 
     batch
