@@ -63,7 +63,7 @@
 }
 
 .species {
-  background-image: url("/assets/blob.png");
+  background-image: var(--img);
   background-position: center;
   background-size: 50%;
   background-repeat: no-repeat;

@@ -19,6 +19,7 @@
       <div class="absolute" *ngIf="tile.species.length > 0">
         <div class="absolute" *ngFor="let species of tile.species">
           <div
+            style="--img: url({{ getSpeciesImgUrl(species.id) }});"
             [ngClass]="{ species: tile.species.length > 0 }"
             *ngIf="species.quantity"
           >

@@ -76,9 +76,13 @@ export class BoardViewComponent implements OnInit {
     if (species.tileIds.filter((id) => id === tileId).length > 1) {
       console.log(species.tileIds.filter((id) => id === tileId));
       this.speciesService.proliferate(species.id, [tileId, tileId]);
-      this.snackbar.open('Prolifération !');
+      this.snackbar.open('Prolifération !', null, {
+        duration: 2000,
+      });
     } else {
-      this.snackbar.open("Manque d'unités pour proliférer.");
+      this.snackbar.open("Manque d'unités pour proliférer.", null, {
+        duration: 3000,
+      });
     }
   }
 
@@ -88,6 +92,17 @@ export class BoardViewComponent implements OnInit {
     newTileId: number
   ) {
     this.speciesService.moveUnits(speciesId, previousTileIds, newTileId);
-    this.snackbar.open('Colonisation !');
+    this.snackbar.open('Colonisation !', null, {
+      duration: 2000,
+    });
+  }
+
+  getSpeciesImgUrl(speciesId: string): string {
+    let url: string;
+    const species = this.speciesQuery.getEntity(speciesId);
+
+    if (species.playerId === 'neutral') url = `/assets/${species.id}.png`;
+
+    return url;
   }
 }
