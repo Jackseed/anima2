@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
-import { UserQuery } from 'src/app/auth/_state';
 import { createGame } from './game.model';
 import { GameStore, GameState } from './game.store';
 
