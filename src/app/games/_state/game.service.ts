@@ -92,4 +92,8 @@ export class GameService extends CollectionService<GameState> {
         console.log('Transaction failed: ', error);
       });
   }
+
+  public countScore(regionType: ) {
+
+  }
 }

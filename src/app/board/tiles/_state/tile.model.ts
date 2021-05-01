@@ -2,20 +2,23 @@ export interface Tile {
   id: number;
   x?: number;
   y?: number;
-  type?:
-    | 'rockies'
-    | 'mountains'
-    | 'island'
-    | 'plains'
-    | 'swamps'
-    | 'forest'
-    | 'blank';
+  type?: Region;
   species?: {
     id: string;
     quantity: number;
   }[];
   isReachable?: boolean;
 }
+export const regions = [
+  'rockies',
+  'mountains',
+  'island',
+  'plains',
+  'swamps',
+  'forest',
+  'blank',
+] as const;
+export type Region = typeof regions[number];
 export const cols = 12;
 export const lines = 13;
 export const max = cols * lines;
@@ -107,14 +110,7 @@ export function createTile(
   id: number,
   x: number,
   y: number,
-  type:
-    | 'rockies'
-    | 'mountains'
-    | 'island'
-    | 'plains'
-    | 'swamps'
-    | 'forest'
-    | 'blank',
+  type: Region,
   params?: Partial<Tile>
 ): Tile {
   return {
