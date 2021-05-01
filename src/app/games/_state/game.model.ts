@@ -2,25 +2,25 @@ export interface Game {
   id?: string;
   name?: string;
   playerIds?: string[];
-  era?: {
-    remainingActions: number;
-    eraCounters: number;
-    turnCount: number;
-  };
+  remainingActions: number;
+  eraCount: number;
+  turnCount: number;
+  actionType: 'newSpecies' | 'proliferate' | 'colonize' | 'newAbility' | '';
+  colonizationCount: number;
 }
 
 export const actionPerTurn = 2;
 
-export function createGame(params: Partial<Game> = {}): Game {
+export function createGame(params: Partial<Game>): Game {
   return {
     id: params.id,
     name: params.name,
     playerIds: params.playerIds,
-    era: {
-      remainingActions: actionPerTurn,
-      eraCounters: 1,
-      turnCount: 1,
-    },
+    remainingActions: actionPerTurn,
+    eraCount: 1,
+    turnCount: 1,
+    actionType: 'newSpecies',
+    colonizationCount: 4,
     ...params,
   };
 }

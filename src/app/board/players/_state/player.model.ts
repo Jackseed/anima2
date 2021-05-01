@@ -1,9 +1,16 @@
+import { guid } from '@datorama/akita';
+
 export interface Player {
-  id: number | string;
+  id: string;
+  speciesIds: string[];
+  score: number;
 }
 
-export function createPlayer(params: Partial<Player>) {
+export function createPlayer(id: string, params: Partial<Player>): Player {
   return {
-
-  } as Player;
+    id: params.id,
+    speciesIds: [guid()],
+    score: 0,
+    ...params,
+  };
 }
