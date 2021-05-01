@@ -1,3 +1,5 @@
+import firebase from 'firebase/app';
+
 export interface Game {
   id?: string;
   name?: string;
@@ -6,7 +8,7 @@ export interface Game {
   eraCount: number;
   turnCount: number;
   actionType: 'newSpecies' | 'proliferate' | 'colonize' | 'newAbility' | '';
-  colonizationCount: number;
+  colonizationCount: number | firebase.firestore.FieldValue;
 }
 
 export const actionPerTurn = 2;

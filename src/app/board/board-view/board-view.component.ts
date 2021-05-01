@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 // States
 import { UserQuery } from 'src/app/auth/_state';
-import { GameQuery, GameService } from 'src/app/games/_state';
+import { Game, GameQuery, GameService } from 'src/app/games/_state';
 import { PlayerQuery } from '../players/_state';
 // Components
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
@@ -22,6 +22,7 @@ export class BoardViewComponent implements OnInit {
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public playingPlayerId: string;
+  public gameId: string;
 
   constructor(
     private gameQuery: GameQuery,
@@ -42,6 +43,7 @@ export class BoardViewComponent implements OnInit {
     this.species$ = this.speciesQuery.selectAll();
     this.speciesService.setActive('mountains');
     this.playingPlayerId = this.userQuery.getActiveId();
+    this.gameId = this.gameQuery.getActiveId();
   }
 
   public countSpeciesOnTile(speciesTileIds: number[], i: number): number {
@@ -59,21 +61,30 @@ export class BoardViewComponent implements OnInit {
         this.speciesService.proliferate(activeSpecies.id, tileId, 4);
         await this.gameService.switchActionType('');
       }
-      if (this.tileQuery.hasActive() && tile.isReachable) {
-        // checks if a unit is active & tile reachable
-        const activeTileId = this.tileQuery.getActiveId();
+      // checks if a unit is active & tile reachable & colonization count > 1
+      if (
+        this.tileQuery.hasActive() &&
+        tile.isReachable &&
+        game.colonizationCount > 1
+      ) {
+        // COLONIZATION
         // if so, colonizes
-        this.colonize(activeSpecies.id, Number(activeTileId), tileId, 1);
-        this.tileService.removeActive(Number(activeTileId));
-        this.tileService.removeReachable();
-        return;
+        const activeTileId = this.tileQuery.getActiveId();
+        await this.colonize(
+          game,
+          activeSpecies.id,
+          Number(activeTileId),
+          tileId,
+          1
+        );
       }
+      // checks if the tile includes an active species
       if (activeSpecies.tileIds.includes(tileId)) {
-        // checks if the tile includes an active species
         // then check if the tile was already selected
         if (this.isActive(tileId)) {
-          // checks if enough species
+          // checks if enough species to proliferate
           if (activeSpecies.tileIds.filter((id) => id === tileId).length > 1) {
+            // PROLIFERATE
             // if so, proliferates
             this.speciesService.proliferate(activeSpecies.id, tileId, 2);
             this.tileService.removeActive(tileId);
@@ -105,21 +116,27 @@ export class BoardViewComponent implements OnInit {
     return this.tileQuery.hasActive(tileId.toString());
   }
 
-  public colonize(
+  public async colonize(
+    game: Game,
     speciesId: string,
     previousTileId: number,
     newTileId: number,
     quantity: number
   ) {
-    this.speciesService.moveUnits(
-      speciesId,
-      previousTileId,
-      newTileId,
-      quantity
-    );
-    this.snackbar.open('Colonisation !', null, {
-      duration: 2000,
-    });
+    this.tileService.removeActive(Number(previousTileId));
+    this.tileService.removeReachable();
+
+    this.speciesService
+      .move(game, speciesId, previousTileId, newTileId, quantity)
+      .then(async () => {
+        console.log('Transaction successfully committed!');
+        this.snackbar.open('Colonisation !', null, {
+          duration: 2000,
+        });
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
+      });
   }
 
   getSpeciesImgUrl(speciesId: string): string {
