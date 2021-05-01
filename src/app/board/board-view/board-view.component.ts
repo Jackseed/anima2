@@ -47,6 +47,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.game$ = this.gameQuery.selectActive();
     this.turnSub = this.getTurnSub();
     this.game$.subscribe(console.log);
+    this.gameService.countScore('island');
   }
 
   // If no more actions for the active player, skips turn
@@ -157,6 +158,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
         this.snackbar.open('Colonisation !', null, {
           duration: 2000,
         });
+        // update remainingActions if that's the last colonizationCount
+        if (game.colonizationCount === quantity) {
+          this.gameService.decrementRemainingActions();
+        }
       })
       .catch((error) => {
         console.log('Transaction failed: ', error);

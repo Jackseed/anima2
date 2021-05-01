@@ -5,6 +5,9 @@ import { actionPerTurn, colonizationCount, createGame } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
 import firebase from 'firebase/app';
+import { fullRegions, Region } from 'src/app/board/tiles/_state';
+import { Player, PlayerQuery } from 'src/app/board/players/_state';
+import { SpeciesQuery } from 'src/app/board/species/_state';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games' })
@@ -12,6 +15,8 @@ export class GameService extends CollectionService<GameState> {
   constructor(
     store: GameStore,
     private query: GameQuery,
+    private playerQuery: PlayerQuery,
+    private speciesQuery: SpeciesQuery,
     private afAuth: AngularFireAuth
   ) {
     super(store);
@@ -93,7 +98,26 @@ export class GameService extends CollectionService<GameState> {
       });
   }
 
-  public countScore(regionType: ) {
-
+  public countScore(region: Region) {
+    const game = this.query.getActive();
+    const regions = fullRegions;
+    const players: Player[] = [];
+    game.playerIds.forEach((id) =>
+      players.push({ ...this.playerQuery.getEntity(id), tileIds: [] })
+    );
+    players.forEach((player) =>
+      player.speciesIds.forEach((speciesId) => {
+        const species = this.speciesQuery.getEntity(speciesId);
+        player.tileIds = [...player.tileIds, ...species.tileIds];
+      })
+    );
+    console.log(players);
+    const isPlayerControling = new Array(players.length).fill(true);
+    regions[region].forEach((id) => {
+      players.forEach((player, index: number) => {
+        if (isPlayerControling[index]) players[index].tileIds;
+      });
+    });
+    console.log(isPlayerControling);
   }
 }

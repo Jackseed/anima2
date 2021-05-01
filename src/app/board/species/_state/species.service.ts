@@ -6,14 +6,12 @@ import { Tile, TileQuery } from '../../tiles/_state';
 import { neutrals, Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import firebase from 'firebase/app';
-import { Game, GameService } from 'src/app/games/_state';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/species' })
 export class SpeciesService extends CollectionService<SpeciesState> {
   constructor(
     store: SpeciesStore,
-    private gameService: GameService,
     private tileQuery: TileQuery,
     private routerQuery: RouterQuery
   ) {
@@ -163,7 +161,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   }
 
   public async move(
-    game: Game,
+    game,
     speciesId: string,
     previousTileId: number,
     newTileId: number,
@@ -212,19 +210,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
 
     batch.update(gameRef, { colonizationCount: decrement });
 
-    batch
-      .commit()
-      .then(() => {
-        console.log('move - Transaction successfully committed!');
-        // update remainingActions if that's the last colonizationCount
-        if (game.colonizationCount === quantity) {
-          this.gameService.decrementRemainingActions();
-        }
-      })
-      .catch((error) => {
-        console.log('Transaction failed: ', error);
-      });
-
-    return;
+    return batch.commit();
   }
 }

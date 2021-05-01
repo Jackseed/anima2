@@ -4,6 +4,7 @@ export interface Player {
   id: string;
   speciesIds: string[];
   score: number;
+  tileIds?: number[];
 }
 
 export function createPlayer(id: string, params: Partial<Player>): Player {

@@ -19,6 +19,7 @@ export const regions = [
   'blank',
 ] as const;
 export type Region = typeof regions[number];
+
 export const cols = 12;
 export const lines = 13;
 export const max = cols * lines;
@@ -105,6 +106,16 @@ export const islandBridgeCoordinates: [x: number, y: number][] = [
 export const islandBridgeIds: number[] = islandBridgeCoordinates.map(
   (coordinates) => coordinates[0] + coordinates[1] * cols
 );
+
+export const fullRegions = {
+  rockies: rockiesIds,
+  mountains: mountainsIds,
+  island: islandIds,
+  plains: plainsIds,
+  swamps: swampsIds,
+  forest: forestIds,
+  blank: [],
+};
 
 export function createTile(
   id: number,
