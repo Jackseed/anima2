@@ -1,10 +1,10 @@
 // Angular
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
 // Rxjs
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { iif, Observable, of, Subscription } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 // States
 import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
@@ -18,11 +18,12 @@ import { Tile, TileQuery, TileService } from '../tiles/_state';
   templateUrl: './board-view.component.html',
   styleUrls: ['./board-view.component.scss'],
 })
-export class BoardViewComponent implements OnInit {
+export class BoardViewComponent implements OnInit, OnDestroy {
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public playingPlayerId: string;
-  public gameId: string;
+  public game$: Observable<Game>;
+  public turnSub: Subscription;
 
   constructor(
     private gameQuery: GameQuery,
@@ -43,8 +44,33 @@ export class BoardViewComponent implements OnInit {
     this.species$ = this.speciesQuery.selectAll();
     this.speciesService.setActive('mountains');
     this.playingPlayerId = this.userQuery.getActiveId();
-    this.gameId = this.gameQuery.getActiveId();
+    this.game$ = this.gameQuery.selectActive();
+    this.turnSub = this.getTurnSub();
+    this.game$.subscribe(console.log);
   }
+
+  // If no more actions for the active player, skips turn
+  public getTurnSub(): Subscription {
+    return this.game$
+      .pipe(
+        map((game) => game.remainingActions),
+        mergeMap((remainingActions) =>
+          iif(
+            () => this.playerQuery.getActiveId() === this.playingPlayerId,
+            of(remainingActions),
+            of(true)
+          )
+        ),
+        tap((bool) =>
+          !bool
+            ? this.gameService.incrementTurnCount()
+            : console.log('still actions')
+        )
+      )
+      .subscribe();
+  }
+
+  public skipTurn() {}
 
   public countSpeciesOnTile(speciesTileIds: number[], i: number): number {
     return speciesTileIds.filter((tileId) => tileId === i).length;
@@ -65,7 +91,7 @@ export class BoardViewComponent implements OnInit {
       if (
         this.tileQuery.hasActive() &&
         tile.isReachable &&
-        game.colonizationCount > 1
+        game.colonizationCount > 0
       ) {
         // COLONIZATION
         // if so, colonizes
@@ -129,7 +155,7 @@ export class BoardViewComponent implements OnInit {
     this.speciesService
       .move(game, speciesId, previousTileId, newTileId, quantity)
       .then(async () => {
-        console.log('Transaction successfully committed!');
+        console.log('move - Transaction successfully committed!');
         this.snackbar.open('Colonisation !', null, {
           duration: 2000,
         });
@@ -146,5 +172,9 @@ export class BoardViewComponent implements OnInit {
     if (species.playerId === 'neutral') url = `/assets/${species.id}.png`;
 
     return url;
+  }
+
+  ngOnDestroy() {
+    this.turnSub.unsubscribe();
   }
 }
