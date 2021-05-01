@@ -70,8 +70,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  public skipTurn() {}
-
   public countSpeciesOnTile(speciesTileIds: number[], i: number): number {
     return speciesTileIds.filter((tileId) => tileId === i).length;
   }

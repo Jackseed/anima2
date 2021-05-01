@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
-import { actionPerTurn, createGame } from './game.model';
+import { actionPerTurn, colonizationCount, createGame } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
 import firebase from 'firebase/app';
@@ -66,6 +66,27 @@ export class GameService extends CollectionService<GameState> {
       .commit()
       .then(() => {
         console.log('incrementTurnCount - Transaction successfully committed!');
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
+      });
+  }
+
+  public async decrementRemainingActions() {
+    const game = this.query.getActive();
+    const gameRef = this.db.collection('games').doc(game.id).ref;
+    const batch = this.db.firestore.batch();
+    const decrement = firebase.firestore.FieldValue.increment(-1);
+
+    batch.update(gameRef, { remainingActions: decrement });
+    batch.update(gameRef, { colonizationCount: colonizationCount });
+
+    return batch
+      .commit()
+      .then(() => {
+        console.log(
+          'decrementRemainingActions - Transaction successfully committed!'
+        );
       })
       .catch((error) => {
         console.log('Transaction failed: ', error);

@@ -12,6 +12,7 @@ export interface Game {
 }
 
 export const actionPerTurn = 2;
+export const colonizationCount = 4;
 
 export function createGame(params: Partial<Game>): Game {
   return {
@@ -22,7 +23,7 @@ export function createGame(params: Partial<Game>): Game {
     eraCount: 1,
     turnCount: 1,
     actionType: 'newSpecies',
-    colonizationCount: 4,
+    colonizationCount: colonizationCount,
     ...params,
   };
 }
