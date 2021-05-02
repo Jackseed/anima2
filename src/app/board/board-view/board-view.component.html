@@ -1,4 +1,22 @@
 <div class="main">
+  <mat-card class="score absolute">
+    <mat-card-header
+      ><mat-card-title>Tableau des scores</mat-card-title></mat-card-header
+    >
+    <mat-card-content *ngIf="game$ | async as game">
+      <h3>Partie</h3>
+      <li>Ère: {{ game.eraCount }}</li>
+      <li>Tours: {{ game.turnCount }}</li>
+      <h3>Tour en cours</h3>
+      <li>Joueur actif: {{ game.activePlayerId.slice(0, 4) }}</li>
+      <li>Actions restantes: {{ game.remainingActions }}</li>
+      <li>Colonisations possibles: {{ game.colonizationCount }}</li>
+      <h3>Joueurs</h3>
+      <li *ngFor="let player of players$ | async">
+        {{ player.id.slice(0, 4) }}: {{ player.score }}
+      </li>
+    </mat-card-content>
+  </mat-card>
   <div class="container">
     <div
       *ngFor="let tile of tiles$ | async; let i = index"

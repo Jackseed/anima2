@@ -19,6 +19,7 @@ import { ActiveGameGuard } from './games/guards/active-game.guard';
 import { ActiveUserGuard } from './auth/guards/active-user.guard';
 import { AngularFireAuthGuard } from '@angular/fire/auth-guard';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SETTINGS } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [AppComponent],
@@ -41,6 +42,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ActiveUserGuard,
     GameGuard,
     ActiveGameGuard,
+    {
+      provide: SETTINGS,
+      useValue: environment.production
+        ? undefined
+        : {
+            host: 'localhost:8080',
+            ssl: false,
+          },
+    },
   ],
   bootstrap: [AppComponent],
 })

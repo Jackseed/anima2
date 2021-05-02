@@ -2,20 +2,24 @@ export interface Tile {
   id: number;
   x?: number;
   y?: number;
-  type?:
-    | 'rockies'
-    | 'mountains'
-    | 'island'
-    | 'plains'
-    | 'swamps'
-    | 'forest'
-    | 'blank';
+  type?: RegionType;
   species?: {
     id: string;
     quantity: number;
   }[];
   isReachable?: boolean;
 }
+export const regionIds = [
+  'rockies',
+  'mountains',
+  'island',
+  'plains',
+  'swamps',
+  'forest',
+  'blank',
+] as const;
+export type RegionType = typeof regionIds[number];
+
 export const cols = 12;
 export const lines = 13;
 export const max = cols * lines;
@@ -103,18 +107,26 @@ export const islandBridgeIds: number[] = islandBridgeCoordinates.map(
   (coordinates) => coordinates[0] + coordinates[1] * cols
 );
 
+export interface Region {
+  name: RegionType;
+  tileIds: number[];
+  score: number;
+}
+
+export const Regions: Region[] = [
+  { name: 'rockies', tileIds: rockiesIds, score: 6 },
+  { name: 'mountains', tileIds: mountainsIds, score: 7 },
+  { name: 'island', tileIds: islandIds, score: 3 },
+  { name: 'plains', tileIds: plainsIds, score: 9 },
+  { name: 'swamps', tileIds: swampsIds, score: 6 },
+  { name: 'forest', tileIds: forestIds, score: 8 },
+];
+
 export function createTile(
   id: number,
   x: number,
   y: number,
-  type:
-    | 'rockies'
-    | 'mountains'
-    | 'island'
-    | 'plains'
-    | 'swamps'
-    | 'forest'
-    | 'blank',
+  type: RegionType,
   params?: Partial<Tile>
 ): Tile {
   return {

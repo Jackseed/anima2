@@ -1,10 +1,14 @@
 // Angular
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
 // Rxjs
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { iif, Observable, of, Subscription } from 'rxjs';
+import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
+// States
+import { UserQuery } from 'src/app/auth/_state';
+import { Game, GameQuery, GameService } from 'src/app/games/_state';
+import { Player, PlayerQuery, PlayerService } from '../players/_state';
 // Components
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
@@ -14,11 +18,25 @@ import { Tile, TileQuery, TileService } from '../tiles/_state';
   templateUrl: './board-view.component.html',
   styleUrls: ['./board-view.component.scss'],
 })
-export class BoardViewComponent implements OnInit {
+export class BoardViewComponent implements OnInit, OnDestroy {
+  // variables
+  public playingPlayerId: string;
+  // observables
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
+  public game$: Observable<Game>;
+  public players$: Observable<Player[]>;
+  // subscriptions
+  private turnSub: Subscription;
+  private activePlayerSub: Subscription;
+  private activeSpeciesSub: Subscription;
 
   constructor(
+    private gameQuery: GameQuery,
+    private gameService: GameService,
+    private userQuery: UserQuery,
+    private playerQuery: PlayerQuery,
+    private playerService: PlayerService,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
@@ -27,82 +45,188 @@ export class BoardViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.game$ = this.gameQuery.selectActive();
+    this.players$ = this.playerQuery.selectAll();
+    this.activePlayerSub = this.getActivePlayerSub();
+    this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.tiles$ = this.tileQuery
       .selectAll()
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
     this.species$ = this.speciesQuery.selectAll();
-    this.speciesService.setActive('mountains');
+
+    this.playingPlayerId = this.userQuery.getActiveId();
+
+    this.turnSub = this.getTurnSub();
+  }
+
+  // If no more actions for the active player, skips turn
+  private getTurnSub(): Subscription {
+    return this.game$
+      .pipe(
+        pluck('remainingActions'),
+        mergeMap((remainingActions) =>
+          iif(
+            () => this.playerQuery.getActiveId() === this.playingPlayerId,
+            of(remainingActions),
+            of(true)
+          )
+        ),
+        tap((bool) => {
+          if (!bool) this.gameService.incrementTurnCount();
+        })
+      )
+      .subscribe();
+  }
+  // base akita active player on game obj
+  private getActivePlayerSub(): Subscription {
+    return this.game$
+      .pipe(
+        pluck('activePlayerId'),
+        tap((id) => this.playerService.setActive(id))
+      )
+      .subscribe();
+  }
+  // set active first species from active player
+  private getActiveSpeciesSub(): Subscription {
+    return this.playerQuery
+      .selectActive()
+      .pipe(
+        filter((player) => !!player),
+        pluck('speciesIds'),
+        tap((ids) => this.speciesService.setActive(ids[0]))
+      )
+      .subscribe();
   }
 
   public countSpeciesOnTile(speciesTileIds: number[], i: number): number {
     return speciesTileIds.filter((tileId) => tileId === i).length;
   }
 
-  public play(tileId: number) {
+  public async play(tileId: number) {
     const activeSpecies = this.speciesQuery.getActive();
     const tile = this.tileQuery.getEntity(tileId.toString());
-    // checks if a unit is active & tile reachable
-    if (this.tileQuery.hasActive() && tile.isReachable) {
-      const activeTileId = this.tileQuery.getActiveId();
-      // if so, colonizes
-      this.colonize(activeSpecies.id, [Number(activeTileId)], tileId);
-      this.tileService.removeActive(Number(activeTileId));
-      this.tileService.removeReachable();
-      return;
-    }
-    if (activeSpecies.tileIds.includes(tileId)) {
-      // checks if the tile includes an active species
-      // then check if the tile was already selected
-      if (this.isActive(tileId)) {
-        // if so, proliferates
-        this.proliferate(activeSpecies.id, tileId);
-        this.tileService.removeActive(tileId);
-        this.tileService.removeReachable();
-        // else selects the tile
+    const game = this.gameQuery.getActive();
+    const activePlayerId = game.activePlayerId;
+    if (tile.type !== 'blank')
+      if (activePlayerId === this.playingPlayerId) {
+        if (game.actionType === 'newSpecies') {
+          this.speciesService.proliferate(activeSpecies.id, tileId, 4);
+          await this.gameService.switchActionType('');
+        }
+        // checks if a unit is active & tile reachable & colonization count > 1
+        if (
+          this.tileQuery.hasActive() &&
+          tile.isReachable &&
+          game.colonizationCount > 0
+        ) {
+          // COLONIZATION
+          // if so, colonizes
+          const activeTileId = this.tileQuery.getActiveId();
+          await this.colonize(
+            game,
+            activeSpecies.id,
+            Number(activeTileId),
+            tileId,
+            1
+          );
+        }
+        // checks if the tile includes an active species
+        if (activeSpecies.tileIds.includes(tileId)) {
+          // then check if the tile was already selected
+          if (this.isActive(tileId)) {
+            // checks if enough species to proliferate
+            if (
+              activeSpecies.tileIds.filter((id) => id === tileId).length > 1
+            ) {
+              // PROLIFERATE
+              // if so, proliferates
+              await this.proliferate(activeSpecies.id, tileId, 2);
+            } else {
+              this.snackbar.open("Manque d'unités pour proliférer.", null, {
+                duration: 3000,
+              });
+            }
+
+            // else selects the tile
+          } else {
+            this.tileService.removeReachable();
+            this.tileService.select(tileId);
+            this.tileService.markAdjacentReachableTiles(tileId);
+          }
+        }
       } else {
-        this.tileService.removeReachable();
-        this.tileService.select(tileId);
-        this.tileService.markAdjacentReachableTiles(tileId);
+        this.snackbar.open('Not your turn', null, {
+          duration: 3000,
+        });
       }
-    }
   }
 
   public isActive(tileId: number): boolean {
     return this.tileQuery.hasActive(tileId.toString());
   }
 
-  public proliferate(speciesId: string, tileId: number) {
-    const species = this.speciesQuery.getEntity(speciesId);
-    if (species.tileIds.filter((id) => id === tileId).length > 1) {
-      console.log(species.tileIds.filter((id) => id === tileId));
-      this.speciesService.proliferate(species.id, [tileId, tileId]);
-      this.snackbar.open('Prolifération !', null, {
-        duration: 2000,
+  public async proliferate(
+    speciesId: string,
+    tileId: number,
+    quantity: number
+  ) {
+    this.tileService.removeActive(tileId);
+    this.tileService.removeReachable();
+    this.speciesService
+      .proliferate(speciesId, tileId, quantity)
+      .then(() => {
+        this.snackbar.open('Prolifération !', null, {
+          duration: 2000,
+        });
+        this.gameService.decrementRemainingActions();
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
       });
-    } else {
-      this.snackbar.open("Manque d'unités pour proliférer.", null, {
-        duration: 3000,
-      });
-    }
   }
 
-  public colonize(
+  public async colonize(
+    game: Game,
     speciesId: string,
-    previousTileIds: number[],
-    newTileId: number
+    previousTileId: number,
+    newTileId: number,
+    quantity: number
   ) {
-    this.speciesService.moveUnits(speciesId, previousTileIds, newTileId);
-    this.snackbar.open('Colonisation !', null, {
-      duration: 2000,
-    });
+    this.tileService.removeActive(Number(previousTileId));
+    this.tileService.removeReachable();
+
+    this.speciesService
+      .move(game, speciesId, previousTileId, newTileId, quantity)
+      .then(async () => {
+        this.snackbar.open('Colonisation !', null, {
+          duration: 2000,
+        });
+        // update remainingActions if that's the last colonizationCount
+        if (game.colonizationCount === quantity) {
+          this.gameService.decrementRemainingActions();
+        }
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
+      });
   }
 
   getSpeciesImgUrl(speciesId: string): string {
     let url: string;
     const species = this.speciesQuery.getEntity(speciesId);
 
-    if (species.playerId === 'neutral') url = `/assets/${species.id}.png`;
+    if (species.playerId === 'neutral') {
+      url = `/assets/${species.id}.png`;
+    } else {
+      url = `/assets/${species.abilityIds[0]}.png`;
+    }
 
     return url;
+  }
+
+  ngOnDestroy() {
+    this.turnSub.unsubscribe();
+    this.activePlayerSub.unsubscribe();
+    this.activeSpeciesSub.unsubscribe();
   }
 }
