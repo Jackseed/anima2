@@ -209,15 +209,15 @@ export const neutrals: Species[] = [
 export function createSpecies(
   id?: string,
   playerId?: string,
-  tileIds?: number[],
   abilityIds?: Abilities[],
+  tileIds?: number[],
   params?: Partial<Species>
 ): Species {
   return {
     id,
     playerId,
-    tileIds,
     abilityIds,
+    tileIds,
     ...params,
   };
 }

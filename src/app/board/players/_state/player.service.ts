@@ -8,4 +8,8 @@ export class PlayerService extends CollectionService<PlayerState> {
   constructor(store: PlayerStore) {
     super(store);
   }
+
+  public setActive(id: string) {
+    this.store.setActive(id);
+  }
 }

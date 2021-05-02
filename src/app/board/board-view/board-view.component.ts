@@ -4,11 +4,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 // Rxjs
 import { iif, Observable, of, Subscription } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 // States
 import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
-import { PlayerQuery } from '../players/_state';
+import { PlayerQuery, PlayerService } from '../players/_state';
 // Components
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
@@ -23,13 +23,16 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public species$: Observable<Species[]>;
   public playingPlayerId: string;
   public game$: Observable<Game>;
-  public turnSub: Subscription;
+  private turnSub: Subscription;
+  private activePlayerSub: Subscription;
+  private activeSpeciesSub: Subscription;
 
   constructor(
     private gameQuery: GameQuery,
     private gameService: GameService,
     private userQuery: UserQuery,
     private playerQuery: PlayerQuery,
+    private playerService: PlayerService,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
@@ -38,23 +41,27 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.game$ = this.gameQuery.selectActive();
+    this.activePlayerSub = this.getActivePlayerSub();
+    this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.tiles$ = this.tileQuery
       .selectAll()
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
     this.species$ = this.speciesQuery.selectAll();
-    this.speciesService.setActive('mountains');
+
     this.playingPlayerId = this.userQuery.getActiveId();
-    this.game$ = this.gameQuery.selectActive();
+
     this.turnSub = this.getTurnSub();
     this.game$.subscribe(console.log);
     this.gameService.countScore('island');
+    this.speciesService.setActive('mountains');
   }
 
   // If no more actions for the active player, skips turn
-  public getTurnSub(): Subscription {
+  private getTurnSub(): Subscription {
     return this.game$
       .pipe(
-        map((game) => game.remainingActions),
+        pluck('remainingActions'),
         mergeMap((remainingActions) =>
           iif(
             () => this.playerQuery.getActiveId() === this.playingPlayerId,
@@ -67,6 +74,26 @@ export class BoardViewComponent implements OnInit, OnDestroy {
             ? this.gameService.incrementTurnCount()
             : console.log('still actions')
         )
+      )
+      .subscribe();
+  }
+  // base akita active player on game obj
+  private getActivePlayerSub(): Subscription {
+    return this.game$
+      .pipe(
+        pluck('activePlayerId'),
+        tap((id) => this.playerService.setActive(id))
+      )
+      .subscribe();
+  }
+  // set active first species from active player
+  private getActiveSpeciesSub(): Subscription {
+    return this.playerQuery
+      .selectActive()
+      .pipe(
+        filter(player => !!player),
+        pluck('speciesIds'),
+        tap((ids) => this.speciesService.setActive(ids[0]))
       )
       .subscribe();
   }
@@ -179,5 +206,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.turnSub.unsubscribe();
+    this.activePlayerSub.unsubscribe();
   }
 }

@@ -11,7 +11,11 @@ import {
   Player,
   PlayerQuery,
 } from 'src/app/board/players/_state';
-import { SpeciesQuery } from 'src/app/board/species/_state';
+import {
+  abilityIds,
+  createSpecies,
+  SpeciesQuery,
+} from 'src/app/board/species/_state';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games' })
@@ -39,18 +43,23 @@ export class GameService extends CollectionService<GameState> {
 
     batch.set(gameRef, game);
 
-    // TODO: move species creation later
     const speciesId = this.db.createId();
     const player = createPlayer(playerId, [speciesId]);
     batch.set(playerRef, player);
 
-
+    // TODO: move species creation later
+    const speciesRef = this.db.collection(`games/${id}/species`).doc(speciesId)
+      .ref;
+    const randomAbility =
+      abilityIds[Math.floor(Math.random() * abilityIds.length)];
+    const species = createSpecies(speciesId, playerId, [randomAbility], []);
+    batch.set(speciesRef, species);
 
     // Create the game
     await batch
       .commit()
       .then(() => {
-        console.log('Game & Player created');
+        console.log('Game, player & species created');
       })
       .catch((error) => {
         console.log('Transaction failed: ', error);
