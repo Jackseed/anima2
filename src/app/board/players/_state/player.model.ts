@@ -14,6 +14,7 @@ export function createPlayer(
     id: id,
     speciesIds: speciesIds,
     score: 0,
+    tileIds: [],
     ...params,
   };
 }

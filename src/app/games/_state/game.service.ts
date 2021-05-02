@@ -91,8 +91,10 @@ export class GameService extends CollectionService<GameState> {
     batch.update(gameRef, { turnCount: increment });
     batch.update(gameRef, { remainingActions: actionPerTurn });
 
-    if ((game.turnCount + 1) % 3 === 0)
+    if ((game.turnCount + 1) % 3 === 0) {
       batch.update(gameRef, { eraCount: increment });
+      this.countScore('island');
+    }
 
     return batch
       .commit()
@@ -128,21 +130,30 @@ export class GameService extends CollectionService<GameState> {
   public countScore(region: Region) {
     const game = this.query.getActive();
     const regions = Regions;
-    const players: Player[] = [];
-    game.playerIds.forEach((id) =>
-      players.push({ ...this.playerQuery.getEntity(id), tileIds: [] })
-    );
+    const players: Player[] = this.playerQuery.getAll();
+    const playerTiles = {};
+    // iterates on player species to add their tileIds to playerTiles
     players.forEach((player) =>
       player.speciesIds.forEach((speciesId) => {
         const species = this.speciesQuery.getEntity(speciesId);
-        player.tileIds = [...player.tileIds, ...species.tileIds];
+        playerTiles.hasOwnProperty(player.id)
+          ? (playerTiles[player.id] = [
+              ...playerTiles[player.id],
+              ...species.tileIds,
+            ])
+          : (playerTiles[player.id] = species.tileIds);
       })
     );
-    console.log(players);
+    console.log('players tiles: ', playerTiles);
+    // creates a boolean to know if the player control the region
     const isPlayerControling = new Array(players.length).fill(true);
-    regions[region].forEach((id) => {
+    // iterates on region tiles to check if players control it
+    regions[region].forEach((tileId) => {
       players.forEach((player, index: number) => {
-        if (isPlayerControling[index]) players[index].tileIds;
+        if (isPlayerControling[index])
+          playerTiles[player.id].includes(tileId)
+            ? (isPlayerControling[index] = true)
+            : (isPlayerControling[index] = false);
       });
     });
     console.log(isPlayerControling);

@@ -53,7 +53,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
     this.turnSub = this.getTurnSub();
     this.game$.subscribe(console.log);
-    this.gameService.countScore('island');
   }
 
   // If no more actions for the active player, skips turn
@@ -68,11 +67,9 @@ export class BoardViewComponent implements OnInit, OnDestroy {
             of(true)
           )
         ),
-        tap((bool) =>
-          !bool
-            ? this.gameService.incrementTurnCount()
-            : console.log('still actions')
-        )
+        tap((bool) => {
+          if (!bool) this.gameService.incrementTurnCount();
+        })
       )
       .subscribe();
   }
