@@ -97,14 +97,9 @@ export class GameService extends CollectionService<GameState> {
       this.countAllScore();
     }
 
-    return batch
-      .commit()
-      .then(() => {
-        console.log('incrementTurnCount - Transaction successfully committed!');
-      })
-      .catch((error) => {
-        console.log('Transaction failed: ', error);
-      });
+    return batch.commit().catch((error) => {
+      console.log('Transaction failed: ', error);
+    });
   }
 
   public async decrementRemainingActions() {
@@ -116,16 +111,9 @@ export class GameService extends CollectionService<GameState> {
     batch.update(gameRef, { remainingActions: decrement });
     batch.update(gameRef, { colonizationCount: colonizationCount });
 
-    return batch
-      .commit()
-      .then(() => {
-        console.log(
-          'decrementRemainingActions - Transaction successfully committed!'
-        );
-      })
-      .catch((error) => {
-        console.log('Transaction failed: ', error);
-      });
+    return batch.commit().catch((error) => {
+      console.log('Transaction failed: ', error);
+    });
   }
 
   public countAllScore() {
@@ -154,7 +142,6 @@ export class GameService extends CollectionService<GameState> {
           : (playerTiles[player.id] = species.tileIds);
       })
     );
-    console.log('players tiles: ', playerTiles);
     // creates a boolean to know if the player control the region
     const isPlayerControling = new Array(players.length).fill(true);
     // iterates on region tiles to check if players control it

@@ -135,12 +135,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
             ) {
               // PROLIFERATE
               // if so, proliferates
-              this.speciesService.proliferate(activeSpecies.id, tileId, 2);
-              this.tileService.removeActive(tileId);
-              this.tileService.removeReachable();
-              this.snackbar.open('Prolifération !', null, {
-                duration: 2000,
-              });
+              await this.proliferate(activeSpecies.id, tileId, 2);
             } else {
               this.snackbar.open("Manque d'unités pour proliférer.", null, {
                 duration: 3000,
@@ -165,6 +160,26 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return this.tileQuery.hasActive(tileId.toString());
   }
 
+  public async proliferate(
+    speciesId: string,
+    tileId: number,
+    quantity: number
+  ) {
+    this.tileService.removeActive(tileId);
+    this.tileService.removeReachable();
+    this.speciesService
+      .proliferate(speciesId, tileId, quantity)
+      .then(() => {
+        this.snackbar.open('Prolifération !', null, {
+          duration: 2000,
+        });
+        this.gameService.decrementRemainingActions();
+      })
+      .catch((error) => {
+        console.log('Transaction failed: ', error);
+      });
+  }
+
   public async colonize(
     game: Game,
     speciesId: string,
@@ -178,7 +193,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.speciesService
       .move(game, speciesId, previousTileId, newTileId, quantity)
       .then(async () => {
-        console.log('move - Transaction successfully committed!');
         this.snackbar.open('Colonisation !', null, {
           duration: 2000,
         });

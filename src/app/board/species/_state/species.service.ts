@@ -150,14 +150,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const species = this.getUpdatedSpeciesOnTile(tile, id, quantity);
     batch.update(tileDoc.ref, { species });
 
-    batch
-      .commit()
-      .then(() => {
-        console.log('Transaction successfully committed!');
-      })
-      .catch((error) => {
-        console.log('Transaction failed: ', error);
-      });
+    return batch.commit();
   }
 
   public async move(
