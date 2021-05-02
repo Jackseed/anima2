@@ -54,7 +54,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.turnSub = this.getTurnSub();
     this.game$.subscribe(console.log);
     this.gameService.countScore('island');
-    this.speciesService.setActive('mountains');
   }
 
   // If no more actions for the active player, skips turn
@@ -91,7 +90,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return this.playerQuery
       .selectActive()
       .pipe(
-        filter(player => !!player),
+        filter((player) => !!player),
         pluck('speciesIds'),
         tap((ids) => this.speciesService.setActive(ids[0]))
       )
@@ -199,7 +198,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     let url: string;
     const species = this.speciesQuery.getEntity(speciesId);
 
-    if (species.playerId === 'neutral') url = `/assets/${species.id}.png`;
+    if (species.playerId === 'neutral') {
+      url = `/assets/${species.id}.png`;
+    } else {
+      url = `/assets/${species.abilityIds[0]}.png`;
+    }
 
     return url;
   }
@@ -207,5 +210,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.turnSub.unsubscribe();
     this.activePlayerSub.unsubscribe();
+    this.activeSpeciesSub.unsubscribe();
   }
 }
