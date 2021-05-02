@@ -79,7 +79,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     const activeSpecies = this.speciesQuery.getActive();
     const tile = this.tileQuery.getEntity(tileId.toString());
     const game = this.gameQuery.getActive();
-    const activePlayerId = this.playerQuery.getActiveId();
+    const activePlayerId = game.activePlayerId;
 
     if (activePlayerId === this.playingPlayerId) {
       if (game.actionType === 'newSpecies') {

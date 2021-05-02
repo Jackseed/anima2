@@ -9,7 +9,7 @@ export interface Tile {
   }[];
   isReachable?: boolean;
 }
-export const regions = [
+export const regionIds = [
   'rockies',
   'mountains',
   'island',
@@ -18,7 +18,7 @@ export const regions = [
   'forest',
   'blank',
 ] as const;
-export type Region = typeof regions[number];
+export type Region = typeof regionIds[number];
 
 export const cols = 12;
 export const lines = 13;
@@ -107,7 +107,7 @@ export const islandBridgeIds: number[] = islandBridgeCoordinates.map(
   (coordinates) => coordinates[0] + coordinates[1] * cols
 );
 
-export const fullRegions = {
+export const Regions = {
   rockies: rockiesIds,
   mountains: mountainsIds,
   island: islandIds,
