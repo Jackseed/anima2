@@ -5,7 +5,7 @@ import { actionPerTurn, colonizationCount, createGame } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
 import firebase from 'firebase/app';
-import { Regions, Region } from 'src/app/board/tiles/_state';
+import { Regions, Region, regionIds } from 'src/app/board/tiles/_state';
 import {
   createPlayer,
   Player,
@@ -92,8 +92,9 @@ export class GameService extends CollectionService<GameState> {
     batch.update(gameRef, { remainingActions: actionPerTurn });
 
     if ((game.turnCount + 1) % 3 === 0) {
+      console.log('new era!');
       batch.update(gameRef, { eraCount: increment });
-      this.countScore('island');
+      this.countAllScore();
     }
 
     return batch
@@ -127,8 +128,17 @@ export class GameService extends CollectionService<GameState> {
       });
   }
 
+  public countAllScore() {
+    const regionScores = {};
+    regionIds
+      .filter((regionId) => regionId !== 'blank')
+      .forEach((regionId) => {
+        regionScores[regionId] = this.countScore(regionId);
+      });
+    console.log(regionScores);
+  }
+
   public countScore(region: Region) {
-    const game = this.query.getActive();
     const regions = Regions;
     const players: Player[] = this.playerQuery.getAll();
     const playerTiles = {};
@@ -156,6 +166,6 @@ export class GameService extends CollectionService<GameState> {
             : (isPlayerControling[index] = false);
       });
     });
-    console.log(isPlayerControling);
+    return isPlayerControling;
   }
 }

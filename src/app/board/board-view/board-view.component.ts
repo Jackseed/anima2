@@ -52,7 +52,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.playingPlayerId = this.userQuery.getActiveId();
 
     this.turnSub = this.getTurnSub();
-    this.game$.subscribe(console.log);
   }
 
   // If no more actions for the active player, skips turn
@@ -103,61 +102,63 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     const tile = this.tileQuery.getEntity(tileId.toString());
     const game = this.gameQuery.getActive();
     const activePlayerId = game.activePlayerId;
-
-    if (activePlayerId === this.playingPlayerId) {
-      if (game.actionType === 'newSpecies') {
-        this.speciesService.proliferate(activeSpecies.id, tileId, 4);
-        await this.gameService.switchActionType('');
-      }
-      // checks if a unit is active & tile reachable & colonization count > 1
-      if (
-        this.tileQuery.hasActive() &&
-        tile.isReachable &&
-        game.colonizationCount > 0
-      ) {
-        // COLONIZATION
-        // if so, colonizes
-        const activeTileId = this.tileQuery.getActiveId();
-        await this.colonize(
-          game,
-          activeSpecies.id,
-          Number(activeTileId),
-          tileId,
-          1
-        );
-      }
-      // checks if the tile includes an active species
-      if (activeSpecies.tileIds.includes(tileId)) {
-        // then check if the tile was already selected
-        if (this.isActive(tileId)) {
-          // checks if enough species to proliferate
-          if (activeSpecies.tileIds.filter((id) => id === tileId).length > 1) {
-            // PROLIFERATE
-            // if so, proliferates
-            this.speciesService.proliferate(activeSpecies.id, tileId, 2);
-            this.tileService.removeActive(tileId);
-            this.tileService.removeReachable();
-            this.snackbar.open('Prolifération !', null, {
-              duration: 2000,
-            });
-          } else {
-            this.snackbar.open("Manque d'unités pour proliférer.", null, {
-              duration: 3000,
-            });
-          }
-
-          // else selects the tile
-        } else {
-          this.tileService.removeReachable();
-          this.tileService.select(tileId);
-          this.tileService.markAdjacentReachableTiles(tileId);
+    if (tile.type !== 'blank')
+      if (activePlayerId === this.playingPlayerId) {
+        if (game.actionType === 'newSpecies') {
+          this.speciesService.proliferate(activeSpecies.id, tileId, 4);
+          await this.gameService.switchActionType('');
         }
+        // checks if a unit is active & tile reachable & colonization count > 1
+        if (
+          this.tileQuery.hasActive() &&
+          tile.isReachable &&
+          game.colonizationCount > 0
+        ) {
+          // COLONIZATION
+          // if so, colonizes
+          const activeTileId = this.tileQuery.getActiveId();
+          await this.colonize(
+            game,
+            activeSpecies.id,
+            Number(activeTileId),
+            tileId,
+            1
+          );
+        }
+        // checks if the tile includes an active species
+        if (activeSpecies.tileIds.includes(tileId)) {
+          // then check if the tile was already selected
+          if (this.isActive(tileId)) {
+            // checks if enough species to proliferate
+            if (
+              activeSpecies.tileIds.filter((id) => id === tileId).length > 1
+            ) {
+              // PROLIFERATE
+              // if so, proliferates
+              this.speciesService.proliferate(activeSpecies.id, tileId, 2);
+              this.tileService.removeActive(tileId);
+              this.tileService.removeReachable();
+              this.snackbar.open('Prolifération !', null, {
+                duration: 2000,
+              });
+            } else {
+              this.snackbar.open("Manque d'unités pour proliférer.", null, {
+                duration: 3000,
+              });
+            }
+
+            // else selects the tile
+          } else {
+            this.tileService.removeReachable();
+            this.tileService.select(tileId);
+            this.tileService.markAdjacentReachableTiles(tileId);
+          }
+        }
+      } else {
+        this.snackbar.open('Not your turn', null, {
+          duration: 3000,
+        });
       }
-    } else {
-      this.snackbar.open('Not your turn', null, {
-        duration: 3000,
-      });
-    }
   }
 
   public isActive(tileId: number): boolean {
