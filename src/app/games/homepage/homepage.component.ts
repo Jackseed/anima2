@@ -26,7 +26,6 @@ export class HomepageComponent implements OnInit {
     await this.tileService
       .setTiles(gameId)
       .then(() => {
-        console.log('Tiles created');
         this.speciesService.setNeutrals(gameId);
         this.router.navigate([`/games/${gameId}`]);
       })

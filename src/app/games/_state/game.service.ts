@@ -5,7 +5,7 @@ import { actionPerTurn, colonizationCount, createGame } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
 import firebase from 'firebase/app';
-import { Regions, Region, regionIds } from 'src/app/board/tiles/_state';
+import { Regions, Region } from 'src/app/board/tiles/_state';
 import {
   createPlayer,
   Player,
@@ -56,14 +56,9 @@ export class GameService extends CollectionService<GameState> {
     batch.set(speciesRef, species);
 
     // Create the game
-    await batch
-      .commit()
-      .then(() => {
-        console.log('Game, player & species created');
-      })
-      .catch((error) => {
-        console.log('Transaction failed: ', error);
-      });
+    await batch.commit().catch((error) => {
+      console.log('Transaction failed: ', error);
+    });
     return id;
   }
 
@@ -74,9 +69,6 @@ export class GameService extends CollectionService<GameState> {
     await this.collection
       .doc(id)
       .update({ actionType })
-      .then(() => {
-        console.log('Transaction successfully committed!');
-      })
       .catch((error) => {
         console.log('Transaction failed: ', error);
       });
@@ -117,17 +109,42 @@ export class GameService extends CollectionService<GameState> {
   }
 
   public countAllScore() {
+    const players = this.playerQuery.getAll();
     const regionScores = {};
-    regionIds
-      .filter((regionId) => regionId !== 'blank')
-      .forEach((regionId) => {
-        regionScores[regionId] = this.countScore(regionId);
+    const playerScores = {};
+    const regions = Regions;
+    const gameId = this.query.getActiveId();
+    const batch = this.db.firestore.batch();
+
+    regions.forEach((region) => {
+      regionScores[region.name] = this.countScore(region);
+      players.forEach((player, index: number) => {
+        // initialize score
+        if (!playerScores[player.id]) playerScores[player.id] = 0;
+        // add region score if it's controled by player
+        playerScores[player.id] += regionScores[region.name][index]
+          ? region.score
+          : 0;
       });
-    console.log(regionScores);
+    });
+
+    players.forEach((player) => {
+      const playerRef = this.db
+        .collection(`games/${gameId}/players`)
+        .doc(player.id).ref;
+
+      if (playerScores[player.id])
+        batch.update(playerRef, {
+          score: player.score + playerScores[player.id],
+        });
+    });
+
+    batch.commit().catch((error) => {
+      console.log('Transaction failed: ', error);
+    });
   }
 
   public countScore(region: Region) {
-    const regions = Regions;
     const players: Player[] = this.playerQuery.getAll();
     const playerTiles = {};
     // iterates on player species to add their tileIds to playerTiles
@@ -142,10 +159,12 @@ export class GameService extends CollectionService<GameState> {
           : (playerTiles[player.id] = species.tileIds);
       })
     );
+
     // creates a boolean to know if the player control the region
     const isPlayerControling = new Array(players.length).fill(true);
+
     // iterates on region tiles to check if players control it
-    regions[region].forEach((tileId) => {
+    region.tileIds.forEach((tileId) => {
       players.forEach((player, index: number) => {
         if (isPlayerControling[index])
           playerTiles[player.id].includes(tileId)

@@ -11,6 +11,10 @@
       <li>Joueur actif: {{ game.activePlayerId.slice(0, 4) }}</li>
       <li>Actions restantes: {{ game.remainingActions }}</li>
       <li>Colonisations possibles: {{ game.colonizationCount }}</li>
+      <h3>Joueurs</h3>
+      <li *ngFor="let player of players$ | async">
+        {{ player.id.slice(0, 4) }}: {{ player.score }}
+      </li>
     </mat-card-content>
   </mat-card>
   <div class="container">

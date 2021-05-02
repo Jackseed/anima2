@@ -8,7 +8,7 @@ import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 // States
 import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
-import { PlayerQuery, PlayerService } from '../players/_state';
+import { Player, PlayerQuery, PlayerService } from '../players/_state';
 // Components
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
@@ -19,10 +19,14 @@ import { Tile, TileQuery, TileService } from '../tiles/_state';
   styleUrls: ['./board-view.component.scss'],
 })
 export class BoardViewComponent implements OnInit, OnDestroy {
+  // variables
+  public playingPlayerId: string;
+  // observables
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
-  public playingPlayerId: string;
   public game$: Observable<Game>;
+  public players$: Observable<Player[]>;
+  // subscriptions
   private turnSub: Subscription;
   private activePlayerSub: Subscription;
   private activeSpeciesSub: Subscription;
@@ -42,6 +46,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.game$ = this.gameQuery.selectActive();
+    this.players$ = this.playerQuery.selectAll();
     this.activePlayerSub = this.getActivePlayerSub();
     this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.tiles$ = this.tileQuery

@@ -11,7 +11,7 @@ import {
   rockiesIds,
   swampsIds,
   Tile,
-  Region,
+  RegionType,
 } from './tile.model';
 import { TileQuery } from './tile.query';
 import { TileStore, TileState } from './tile.store';
@@ -33,7 +33,7 @@ export class TileService extends CollectionService<TileState> {
         for (let j = 0; j < cols; j++) {
           const tileId = j + cols * i;
           if (tileId < max) {
-            let type: Region = 'blank';
+            let type: RegionType = 'blank';
             if (islandIds.includes(tileId)) type = 'island';
             if (mountainsIds.includes(tileId)) type = 'mountains';
             if (rockiesIds.includes(tileId)) type = 'rockies';

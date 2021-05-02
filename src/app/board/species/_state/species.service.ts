@@ -85,9 +85,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         }
         transaction.set(speciesRef, species);
       })
-      .then(() => {
-        console.log('Transaction successfully committed!');
-      })
       .catch((error) => {
         console.log('Transaction failed: ', error);
       });
