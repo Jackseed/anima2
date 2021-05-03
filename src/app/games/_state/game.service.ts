@@ -83,6 +83,7 @@ export class GameService extends CollectionService<GameState> {
     batch.update(gameRef, { turnCount: increment });
     batch.update(gameRef, { remainingActions: actionPerTurn });
 
+    // every 3 turns, new era
     if ((game.turnCount + 1) % 3 === 0) {
       console.log('new era!');
       batch.update(gameRef, { eraCount: increment });
