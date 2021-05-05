@@ -1,5 +1,5 @@
 // Angular
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
 // Firebase
@@ -175,7 +175,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     tileId: number,
     quantity: number
   ) {
-    this.tileService.removeActive(tileId);
+    this.tileService.removeActive();
     this.tileService.removeReachable();
     this.speciesService
       .proliferate(speciesId, tileId, quantity)
@@ -197,7 +197,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     newTileId: number,
     quantity: number
   ) {
-    this.tileService.removeActive(Number(previousTileId));
+    this.tileService.removeActive();
     this.tileService.removeReachable();
 
     this.speciesService
@@ -244,6 +244,16 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return activeAbilities.includes('agility')
       ? +game.colonizationCount + abilities['agility'].value
       : game.colonizationCount;
+  }
+
+  // Cancel tile focus when using "esc" on keyboard
+  @HostListener('document:keydown', ['$event']) onKeydownHandler(
+    event: KeyboardEvent
+  ) {
+    if (event.key === 'Escape') {
+      this.tileService.removeActive();
+      this.tileService.removeReachable();
+    }
   }
 
   ngOnDestroy() {
