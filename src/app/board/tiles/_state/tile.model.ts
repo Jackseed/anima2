@@ -24,6 +24,7 @@ export const cols = 12;
 export const lines = 13;
 export const max = cols * lines;
 
+
 export const islandCoordinates: [x: number, y: number][] = [
   [8, 2],
   [7, 3],

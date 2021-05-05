@@ -11,7 +11,6 @@ import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
-// Components
 import {
   Abilities,
   abilities,
