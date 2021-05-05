@@ -63,7 +63,7 @@ export class TileService extends CollectionService<TileState> {
   }
 
   public markAdjacentReachableTiles(tileId: number) {
-    const rechableTileIds = this.query.getAdjacentTiles(tileId, 1);
+    const rechableTileIds = this.query.getAdjacentTiles(tileId, 3);
     this.markAsReachable(rechableTileIds);
   }
 

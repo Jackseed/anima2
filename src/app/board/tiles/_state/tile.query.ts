@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Order, QueryConfig, QueryEntity } from '@datorama/akita';
-import { cols, islandBridgeIds, Tile } from './tile.model';
+import { cols, islandBridgeIds, islandIds, Tile } from './tile.model';
 import { TileStore, TileState } from './tile.store';
 
 @Injectable({ providedIn: 'root' })
@@ -15,7 +15,7 @@ export class TileQuery extends QueryEntity<TileState> {
 
   public getAdjacentTiles(tileId: number, range: number): number[] {
     const tile: Tile = this.getEntity(tileId.toString());
-    const tileIds: number[] = [];
+    let tileIds: number[] = [];
     for (let x = -range; x <= range; x++) {
       for (let y = -range; y <= range; y++) {
         // remove diagonal values for hexa grid
@@ -43,18 +43,32 @@ export class TileQuery extends QueryEntity<TileState> {
         }
       }
     }
-    // adds the island bridge
-    if (islandBridgeIds.includes(tileId))
-      islandBridgeIds.forEach((id) => tileIds.push(id));
+
+    // remove island tileIds since they don't have a normal distance
+    tileIds = tileIds.filter((id) => !islandIds.includes(id));
+    // then adds island tileIds according to center distance to the bridge
+    const bridgeDistances: number[] = [];
+    islandBridgeIds.forEach((id) =>
+      bridgeDistances.push(this.calculateDistance(tileId, id))
+    );
+
+    bridgeDistances.forEach((distance) => {
+      // if bridge can be crossed, add its ids to the tiles
+      if (distance <= range - 1)
+        islandBridgeIds.forEach((id) => tileIds.push(id));
+      // if there is extra movement, add the island tileIds
+      if (distance <= range - 2) islandIds.forEach((id) => tileIds.push(id));
+    });
+
     // remove the center tileId
-    return tileIds.filter((id) => id !== tileId);
+    tileIds = tileIds.filter((id) => id !== tileId);
+    return tileIds;
   }
 
   public calculateDistance(tileIdA: number, tileIdB: number): number {
     const tileA = this.getEntity(tileIdA.toString());
     const tileB = this.getEntity(tileIdB.toString());
 
-    console.log(tileA, tileB);
     // compute distance as we would on a normal grid
     let distance: { x: number; y: number } = { x: 0, y: 0 };
     distance.x = tileA.x - tileB.x;
