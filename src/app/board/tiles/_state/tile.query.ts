@@ -13,21 +13,21 @@ export class TileQuery extends QueryEntity<TileState> {
     super(store);
   }
 
-  public getAdjacentTiles(tileId: number, paramValue: number): number[] {
+  public getAdjacentTiles(tileId: number, range: number): number[] {
     const tile: Tile = this.getEntity(tileId.toString());
     const tileIds: number[] = [];
-    for (let x = -paramValue; x <= paramValue; x++) {
-      for (let y = -paramValue; y <= paramValue; y++) {
+    for (let x = -range; x <= range; x++) {
+      for (let y = -range; y <= range; y++) {
         // remove diagonal values for hexa grid
         // different values depending on odd or even lines
         if (
           !(
             tile.y % 2 === 0 &&
-            ((x === 1 && y === -1) || (x === 1 && y === 1))
+            ((x === range && y === -range) || (x === range && y === range))
           ) &&
           !(
             tile.y % 2 !== 0 &&
-            ((x === -1 && y === -1) || (x === -1 && y === 1))
+            ((x === -range && y === -range) || (x === -range && y === range))
           )
         ) {
           const X = tile.x + x;

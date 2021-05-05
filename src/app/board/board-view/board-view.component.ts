@@ -208,7 +208,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
         });
         // update remainingActions if that's the last colonizationCount
         if (+this.colonizationCount + 1 === quantity) {
-          console.log('decrement');
           this.gameService.decrementRemainingActions();
         }
       })
@@ -241,11 +240,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     const activeSpecies = this.speciesQuery.getActive();
     const activeAbilities = activeSpecies.abilityIds;
     const game = this.gameQuery.getActive();
-    console.log(
-      activeAbilities.includes('agility')
-        ? +game.colonizationCount + abilities['agility'].value
-        : game.colonizationCount
-    );
+
     return activeAbilities.includes('agility')
       ? +game.colonizationCount + abilities['agility'].value
       : game.colonizationCount;
