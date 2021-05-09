@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Order, QueryConfig, QueryEntity } from '@datorama/akita';
-import { cols, islandBridgeIds, islandIds, Tile } from './tile.model';
-import { TileStore, TileState } from './tile.store';
+import {
+  EntityUIQuery,
+  Order,
+  QueryConfig,
+  QueryEntity,
+} from '@datorama/akita';
+import { cols, islandBridgeIds, Tile } from './tile.model';
+import { TileStore, TileState, TileUI, TileUIState } from './tile.store';
 
 @Injectable({ providedIn: 'root' })
 @QueryConfig({
@@ -9,8 +14,10 @@ import { TileStore, TileState } from './tile.store';
   sortByOrder: Order.ASC,
 })
 export class TileQuery extends QueryEntity<TileState> {
+  ui: EntityUIQuery<TileUIState, TileUI>;
   constructor(protected store: TileStore) {
     super(store);
+    this.createUIQuery();
   }
 
   public getAdjacentTiles(tileId: number, range: number): number[] {

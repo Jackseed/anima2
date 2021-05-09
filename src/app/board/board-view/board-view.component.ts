@@ -208,6 +208,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
         this.snackbar.open('Colonisation !', null, {
           duration: 2000,
         });
+        this.tileService.resetRange();
         // update remainingActions if that's the last colonizationCount
         if (+this.colonizationCount + 1 === quantity) {
           this.gameService.decrementRemainingActions();

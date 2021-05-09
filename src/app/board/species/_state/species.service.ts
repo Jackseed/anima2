@@ -6,6 +6,7 @@ import { Tile, TileQuery } from '../../tiles/_state';
 import { neutrals, Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import firebase from 'firebase/app';
+import { Game } from 'src/app/games/_state';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/species' })
@@ -151,7 +152,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   }
 
   public async move(
-    game,
+    game: Game,
     speciesId: string,
     previousTileId: number,
     newTileId: number,
@@ -196,8 +197,9 @@ export class SpeciesService extends CollectionService<SpeciesState> {
 
     // update colonization count
     const gameRef = this.db.collection('games').doc(game.id).ref;
-    const distance = this.tileQuery.getDistance(previousTileId, newTileId);
-    console.log(distance);
+    const UItile = this.tileQuery.ui.getEntity(newTileId.toString());
+    const distance = UItile.range;
+
     const decrement = firebase.firestore.FieldValue.increment(
       -distance * quantity
     );
