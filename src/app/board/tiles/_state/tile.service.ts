@@ -58,13 +58,36 @@ export class TileService extends CollectionService<TileState> {
     this.store.setActive(tileId.toString());
   }
 
-  public removeActive(id: number) {
-    this.store.removeActive(id.toString());
+  public removeActive() {
+    this.store.setActive(null);
   }
 
-  public markAdjacentReachableTiles(tileId: number) {
-    const rechableTileIds = this.query.getAdjacentTiles(tileId, 1);
-    this.markAsReachable(rechableTileIds);
+  public markAdjacentReachableTiles(tileId: number, range: number) {
+    let tileIds = [];
+    let reachables = [];
+    // iterates on adjacent tiles to get their adjacent tiles
+    for (let i = 0; i < range; i++) {
+      i === 0
+        ? (reachables = this.query.getAdjacentTiles(tileId, 1))
+        : reachables.forEach(
+            (id) =>
+              (reachables = [
+                ...reachables,
+                ...this.query.getAdjacentTiles(id, 1),
+              ])
+          );
+      // get onlt this range tiles
+      let rangeTiles = reachables.filter((id) => !tileIds.includes(id));
+      // remove duplicates
+      rangeTiles = [...new Set(rangeTiles)];
+      this.updateRange(rangeTiles, i + 1);
+
+      tileIds = [...tileIds, ...rangeTiles];
+    }
+
+    // remove the center tileId
+    tileIds = tileIds.filter((id) => id !== tileId);
+    this.markAsReachable(tileIds);
   }
 
   public markAsReachable(tileIds: number[]) {
@@ -76,5 +99,16 @@ export class TileService extends CollectionService<TileState> {
 
   public removeReachable() {
     this.store.update(null, { isReachable: false });
+  }
+
+  public updateRange(tileIds: number[], range: number) {
+    this.store.ui.update(
+      tileIds.map((id) => id.toString()),
+      { range }
+    );
+  }
+
+  public resetRange() {
+    this.store.ui.update(null, { range: null });
   }
 }

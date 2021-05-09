@@ -26,98 +26,98 @@ export const abilityIds = [
 ] as const;
 export type Abilities = typeof abilityIds[number];
 
-export const abilities = [
-  {
+export const abilities = {
+  spontaneousGeneration: {
     id: 'spontaneousGeneration',
     en: 'Spontaneous Generation',
     fr: 'Génération spontanée',
-    img: '/assets/spontaneousGeneration.png',
+    value: 2,
   },
-  {
+  hounds: {
     id: 'hounds',
     en: 'Hounds',
     fr: 'Meute',
-    img: '/assets/hounds.png',
+    value: 2,
   },
-  {
+  range: {
     id: 'range',
     en: 'Range',
     fr: 'Portée',
-    img: '/assets/range.png',
+    value: 2,
   },
-  {
+  survival: {
     id: 'survival',
     en: 'Survival Instinct',
     fr: 'Instinct de survie',
-    img: '/assets/survival.png',
+    value: 2,
   },
-  {
+  tunnel: {
     id: 'tunnel',
     en: 'Tunnel',
     fr: 'Tunnel',
-    img: '/assets/tunnel.png',
+    value: 2,
   },
-  {
+  nest: {
     id: 'nest',
     en: 'Nest',
     fr: 'Nid',
-    img: '/assets/nest.png',
+    value: 2,
   },
-  {
+  flying: {
     id: 'flying',
     en: 'Flying',
     fr: 'Vol',
-    img: '/assets/flying.png',
+    value: 2,
   },
-  {
+  giantism: {
     id: 'giantism',
     en: 'Giantism',
     fr: 'Gigantisme',
-    img: '/assets/giantism.png',
+    value: 2,
   },
-  {
+  agility: {
     id: 'agility',
     en: 'Agility',
     fr: 'Agilité',
-    img: '/assets/agility.png',
+    value: 2,
   },
-  {
+  acceleration: {
     id: 'acceleration',
     en: 'Acceleration',
     fr: 'Accélération',
-    img: '/assets/acceleration.png',
+    value: 2,
   },
-  {
+  rallying: {
     id: 'rallying',
     en: 'Rallying Cry',
     fr: 'Cri de ralliement',
-    img: '/assets/rallying.png',
+    value: 2,
   },
-  {
+  intimidate: {
     id: 'intimidate',
     en: 'Intimidate',
     fr: 'Intimidation',
-    img: '/assets/intimidate.png',
+    value: 2,
   },
-  {
+  hermaphrodite: {
     id: 'hermaphrodite',
     en: 'Hermaphrodite',
     fr: 'Hermaphrodite',
-    img: '/assets/hermaphrodite.png',
+    value: 2,
   },
-  {
+  carnivore: {
     id: 'carnivore',
     en: 'Carnivore',
     fr: 'Carnassier',
-    img: '/assets/carnivore.png',
+    value: 2,
   },
-  {
+  submersible: {
     id: 'submersible',
     en: 'Submersible',
     fr: 'Submersible',
-    img: '/assets/submersible.png',
+    value: 2,
   },
-];
+};
 
 export const rockiesNeutralCoordinates: [x: number, y: number][] = [
   [4, 3],

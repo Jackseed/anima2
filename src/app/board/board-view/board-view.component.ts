@@ -1,7 +1,9 @@
 // Angular
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
+// Firebase
+import firebase from 'firebase/app';
 // Rxjs
 import { iif, Observable, of, Subscription } from 'rxjs';
 import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
@@ -9,8 +11,13 @@ import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
-// Components
-import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
+import {
+  Abilities,
+  abilities,
+  Species,
+  SpeciesQuery,
+  SpeciesService,
+} from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 
 @Component({
@@ -26,6 +33,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
   public players$: Observable<Player[]>;
+  public activeSpecies$: Observable<Species>;
   // subscriptions
   private turnSub: Subscription;
   private activePlayerSub: Subscription;
@@ -47,6 +55,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.game$ = this.gameQuery.selectActive();
     this.players$ = this.playerQuery.selectAll();
+    this.activeSpecies$ = this.speciesQuery.selectActive();
     this.activePlayerSub = this.getActivePlayerSub();
     this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.tiles$ = this.tileQuery
@@ -98,15 +107,12 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  public countSpeciesOnTile(speciesTileIds: number[], i: number): number {
-    return speciesTileIds.filter((tileId) => tileId === i).length;
-  }
-
   public async play(tileId: number) {
     const activeSpecies = this.speciesQuery.getActive();
     const tile = this.tileQuery.getEntity(tileId.toString());
     const game = this.gameQuery.getActive();
     const activePlayerId = game.activePlayerId;
+
     if (tile.type !== 'blank')
       if (activePlayerId === this.playingPlayerId) {
         if (game.actionType === 'newSpecies') {
@@ -114,21 +120,19 @@ export class BoardViewComponent implements OnInit, OnDestroy {
           await this.gameService.switchActionType('');
         }
         // checks if a unit is active & tile reachable & colonization count > 1
-        if (
-          this.tileQuery.hasActive() &&
-          tile.isReachable &&
-          game.colonizationCount > 0
-        ) {
+        if (this.tileQuery.hasActive() && tile.isReachable) {
           // COLONIZATION
-          // if so, colonizes
-          const activeTileId = this.tileQuery.getActiveId();
-          await this.colonize(
-            game,
-            activeSpecies.id,
-            Number(activeTileId),
-            tileId,
-            1
-          );
+          // check move limit then colonizes
+          if (this.colonizationCount) {
+            const activeTileId = this.tileQuery.getActiveId();
+            await this.colonize(
+              game,
+              activeSpecies.id,
+              Number(activeTileId),
+              tileId,
+              1
+            );
+          }
         }
         // checks if the tile includes an active species
         if (activeSpecies.tileIds.includes(tileId)) {
@@ -151,7 +155,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
           } else {
             this.tileService.removeReachable();
             this.tileService.select(tileId);
-            this.tileService.markAdjacentReachableTiles(tileId);
+            this.tileService.markAdjacentReachableTiles(
+              tileId,
+              Number(game.colonizationCount)
+            );
           }
         }
       } else {
@@ -165,12 +172,12 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return this.tileQuery.hasActive(tileId.toString());
   }
 
-  public async proliferate(
+  private async proliferate(
     speciesId: string,
     tileId: number,
     quantity: number
   ) {
-    this.tileService.removeActive(tileId);
+    this.tileService.removeActive();
     this.tileService.removeReachable();
     this.speciesService
       .proliferate(speciesId, tileId, quantity)
@@ -185,14 +192,14 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       });
   }
 
-  public async colonize(
+  private async colonize(
     game: Game,
     speciesId: string,
     previousTileId: number,
     newTileId: number,
     quantity: number
   ) {
-    this.tileService.removeActive(Number(previousTileId));
+    this.tileService.removeActive();
     this.tileService.removeReachable();
 
     this.speciesService
@@ -201,8 +208,9 @@ export class BoardViewComponent implements OnInit, OnDestroy {
         this.snackbar.open('Colonisation !', null, {
           duration: 2000,
         });
+        this.tileService.resetRange();
         // update remainingActions if that's the last colonizationCount
-        if (game.colonizationCount === quantity) {
+        if (+this.colonizationCount + 1 === quantity) {
           this.gameService.decrementRemainingActions();
         }
       })
@@ -211,7 +219,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       });
   }
 
-  getSpeciesImgUrl(speciesId: string): string {
+  public getSpeciesImgUrl(speciesId: string): string {
     let url: string;
     const species = this.speciesQuery.getEntity(speciesId);
 
@@ -222,6 +230,33 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     }
 
     return url;
+  }
+
+  public getAbilityFrName(abilityId: Abilities) {
+    return abilities[abilityId].fr;
+  }
+  public getAbilityValue(abilityId: Abilities) {
+    return abilities[abilityId].value;
+  }
+
+  public get colonizationCount(): number | firebase.firestore.FieldValue {
+    const activeSpecies = this.speciesQuery.getActive();
+    const activeAbilities = activeSpecies.abilityIds;
+    const game = this.gameQuery.getActive();
+
+    return activeAbilities.includes('agility')
+      ? +game.colonizationCount + abilities['agility'].value
+      : game.colonizationCount;
+  }
+
+  // Cancel tile focus when using "esc" on keyboard
+  @HostListener('document:keydown', ['$event']) onKeydownHandler(
+    event: KeyboardEvent
+  ) {
+    if (event.key === 'Escape') {
+      this.tileService.removeActive();
+      this.tileService.removeReachable();
+    }
   }
 
   ngOnDestroy() {

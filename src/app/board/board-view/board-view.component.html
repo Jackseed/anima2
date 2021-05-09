@@ -9,8 +9,23 @@
       <li>Tours: {{ game.turnCount }}</li>
       <h3>Tour en cours</h3>
       <li>Joueur actif: {{ game.activePlayerId.slice(0, 4) }}</li>
+      <li *ngIf="activeSpecies$ | async as species">
+        Traits espèce active:
+        <span *ngFor="let abilityId of species.abilityIds; let isLast = last"
+          >{{ getAbilityFrName(abilityId) }}{{ isLast ? "" : ", " }}</span
+        >
+      </li>
       <li>Actions restantes: {{ game.remainingActions }}</li>
-      <li>Colonisations possibles: {{ game.colonizationCount }}</li>
+      <li>
+        Colonisations possibles:
+        <span *ngIf="(activeSpecies$ | async).abilityIds.includes('agility')">{{
+          game.colonizationCount + getAbilityValue("agility")
+        }}</span>
+        <span
+          *ngIf="!(activeSpecies$ | async).abilityIds.includes('agility')"
+          >{{ game.colonizationCount }}</span
+        >
+      </li>
       <h3>Joueurs</h3>
       <li *ngFor="let player of players$ | async">
         {{ player.id.slice(0, 4) }}: {{ player.score }}
