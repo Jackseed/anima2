@@ -23,7 +23,7 @@ export class TileStore extends EntityStore<TileState> {
   ui: EntityUIStore<TileUIState>;
   constructor() {
     super();
-    const defaults = { range: 0 };
+    const defaults = { range: null };
     this.createUIStore().setInitialEntityState(defaults);
   }
 }

@@ -96,14 +96,18 @@ export class TileService extends CollectionService<TileState> {
 
   public removeReachable() {
     this.store.update(null, { isReachable: false });
-    this.updateRange(null);
+    this.resetRange();
   }
 
-  public updateRange(range: number) {
-    this.store.update({
-      ui: {
-        range,
-      },
+  public updateRange(tileId: number, range: number) {
+    this.store.ui.update(tileId.toString(), (_) => {
+      range;
+    });
+  }
+
+  public resetRange() {
+    this.store.ui.update(null, (_) => {
+      null;
     });
   }
 }
