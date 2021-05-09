@@ -109,10 +109,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   public async play(tileId: number) {
     const activeSpecies = this.speciesQuery.getActive();
-    const activeAbilities = activeSpecies.abilityIds;
     const tile = this.tileQuery.getEntity(tileId.toString());
     const game = this.gameQuery.getActive();
     const activePlayerId = game.activePlayerId;
+
     if (tile.type !== 'blank')
       if (activePlayerId === this.playingPlayerId) {
         if (game.actionType === 'newSpecies') {
@@ -155,7 +155,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
           } else {
             this.tileService.removeReachable();
             this.tileService.select(tileId);
-            this.tileService.markAdjacentReachableTiles(tileId);
+            this.tileService.markAdjacentReachableTiles(
+              tileId,
+              Number(game.colonizationCount)
+            );
           }
         }
       } else {

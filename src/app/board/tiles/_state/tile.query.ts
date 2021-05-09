@@ -44,28 +44,14 @@ export class TileQuery extends QueryEntity<TileState> {
       }
     }
 
-    // remove island tileIds since they don't have a normal distance
-    tileIds = tileIds.filter((id) => !islandIds.includes(id));
-    // then adds island tileIds according to center distance to the bridge
-    const bridgeDistances: number[] = [];
-    islandBridgeIds.forEach((id) =>
-      bridgeDistances.push(this.calculateDistance(tileId, id))
-    );
+    // adds the island bridge
+    if (islandBridgeIds.includes(tileId))
+      islandBridgeIds.forEach((id) => tileIds.push(id));
 
-    bridgeDistances.forEach((distance) => {
-      // if bridge can be crossed, add its ids to the tiles
-      if (distance <= range - 1)
-        islandBridgeIds.forEach((id) => tileIds.push(id));
-      // if there is extra movement, add the island tileIds
-      if (distance <= range - 2) islandIds.forEach((id) => tileIds.push(id));
-    });
-
-    // remove the center tileId
-    tileIds = tileIds.filter((id) => id !== tileId);
     return tileIds;
   }
 
-  public calculateDistance(tileIdA: number, tileIdB: number): number {
+  public getDistance(tileIdA: number, tileIdB: number): number {
     const tileA = this.getEntity(tileIdA.toString());
     const tileB = this.getEntity(tileIdB.toString());
 

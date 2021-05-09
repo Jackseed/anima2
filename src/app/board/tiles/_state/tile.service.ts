@@ -62,9 +62,29 @@ export class TileService extends CollectionService<TileState> {
     this.store.setActive(null);
   }
 
-  public markAdjacentReachableTiles(tileId: number) {
-    const rechableTileIds = this.query.getAdjacentTiles(tileId, 3);
-    this.markAsReachable(rechableTileIds);
+  public markAdjacentReachableTiles(tileId: number, range: number) {
+    const rechableTileIds = this.query.getAdjacentTiles(tileId, 1);
+    let tileIds = [];
+    let reachables = [];
+    // iterates on adjacent tiles to get their adjacent tiles
+    for (let i = 0; i < range; i++) {
+      i === 0
+        ? (reachables = this.query.getAdjacentTiles(tileId, 1))
+        : reachables.forEach(
+            (id) =>
+              (reachables = [
+                ...reachables,
+                ...this.query.getAdjacentTiles(id, 1),
+              ])
+          );
+      // remove duplicates
+      reachables = [...new Set(reachables)];
+      tileIds = [...tileIds, ...reachables];
+    }
+
+    // remove the center tileId
+    tileIds = tileIds.filter((id) => id !== tileId);
+    this.markAsReachable(tileIds);
   }
 
   public markAsReachable(tileIds: number[]) {

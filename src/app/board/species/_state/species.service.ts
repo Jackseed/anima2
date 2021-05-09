@@ -196,7 +196,11 @@ export class SpeciesService extends CollectionService<SpeciesState> {
 
     // update colonization count
     const gameRef = this.db.collection('games').doc(game.id).ref;
-    const decrement = firebase.firestore.FieldValue.increment(-quantity);
+    const distance = this.tileQuery.getDistance(previousTileId, newTileId);
+    console.log(distance);
+    const decrement = firebase.firestore.FieldValue.increment(
+      -distance * quantity
+    );
 
     batch.update(gameRef, { colonizationCount: decrement });
 
