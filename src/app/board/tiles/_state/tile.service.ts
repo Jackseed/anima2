@@ -77,9 +77,9 @@ export class TileService extends CollectionService<TileState> {
                 ...this.query.getAdjacentTiles(id, 1),
               ])
           );
-      // remove duplicates
-      reachables = [...new Set(reachables)];
       tileIds = [...tileIds, ...reachables];
+      // remove duplicates
+      tileIds = [...new Set(tileIds)];
     }
 
     // remove the center tileId
@@ -96,5 +96,14 @@ export class TileService extends CollectionService<TileState> {
 
   public removeReachable() {
     this.store.update(null, { isReachable: false });
+    this.updateRange(null);
+  }
+
+  public updateRange(range: number) {
+    this.store.update({
+      ui: {
+        range,
+      },
+    });
   }
 }
