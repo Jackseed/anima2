@@ -28,18 +28,6 @@
   );
 }
 
-#triangle-up {
-  bottom: 30%;
-  right: 30%;
-  width: 0;
-  height: 0;
-  border-left: calc(var(--s) / 4) solid transparent;
-  border-right: calc(var(--s) / 4) solid transparent;
-  border-bottom: calc(var(--s) / 2) solid red;
-  margin: 0;
-  z-index: 10;
-  clip-path: unset;
-}
 
 .container > div:hover {
   background: #f58787;

@@ -1,5 +1,4 @@
 <div class="main">
-  <div class="absolute" id="triangle-up"></div>
   <mat-card class="score absolute">
     <mat-card-header
       ><mat-card-title>Tableau des scores</mat-card-title></mat-card-header
@@ -52,7 +51,6 @@
     >
       <div class="absolute" *ngIf="tile.species.length > 0">
         <div class="absolute" *ngFor="let species of tile.species">
-          <div class="absolute" id="triangle-up"></div>
           <div
             style="--img: url({{ getSpeciesImgUrl(species.id) }});"
             [ngClass]="{ species: tile.species.length > 0 }"
