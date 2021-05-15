@@ -46,17 +46,19 @@
         selected: isActive(tile.id),
         reachable: tile?.isReachable
       }"
-      class="tile"
+      class="hex relative"
       (click)="play(i)"
     >
-      <div class="absolute" *ngIf="tile.species.length > 0">
-        <div class="absolute" *ngFor="let species of tile.species">
+      <div fxFlexFill class="absolute grid" *ngIf="tile.species.length > 0">
+        <div class="green" *ngFor="let species of tile.species">
           <div
+            fxFlexFill
             style="--img: url({{ getSpeciesImgUrl(species.id) }});"
             [ngClass]="{ species: tile.species.length > 0 }"
             *ngIf="species.quantity"
+            class="yellow"
           >
-            <div class="species-quantity">
+            <div class="species-quantity blue">
               {{ species.quantity }}
             </div>
           </div>
