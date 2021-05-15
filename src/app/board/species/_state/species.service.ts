@@ -114,8 +114,14 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         updatedSpecies = [...tile.species].map((specie) => {
           return { ...specie };
         });
-        updatedSpecies[speciesIndex].quantity =
-          updatedSpecies[speciesIndex].quantity + quantity;
+        // check if there is no more species, if so delete it
+        if (updatedSpecies[speciesIndex].quantity + quantity === 0) {
+          updatedSpecies.splice(speciesIndex, 1);
+          // else update quantity
+        } else {
+          updatedSpecies[speciesIndex].quantity =
+            updatedSpecies[speciesIndex].quantity + quantity;
+        }
       }
       // if the tile hadn't species object, adds it
     } else {
