@@ -123,6 +123,7 @@ export const rockiesNeutralCoordinates: [x: number, y: number][] = [
   [4, 3],
   [4, 3],
   [4, 4],
+  [6, 6],
 ];
 
 export const mountainsNeutralCoordinates: [x: number, y: number][] = [
@@ -137,6 +138,7 @@ export const islandNeutralCoordinates: [x: number, y: number][] = [
   [7, 3],
   [8, 3],
   [8, 3],
+  [6, 6],
 ];
 
 export const plainsNeutralCoordinates: [x: number, y: number][] = [

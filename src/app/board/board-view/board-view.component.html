@@ -1,5 +1,5 @@
 <div class="main">
-  <mat-card class="score absolute">
+  <!-- <mat-card class="score absolute">
     <mat-card-header
       ><mat-card-title>Tableau des scores</mat-card-title></mat-card-header
     >
@@ -31,7 +31,7 @@
         {{ player.id.slice(0, 4) }}: {{ player.score }}
       </li>
     </mat-card-content>
-  </mat-card>
+  </mat-card> -->
   <div class="container">
     <div
       *ngFor="let tile of tiles$ | async; let i = index"
@@ -49,17 +49,23 @@
       class="hex relative"
       (click)="play(i)"
     >
-      <div fxFlexFill class="absolute grid" *ngIf="tile.species.length > 0">
-        <div *ngFor="let species of tile.species" class="relative">
-          <div
-            fxFlexFill
-            style="--img: url({{ getSpeciesImgUrl(species.id) }});"
-            [ngClass]="{ species: tile.species.length > 0 }"
-            *ngIf="species.quantity"
-          >
-            <div class="species-quantity absolute">
-              {{ species.quantity }}
-            </div>
+      <div
+        fxFlexFill
+        class="absolute"
+        *ngIf="tile.species.length > 0"
+        [ngClass]="{
+          grid12: tile.species.length <= 2 || tile.species.length === 4,
+          grid3: tile.species.length === 3
+        }"
+      >
+        <div
+          *ngFor="let species of tile.species"
+          class="species relative"
+          fxFlexFill
+          style="--img: url({{ getSpeciesImgUrl(species.id) }});"
+        >
+          <div class="species-quantity absolute">
+            {{ species.quantity }}
           </div>
         </div>
       </div>
