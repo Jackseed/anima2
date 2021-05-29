@@ -54,8 +54,10 @@
         class="absolute"
         *ngIf="tile.species.length > 0"
         [ngClass]="{
-          grid12: tile.species.length <= 2 || tile.species.length === 4,
-          grid3: tile.species.length === 3
+          grid1: tile.species.length === 1,
+          grid2: tile.species.length === 2,
+          grid3: tile.species.length === 3,
+          grid4: tile.species.length === 4
         }"
       >
         <div
