@@ -41,17 +41,10 @@
 
 .species-quantity {
   z-index: 1;
-  font-size: 13px;
+  font-size: 0.4rem;
   text-align: center;
   vertical-align: middle;
   line-height: 100%;
-}
-
-/* GRID 1 */
-.grid1,
-.grid4 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(3vw, 1fr));
 }
 
 /* GRID 2 */
@@ -60,7 +53,6 @@
   grid-template-columns: repeat(1, 1fr);
   grid-template-rows: repeat(2, 1fr);
 }
-
 .grid2 div {
   background-size: 33% !important;
 }
@@ -68,7 +60,6 @@
 .grid2 div:nth-child(1) {
   background-position: right 50% bottom 25%;
 }
-
 .grid2 div:nth-child(1) div {
   bottom: 20%;
 }
@@ -76,7 +67,6 @@
 .grid2 div:nth-child(2) {
   background-position: right 50% top 25%;
 }
-
 .grid2 div:nth-child(2) div {
   top: 15%;
 }
@@ -90,17 +80,67 @@
 .grid3 div:nth-child(1) {
   background-position: right 25% bottom 25%;
 }
+.grid3 div:nth-child(1) div {
+  right: 20%;
+  bottom: 15%;
+}
 
 .grid3 div:nth-child(2) {
+  background-position: left 25% bottom 25%;
+}
+.grid3 div:nth-child(2) div {
+  left: 20%;
+  bottom: 15%;
 }
 
 .grid3 div:nth-child(3) {
   grid-column: span 2;
   grid-row: 2;
-  background-size: 33% !important;
+  background-size: 25% !important;
+  background-position: right 50% top 25%;
+}
+.grid3 div:nth-child(3) div {
+  top: 15%;
 }
 
 /* GRID 4 */
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3vw, 1fr));
+}
+
+.grid4 div:nth-child(1) {
+  background-position: right 25% bottom 25%;
+}
+.grid4 div:nth-child(1) div {
+  right: 25%;
+  bottom: 20%;
+}
+
+.grid4 div:nth-child(2) {
+  background-position: left 25% bottom 25%;
+}
+.grid4 div:nth-child(2) div {
+  left: 25%;
+  bottom: 20%;
+}
+
+.grid4 div:nth-child(3) {
+  background-position: right 25% top 25%;
+}
+.grid4 div:nth-child(3) div {
+  right: 25%;
+  top: 20%;
+}
+
+.grid4 div:nth-child(4) {
+  background-position: left 25% top 25%;
+}
+.grid4 div:nth-child(4) div {
+  left: 25%;
+  top: 20%;
+}
+
 /*
 .grid2 {
   display: grid;
