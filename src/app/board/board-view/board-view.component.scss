@@ -106,7 +106,7 @@
 /* GRID 4 */
 .grid4 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(3vw, 1fr));
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .grid4 div:nth-child(1) {
@@ -141,15 +141,112 @@
   top: 20%;
 }
 
-/*
-.grid2 {
+/* GRID 5 */
+.grid5 {
   display: grid;
   grid-template-areas:
-    "a . c"
-    "e g f"
-    "d . b";
+    ". a ."
+    "b c d"
+    ". e .";
 }
- */
+.grid5 div:nth-child(1) {
+  grid-area: a;
+}
+.grid5 div:nth-child(2) {
+  grid-area: b;
+}
+.grid5 div:nth-child(3) {
+  grid-area: c;
+}
+.grid5 div:nth-child(4) {
+  grid-area: d;
+}
+.grid5 div:nth-child(5) {
+  grid-area: e;
+}
+
+/* GRID 6 */
+.grid6 {
+  display: grid;
+  grid-template-areas:
+    "a a a b b b"
+    "c c c d d d"
+    "e e e f f f";
+}
+.grid6 div:nth-child(1) {
+  grid-area: a;
+  background-position: right 15% bottom 0%;
+}
+.grid6 div:nth-child(1) div {
+  right: 20%;
+  bottom: 15%;
+}
+.grid6 div:nth-child(2) {
+  grid-area: b;
+  background-position: left 15% bottom 0%;
+}
+.grid6 div:nth-child(2) div {
+  right: 20%;
+  bottom: 15%;
+}
+.grid6 div:nth-child(3) {
+  grid-area: c;
+  background-position: left 20% bottom 50%;
+}
+.grid6 div:nth-child(4) {
+  grid-area: d;
+  background-position: right 20% bottom 50%;
+}
+.grid6 div:nth-child(5) {
+  grid-area: e;
+  background-position: right 15% top 0%;
+}
+.grid6 div:nth-child(6) {
+  grid-area: f;
+  background-position: left 15% top 0%;
+}
+
+/* GRID 7 */
+.grid7 {
+  display: grid;
+  grid-template-areas:
+    "a a a b b b"
+    "c c d d e e"
+    "f f f g g g";
+}
+.grid7 div:nth-child(1) {
+  grid-area: a;
+  background-position: right 15% bottom 0%;
+  background-size: 45% !important;
+}
+.grid7 div:nth-child(2) {
+  grid-area: b;
+  background-position: left 15% bottom 0%;
+  background-size: 45% !important;
+}
+.grid7 div:nth-child(3) {
+  grid-area: c;
+  background-size: 70% !important;
+}
+.grid7 div:nth-child(4) {
+  grid-area: d;
+  background-size: 70% !important;
+}
+.grid7 div:nth-child(5) {
+  grid-area: e;
+  background-size: 70% !important;
+}
+.grid7 div:nth-child(6) {
+  grid-area: f;
+  background-position: right 15% top 0%;
+  background-size: 45% !important;
+}
+.grid7 div:nth-child(7) {
+  grid-area: g;
+  background-position: left 15% top 0%;
+  background-size: 45% !important;
+}
+
 .container > div:hover {
   background: #f58787;
   cursor: pointer;
