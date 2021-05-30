@@ -70,8 +70,8 @@
   grid-template-rows: repeat(2, 1fr);
 }
 .grid2 .species {
-  width: 50%;
-  height: 50%;
+  width: 75%;
+  height: 75%;
 }
 
 .grid2 .tile-container0 {
@@ -87,33 +87,36 @@
 /* GRID 3 */
 .grid3 {
   display: grid;
+  grid-gap: 5%;
   grid-template-columns: repeat(2, 1fr);
 }
-
-.grid3 div:nth-child(1) {
-  background-position: right 25% bottom 25%;
-}
-.grid3 div:nth-child(1) div {
-  right: 20%;
-  bottom: 15%;
+.grid3 .species {
+  width: 70%;
+  height: 70%;
 }
 
-.grid3 div:nth-child(2) {
-  background-position: left 25% bottom 25%;
+.grid3 .tile-container0 {
+  margin-right: 7.5%;
+  justify-content: flex-end;
+  align-items: flex-end;
 }
-.grid3 div:nth-child(2) div {
-  left: 20%;
-  bottom: 15%;
+.grid3 .tile-container1 {
+  margin-left: 7.5%;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+.grid3 .tile-container2 {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.grid3 div:nth-child(3) {
-  grid-column: span 2;
-  grid-row: 2;
-  background-size: 25% !important;
-  background-position: right 50% top 25%;
+.grid3 .tile0,
+.grid3 .tile1 {
+  background-size: 100%;
 }
-.grid3 div:nth-child(3) div {
-  top: 15%;
+.grid3 .tile2 {
+  background-size: 50%;
 }
 
 /* GRID 4 */
