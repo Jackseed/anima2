@@ -245,37 +245,57 @@
     "c c d d e e"
     "f f f g g g";
 }
-.grid7 div:nth-child(1) {
+
+.grid7 .species {
+  width: 65%;
+  height: 66%;
+  background-size: 70%;
+}
+.grid7 .tile0,
+.grid7 .tile1,
+.grid7 .tile5,
+.grid7 .tile6 {
+  background-size: 66%;
+}
+.grid7 .tile2,
+.grid7 .tile3,
+.grid7 .tile4 {
+  background-size: 100%;
+}
+.grid7 .tile-container0 {
   grid-area: a;
-  background-position: right 15% bottom 0%;
-  background-size: 45% !important;
+  justify-content: flex-end;
+  align-items: flex-end;
 }
-.grid7 div:nth-child(2) {
+.grid7 .tile-container1 {
   grid-area: b;
-  background-position: left 15% bottom 0%;
-  background-size: 45% !important;
+  justify-content: flex-end;
+  align-items: flex-start;
 }
-.grid7 div:nth-child(3) {
+.grid7 .tile-container2 {
   grid-area: c;
-  background-size: 70% !important;
+  justify-content: center;
+  align-items: center;
 }
-.grid7 div:nth-child(4) {
+.grid7 .tile-container3 {
   grid-area: d;
-  background-size: 70% !important;
+  justify-content: center;
+  align-items: center;
 }
-.grid7 div:nth-child(5) {
+.grid7 .tile-container4 {
   grid-area: e;
-  background-size: 70% !important;
+  justify-content: center;
+  align-items: center;
 }
-.grid7 div:nth-child(6) {
+.grid7 .tile-container5 {
   grid-area: f;
-  background-position: right 15% top 0%;
-  background-size: 45% !important;
+  justify-content: flex-start;
+  align-items: flex-end;
 }
-.grid7 div:nth-child(7) {
+.grid7 .tile-container6 {
   grid-area: g;
-  background-position: left 15% top 0%;
-  background-size: 45% !important;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .container > div:hover {

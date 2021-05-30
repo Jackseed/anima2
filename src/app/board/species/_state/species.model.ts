@@ -162,6 +162,7 @@ export const forestNeutralCoordinates: [x: number, y: number][] = [
   [3, 7],
   [3, 7],
   [3, 8],
+  [6, 6],
 ];
 
 export const neutrals: Species[] = [
