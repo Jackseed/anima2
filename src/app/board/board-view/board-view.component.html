@@ -63,13 +63,16 @@
         }"
       >
         <div
-          *ngFor="let species of tile.species"
-          class="species relative"
-          fxFlexFill
-          style="--img: url({{ getSpeciesImgUrl(species.id) }});"
+          *ngFor="let species of tile.species; let i = index"
+          class="tiles tile-container{{ i }}"
         >
-          <div class="species-quantity absolute">
-            {{ species.quantity }}
+          <div
+            class="species tile{{ i }}"
+            style="--img: url({{ getSpeciesImgUrl(species.id) }});"
+          >
+            <div class="species-quantity">
+              {{ species.quantity }}
+            </div>
           </div>
         </div>
       </div>
