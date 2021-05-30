@@ -191,25 +191,6 @@
   align-items: center;
 }
 
-/*
-.grid5 div:nth-child(1) {
-  grid-area: a;
-  justify-content: center;
-  align-items: flex-end;
-}
-.grid5 div:nth-child(2) {
-  grid-area: b;
-}
-.grid5 div:nth-child(3) {
-  grid-area: c;
-}
-.grid5 div:nth-child(4) {
-  grid-area: d;
-}
-.grid5 div:nth-child(5) {
-  grid-area: e;
-} */
-
 /* GRID 6 */
 .grid6 {
   display: grid;
@@ -218,37 +199,42 @@
     "c c c d d d"
     "e e e f f f";
 }
-.grid6 div:nth-child(1) {
+
+.grid6 .species {
+  width: 65%;
+  height: 66%;
+  background-size: 70%;
+}
+
+.grid6 .tile-container0 {
   grid-area: a;
-  background-position: right 15% bottom 0%;
+  justify-content: flex-end;
+  align-items: flex-end;
 }
-.grid6 div:nth-child(1) div {
-  right: 20%;
-  bottom: 15%;
-}
-.grid6 div:nth-child(2) {
+.grid6 .tile-container1 {
   grid-area: b;
-  background-position: left 15% bottom 0%;
+  justify-content: flex-end;
+  align-items: flex-start;
 }
-.grid6 div:nth-child(2) div {
-  right: 20%;
-  bottom: 15%;
-}
-.grid6 div:nth-child(3) {
+.grid6 .tile-container2 {
   grid-area: c;
-  background-position: left 20% bottom 50%;
+  justify-content: center;
+  align-items: flex-start;
 }
-.grid6 div:nth-child(4) {
+.grid6 .tile-container3 {
   grid-area: d;
-  background-position: right 20% bottom 50%;
+  justify-content: center;
+  align-items: flex-end;
 }
-.grid6 div:nth-child(5) {
+.grid6 .tile-container4 {
   grid-area: e;
-  background-position: right 15% top 0%;
+  justify-content: flex-start;
+  align-items: flex-end;
 }
-.grid6 div:nth-child(6) {
+.grid6 .tile-container5 {
   grid-area: f;
-  background-position: left 15% top 0%;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 /* GRID 7 */
