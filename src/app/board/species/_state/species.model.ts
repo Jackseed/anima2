@@ -138,6 +138,7 @@ export const islandNeutralCoordinates: [x: number, y: number][] = [
   [7, 3],
   [8, 3],
   [8, 3],
+  [6, 6],
 ];
 
 export const plainsNeutralCoordinates: [x: number, y: number][] = [

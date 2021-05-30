@@ -116,45 +116,37 @@
   background-size: 100%;
 }
 .grid3 .tile2 {
-  background-size: 50%;
+  background-size: 47.5%;
 }
 
 /* GRID 4 */
 .grid4 {
   display: grid;
+  grid-gap: 2.5%;
   grid-template-columns: repeat(2, 1fr);
 }
 
-.grid4 div:nth-child(1) {
-  background-position: right 25% bottom 25%;
-}
-.grid4 div:nth-child(1) div {
-  right: 25%;
-  bottom: 20%;
+.grid4 .species {
+  width: 75%;
+  height: 75%;
+  background-size: 90%;
 }
 
-.grid4 div:nth-child(2) {
-  background-position: left 25% bottom 25%;
+.grid4 .tile-container0 {
+  justify-content: flex-end;
+  align-items: flex-end;
 }
-.grid4 div:nth-child(2) div {
-  left: 25%;
-  bottom: 20%;
+.grid4 .tile-container1 {
+  justify-content: flex-end;
+  align-items: flex-start;
 }
-
-.grid4 div:nth-child(3) {
-  background-position: right 25% top 25%;
+.grid4 .tile-container2 {
+  justify-content: flex-start;
+  align-items: flex-end;
 }
-.grid4 div:nth-child(3) div {
-  right: 25%;
-  top: 20%;
-}
-
-.grid4 div:nth-child(4) {
-  background-position: left 25% top 25%;
-}
-.grid4 div:nth-child(4) div {
-  left: 25%;
-  top: 20%;
+.grid4 .tile-container3 {
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 /* GRID 5 */
