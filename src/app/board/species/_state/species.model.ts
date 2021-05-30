@@ -146,6 +146,7 @@ export const plainsNeutralCoordinates: [x: number, y: number][] = [
   [5, 9],
   [5, 10],
   [7, 10],
+  [6, 6],
 ];
 
 export const swampsNeutralCoordinates: [x: number, y: number][] = [

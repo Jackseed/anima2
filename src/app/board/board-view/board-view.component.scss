@@ -152,13 +152,50 @@
 /* GRID 5 */
 .grid5 {
   display: grid;
+  grid-gap: 5%;
   grid-template-areas:
     ". a ."
     "b c d"
     ". e .";
 }
+
+.grid5 .species {
+  width: 85%;
+  height: 85%;
+  background-size: 100%;
+}
+
+.grid5 .tile-container0 {
+  grid-area: a;
+  justify-content: flex-end;
+  align-items: center;
+}
+.grid5 .tile-container1 {
+  grid-area: b;
+  justify-content: center;
+  align-items: flex-end;
+}
+.grid5 .tile-container2 {
+  grid-area: c;
+  justify-content: center;
+  align-items: center;
+}
+.grid5 .tile-container3 {
+  grid-area: d;
+  justify-content: center;
+  align-items: flex-start;
+}
+.grid5 .tile-container4 {
+  grid-area: e;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/*
 .grid5 div:nth-child(1) {
   grid-area: a;
+  justify-content: center;
+  align-items: flex-end;
 }
 .grid5 div:nth-child(2) {
   grid-area: b;
@@ -171,7 +208,7 @@
 }
 .grid5 div:nth-child(5) {
   grid-area: e;
-}
+} */
 
 /* GRID 6 */
 .grid6 {
