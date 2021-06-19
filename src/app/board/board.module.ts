@@ -22,5 +22,6 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatIconModule,
   ],
+  exports: [FooterComponent],
 })
 export class BoardModule {}

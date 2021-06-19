@@ -32,7 +32,7 @@
       </li>
     </mat-card-content>
   </mat-card> -->
-  <div class="container">
+  <div class="no-font">
     <div
       *ngFor="let tile of tiles$ | async; let i = index"
       [ngClass]="{
@@ -79,7 +79,7 @@
       </div>
     </div>
   </div>
-  <div class="absolute" id="footer">
-    <app-footer fxFlexFill></app-footer>
-  </div>
+</div>
+<div id="footer">
+  <app-footer fxFlexFill></app-footer>
 </div>
