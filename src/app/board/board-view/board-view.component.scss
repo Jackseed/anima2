@@ -1,3 +1,10 @@
+#header {
+  position: fixed;
+  width: 100%;
+  height: 16%;
+  z-index: 2;
+}
+
 pinch-zoom {
   background-color: white !important;
   height: 100%;
@@ -17,8 +24,6 @@ pinch-zoom {
   left: 0;
   right: 0;
   height: 16%;
-  min-height: 30px;
-  z-index: 2;
 }
 
 .no-font {
