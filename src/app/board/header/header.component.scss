@@ -3,3 +3,13 @@
   padding-left: 5%;
   padding-right: 5%;
 }
+
+.active-specie {
+  --s: 3rem + 2.5vmin;
+  background-image: url("/assets/giantism.png");
+  background-position: center;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  width: calc(var(--s));
+  height: calc(var(--s));
+}
