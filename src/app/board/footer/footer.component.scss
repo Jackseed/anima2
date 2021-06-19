@@ -1,0 +1,22 @@
+.text-box {
+  background-color: rgba(242, 242, 242, 0.6);
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.orange {
+  background-color: orange;
+}
+.mat-icon-button {
+  --s: 3rem + 2.5vmin;
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
+
+  .mat-icon {
+    font-size: calc(var(--s));
+    width: calc(var(--s));
+    height: calc(var(--s));
+    line-height: calc(var(--s));
+  }
+}

@@ -42,7 +42,7 @@ import { SETTINGS } from '@angular/fire/firestore';
     ActiveUserGuard,
     GameGuard,
     ActiveGameGuard,
-    {
+/*     {
       provide: SETTINGS,
       useValue: environment.production
         ? undefined
@@ -50,7 +50,7 @@ import { SETTINGS } from '@angular/fire/firestore';
             host: 'localhost:8080',
             ssl: false,
           },
-    },
+    }, */
   ],
   bootstrap: [AppComponent],
 })

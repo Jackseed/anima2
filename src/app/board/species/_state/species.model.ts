@@ -123,12 +123,21 @@ export const rockiesNeutralCoordinates: [x: number, y: number][] = [
   [4, 3],
   [4, 3],
   [4, 4],
+  [6, 6],
+  [8, 2],
+  [7, 3],
+  [8, 3],
 ];
 
 export const mountainsNeutralCoordinates: [x: number, y: number][] = [
   [6, 6],
   [6, 6],
   [6, 6],
+  [4, 3],
+  [4, 4],
+  [8, 2],
+  [7, 3],
+  [8, 3],
 ];
 
 export const islandNeutralCoordinates: [x: number, y: number][] = [
@@ -137,6 +146,8 @@ export const islandNeutralCoordinates: [x: number, y: number][] = [
   [7, 3],
   [8, 3],
   [8, 3],
+  [6, 6],
+  [4, 4],
 ];
 
 export const plainsNeutralCoordinates: [x: number, y: number][] = [
@@ -144,12 +155,19 @@ export const plainsNeutralCoordinates: [x: number, y: number][] = [
   [5, 9],
   [5, 10],
   [7, 10],
+  [6, 6],
+  [8, 2],
+  [7, 3],
+  [8, 3],
 ];
 
 export const swampsNeutralCoordinates: [x: number, y: number][] = [
   [9, 6],
   [8, 7],
   [9, 8],
+  [6, 6],
+  [7, 3],
+  [8, 3],
 ];
 
 export const forestNeutralCoordinates: [x: number, y: number][] = [
@@ -158,6 +176,8 @@ export const forestNeutralCoordinates: [x: number, y: number][] = [
   [3, 7],
   [3, 7],
   [3, 8],
+  [6, 6],
+  [8, 3],
 ];
 
 export const neutrals: Species[] = [
