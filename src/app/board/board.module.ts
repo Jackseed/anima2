@@ -1,6 +1,7 @@
 // Angular
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 // Components
 import { BoardViewComponent } from './board-view/board-view.component';
 import { FooterComponent } from './footer/footer.component';
@@ -17,6 +18,7 @@ import { PinchZoomModule } from 'ngx-pinch-zoom';
   declarations: [BoardViewComponent, FooterComponent],
   imports: [
     CommonModule,
+    HttpClientModule,
     FlexLayoutModule,
     MatSnackBarModule,
     MatCardModule,
