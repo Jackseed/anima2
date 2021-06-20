@@ -5,23 +5,10 @@
   font-weight: bold;
   line-height: 25px;
   background-color: #2984a0;
-  margin-bottom: 25%;
+  margin-bottom: 15%;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.wrapper::-webkit-scrollbar {
-  display: none;
-}
-
-h3 {
-  text-decoration: none;
-  margin: 0;
-}
-button {
-  margin-top: 0px !important;
-  margin-left: 0px !important;
 }
 
 .main {
@@ -31,10 +18,6 @@ button {
   display: flex;
 }
 
-.container {
-  /*   -webkit-transform: rotateX(180deg);
-  transform: rotateX(180deg); */
-}
 .container button {
   width: var(--s);
   height: calc(var(--s) * 1.1547);
@@ -56,4 +39,24 @@ button {
     transparent 0 calc(var(--r) - 3px),
     #fff 0 var(--r)
   );
+}
+
+button {
+  margin-top: 0px !important;
+  margin-left: 0px !important;
+  display: flex;
+}
+
+h3 {
+  color: white;
+  margin: 0;
+  font-size: 14px;
+}
+.species {
+  background-image: var(--img);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 50px;
+  margin: 0;
 }
