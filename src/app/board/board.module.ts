@@ -36,6 +36,5 @@ import { MenuComponent } from './adaptation/menu/menu.component';
     MatDialogModule,
     PinchZoomModule,
   ],
-  entryComponents: [MenuComponent],
 })
 export class BoardModule {}

@@ -21,3 +21,12 @@
     line-height: calc(var(--s));
   }
 }
+
+::ng-deep .adaptation-menu > mat-dialog-container {
+  background: transparent;
+  box-shadow: none;
+}
+
+::ng-deep .cdk-overlay-dark-backdrop {
+  background: rgba(255, 255, 255, 0.75);
+}
