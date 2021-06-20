@@ -11,6 +11,19 @@
   align-items: center;
 }
 
+.wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+h3 {
+  text-decoration: none;
+  margin: 0;
+}
+button {
+  margin-top: 0px !important;
+  margin-left: 0px !important;
+}
+
 .main {
   --s: 30vw;
   --m: 1.5vw;
@@ -19,8 +32,8 @@
 }
 
 .container {
-  -webkit-transform: rotateX(180deg);
-  transform: rotateX(180deg);
+  /*   -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg); */
 }
 .container button {
   width: var(--s);
