@@ -75,10 +75,6 @@ pinch-zoom {
   flex-direction: column;
 }
 
-.relative {
-  position: relative;
-}
-
 .selected {
   filter: brightness(100%);
   animation: blinker 1.5s linear infinite;
@@ -98,10 +94,6 @@ pinch-zoom {
   opacity: 0.5;
 }
 
-.absolute {
-  position: absolute;
-}
-
 .score {
   z-index: 3;
 }
@@ -118,22 +110,22 @@ pinch-zoom {
   cursor: auto !important;
 }
 .island {
-  background: #E5E4F1;
+  background: #e5e4f1;
 }
 .rockies {
-  background: #EBEAC0;
+  background: #ebeac0;
 }
 .mountains {
-  background: #FCE2B9;
+  background: #fce2b9;
 }
 .forest {
-  background: #D4E8D7;
+  background: #d4e8d7;
 }
 .swamps {
-  background: #C5E4F2;
+  background: #c5e4f2;
 }
 .plains {
-  background: #F9EC9A;
+  background: #f9ec9a;
 }
 /* GRID 1 */
 .grid1 .species {
