@@ -5,6 +5,10 @@
   display: flex;
 }
 
+.container {
+  -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg);
+}
 .container button {
   width: var(--s);
   height: calc(var(--s) * 1.1547);
