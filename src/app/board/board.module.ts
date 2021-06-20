@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 // Components
 import { BoardViewComponent } from './board-view/board-view.component';
 import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from './header/header.component';
 // Flex Layout
 import { FlexLayoutModule } from '@angular/flex-layout';
 // Material
@@ -15,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { PinchZoomModule } from 'ngx-pinch-zoom';
 
 @NgModule({
-  declarations: [BoardViewComponent, FooterComponent],
+  declarations: [BoardViewComponent, FooterComponent, HeaderComponent],
   imports: [
     CommonModule,
     HttpClientModule,
@@ -26,6 +27,5 @@ import { PinchZoomModule } from 'ngx-pinch-zoom';
     MatIconModule,
     PinchZoomModule,
   ],
-  exports: [FooterComponent],
 })
 export class BoardModule {}
