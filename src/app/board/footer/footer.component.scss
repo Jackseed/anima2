@@ -27,6 +27,10 @@
   box-shadow: none;
 }
 
+/* ::ng-deep .cdk-overlay-pane {
+  max-width: 100vw ;
+} */
+
 ::ng-deep .cdk-overlay-dark-backdrop {
   background: rgba(255, 255, 255, 0.75);
 }
