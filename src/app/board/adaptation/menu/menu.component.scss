@@ -30,6 +30,17 @@
   background-size: contain;
   background-repeat: no-repeat;
 }
+
+button {
+  margin-top: 0px !important;
+  margin-left: 0px !important;
+}
+
+.glow {
+  border: solid #f59c27;
+  background-color: #f59c27;
+}
+
 .container::before {
   content: "";
   width: calc(var(--s) / 2 + var(--m));
@@ -39,12 +50,6 @@
     transparent 0 calc(var(--r) - 3px),
     #fff 0 var(--r)
   );
-}
-
-button {
-  margin-top: 0px !important;
-  margin-left: 0px !important;
-  display: flex;
 }
 
 h3 {
@@ -59,4 +64,30 @@ h3 {
   background-repeat: no-repeat;
   height: 50px;
   margin: 0;
+}
+
+.definition-box {
+  min-height: 80px;
+  height: 20%;
+  margin-top: 25%;
+  background-color: white;
+  border: solid #f59c27;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+textarea {
+  font: 14px "Grandstander";
+  font-weight: 600;
+  line-height: 15px;
+  color: #f59c27;
+  text-align: center;
+  border: none;
+  background-color: transparent;
+  resize: none;
+  outline: none;
+  border-radius: 0;
+  height: 90%;
+  width: 90%;
 }
