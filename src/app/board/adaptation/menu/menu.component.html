@@ -4,16 +4,18 @@
   </div>
   <div class="main">
     <div class="container">
-      <button
-        mat-button
-        fxLayout="row"
-        fxLayoutAlign="center center"
-        (click)="activate(0)"
-        [ngClass]="{ glow: abilities[0].isActive }"
-      >
-        <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h3>{{ abilities[0].name }}</h3>
-      </button>
+      <div [ngClass]="{ parentGlow: abilities[0].isActive }">
+        <button
+          mat-button
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          (click)="activate(0)"
+          [ngClass]="{ glow: abilities[0].isActive }"
+        >
+          <div class="species" style="--img: url(/assets/vol.png)"></div>
+          <h3>{{ abilities[0].name }}</h3>
+        </button>
+      </div>
       <button
         mat-button
         (click)="activate(1)"

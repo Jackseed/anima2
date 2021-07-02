@@ -29,11 +29,16 @@
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+  padding: 0;
 }
 
 button {
   margin-top: 0px !important;
   margin-left: 0px !important;
+}
+
+.parentGlow {
+  filter: drop-shadow(0.35rem 0.35rem 0.4rem #f59c27);
 }
 
 .glow {
