@@ -13,10 +13,18 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+// Libs
 import { PinchZoomModule } from 'ngx-pinch-zoom';
+import { MenuComponent } from './adaptation/menu/menu.component';
 
 @NgModule({
-  declarations: [BoardViewComponent, FooterComponent, HeaderComponent],
+  declarations: [
+    BoardViewComponent,
+    FooterComponent,
+    HeaderComponent,
+    MenuComponent,
+  ],
   imports: [
     CommonModule,
     HttpClientModule,
@@ -25,6 +33,7 @@ import { PinchZoomModule } from 'ngx-pinch-zoom';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    MatDialogModule,
     PinchZoomModule,
   ],
 })

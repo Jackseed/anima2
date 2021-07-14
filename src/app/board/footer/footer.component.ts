@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MenuComponent } from '../adaptation/menu/menu.component';
 
 @Component({
   selector: 'app-footer',
@@ -11,7 +13,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class FooterComponent implements OnInit {
   constructor(
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    public dialog: MatDialog
   ) {
     this.matIconRegistry.addSvgIcon(
       'migrate',
@@ -50,18 +53,25 @@ export class FooterComponent implements OnInit {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'natural-selection',
+      'adaptation',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/natural-selection.svg'
+        '../../../assets/adaptation.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'natural-selection-disable',
+      'adaptation-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/natural-selection-disable.svg'
+        '../../../assets/adaptation-disable.svg'
       )
     );
   }
 
   ngOnInit(): void {}
+
+  public openDialog(): void {
+    const dialogRef = this.dialog.open(MenuComponent, {
+      panelClass: 'adaptation-menu',
+      autoFocus: false,
+    });
+  }
 }
