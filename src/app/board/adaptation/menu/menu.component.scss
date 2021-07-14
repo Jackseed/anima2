@@ -18,7 +18,7 @@
   display: flex;
 }
 
-.container button {
+.hex {
   width: var(--s);
   height: calc(var(--s) * 1.1547);
   margin: var(--m);
@@ -37,15 +37,6 @@ button {
   margin-left: 0px !important;
 }
 
-.parentGlow {
-  filter: drop-shadow(0.35rem 0.35rem 0.4rem #f59c27);
-}
-
-.glow {
-  border: solid #f59c27;
-  background-color: #f59c27;
-}
-
 .container::before {
   content: "";
   width: calc(var(--s) / 2 + var(--m));
@@ -57,11 +48,21 @@ button {
   );
 }
 
+.parentGlow {
+  filter: drop-shadow(0.35rem 0.35rem 0.4rem #f59c27);
+}
+
+.glow {
+  border: solid #f59c27;
+  background-color: #f59c27;
+}
+
 h3 {
   color: white;
   margin: 0;
   font-size: 14px;
 }
+
 .species {
   background-image: var(--img);
   background-position: center;

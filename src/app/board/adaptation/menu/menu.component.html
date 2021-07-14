@@ -6,6 +6,7 @@
     <div class="container">
       <div [ngClass]="{ parentGlow: abilities[0].isActive }">
         <button
+          class="hex"
           mat-button
           fxLayout="row"
           fxLayoutAlign="center center"
@@ -16,22 +17,28 @@
           <h3>{{ abilities[0].name }}</h3>
         </button>
       </div>
-      <button
-        mat-button
-        (click)="activate(1)"
-        [ngClass]="{ glow: abilities[1].isActive }"
-      >
-        <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h3>{{ abilities[1].name }}</h3>
-      </button>
-      <button
-        mat-button
-        (click)="activate(2)"
-        [ngClass]="{ glow: abilities[2].isActive }"
-      >
-        <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h3>{{ abilities[2].name }}</h3>
-      </button>
+      <span [ngClass]="{ parentGlow: abilities[1].isActive }">
+        <button
+          class="hex"
+          mat-button
+          (click)="activate(1)"
+          [ngClass]="{ glow: abilities[1].isActive }"
+        >
+          <div class="species" style="--img: url(/assets/vol.png)"></div>
+          <h3>{{ abilities[1].name }}</h3>
+        </button>
+      </span>
+      <span [ngClass]="{ parentGlow: abilities[2].isActive }">
+        <button
+          class="hex"
+          mat-button
+          (click)="activate(2)"
+          [ngClass]="{ glow: abilities[2].isActive }"
+        >
+          <div class="species" style="--img: url(/assets/vol.png)"></div>
+          <h3>{{ abilities[2].name }}</h3>
+        </button>
+      </span>
     </div>
   </div>
   <div *ngFor="let ability of abilities">
