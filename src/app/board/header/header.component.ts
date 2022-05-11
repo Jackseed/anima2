@@ -38,6 +38,7 @@ export class HeaderComponent implements OnInit {
       width: '300px',
       height: '200px',
       panelClass: 'custom-container',
+      autoFocus: false,
     });
   }
 }

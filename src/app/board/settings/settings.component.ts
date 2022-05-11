@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 // Angular Material
 import { MatIconRegistry } from '@angular/material/icon';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-settings',
@@ -11,6 +12,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 })
 export class SettingsComponent implements OnInit {
   constructor(
+    public dialogRef: MatDialogRef<SettingsComponent>,
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer
   ) {
@@ -23,4 +25,8 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  public close() {
+    this.dialogRef.close();
+  }
 }
