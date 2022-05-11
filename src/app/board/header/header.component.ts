@@ -35,8 +35,7 @@ export class HeaderComponent implements OnInit {
 
   public openDialog(): void {
     const dialogRef = this.dialog.open(SettingsComponent, {
-      width: '300px',
-      height: '200px',
+      height: '60%',
       panelClass: 'custom-container',
       autoFocus: false,
     });

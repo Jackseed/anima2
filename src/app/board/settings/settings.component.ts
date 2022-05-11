@@ -11,6 +11,20 @@ import { MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
+  public menu = [
+    {
+      cta: 'Envoyer un emoji',
+    },
+    {
+      cta: 'Demander une pause',
+    },
+    {
+      cta: 'Règles',
+    },
+    {
+      cta: 'Quittez',
+    },
+  ];
   constructor(
     public dialogRef: MatDialogRef<SettingsComponent>,
     private matIconRegistry: MatIconRegistry,

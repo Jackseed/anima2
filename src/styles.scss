@@ -24,7 +24,7 @@ h1 {
 
 h2 {
   color: white;
-  font-size: calc(1rem + 2vmin);
+  font-size: calc(1rem + 1.5vmin);
 }
 
 .relative {
@@ -46,4 +46,15 @@ h2 {
 
 .cdk-overlay-pane.custom-container {
   position: relative !important;
+}
+
+.nav-button {
+  background-color: #2984a0;
+  border-left: 20px #2984a0 solid;
+  border-right: 20px #2984a0 solid;
+  border-top: none;
+  border-bottom: none;
+  //  border-style: none;
+  border-radius: 30px;
+  white-space: nowrap;
 }

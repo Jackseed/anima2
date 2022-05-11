@@ -10,7 +10,7 @@
     fxLayoutAlign="space-evenly center"
   >
     <nav *ngFor="let item of menu">
-      <button (click)="item.func">
+      <button class="nav-button" (click)="(item.func)">
         <h2>{{ item.cta }}</h2>
       </button>
     </nav>
