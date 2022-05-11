@@ -38,3 +38,12 @@ h2 {
 .orange {
   background-color: $anima-color;
 }
+
+.custom-container .mat-dialog-container {
+  border: 4px $anima-color solid;
+  border-radius: 0px;
+}
+
+.cdk-overlay-pane.custom-container {
+  position: relative !important;
+}

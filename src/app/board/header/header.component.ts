@@ -26,7 +26,7 @@ export class HeaderComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'menu-button',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-button.svg'
+        '../../../assets/close-button.svg'
       )
     );
   }
@@ -34,6 +34,10 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {}
 
   public openDialog(): void {
-    const dialogRef = this.dialog.open(SettingsComponent);
+    const dialogRef = this.dialog.open(SettingsComponent, {
+      width: '300px',
+      height: '200px',
+      panelClass: 'custom-container',
+    });
   }
 }
