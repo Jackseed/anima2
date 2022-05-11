@@ -2,9 +2,16 @@
   <header fxFlex="15" fxLayout="column" fxLayoutAlign="end center">
     Anima
   </header>
-  <main fxFlex="75" fxLayout="column" fxLayoutAlign="space-evenly center">
+  <main
+    fxFlexFill
+    fxFlex="75"
+    fxLayout="column"
+    fxLayoutAlign="space-evenly center"
+  >
     <nav *ngFor="let item of menu">
-      <button>{{ item.cta }}</button>
+      <button>
+        <h2>{{ item.cta }}</h2>
+      </button>
     </nav>
   </main>
   <div fxFlex="9"></div>
