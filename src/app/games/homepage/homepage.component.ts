@@ -11,6 +11,24 @@ import { GameService } from '../_state/game.service';
   styleUrls: ['./homepage.component.scss'],
 })
 export class HomepageComponent implements OnInit {
+  public menu = [
+    {
+      cta: 'Partie rapide',
+    },
+    {
+      cta: 'Invitez un joueur',
+    },
+    {
+      cta: 'Règles & tuto',
+    },
+    {
+      cta: 'Compte',
+    },
+    {
+      cta: 'Quittez',
+    },
+  ];
+
   constructor(
     private router: Router,
     private gameService: GameService,
