@@ -1,3 +1,5 @@
+$anima-color: #f59c27;
+
 html,
 body {
   margin: 0;
@@ -14,6 +16,12 @@ span {
   font-family: Grandstander, "Helvetica Neue", sans-serif;
 }
 
+h1 {
+  color: $anima-color;
+  font-size: calc(2rem + 6vmin);
+  margin: 0;
+}
+
 h2 {
   color: white;
   font-size: calc(1rem + 2vmin);
@@ -28,5 +36,5 @@ h2 {
 }
 
 .orange {
-  background-color: orange;
+  background-color: $anima-color;
 }
