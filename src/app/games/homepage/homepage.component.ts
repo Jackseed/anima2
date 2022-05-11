@@ -16,18 +16,23 @@ export class HomepageComponent implements OnInit {
   public menu = [
     {
       cta: 'Partie rapide',
+      func: this.playNow(),
     },
     {
       cta: 'Invitez un joueur',
+      func: this.playNow(),
     },
     {
       cta: 'Règles & tuto',
+      func: this.playNow(),
     },
     {
       cta: 'Compte',
+      func: this.playNow(),
     },
     {
       cta: 'Quittez',
+      func: this.playNow(),
     },
   ];
 
