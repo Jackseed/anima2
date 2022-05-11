@@ -17,6 +17,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 // Libs
 import { PinchZoomModule } from 'ngx-pinch-zoom';
 import { MenuComponent } from './adaptation/menu/menu.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { MenuComponent } from './adaptation/menu/menu.component';
     FooterComponent,
     HeaderComponent,
     MenuComponent,
+    SettingsComponent,
   ],
   imports: [
     CommonModule,

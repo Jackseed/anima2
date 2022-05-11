@@ -1,9 +1,11 @@
+// Angular
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-
-import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+// Components
 import { MenuComponent } from '../adaptation/menu/menu.component';
+// Angular Material
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconRegistry } from '@angular/material/icon';
 
 @Component({
   selector: 'app-footer',

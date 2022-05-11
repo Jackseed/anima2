@@ -1,7 +1,10 @@
+// Angular
 import { Component, OnInit } from '@angular/core';
-
-import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+// Angular Material
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconRegistry } from '@angular/material/icon';
+import { SettingsComponent } from '../settings/settings.component';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +14,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class HeaderComponent implements OnInit {
   constructor(
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    public dialog: MatDialog
   ) {
     this.matIconRegistry.addSvgIcon(
       'strategic-view',
@@ -28,4 +32,8 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  public openDialog(): void {
+    const dialogRef = this.dialog.open(SettingsComponent);
+  }
 }
