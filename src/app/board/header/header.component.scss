@@ -22,6 +22,12 @@
   width: calc(var(--s));
   height: calc(var(--s));
   z-index: 1;
+  .mat-icon {
+    font-size: calc(var(--s));
+    width: calc(var(--s));
+    height: calc(var(--s));
+    line-height: calc(var(--s));
+  }
 }
 
 .small-text-box {
@@ -33,7 +39,6 @@
   padding-top: 5%;
   padding-bottom: 5%;
   min-height: 20px;
-
   z-index: 0;
 }
 
