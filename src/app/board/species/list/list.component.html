@@ -1,7 +1,13 @@
-<div fxFlexFill fxLayout="row" fxLayoutAlign="start center">
-  <main
-    fxFlex="55"
+<button mat-icon-button id="close-button" (click)="close()">
+  <mat-icon id="close-icon" svgIcon="close"></mat-icon>
+</button>
+<main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
+  <article
+    fxFlex="20"
     class="container relative"
+    fxFlexFill
+    fxLayout="row"
+    fxLayoutAlign="start center"
   >
     <div
       class="active species absolute"
@@ -29,5 +35,5 @@
         style="--img: url(/assets/ability-3.png)"
       ></div>
     </div>
-  </main>
-</div>
+  </article>
+</main>
