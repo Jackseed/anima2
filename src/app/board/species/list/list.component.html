@@ -3,17 +3,18 @@
 </button>
 <main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
   <article
-    fxFlex="20"
+    *ngFor="let specie of species"
+    fxFlex="19"
     class="relative"
     fxFlexFill
     fxLayout="row"
     fxLayoutAlign="start center"
   >
-    <div
+    <mat-icon
       fxFlex="25"
-      class="active species absolute"
-      style="--img: url(/assets/active-specie.png)"
-    ></div>
+      class="active absolute"
+      [svgIcon]="specie.icon"
+    ></mat-icon>
     <div
       class="box absolute"
       fxLayout="row"
