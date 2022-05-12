@@ -12,25 +12,12 @@
   min-height: 10px;
 }
 
-.active {
-  --s: 4.5rem + 2.5vmin;
-  width: calc(var(--s));
-  height: calc(var(--s));
-  z-index: 1;
-  .mat-icon {
-    font-size: calc(var(--s));
-    width: calc(var(--s));
-    height: calc(var(--s));
-    line-height: calc(var(--s));
-  }
-}
-
 .box {
   background-color: #f2f2f2;
-  border: 2px orange solid;
-  height: 50%;
+  border: 3px #f59c27 solid;
+  height: 45%;
   width: 100%;
-  margin-left: 25%;
+  margin-left: 40%;
 }
 
 #close-button {
@@ -45,4 +32,9 @@
   width: calc(2rem + 6vmin);
   height: calc(2rem + 6vmin);
   line-height: calc(2rem + 6vmin);
+}
+
+aside {
+  border-top: 4px #f59c27 solid;
+  width: calc(100% + 48px) !important;
 }

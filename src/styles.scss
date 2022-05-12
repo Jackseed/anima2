@@ -44,6 +44,10 @@ h2 {
   border-radius: 0px;
 }
 
+.no-padding-bottom .mat-dialog-container {
+  padding: 24px 24px 0px 24px;
+}
+
 .cdk-overlay-pane.custom-container {
   position: relative !important;
 }

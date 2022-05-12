@@ -42,9 +42,9 @@ export class HeaderComponent implements OnInit {
 
   public openSpeciesList(): void {
     const dialogRef = this.dialog.open(ListComponent, {
-      height: '60%',
+      height: '90%',
       width: '80%',
-      panelClass: 'custom-container',
+      panelClass: ['custom-container', 'no-padding-bottom'],
       autoFocus: false,
     });
   }
