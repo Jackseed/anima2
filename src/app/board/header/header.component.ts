@@ -5,6 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { SettingsComponent } from '../settings/settings.component';
+import { ListComponent } from '../species/list/list.component';
 
 @Component({
   selector: 'app-header',
@@ -39,7 +40,16 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  public openDialog(): void {
+  public openSpeciesList(): void {
+    const dialogRef = this.dialog.open(ListComponent, {
+      height: '60%',
+      width: '80%',
+      panelClass: 'custom-container',
+      autoFocus: false,
+    });
+  }
+
+  public openSettings(): void {
     const dialogRef = this.dialog.open(SettingsComponent, {
       height: '60%',
       panelClass: 'custom-container',

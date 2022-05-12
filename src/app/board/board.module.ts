@@ -6,6 +6,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { BoardViewComponent } from './board-view/board-view.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
+import { MenuComponent } from './adaptation/menu/menu.component';
+import { SettingsComponent } from './settings/settings.component';
+import { ListComponent } from './species/list/list.component';
 // Flex Layout
 import { FlexLayoutModule } from '@angular/flex-layout';
 // Material
@@ -16,8 +19,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 // Libs
 import { PinchZoomModule } from 'ngx-pinch-zoom';
-import { MenuComponent } from './adaptation/menu/menu.component';
-import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { SettingsComponent } from './settings/settings.component';
     HeaderComponent,
     MenuComponent,
     SettingsComponent,
+    ListComponent,
   ],
   imports: [
     CommonModule,

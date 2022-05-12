@@ -1,0 +1,38 @@
+.container {
+  height: 100%;
+  align-items: center;
+  display: flex;
+}
+
+.species {
+  background-image: var(--img);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  min-height: 10px;
+}
+
+.active {
+  --s: 4.5rem + 2.5vmin;
+  width: calc(var(--s));
+  height: calc(var(--s));
+  z-index: 1;
+  .mat-icon {
+    font-size: calc(var(--s));
+    width: calc(var(--s));
+    height: calc(var(--s));
+    line-height: calc(var(--s));
+  }
+}
+
+.small-text-box {
+  background-color: rgb(255, 255, 255, 0.95);
+  width: 100%;
+  height: 30%;
+  margin-left: 10%;
+  margin-right: 5%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+  min-height: 20px;
+  z-index: 0;
+}
