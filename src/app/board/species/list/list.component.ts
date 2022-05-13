@@ -58,6 +58,31 @@ export class ListComponent implements OnInit {
         '../../../../assets/specie4.svg'
       )
     );
+
+    this.matIconRegistry.addSvgIcon(
+      'ability-1',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/ability_1.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'ability-2',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/ability-2.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'ability-3',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/ability-3.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'ability-4',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/ability-4.svg'
+      )
+    );
   }
 
   ngOnInit(): void {}
