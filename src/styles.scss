@@ -61,3 +61,17 @@ h2 {
   border-radius: 30px;
   white-space: nowrap;
 }
+
+#close-button {
+  position: absolute;
+  top: 0;
+  right: 50%;
+  transform: translate(50%, -50%);
+}
+
+#close-icon {
+  font-size: calc(2rem + 6vmin);
+  width: calc(2rem + 6vmin);
+  height: calc(2rem + 6vmin);
+  line-height: calc(2rem + 6vmin);
+}
