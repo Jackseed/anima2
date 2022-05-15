@@ -1,7 +1,9 @@
 .text-box {
+  height: 50%;
   width: 100%;
   line-height: 25px;
   background-color: #2984a0;
+  margin-top: 10%;
   margin-bottom: 15%;
   display: flex;
   justify-content: center;
@@ -63,7 +65,7 @@ section::before {
   margin: 0;
 }
 
-.definition-box {
+aside {
   min-height: 80px;
   height: 20%;
   margin-top: 25%;

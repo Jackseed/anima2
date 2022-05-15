@@ -1,8 +1,8 @@
-<div fxFlexFill>
-  <header class="text-box">
+<div fxFlexFill fxLayout="column" fxLayoutAlign="center center">
+  <header class="text-box" fxFlex>
     <h2>Choisissez un <br />nouveau trait</h2>
   </header>
-  <main>
+  <main fxFlex="35">
     <section>
       <article [ngClass]="{ parentGlow: abilities[0].isActive }">
         <button
@@ -41,9 +41,10 @@
       </span>
     </section>
   </main>
-  <aside *ngIf="activeAbility as ability" class="definition-box">
+  <aside fxFlex="35" *ngIf="activeAbility as ability">
     <textarea readonly wrap="hard" rows="3" cols="25">{{
       ability.definition
     }}</textarea>
   </aside>
+  <footer fxFlex="10"></footer>
 </div>
