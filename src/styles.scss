@@ -13,7 +13,7 @@ h3,
 h4,
 p,
 span {
-  font-family: Grandstander, "Helvetica Neue", sans-serif;
+  font-family: "Grandstander", "Helvetica Neue", sans-serif;
 }
 
 h1 {
@@ -25,6 +25,14 @@ h1 {
 h2 {
   color: white;
   font-size: calc(1rem + 1.5vmin);
+}
+
+p,
+textarea {
+  color: $anima-color;
+  font-size: calc(1rem + 1vmin);
+  font-weight: 600;
+  line-height: 16px;
 }
 
 .relative {

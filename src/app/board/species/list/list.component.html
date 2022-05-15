@@ -43,8 +43,22 @@
       </button>
     </div>
   </article>
-  <aside *ngIf="activeAbility as ability" fxFlex="32" fxFlexFill>
-    <textarea readonly wrap="hard" rows="3" cols="25">{{
+  <aside
+    *ngIf="activeAbility as ability"
+    fxFlex="32"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
+    <section
+      fxFlexLayoutGap="10"
+      fxFlex="20"
+      fxFlexFill
+      fxLayoutAlign="center center"
+    >
+      <mat-icon id="title-icon" [svgIcon]="ability.icon"></mat-icon>
+    </section>
+    <textarea fxFlex readonly wrap="hard" rows="3" cols="25">{{
       ability.definition
     }}</textarea>
   </aside>

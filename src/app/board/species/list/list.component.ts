@@ -28,18 +28,18 @@ export class ListComponent implements OnInit {
   public abilities = [
     {
       name: 'Intimidation',
-      img: '/assets/vol.png',
+      icon: 'ability-1',
       definition:
         'À la fin une colonisation, peut déplacer 1 pion adverse se trouvant sur sa case d’1 case.',
     },
     {
       name: 'Gigantisme',
-      img: '/assets/vol.png',
+      icon: 'ability-4',
       definition: 'yi',
     },
     {
       name: 'Vol',
-      img: '/assets/vol.png',
+      icon: 'ability-3',
       definition: 'yu',
     },
   ];

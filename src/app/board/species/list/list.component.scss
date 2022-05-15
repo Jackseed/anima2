@@ -27,3 +27,22 @@ aside {
 .margin-top-2 {
   margin-top: 2%;
 }
+
+textarea {
+  text-align: center;
+  border: none;
+  background-color: transparent;
+  resize: none;
+  outline: none;
+  border-radius: 0;
+  height: 90%;
+  width: 90%;
+}
+
+#title-icon {
+  --s: 1rem + 2.5vmin;
+  font-size: calc(var(--s));
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
+}
