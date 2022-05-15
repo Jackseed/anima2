@@ -72,8 +72,11 @@ export class FooterComponent implements OnInit {
 
   public openDialog(): void {
     const dialogRef = this.dialog.open(MenuComponent, {
-      panelClass: 'adaptation-menu',
+      backdropClass: 'transparent-backdrop',
+      panelClass: 'transparent-menu',
       autoFocus: false,
+      height: '95%',
+      width: '95%',
     });
   }
 }

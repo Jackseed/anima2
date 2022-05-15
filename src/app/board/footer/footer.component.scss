@@ -18,21 +18,3 @@
   }
 }
 
-::ng-deep .adaptation-menu > mat-dialog-container {
-  background: transparent;
-  box-shadow: none;
-  height: 97%;
-}
-
-::ng-deep .cdk-overlay-pane.adaptation-menu {
-  height: 90%;
-}
-
-::ng-deep .cdk-overlay-dark-backdrop {
-  background: rgba(255, 255, 255, 0.75);
-}
-
-::ng-deep .cdk-overlay-container,
-.cdk-global-overlay-wrapper {
-  height: 97%;
-}

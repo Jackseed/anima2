@@ -35,5 +35,10 @@ export class MenuComponent implements OnInit {
 
   public activate(i: number) {
     this.activeAbility = this.abilities[i];
+    for (let j = 0; j < 3; j++) {
+      j === i
+        ? (this.abilities[i].isActive = true)
+        : (this.abilities[j].isActive = false);
+    }
   }
 }

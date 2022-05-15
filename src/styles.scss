@@ -56,6 +56,15 @@ textarea {
   padding: 24px 24px 0px 24px;
 }
 
+.transparent-menu .mat-dialog-container {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.transparent-backdrop {
+  background: rgba(255, 255, 255, 0.75);
+}
 .cdk-overlay-pane.custom-container {
   position: relative !important;
 }
