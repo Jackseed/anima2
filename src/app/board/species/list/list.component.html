@@ -18,28 +18,13 @@
       fxFlex="60"
     >
       <button
+        *ngFor="let ability of abilities; let i = index"
         mat-icon-button
         fxFlex="22"
         class="abilities"
-        (click)="activate(0)"
+        (click)="activate(i)"
       >
-        <mat-icon svgIcon="ability-1"></mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        fxFlex="22"
-        class="abilities"
-        (click)="activate(1)"
-      >
-        <mat-icon svgIcon="ability-4"></mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        fxFlex="22"
-        class="abilities"
-        (click)="activate(2)"
-      >
-        <mat-icon svgIcon="ability-3"></mat-icon>
+        <mat-icon [svgIcon]="ability.icon"></mat-icon>
       </button>
     </div>
   </article>
