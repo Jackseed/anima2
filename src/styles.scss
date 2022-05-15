@@ -79,6 +79,10 @@ textarea {
   padding: 0;
 }
 
+.cdk-overlay-pane.transparent-menu {
+  max-width: 100% !important;
+}
+
 .transparent-backdrop {
   background: rgba(255, 255, 255, 0.75);
 }

@@ -76,7 +76,7 @@ export class FooterComponent implements OnInit {
       panelClass: 'transparent-menu',
       autoFocus: false,
       height: '95%',
-      width: '95%',
+      width: '100%',
     });
   }
 }
