@@ -4,7 +4,7 @@
   line-height: 25px;
   background-color: #2984a0;
   margin-top: 10%;
-  margin-bottom: 15%;
+  margin-bottom: 5%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,24 +20,15 @@ main {
 .hex {
   width: var(--s);
   height: calc(var(--s) * 1.1547);
-  //margin: var(--m);
-  // display: inline-block;
   clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-  // margin-bottom: calc(var(--m) - var(--s) * 0.2885);
   background-image: url("/assets/hexa-menu.png");
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  //padding: 0;
-}
-
-button {
-  margin-top: 0px !important;
-  margin-left: 0px !important;
 }
 
 .parentGlow {
-  filter: drop-shadow(0 0 0.5rem #f59c27);
+  filter: drop-shadow(0 0 1rem #f59c27);
 }
 
 .glow {
@@ -50,14 +41,13 @@ button {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  height: 50px;
-  margin: 0;
+  height: calc(1rem + 7vh);
 }
 
 aside {
   min-height: 80px;
   height: 20%;
-  margin-top: 25%;
+  margin-top: 5%;
   background-color: white;
   border: solid #f59c27;
   display: flex;
