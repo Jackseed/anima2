@@ -54,12 +54,6 @@ section::before {
   background-color: #f59c27;
 }
 
-h3 {
-  color: white;
-  margin: 0;
-  font-size: 14px;
-}
-
 .species {
   background-image: var(--img);
   background-position: center;
@@ -78,19 +72,4 @@ h3 {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-textarea {
-  font: 14px "Grandstander";
-  font-weight: 600;
-  line-height: 15px;
-  color: #f59c27;
-  text-align: center;
-  border: none;
-  background-color: transparent;
-  resize: none;
-  outline: none;
-  border-radius: 0;
-  height: 90%;
-  width: 90%;
 }
