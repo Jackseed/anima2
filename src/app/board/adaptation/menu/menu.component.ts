@@ -1,4 +1,8 @@
+// Angular
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+// Material
+import { MatIconRegistry } from '@angular/material/icon';
 
 @Component({
   selector: 'app-menu',
@@ -29,7 +33,23 @@ export class MenuComponent implements OnInit {
   ];
   public activeAbility: Object = {};
 
-  constructor() {}
+  constructor(
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
+  ) {
+    this.matIconRegistry.addSvgIcon(
+      'blank',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/blank-button.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'validate',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/validate-button.svg'
+      )
+    );
+  }
 
   ngOnInit(): void {}
 

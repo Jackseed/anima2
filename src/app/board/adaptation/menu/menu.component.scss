@@ -49,8 +49,21 @@ aside {
   height: 20%;
   margin-top: 5%;
   background-color: white;
-  border: 4px #f59c27 solid;
+  border: 6px #f59c27 solid;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#validate-button {
+  position: absolute;
+  bottom: 0;
+  transform: translate(-100%, -40%);
+}
+
+#validate-icon {
+  font-size: calc(2rem + 10vh);
+  width: calc(2rem + 10vh);
+  height: calc(2rem + 10vh);
+  line-height: calc(2rem + 10vh);
 }

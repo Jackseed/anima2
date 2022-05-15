@@ -28,10 +28,13 @@
       </button>
     </article>
   </main>
-  <aside fxFlex="35" *ngIf="activeAbility as ability">
+  <aside class="relative" fxFlex="35" *ngIf="activeAbility as ability">
     <textarea readonly wrap="hard" rows="3" cols="25">{{
       ability.definition
     }}</textarea>
+    <button mat-icon-button id="validate-button">
+      <mat-icon id="validate-icon" svgIcon="blank"></mat-icon>
+    </button>
   </aside>
   <div fxFlex="9"></div>
   <footer fxFlexFill fxFlex="1" class="orange"></footer>
