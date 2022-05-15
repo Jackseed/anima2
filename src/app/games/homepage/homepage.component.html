@@ -1,1 +1,22 @@
+<div fxFlexFill fxLayout="column" fxLayoutAlign="start center">
+  <header fxFlex="17" fxLayout="column" fxLayoutAlign="end center">
+    <h1>Anima<mat-icon svgIcon="adaptation"></mat-icon></h1>
+  </header>
+  <div fxFlex="3"></div>
+  <main
+    fxFlexFill
+    fxFlex="70"
+    fxLayout="column"
+    fxLayoutAlign="space-evenly center"
+  >
+    <nav *ngFor="let item of menu">
+      <button class="nav-button" (click)="(item.func)">
+        <h2>{{ item.cta }}</h2>
+      </button>
+    </nav>
+  </main>
+  <div fxFlex="9"></div>
+  <footer fxFlexFill fxFlex="1" class="orange"></footer>
+</div>
+
 <button (click)="playNow()">Play</button>

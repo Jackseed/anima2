@@ -1,0 +1,12 @@
+<button mat-icon-button id="close-button" (click)="close()">
+  <mat-icon id="close-icon" svgIcon="close"></mat-icon>
+</button>
+<div fxFlexFill>
+  <main fxFlexFill fxLayout="column" fxLayoutAlign="space-evenly center">
+    <nav *ngFor="let item of menu">
+      <button class="nav-button">
+        <h2>{{ item.cta }}</h2>
+      </button>
+    </nav>
+  </main>
+</div>

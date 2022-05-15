@@ -1,0 +1,50 @@
+<button mat-icon-button id="close-button" (click)="close()">
+  <mat-icon id="close-icon" svgIcon="close"></mat-icon>
+</button>
+<main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
+  <article
+    *ngFor="let specie of species"
+    fxFlex="17"
+    class="relative margin-top-2"
+    fxFlexFill
+    fxLayout="row"
+    fxLayoutAlign="start center"
+  >
+    <mat-icon fxFlex="40" fxFlexFill [svgIcon]="specie.icon"></mat-icon>
+    <div
+      class="box absolute"
+      fxLayout="row"
+      fxLayoutAlign="space-around center"
+      fxFlex="60"
+    >
+      <button
+        *ngFor="let ability of abilities; let i = index"
+        mat-icon-button
+        fxFlex="22"
+        class="abilities"
+        (click)="activate(i)"
+      >
+        <mat-icon [svgIcon]="ability.icon"></mat-icon>
+      </button>
+    </div>
+  </article>
+  <aside
+    *ngIf="activeAbility as ability"
+    fxFlex="32"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
+    <section
+      fxFlexLayoutGap="10"
+      fxFlex="20"
+      fxFlexFill
+      fxLayoutAlign="center center"
+    >
+      <mat-icon id="title-icon" [svgIcon]="ability.icon"></mat-icon>
+    </section>
+    <textarea fxFlex readonly wrap="hard" rows="3" cols="25">{{
+      ability.definition
+    }}</textarea>
+  </aside>
+</main>

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { resetStores } from '@datorama/akita';
 import { SpeciesService } from 'src/app/board/species/_state';
@@ -11,12 +13,44 @@ import { GameService } from '../_state/game.service';
   styleUrls: ['./homepage.component.scss'],
 })
 export class HomepageComponent implements OnInit {
+  public menu = [
+    {
+      cta: 'Partie rapide',
+      func: this.playNow(),
+    },
+    {
+      cta: 'Invitez un joueur',
+      func: this.playNow(),
+    },
+    {
+      cta: 'Règles & tuto',
+      func: this.playNow(),
+    },
+    {
+      cta: 'Compte',
+      func: this.playNow(),
+    },
+    {
+      cta: 'Quittez',
+      func: this.playNow(),
+    },
+  ];
+
   constructor(
     private router: Router,
     private gameService: GameService,
     private speciesService: SpeciesService,
-    private tileService: TileService
-  ) {}
+    private tileService: TileService,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
+  ) {
+    this.matIconRegistry.addSvgIcon(
+      'adaptation',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/adaptation.svg'
+      )
+    );
+  }
 
   ngOnInit(): void {}
 

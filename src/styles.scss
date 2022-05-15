@@ -1,3 +1,5 @@
+$anima-color: #f59c27;
+
 html,
 body {
   margin: 0;
@@ -11,7 +13,26 @@ h3,
 h4,
 p,
 span {
-  font-family: Grandstander, "Helvetica Neue", sans-serif;
+  font-family: "Grandstander", "Helvetica Neue", sans-serif;
+}
+
+h1 {
+  color: $anima-color;
+  font-size: calc(2rem + 6vmin);
+  margin: 0;
+}
+
+h2 {
+  color: white;
+  font-size: calc(1rem + 1.5vmin);
+}
+
+p,
+textarea {
+  color: $anima-color;
+  font-size: calc(1rem + 1vmin);
+  font-weight: 600;
+  line-height: 16px;
 }
 
 .relative {
@@ -20,4 +41,45 @@ span {
 
 .absolute {
   position: absolute;
+}
+
+.orange {
+  background-color: $anima-color;
+}
+
+.custom-container .mat-dialog-container {
+  border: 4px $anima-color solid;
+  border-radius: 0px;
+}
+
+.no-padding-bottom .mat-dialog-container {
+  padding: 24px 24px 0px 24px;
+}
+
+.cdk-overlay-pane.custom-container {
+  position: relative !important;
+}
+
+.nav-button {
+  background-color: #2984a0;
+  border-left: 20px #2984a0 solid;
+  border-right: 20px #2984a0 solid;
+  border-top: none;
+  border-bottom: none;
+  border-radius: 30px;
+  white-space: nowrap;
+}
+
+#close-button {
+  position: absolute;
+  top: 0;
+  right: 50%;
+  transform: translate(50%, -50%);
+}
+
+#close-icon {
+  font-size: calc(2rem + 6vmin);
+  width: calc(2rem + 6vmin);
+  height: calc(2rem + 6vmin);
+  line-height: calc(2rem + 6vmin);
 }
