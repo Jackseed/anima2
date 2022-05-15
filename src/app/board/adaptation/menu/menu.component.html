@@ -1,10 +1,10 @@
 <div fxFlexFill>
-  <div class="text-box">
+  <header class="text-box">
     <h2>Choisissez un <br />nouveau trait</h2>
-  </div>
-  <div class="main">
-    <div class="container">
-      <div [ngClass]="{ parentGlow: abilities[0].isActive }">
+  </header>
+  <main>
+    <section>
+      <article [ngClass]="{ parentGlow: abilities[0].isActive }">
         <button
           class="hex"
           mat-button
@@ -16,7 +16,7 @@
           <div class="species" style="--img: url(/assets/vol.png)"></div>
           <h3>{{ abilities[0].name }}</h3>
         </button>
-      </div>
+      </article>
       <span [ngClass]="{ parentGlow: abilities[1].isActive }">
         <button
           class="hex"
@@ -39,13 +39,11 @@
           <h3>{{ abilities[2].name }}</h3>
         </button>
       </span>
-    </div>
-  </div>
-  <div *ngFor="let ability of abilities">
-    <div *ngIf="ability.isActive" class="definition-box">
-      <textarea readonly wrap="hard" rows="3" cols="25">{{
-        ability.definition
-      }}</textarea>
-    </div>
-  </div>
+    </section>
+  </main>
+  <aside *ngIf="activeAbility as ability" class="definition-box">
+    <textarea readonly wrap="hard" rows="3" cols="25">{{
+      ability.definition
+    }}</textarea>
+  </aside>
 </div>

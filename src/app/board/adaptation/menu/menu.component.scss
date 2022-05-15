@@ -11,7 +11,7 @@
   align-items: center;
 }
 
-.main {
+main {
   --s: 30vw;
   --m: 1.5vw;
   --r: calc(var(--s) * 3 * 1.1547 / 2 + 4 * var(--m) - 2px);
@@ -37,7 +37,7 @@ button {
   margin-left: 0px !important;
 }
 
-.container::before {
+section::before {
   content: "";
   width: calc(var(--s) / 2 + var(--m));
   float: left;

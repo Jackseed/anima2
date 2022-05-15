@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnInit {
-  abilities = [
+  public abilities = [
     {
       name: 'Intimidation',
       img: '/assets/vol.png',
@@ -27,15 +27,13 @@ export class MenuComponent implements OnInit {
       isActive: false,
     },
   ];
+  public activeAbility: Object = {};
+
   constructor() {}
 
   ngOnInit(): void {}
 
   public activate(i: number) {
-    for (let j = 0; j < 3; j++) {
-      j === i
-        ? (this.abilities[i].isActive = true)
-        : (this.abilities[j].isActive = false);
-    }
+    this.activeAbility = this.abilities[i];
   }
 }
