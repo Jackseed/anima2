@@ -2,7 +2,7 @@
   <header class="text-box" fxFlex>
     <h2>Choisissez un <br />nouveau trait</h2>
   </header>
-  <main fxFlexFill fxFlex="35" fxLayout="row" fxLayoutAlign="center center">
+  <main fxFlexFill fxFlex="30" fxLayout="row" fxLayoutAlign="center center">
     <article fxFlex="45" [ngClass]="{ parentGlow: abilities[0].isActive }">
       <button
         class="hex"
@@ -33,5 +33,6 @@
       ability.definition
     }}</textarea>
   </aside>
-  <footer fxFlex="10"></footer>
+  <div fxFlex="9"></div>
+  <footer fxFlexFill fxFlex="1" class="orange"></footer>
 </div>
