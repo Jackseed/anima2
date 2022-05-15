@@ -1,7 +1,9 @@
+// Angular
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+// Material
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-list',
@@ -23,6 +25,26 @@ export class ListComponent implements OnInit {
       icon: 'specie4',
     },
   ];
+  public abilities = [
+    {
+      name: 'Intimidation',
+      img: '/assets/vol.png',
+      definition:
+        'À la fin une colonisation, peut déplacer 1 pion adverse se trouvant sur sa case d’1 case.',
+    },
+    {
+      name: 'Gigantisme',
+      img: '/assets/vol.png',
+      definition: 'yi',
+    },
+    {
+      name: 'Vol',
+      img: '/assets/vol.png',
+      definition: 'yu',
+    },
+  ];
+  public activeAbility: Object = {};
+
   constructor(
     public dialogRef: MatDialogRef<ListComponent>,
     private matIconRegistry: MatIconRegistry,
@@ -86,6 +108,10 @@ export class ListComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  public activate(i: number) {
+    this.activeAbility = this.abilities[i];
+  }
 
   public close() {
     this.dialogRef.close();

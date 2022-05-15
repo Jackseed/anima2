@@ -17,16 +17,35 @@
       fxLayoutAlign="space-around center"
       fxFlex="60"
     >
-      <button mat-icon-button fxFlex="22" class="abilities">
+      <button
+        mat-icon-button
+        fxFlex="22"
+        class="abilities"
+        (click)="activate(0)"
+      >
         <mat-icon svgIcon="ability-1"></mat-icon>
       </button>
-      <button mat-icon-button fxFlex="22" class="abilities">
+      <button
+        mat-icon-button
+        fxFlex="22"
+        class="abilities"
+        (click)="activate(1)"
+      >
         <mat-icon svgIcon="ability-4"></mat-icon>
       </button>
-      <button mat-icon-button fxFlex="22" class="abilities">
+      <button
+        mat-icon-button
+        fxFlex="22"
+        class="abilities"
+        (click)="activate(2)"
+      >
         <mat-icon svgIcon="ability-3"></mat-icon>
       </button>
     </div>
   </article>
-  <aside fxFlex="32" fxFlexFill></aside>
+  <aside *ngIf="activeAbility as ability" fxFlex="32" fxFlexFill>
+    <textarea readonly wrap="hard" rows="3" cols="25">{{
+      ability.definition
+    }}</textarea>
+  </aside>
 </main>
