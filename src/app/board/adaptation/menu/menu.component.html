@@ -28,15 +28,19 @@
       </button>
     </article>
   </main>
-  <aside class="relative" fxFlex="35" *ngIf="activeAbility as ability">
+  <aside class="relative" fxFlex="35">
     <textarea readonly wrap="hard" rows="3" cols="25">{{
-      ability.definition
+      activeAbility.definition
     }}</textarea>
-    <button *ngIf="!activeAbility" mat-icon-button id="validate-button">
+    <button
+      *ngIf="activeAbility.name === 'default'"
+      mat-icon-button
+      id="validate-button"
+    >
       <mat-icon id="validate-icon" svgIcon="blank"></mat-icon>
     </button>
     <button
-      *ngIf="activeAbility"
+      *ngIf="!(activeAbility.name === 'default')"
       mat-icon-button
       id="validate-button"
       (click)="close()"

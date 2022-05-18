@@ -32,7 +32,17 @@ export class MenuComponent implements OnInit {
       isActive: false,
     },
   ];
-  public activeAbility: Object = {};
+  public activeAbility: {
+    name: string;
+    img: string;
+    definition: string;
+    isActive: boolean;
+  } = {
+    name: 'default',
+    img: '',
+    definition: '',
+    isActive: true,
+  };
 
   constructor(
     public dialogRef: MatDialogRef<MenuComponent>,
@@ -53,7 +63,9 @@ export class MenuComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log(this.activeAbility.name === 'default');
+  }
 
   public activate(i: number) {
     this.activeAbility = this.abilities[i];
@@ -65,7 +77,6 @@ export class MenuComponent implements OnInit {
   }
 
   public close() {
-    this.activeAbility = {};
     this.dialogRef.close();
   }
 }
