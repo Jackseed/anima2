@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 // Material
 import { MatIconRegistry } from '@angular/material/icon';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-menu',
@@ -34,6 +35,7 @@ export class MenuComponent implements OnInit {
   public activeAbility: Object = {};
 
   constructor(
+    public dialogRef: MatDialogRef<MenuComponent>,
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer
   ) {
@@ -60,5 +62,10 @@ export class MenuComponent implements OnInit {
         ? (this.abilities[i].isActive = true)
         : (this.abilities[j].isActive = false);
     }
+  }
+
+  public close() {
+    this.activeAbility = {};
+    this.dialogRef.close();
   }
 }

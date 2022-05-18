@@ -32,8 +32,16 @@
     <textarea readonly wrap="hard" rows="3" cols="25">{{
       ability.definition
     }}</textarea>
-    <button mat-icon-button id="validate-button">
+    <button *ngIf="!activeAbility" mat-icon-button id="validate-button">
       <mat-icon id="validate-icon" svgIcon="blank"></mat-icon>
+    </button>
+    <button
+      *ngIf="activeAbility"
+      mat-icon-button
+      id="validate-button"
+      (click)="close()"
+    >
+      <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>
     </button>
   </aside>
   <div fxFlex="9"></div>
