@@ -6,6 +6,8 @@ import { MenuComponent } from '../adaptation/menu/menu.component';
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
+import { TileQuery } from '../tiles/_state';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-footer',
@@ -13,10 +15,12 @@ import { MatIconRegistry } from '@angular/material/icon';
   styleUrls: ['./footer.component.scss'],
 })
 export class FooterComponent implements OnInit {
+  isTileActive$: Observable<boolean> = of(false);
   constructor(
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private tileQuery: TileQuery
   ) {
     this.matIconRegistry.addSvgIcon(
       'migrate',
@@ -68,7 +72,10 @@ export class FooterComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
+    this.isTileActive$.subscribe(console.log);
+  }
 
   public openDialog(): void {
     const dialogRef = this.dialog.open(MenuComponent, {

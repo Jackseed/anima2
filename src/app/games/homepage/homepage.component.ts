@@ -16,23 +16,23 @@ export class HomepageComponent implements OnInit {
   public menu = [
     {
       cta: 'Partie rapide',
-      func: this.playNow(),
+      //func: this.playNow(),
     },
     {
       cta: 'Invitez un joueur',
-      func: this.playNow(),
+      //func: this.playNow(),
     },
     {
       cta: 'Règles & tuto',
-      func: this.playNow(),
+      //func: this.playNow(),
     },
     {
       cta: 'Compte',
-      func: this.playNow(),
+      //func: this.playNow(),
     },
     {
       cta: 'Quittez',
-      func: this.playNow(),
+      //func: this.playNow(),
     },
   ];
 
@@ -47,7 +47,7 @@ export class HomepageComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'adaptation',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/adaptation.svg'
+        '../../../assets/action-buttons/adaptation.svg'
       )
     );
   }
