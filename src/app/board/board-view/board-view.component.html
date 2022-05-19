@@ -37,52 +37,63 @@
       </li>
     </mat-card-content>
   </mat-card> -->
+    <!------------ MAP -------------->
     <div class="no-font">
-      <div
+      <!------------ TILE -------------->
+      <article
         *ngFor="let tile of tiles$ | async; let i = index"
-        [ngClass]="{
-          blank: tile.type === 'blank',
-          island: tile.type === 'island',
-          mountains: tile.type === 'mountains',
-          rockies: tile.type === 'rockies',
-          plains: tile.type === 'plains',
-          swamps: tile.type === 'swamps',
-          forest: tile.type === 'forest',
-          selected: isActive(tile.id),
-          reachable: tile?.isReachable
-        }"
         class="hex relative"
+        [ngClass]="{
+          parentSelected: isActive(tile.id)
+        }"
         (click)="play(i)"
       >
         <div
-          fxFlexFill
-          class="absolute"
-          *ngIf="tile.species.length > 0"
+          class="hex"
           [ngClass]="{
-            grid1: tile.species.length === 1,
-            grid2: tile.species.length === 2,
-            grid3: tile.species.length === 3,
-            grid4: tile.species.length === 4,
-            grid5: tile.species.length === 5,
-            grid6: tile.species.length === 6,
-            grid7: tile.species.length === 7
+            blank: tile.type === 'blank',
+            island: tile.type === 'island',
+            mountains: tile.type === 'mountains',
+            rockies: tile.type === 'rockies',
+            plains: tile.type === 'plains',
+            swamps: tile.type === 'swamps',
+            forest: tile.type === 'forest',
+            selected: isActive(tile.id),
+            reachable: tile?.isReachable
           }"
         >
+          <!------------ TILE GRID -------------->
           <div
-            *ngFor="let species of tile.species; let i = index"
-            class="tiles tile-container{{ i }}"
+            fxFlexFill
+            class="absolute"
+            *ngIf="tile.species.length > 0"
+            [ngClass]="{
+              grid1: tile.species.length === 1,
+              grid2: tile.species.length === 2,
+              grid3: tile.species.length === 3,
+              grid4: tile.species.length === 4,
+              grid5: tile.species.length === 5,
+              grid6: tile.species.length === 6,
+              grid7: tile.species.length === 7
+            }"
           >
+            <!------------ SPECIES -------------->
             <div
-              class="species tile{{ i }}"
-              style="--img: url({{ getSpeciesImgUrl(species.id) }});"
+              *ngFor="let species of tile.species; let i = index"
+              class="tiles tile-container{{ i }}"
             >
-              <div class="species-quantity">
-                {{ species.quantity }}
+              <div
+                class="species tile{{ i }}"
+                style="--img: url({{ getSpeciesImgUrl(species.id) }});"
+              >
+                <div class="species-quantity">
+                  {{ species.quantity }}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </article>
     </div>
   </main>
 </pinch-zoom>

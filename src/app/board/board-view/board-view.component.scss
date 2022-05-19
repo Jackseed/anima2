@@ -15,6 +15,7 @@ main {
   --s: 7.4vw; /* size of a hexagon */
   --m: 0.3vw; /* space between each heaxgon */
   --r: calc(var(--s) * 3 * 1.1547 / 2 + 4 * var(--m) - 2px);
+  --border: 2px;
   display: flex;
 }
 
@@ -75,9 +76,21 @@ footer {
   flex-direction: column;
 }
 
+.parent {
+  //overflow: overlay;
+  filter: drop-shadow(9px 5px 10px #ff9100);
+}
+.parentSelected {
+  filter: drop-shadow(0.35rem 0.35rem 0.4rem rgba(0, 0, 0, 0.5));
+  //background: orange;
+}
+
 .selected {
-  filter: brightness(100%);
-  animation: blinker 1.5s linear infinite;
+  box-sizing: border-box;
+  //filter: brightness(100%);
+  //border: 0.1rem solid #f59c27;
+  background-color: #f59c27;
+  // animation: blinker 1.5s linear infinite;
 }
 @keyframes blinker {
   50% {
