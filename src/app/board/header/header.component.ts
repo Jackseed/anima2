@@ -21,19 +21,19 @@ export class HeaderComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'active-specie',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/active-specie.svg'
+        '../../../assets/menu-buttons/active-specie.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'strategic-view',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/strategic-view.svg'
+        '../../../assets/menu-buttons/strategic-view.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'menu-button',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/close-button.svg'
+        '../../../assets/menu-buttons/close-button.svg'
       )
     );
   }

@@ -52,20 +52,18 @@ export class MenuComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'blank',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/blank-button.svg'
+        '../../../assets/menu-buttons/blank-button.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'validate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/validate-button.svg'
+        '../../../assets/menu-buttons/validate-button.svg'
       )
     );
   }
 
-  ngOnInit(): void {
-    console.log(this.activeAbility.name === 'default');
-  }
+  ngOnInit(): void {}
 
   public activate(i: number) {
     this.activeAbility = this.abilities[i];

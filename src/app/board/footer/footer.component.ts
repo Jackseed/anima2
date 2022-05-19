@@ -21,49 +21,49 @@ export class FooterComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'migrate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/migrate.svg'
+        '../../../assets/action-buttons/migrate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'migrate-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/migrate-disable.svg'
+        '../../../assets/action-buttons/migrate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'assimilate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/assimilate.svg'
+        '../../../assets/action-buttons/assimilate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'assimilate-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/assimilate-disable.svg'
+        '../../../assets/action-buttons/assimilate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'proliferate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/proliferate.svg'
+        '../../../assets/action-buttons/proliferate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'proliferate-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/proliferate-disable.svg'
+        '../../../assets/action-buttons/proliferate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'adaptation',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/adaptation.svg'
+        '../../../assets/action-buttons/adaptation.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'adaptation-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/adaptation-disable.svg'
+        '../../../assets/action-buttons/adaptation-disable.svg'
       )
     );
   }
