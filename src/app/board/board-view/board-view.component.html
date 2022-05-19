@@ -44,51 +44,44 @@
         *ngFor="let tile of tiles$ | async; let i = index"
         class="hex relative"
         [ngClass]="{
-          parentSelected: isActive(tile.id)
+          blank: tile.type === 'blank',
+          island: tile.type === 'island',
+          mountains: tile.type === 'mountains',
+          rockies: tile.type === 'rockies',
+          plains: tile.type === 'plains',
+          swamps: tile.type === 'swamps',
+          forest: tile.type === 'forest',
+          selected: isActive(tile.id),
+          reachable: tile?.isReachable
         }"
         (click)="play(i)"
       >
+        <!------------ TILE GRID -------------->
         <div
-          class="hex"
+          fxFlexFill
+          class="absolute"
+          *ngIf="tile.species.length > 0"
           [ngClass]="{
-            blank: tile.type === 'blank',
-            island: tile.type === 'island',
-            mountains: tile.type === 'mountains',
-            rockies: tile.type === 'rockies',
-            plains: tile.type === 'plains',
-            swamps: tile.type === 'swamps',
-            forest: tile.type === 'forest',
-            selected: isActive(tile.id),
-            reachable: tile?.isReachable
+            grid1: tile.species.length === 1,
+            grid2: tile.species.length === 2,
+            grid3: tile.species.length === 3,
+            grid4: tile.species.length === 4,
+            grid5: tile.species.length === 5,
+            grid6: tile.species.length === 6,
+            grid7: tile.species.length === 7
           }"
         >
-          <!------------ TILE GRID -------------->
+          <!------------ SPECIES -------------->
           <div
-            fxFlexFill
-            class="absolute"
-            *ngIf="tile.species.length > 0"
-            [ngClass]="{
-              grid1: tile.species.length === 1,
-              grid2: tile.species.length === 2,
-              grid3: tile.species.length === 3,
-              grid4: tile.species.length === 4,
-              grid5: tile.species.length === 5,
-              grid6: tile.species.length === 6,
-              grid7: tile.species.length === 7
-            }"
+            *ngFor="let species of tile.species; let i = index"
+            class="tiles tile-container{{ i }}"
           >
-            <!------------ SPECIES -------------->
             <div
-              *ngFor="let species of tile.species; let i = index"
-              class="tiles tile-container{{ i }}"
+              class="species tile{{ i }}"
+              style="--img: url({{ getSpeciesImgUrl(species.id) }});"
             >
-              <div
-                class="species tile{{ i }}"
-                style="--img: url({{ getSpeciesImgUrl(species.id) }});"
-              >
-                <div class="species-quantity">
-                  {{ species.quantity }}
-                </div>
+              <div class="species-quantity">
+                {{ species.quantity }}
               </div>
             </div>
           </div>
