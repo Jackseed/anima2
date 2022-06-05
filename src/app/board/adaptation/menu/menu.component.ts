@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 // Material
 import { MatIconRegistry } from '@angular/material/icon';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-menu',
@@ -47,7 +48,8 @@ export class MenuComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<MenuComponent>,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private snackbar: MatSnackBar
   ) {
     this.matIconRegistry.addSvgIcon(
       'blank',
@@ -76,5 +78,9 @@ export class MenuComponent implements OnInit {
 
   public close() {
     this.dialogRef.close();
+    this.snackbar.open('"Intimidation" obtenue !', null, {
+      duration: 800,
+      panelClass: 'orange-snackbar',
+    });
   }
 }

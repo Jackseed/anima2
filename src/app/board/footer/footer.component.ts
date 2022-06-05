@@ -15,7 +15,7 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./footer.component.scss'],
 })
 export class FooterComponent implements OnInit {
-  isTileActive$: Observable<boolean> = of(false);
+  isTileActive$: Observable<boolean>;
   constructor(
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
@@ -74,7 +74,6 @@ export class FooterComponent implements OnInit {
 
   ngOnInit(): void {
     this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
-    this.isTileActive$.subscribe(console.log);
   }
 
   public openDialog(): void {
