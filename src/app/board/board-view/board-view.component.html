@@ -37,9 +37,12 @@
       </li>
     </mat-card-content>
   </mat-card> -->
+    <!------------ MAP -------------->
     <div class="no-font">
-      <div
+      <!------------ TILE -------------->
+      <article
         *ngFor="let tile of tiles$ | async; let i = index"
+        class="hex relative"
         [ngClass]="{
           blank: tile.type === 'blank',
           island: tile.type === 'island',
@@ -51,9 +54,9 @@
           selected: isActive(tile.id),
           reachable: tile?.isReachable
         }"
-        class="hex relative"
         (click)="play(i)"
       >
+        <!------------ TILE GRID -------------->
         <div
           fxFlexFill
           class="absolute"
@@ -68,6 +71,7 @@
             grid7: tile.species.length === 7
           }"
         >
+          <!------------ SPECIES -------------->
           <div
             *ngFor="let species of tile.species; let i = index"
             class="tiles tile-container{{ i }}"
@@ -82,7 +86,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </article>
     </div>
   </main>
 </pinch-zoom>

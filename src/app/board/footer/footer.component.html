@@ -1,5 +1,6 @@
 <div fxFlexFill fxLayout="column" fxLayoutAlign="start center">
-  <div
+  <section
+    *ngIf="isTileActive$ | async; else inactive"
     class="text-box"
     fxFlexFill
     fxFlex="95"
@@ -18,6 +19,28 @@
     <button mat-icon-button (click)="openDialog()">
       <mat-icon svgIcon="adaptation"></mat-icon>
     </button>
-  </div>
-  <div fxFlexFill fxFlex="5" class="orange"></div>
+  </section>
+  <ng-template #inactive>
+    <section
+      class="text-box"
+      fxFlexFill
+      fxFlex="95"
+      fxLayout="row"
+      fxLayoutAlign="space-between center"
+    >
+      <button mat-icon-button>
+        <mat-icon svgIcon="migrate-disable"></mat-icon>
+      </button>
+      <button mat-icon-button>
+        <mat-icon svgIcon="assimilate-disable"></mat-icon>
+      </button>
+      <button mat-icon-button>
+        <mat-icon svgIcon="proliferate-disable"></mat-icon>
+      </button>
+      <button mat-icon-button (click)="openDialog()">
+        <mat-icon svgIcon="adaptation-disable"></mat-icon>
+      </button>
+    </section>
+  </ng-template>
+  <aside fxFlexFill fxFlex="5" class="orange"></aside>
 </div>

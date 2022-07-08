@@ -53,7 +53,7 @@ export class ListComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'close',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/close-button.svg'
+        '../../../assets/menu-buttons/close-button.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -84,25 +84,25 @@ export class ListComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'ability-1',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/ability_1.svg'
+        '../../../../assets/menu-buttons/ability_1.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'ability-2',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/ability-2.svg'
+        '../../../../assets/menu-buttons/ability-2.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'ability-3',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/ability-3.svg'
+        '../../../../assets/menu-buttons/ability-3.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'ability-4',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/ability-4.svg'
+        '../../../../assets/menu-buttons/ability-4.svg'
       )
     );
   }

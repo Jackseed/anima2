@@ -1,51 +1,53 @@
-<div fxFlexFill>
-  <div class="text-box">
+<div fxFlexFill fxLayout="column" fxLayoutAlign="center center">
+  <header class="text-box" fxFlex>
     <h2>Choisissez un <br />nouveau trait</h2>
-  </div>
-  <div class="main">
-    <div class="container">
-      <div [ngClass]="{ parentGlow: abilities[0].isActive }">
-        <button
-          class="hex"
-          mat-button
-          fxLayout="row"
-          fxLayoutAlign="center center"
-          (click)="activate(0)"
-          [ngClass]="{ glow: abilities[0].isActive }"
-        >
-          <div class="species" style="--img: url(/assets/vol.png)"></div>
-          <h3>{{ abilities[0].name }}</h3>
-        </button>
-      </div>
-      <span [ngClass]="{ parentGlow: abilities[1].isActive }">
-        <button
-          class="hex"
-          mat-button
-          (click)="activate(1)"
-          [ngClass]="{ glow: abilities[1].isActive }"
-        >
-          <div class="species" style="--img: url(/assets/vol.png)"></div>
-          <h3>{{ abilities[1].name }}</h3>
-        </button>
-      </span>
-      <span [ngClass]="{ parentGlow: abilities[2].isActive }">
-        <button
-          class="hex"
-          mat-button
-          (click)="activate(2)"
-          [ngClass]="{ glow: abilities[2].isActive }"
-        >
-          <div class="species" style="--img: url(/assets/vol.png)"></div>
-          <h3>{{ abilities[2].name }}</h3>
-        </button>
-      </span>
-    </div>
-  </div>
-  <div *ngFor="let ability of abilities">
-    <div *ngIf="ability.isActive" class="definition-box">
-      <textarea readonly wrap="hard" rows="3" cols="25">{{
-        ability.definition
-      }}</textarea>
-    </div>
-  </div>
+  </header>
+  <main fxFlexFill fxFlex="30" fxLayout="row" fxLayoutAlign="center center">
+    <article fxFlex="45" [ngClass]="{ parentGlow: abilities[0].isActive }">
+      <button
+        class="hex"
+        mat-button
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        (click)="activate(0)"
+        [ngClass]="{ glow: abilities[0].isActive }"
+      >
+        <div class="species" style="--img: url(/assets/vol.png)"></div>
+        <h3>{{ abilities[0].name }}</h3>
+      </button>
+    </article>
+    <article fxFlex="45" [ngClass]="{ parentGlow: abilities[1].isActive }">
+      <button
+        class="hex"
+        mat-button
+        (click)="activate(1)"
+        [ngClass]="{ glow: abilities[1].isActive }"
+      >
+        <div class="species" style="--img: url(/assets/vol.png)"></div>
+        <h3>{{ abilities[1].name }}</h3>
+      </button>
+    </article>
+  </main>
+  <aside class="relative" fxFlex="35">
+    <textarea readonly wrap="hard" rows="3" cols="25">{{
+      activeAbility.definition
+    }}</textarea>
+    <button
+      *ngIf="activeAbility.name === 'default'"
+      mat-icon-button
+      id="validate-button"
+    >
+      <mat-icon id="validate-icon" svgIcon="blank"></mat-icon>
+    </button>
+    <button
+      *ngIf="!(activeAbility.name === 'default')"
+      mat-icon-button
+      id="validate-button"
+      (click)="close()"
+    >
+      <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>
+    </button>
+  </aside>
+  <div fxFlex="9"></div>
+  <footer fxFlexFill fxFlex="1" class="orange"></footer>
 </div>

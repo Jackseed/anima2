@@ -1,18 +1,17 @@
 .text-box {
-  width: 100%;
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
+  height: 50%;
+  width: 80%;
   line-height: 25px;
   background-color: #2984a0;
-  margin-bottom: 15%;
+  margin-top: 10%;
+  margin-bottom: 5%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.main {
-  --s: 30vw;
+main {
+  --s: 42vw;
   --m: 1.5vw;
   --r: calc(var(--s) * 3 * 1.1547 / 2 + 4 * var(--m) - 2px);
   display: flex;
@@ -21,46 +20,20 @@
 .hex {
   width: var(--s);
   height: calc(var(--s) * 1.1547);
-  margin: var(--m);
-  display: inline-block;
   clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-  margin-bottom: calc(var(--m) - var(--s) * 0.2885);
   background-image: url("/assets/hexa-menu.png");
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  padding: 0;
-}
-
-button {
-  margin-top: 0px !important;
-  margin-left: 0px !important;
-}
-
-.container::before {
-  content: "";
-  width: calc(var(--s) / 2 + var(--m));
-  float: left;
-  height: 100%;
-  shape-outside: repeating-linear-gradient(
-    transparent 0 calc(var(--r) - 3px),
-    #fff 0 var(--r)
-  );
 }
 
 .parentGlow {
-  filter: drop-shadow(0.35rem 0.35rem 0.4rem #f59c27);
+  filter: drop-shadow(0 0 1rem #f59c27);
 }
 
 .glow {
-  border: solid #f59c27;
+  border: 0.1rem solid #f59c27;
   background-color: #f59c27;
-}
-
-h3 {
-  color: white;
-  margin: 0;
-  font-size: 14px;
 }
 
 .species {
@@ -68,32 +41,31 @@ h3 {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  height: 50px;
-  margin: 0;
+  height: calc(1rem + 7vh);
 }
 
-.definition-box {
+aside {
   min-height: 80px;
   height: 20%;
-  margin-top: 25%;
+  margin-top: 5%;
   background-color: white;
-  border: solid #f59c27;
+  border: 6px #f59c27 solid;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-textarea {
-  font: 14px "Grandstander";
-  font-weight: 600;
-  line-height: 15px;
-  color: #f59c27;
-  text-align: center;
-  border: none;
-  background-color: transparent;
-  resize: none;
-  outline: none;
-  border-radius: 0;
-  height: 90%;
-  width: 90%;
+#validate-button {
+  position: absolute;
+  bottom: 0;
+  transform: translate(0%, 50%);
+  height: calc(2rem + 10vh);
+  width: calc(2rem + 10vh);
+}
+
+#validate-icon {
+  font-size: calc(2rem + 10vh);
+  width: calc(2rem + 10vh);
+  height: calc(2rem + 10vh);
+  line-height: calc(2rem + 10vh);
 }

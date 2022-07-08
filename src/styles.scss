@@ -27,12 +27,29 @@ h2 {
   font-size: calc(1rem + 1.5vmin);
 }
 
+h3 {
+  color: white;
+  margin: 0;
+  font-size: calc(0.8rem + 0.5vmin);
+}
+
 p,
 textarea {
   color: $anima-color;
   font-size: calc(1rem + 1vmin);
   font-weight: 600;
   line-height: 16px;
+}
+
+textarea {
+  text-align: center;
+  border: none;
+  background-color: transparent;
+  resize: none;
+  outline: none;
+  border-radius: 0;
+  height: 90%;
+  width: 90%;
 }
 
 .relative {
@@ -56,6 +73,19 @@ textarea {
   padding: 24px 24px 0px 24px;
 }
 
+.transparent-menu .mat-dialog-container {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.cdk-overlay-pane.transparent-menu {
+  max-width: 100% !important;
+}
+
+.transparent-backdrop {
+  background: rgba(255, 255, 255, 0.75);
+}
 .cdk-overlay-pane.custom-container {
   position: relative !important;
 }
@@ -74,7 +104,9 @@ textarea {
   position: absolute;
   top: 0;
   right: 50%;
-  transform: translate(50%, -50%);
+  transform: translate(50%, -40%);
+  width: calc(2rem + 6vmin);
+  height: calc(2rem + 6vmin);
 }
 
 #close-icon {
@@ -82,4 +114,32 @@ textarea {
   width: calc(2rem + 6vmin);
   height: calc(2rem + 6vmin);
   line-height: calc(2rem + 6vmin);
+}
+
+.margin-top-2 {
+  margin-top: 2%;
+}
+
+.orange-snackbar {
+  background: $anima-color;
+  text-align: center;
+  color: white;
+  font-weight: 600;
+  border-radius: 30px !important;
+  width: 200px !important;
+  height: 80px !important;
+  position: absolute;
+  top: 20%;
+  left: 20%;
+}
+
+snack-bar-container > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orange-snackbar .mat-simple-snackbar {
+  font-size: calc(1rem + 1.5vmin);
 }

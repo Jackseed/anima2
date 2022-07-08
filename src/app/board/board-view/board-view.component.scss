@@ -15,6 +15,7 @@ main {
   --s: 7.4vw; /* size of a hexagon */
   --m: 0.3vw; /* space between each heaxgon */
   --r: calc(var(--s) * 3 * 1.1547 / 2 + 4 * var(--m) - 2px);
+  --border: 2px;
   display: flex;
 }
 
@@ -76,13 +77,17 @@ footer {
 }
 
 .selected {
-  filter: brightness(100%);
-  animation: blinker 1.5s linear infinite;
+  background: #f59c27 !important;
 }
-@keyframes blinker {
-  50% {
-    opacity: 0.5;
-  }
+// adds a smaller tile so the older tile acts as a border
+.selected:before {
+  content: "";
+  width: calc(var(--s) - var(--border));
+  height: calc(var(--s) * 1.1547 - var(--border));
+  margin: var(--m);
+  clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+  background: var(--color);
+  position: absolute;
 }
 
 .reachable {
@@ -110,21 +115,28 @@ footer {
   cursor: auto !important;
 }
 .island {
+  --color: #e5e4f1;
   background: #e5e4f1;
 }
 .rockies {
+  --color: #ebeac0;
   background: #ebeac0;
 }
+
 .mountains {
+  --color: #fce2b9;
   background: #fce2b9;
 }
 .forest {
+  --color: #d4e8d7;
   background: #d4e8d7;
 }
 .swamps {
+  --color: #c5e4f2;
   background: #c5e4f2;
 }
 .plains {
+  --color: #f9ec9a;
   background: #f9ec9a;
 }
 /* GRID 1 */
