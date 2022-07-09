@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BoardViewComponent } from './board-view/board-view.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { MenuComponent } from './abilities/menu/menu.component';
+import { AdaptationMenuComponent } from './abilities/menu/adaptation-menu.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ListComponent } from './species/list/list.component';
 // Flex Layout
@@ -25,7 +25,7 @@ import { PinchZoomModule } from 'ngx-pinch-zoom';
     BoardViewComponent,
     FooterComponent,
     HeaderComponent,
-    MenuComponent,
+    AdaptationMenuComponent,
     SettingsComponent,
     ListComponent,
   ],

@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 // Components
-import { MenuComponent } from '../abilities/menu/menu.component';
+import { AdaptationMenuComponent } from '../abilities/menu/adaptation-menu.component';
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
@@ -77,7 +77,7 @@ export class FooterComponent implements OnInit {
   }
 
   public openDialog(): void {
-    const dialogRef = this.dialog.open(MenuComponent, {
+    const dialogRef = this.dialog.open(AdaptationMenuComponent, {
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
       disableClose: true,
