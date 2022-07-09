@@ -143,3 +143,22 @@ snack-bar-container > div {
 .orange-snackbar .mat-simple-snackbar {
   font-size: calc(1rem + 1.5vmin);
 }
+
+.sidebar {
+  background-color: rgba(242, 242, 242, 0.6);
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+
+.text-box {
+  height: 50%;
+  width: 80%;
+  line-height: 25px;
+  background-color: #2984a0;
+  margin-top: 10%;
+  margin-bottom: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
