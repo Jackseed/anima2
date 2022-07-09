@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BoardViewComponent } from './board-view/board-view.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { MenuComponent } from './adaptation/menu/menu.component';
+import { MenuComponent } from './abilities/menu/menu.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ListComponent } from './species/list/list.component';
 // Flex Layout
