@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 // Components
-import { AdaptationMenuComponent } from '../abilities/menu/adaptation-menu.component';
+import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
