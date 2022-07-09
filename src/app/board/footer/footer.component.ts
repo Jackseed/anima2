@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { TileQuery } from '../tiles/_state';
 import { Observable, of } from 'rxjs';
+import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
 
 @Component({
   selector: 'app-footer',
@@ -76,8 +77,12 @@ export class FooterComponent implements OnInit {
     this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
   }
 
-  public openDialog(): void {
-    const dialogRef = this.dialog.open(AdaptationMenuComponent, {
+  public openAbilityMenu(ability: 'assimilation' | 'adaptation'): void {
+    const comp =
+      ability === 'adaptation'
+        ? AdaptationMenuComponent
+        : AssimilationMenuComponent;
+    const dialogRef = this.dialog.open(comp, {
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
       disableClose: true,
