@@ -33,7 +33,7 @@ export class SettingsComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'close',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/close-button.svg'
+        '../../../assets/menu-buttons/close-button.svg'
       )
     );
   }

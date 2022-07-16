@@ -70,7 +70,8 @@ textarea {
 }
 
 .no-padding-bottom .mat-dialog-container {
-  padding: 24px 24px 0px 24px;
+  padding: 12px 12px 0px 12px;
+  overflow: hidden;
 }
 
 .transparent-menu .mat-dialog-container {
@@ -104,7 +105,7 @@ textarea {
   position: absolute;
   top: 0;
   right: 50%;
-  transform: translate(50%, -40%);
+  transform: translate(50%, -50%);
   width: calc(2rem + 6vmin);
   height: calc(2rem + 6vmin);
 }
@@ -149,7 +150,6 @@ snack-bar-container > div {
   padding-left: 5%;
   padding-right: 5%;
 }
-
 
 .text-box {
   height: 50%;

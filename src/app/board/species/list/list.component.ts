@@ -1,8 +1,8 @@
 // Angular
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 // Material
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 
 @Component({
@@ -46,6 +46,7 @@ export class ListComponent implements OnInit {
   public activeAbility: Object = {};
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<ListComponent>,
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer

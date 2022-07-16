@@ -77,16 +77,25 @@ export class FooterComponent implements OnInit {
     this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
   }
 
-  public openAbilityMenu(ability: 'assimilation' | 'adaptation'): void {
-    const comp =
-      ability === 'adaptation'
-        ? AdaptationMenuComponent
-        : AssimilationMenuComponent;
-    const dialogRef = this.dialog.open(comp, {
+  public openAdaptationMenu(): void {
+    this.dialog.open(AdaptationMenuComponent, {
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
       disableClose: true,
       autoFocus: false,
+      height: '100%',
+      width: '100%',
+    });
+  }
+
+  public openAssimilationMenu(): void {
+    this.dialog.open(AssimilationMenuComponent, {
+      data: {
+        comp: 'assimilation',
+      },
+      autoFocus: false,
+      backdropClass: 'transparent-backdrop',
+      panelClass: 'transparent-menu',
       height: '100%',
       width: '100%',
     });

@@ -42,6 +42,9 @@ export class HeaderComponent implements OnInit {
 
   public openSpeciesList(): void {
     const dialogRef = this.dialog.open(ListComponent, {
+      data: {
+        comp: 'list',
+      },
       height: '90%',
       width: '80%',
       panelClass: ['custom-container', 'no-padding-bottom'],

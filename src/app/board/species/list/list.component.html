@@ -6,7 +6,6 @@
     *ngFor="let specie of species"
     fxFlex="17"
     class="relative margin-top-2"
-    fxFlexFill
     fxLayout="row"
     fxLayoutAlign="start center"
   >
@@ -34,6 +33,7 @@
     fxFlexFill
     fxLayout="column"
     fxLayoutAlign="center center"
+    [ngClass]="{ 'no-padding-width': data.comp === 'list' }"
   >
     <section
       fxFlexLayoutGap="10"
