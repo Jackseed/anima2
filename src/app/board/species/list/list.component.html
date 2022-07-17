@@ -16,10 +16,13 @@
       fxLayout="row"
       fxLayoutAlign="center center"
     >
-      <mat-icon
-        class="specie"
-        [svgIcon]="specie.icon"
-      ></mat-icon>
+      <div class="specie relative">
+        <mat-icon fxFlexFill [svgIcon]="specie.icon"></mat-icon>
+        <div class="absolute circle" fxLayoutAlign="center center">
+          <div class="figures">3</div>
+        </div>
+      </div>
+
       <div
         class="box"
         fxLayout="row"
