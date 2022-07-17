@@ -6,6 +6,12 @@ article {
   width: 90%;
 }
 
+.specie {
+  display: flex;
+  height: 100%;
+  width: auto;
+}
+
 .abilities {
   background-image: var(--img);
   background-position: center;
@@ -19,7 +25,6 @@ article {
   border: 3px #f59c27 solid;
   height: 50%;
   width: 100%;
-  margin-left: 39.5%;
 }
 
 aside {
@@ -41,4 +46,8 @@ aside {
   width: calc(var(--s));
   height: calc(var(--s));
   line-height: calc(var(--s));
+}
+
+.margin-top {
+  margin-top: 24px;
 }

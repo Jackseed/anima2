@@ -2,31 +2,42 @@
   <mat-icon id="close-icon" svgIcon="close"></mat-icon>
 </button>
 <main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
-  <article
-    *ngFor="let specie of species"
-    fxFlex="17"
-    class="relative margin-top-2"
-    fxLayout="row"
+  <section
+    fxFlex="68"
+    fxFlexFill
+    fxLayout="column"
     fxLayoutAlign="start center"
+    fxLayoutGap="12px"
+    class="margin-top"
   >
-    <mat-icon fxFlex="40" fxFlexFill [svgIcon]="specie.icon"></mat-icon>
-    <div
-      class="box absolute"
+    <article
+      *ngFor="let specie of species"
+      fxFlex="25"
       fxLayout="row"
-      fxLayoutAlign="space-around center"
-      fxFlex="60"
+      fxLayoutAlign="start center"
     >
-      <button
-        *ngFor="let ability of abilities; let i = index"
-        mat-icon-button
-        fxFlex="22"
-        class="abilities"
-        (click)="activate(i)"
+      <mat-icon
+        class="specie"
+        [svgIcon]="specie.icon"
+      ></mat-icon>
+      <div
+        class="box"
+        fxLayout="row"
+        fxLayoutAlign="space-around center"
+        fxFlex="60"
       >
-        <mat-icon [svgIcon]="ability.icon"></mat-icon>
-      </button>
-    </div>
-  </article>
+        <button
+          *ngFor="let ability of abilities; let i = index"
+          mat-icon-button
+          fxFlex="22"
+          class="abilities"
+          (click)="activate(i)"
+        >
+          <mat-icon [svgIcon]="ability.icon"></mat-icon>
+        </button>
+      </div>
+    </article>
+  </section>
   <aside
     *ngIf="activeAbility as ability"
     fxFlex="32"

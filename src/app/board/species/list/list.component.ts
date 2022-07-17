@@ -12,9 +12,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 })
 export class ListComponent implements OnInit {
   public species = [
-    {
-      icon: 'specie1',
-    },
+ 
     {
       icon: 'specie2',
     },
