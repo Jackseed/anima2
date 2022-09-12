@@ -133,10 +133,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     // checks if a unit is active & tile reachable & migration count > 1
     if (this.tileQuery.hasActive() && tile.isReachable) {
       // MIGRATION
-      // check move limit then colonizes
+      // check move limit then migrates
       if (this.migrationCount) {
         const activeTileId = this.tileQuery.getActiveId();
-        await this.colonize(
+        await this.migrate(
           game,
           activeSpecies.id,
           Number(activeTileId),
@@ -192,7 +192,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       });
   }
 
-  private async colonize(
+  private async migrate(
     game: Game,
     speciesId: string,
     previousTileId: number,

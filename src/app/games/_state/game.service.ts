@@ -63,7 +63,7 @@ export class GameService extends CollectionService<GameState> {
   }
 
   public async switchActionType(
-    actionType: '' | 'newSpecies' | 'proliferate' | 'colonize' | 'newAbility'
+    actionType: '' | 'newSpecies' | 'proliferate' | 'migrate' | 'newAbility'
   ) {
     const id = this.query.getActiveId();
     await this.collection

@@ -8,7 +8,7 @@ export interface Game {
   remainingActions: number;
   eraCount: number;
   turnCount: number;
-  actionType: 'newSpecies' | 'proliferate' | 'colonize' | 'newAbility' | '';
+  actionType: 'newSpecies' | 'proliferate' | 'migrate' | 'newAbility' | '';
   migrationCount: number | firebase.firestore.FieldValue;
 }
 
