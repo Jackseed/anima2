@@ -1,8 +1,8 @@
 <div fxFlexFill fxLayout="column" fxLayoutAlign="center center">
-  <header class="text-box" fxFlex>
+  <header fxFlex="10" class="text-box">
     <h2>Choisissez un <br />nouveau trait</h2>
   </header>
-  <main fxFlexFill fxFlex="30" fxLayout="row" fxLayoutAlign="center center">
+  <main fxFlex="35" fxFlexFill fxLayout="row" fxLayoutAlign="center center">
     <article fxFlex="45" [ngClass]="{ parentGlow: abilities[0].isActive }">
       <button
         class="hex"
@@ -13,7 +13,7 @@
         [ngClass]="{ glow: abilities[0].isActive }"
       >
         <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h3>{{ abilities[0].name }}</h3>
+        <h4>{{ abilities[0].name }}</h4>
       </button>
     </article>
     <article fxFlex="45" [ngClass]="{ parentGlow: abilities[1].isActive }">
@@ -24,11 +24,11 @@
         [ngClass]="{ glow: abilities[1].isActive }"
       >
         <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h3>{{ abilities[1].name }}</h3>
+        <h4>{{ abilities[1].name }}</h4>
       </button>
     </article>
   </main>
-  <aside class="relative" fxFlex="35">
+  <aside fxFlex="40" class="relative">
     <textarea readonly wrap="hard" rows="3" cols="25">{{
       activeAbility.definition
     }}</textarea>
@@ -49,5 +49,5 @@
     </button>
   </aside>
   <div fxFlex="9"></div>
-  <footer fxFlexFill fxFlex="1" class="orange"></footer>
+  <footer fxFlex="1" fxFlexFill class="orange"></footer>
 </div>

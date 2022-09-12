@@ -1,3 +1,17 @@
+main {
+  background-color: white;
+}
+
+article {
+  width: 90%;
+}
+
+.specie {
+  display: flex;
+  height: 100%;
+  width: auto;
+}
+
 .abilities {
   background-image: var(--img);
   background-position: center;
@@ -11,17 +25,19 @@
   border: 3px #f59c27 solid;
   height: 50%;
   width: 100%;
-  margin-left: 39.5%;
 }
 
 aside {
   margin-top: 4%;
   border-top: 4px #f59c27 solid;
-  width: calc(100% + 48px) !important;
   background-image: url("../../../../assets/background-flame.png");
   background-position: center;
   background-size: 25%;
   background-repeat: no-repeat;
+}
+
+.no-padding-width {
+  width: calc(100% + 48px) !important;
 }
 
 #title-icon {
@@ -30,4 +46,30 @@ aside {
   width: calc(var(--s));
   height: calc(var(--s));
   line-height: calc(var(--s));
+}
+
+.margin-top {
+  margin-top: 24px;
+}
+
+.circle {
+  width: 45px;
+  height: 45px;
+  background-color: #f59c27;
+  bottom: 0;
+  right: -20%;
+  border-radius: 50%;
+  border: solid white 3px;
+}
+
+.figures {
+  margin-top: 7px;
+  color: white;
+  font-size: calc(2rem + 1vmin);
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.activeSpecie {
+  box-shadow: 10px 5px 5px red;
 }

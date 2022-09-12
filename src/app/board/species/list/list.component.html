@@ -2,49 +2,103 @@
   <mat-icon id="close-icon" svgIcon="close"></mat-icon>
 </button>
 <main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
-  <article
-    *ngFor="let specie of species"
-    fxFlex="17"
-    class="relative margin-top-2"
-    fxFlexFill
-    fxLayout="row"
-    fxLayoutAlign="start center"
-  >
-    <mat-icon fxFlex="40" fxFlexFill [svgIcon]="specie.icon"></mat-icon>
-    <div
-      class="box absolute"
-      fxLayout="row"
-      fxLayoutAlign="space-around center"
-      fxFlex="60"
-    >
-      <button
-        *ngFor="let ability of abilities; let i = index"
-        mat-icon-button
-        fxFlex="22"
-        class="abilities"
-        (click)="activate(i)"
-      >
-        <mat-icon [svgIcon]="ability.icon"></mat-icon>
-      </button>
-    </div>
-  </article>
-  <aside
-    *ngIf="activeAbility as ability"
-    fxFlex="32"
+  <section
+    fxFlex="68"
     fxFlexFill
     fxLayout="column"
-    fxLayoutAlign="center center"
+    fxLayoutAlign="start center"
+    fxLayoutGap="12px"
+    class="margin-top"
   >
-    <section
-      fxFlexLayoutGap="10"
-      fxFlex="20"
-      fxFlexFill
+    <article
+      *ngFor="let specie of species; index as i"
+      fxFlex="25"
+      fxLayout="row"
       fxLayoutAlign="center center"
     >
-      <mat-icon id="title-icon" [svgIcon]="ability.icon"></mat-icon>
-    </section>
-    <textarea fxFlex readonly wrap="hard" rows="3" cols="25">{{
-      ability.definition
-    }}</textarea>
+      <div class="specie relative">
+        <button
+          fxFlexFill
+          mat-icon-button
+          (click)="activate('specie', i)"
+          [disabled]="this.data.comp === 'passive-list'"
+        >
+          <mat-icon
+            fxFlexFill
+            [svgIcon]="specie.icon"
+            [ngClass]="{ activeSpecie: specie === active }"
+          ></mat-icon>
+        </button>
+        <div class="absolute circle" fxLayoutAlign="center center">
+          <div class="figures">3</div>
+        </div>
+      </div>
+
+      <div
+        class="box"
+        fxLayout="row"
+        fxLayoutAlign="space-around center"
+        fxFlex="60"
+      >
+        <button
+          *ngFor="let ability of abilities; let i = index"
+          mat-icon-button
+          fxFlex="22"
+          class="abilities"
+          (click)="activate('ability', i)"
+        >
+          <mat-icon
+            [svgIcon]="ability.icon"
+            [ngClass]="{ activeSpecie: ability === active }"
+          ></mat-icon>
+        </button>
+      </div>
+    </article>
+  </section>
+  <aside
+    fxFlex="32"
+    fxFlexFill
+    [ngClass]="{ 'no-padding-width': data.comp === 'passive-list' }"
+  >
+    <!----------------------ACTIVE ABILITY ONLY ---------------------->
+    <div
+      *ngIf="active.type! === 'ability'; else specie"
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      fxFlexFill
+    >
+      <h3
+        fxFlexLayoutGap="10"
+        fxFlex="20"
+        fxFlexFill
+        fxLayoutAlign="center center"
+      >
+        <mat-icon id="title-icon" [svgIcon]="active.icon"></mat-icon>
+      </h3>
+      <textarea fxFlex readonly wrap="hard" rows="3" cols="25">{{
+        active.definition
+      }}</textarea>
+    </div>
+    <!----------------------ACTIVE SPECIE ONLY ---------------------->
+    <ng-template #specie>
+      <div
+        *ngIf="active.type! === 'specie'"
+        fxLayout="column"
+        fxLayoutAlign="center center"
+        fxFlexFill
+      >
+        <h3
+          fxFlexLayoutGap="10"
+          fxFlex="40"
+          fxFlexFill
+          fxLayoutAlign="center start"
+        >
+          Assimiler cette espèce ?
+        </h3>
+        <button mat-icon-button id="validate-button" (click)="close()">
+          <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>
+        </button>
+      </div>
+    </ng-template>
   </aside>
 </main>

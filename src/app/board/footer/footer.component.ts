@@ -2,12 +2,13 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 // Components
-import { MenuComponent } from '../adaptation/menu/menu.component';
+import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { TileQuery } from '../tiles/_state';
 import { Observable, of } from 'rxjs';
+import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
 
 @Component({
   selector: 'app-footer',
@@ -76,12 +77,25 @@ export class FooterComponent implements OnInit {
     this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
   }
 
-  public openDialog(): void {
-    const dialogRef = this.dialog.open(MenuComponent, {
+  public openAdaptationMenu(): void {
+    this.dialog.open(AdaptationMenuComponent, {
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
       disableClose: true,
       autoFocus: false,
+      height: '100%',
+      width: '100%',
+    });
+  }
+
+  public openAssimilationMenu(): void {
+    this.dialog.open(AssimilationMenuComponent, {
+      data: {
+        comp: 'assimilation',
+      },
+      autoFocus: false,
+      backdropClass: 'transparent-backdrop',
+      panelClass: 'transparent-menu',
       height: '100%',
       width: '100%',
     });

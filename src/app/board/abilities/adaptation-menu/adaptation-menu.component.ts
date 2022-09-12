@@ -8,10 +8,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-menu',
-  templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss'],
+  templateUrl: './adaptation-menu.component.html',
+  styleUrls: ['./adaptation-menu.component.scss'],
 })
-export class MenuComponent implements OnInit {
+export class AdaptationMenuComponent implements OnInit {
   public abilities = [
     {
       name: 'Intimidation',
@@ -46,7 +46,7 @@ export class MenuComponent implements OnInit {
   };
 
   constructor(
-    public dialogRef: MatDialogRef<MenuComponent>,
+    public dialogRef: MatDialogRef<AdaptationMenuComponent>,
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     private snackbar: MatSnackBar

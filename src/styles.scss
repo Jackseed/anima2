@@ -28,9 +28,16 @@ h2 {
 }
 
 h3 {
+  color: $anima-color;
+  margin: 0;
+  font-size: calc(0.8rem + 1.5vmin);
+  font-weight: 700;
+}
+
+h4 {
   color: white;
   margin: 0;
-  font-size: calc(0.8rem + 0.5vmin);
+  font-size: calc(0.8rem + 1.5vmin);
 }
 
 p,
@@ -70,7 +77,8 @@ textarea {
 }
 
 .no-padding-bottom .mat-dialog-container {
-  padding: 24px 24px 0px 24px;
+  padding: 12px 12px 0px 12px;
+  overflow: hidden;
 }
 
 .transparent-menu .mat-dialog-container {
@@ -104,7 +112,7 @@ textarea {
   position: absolute;
   top: 0;
   right: 50%;
-  transform: translate(50%, -40%);
+  transform: translate(50%, -50%);
   width: calc(2rem + 6vmin);
   height: calc(2rem + 6vmin);
 }
@@ -116,8 +124,19 @@ textarea {
   line-height: calc(2rem + 6vmin);
 }
 
-.margin-top-2 {
-  margin-top: 2%;
+#validate-button {
+  position: absolute;
+  bottom: 0;
+  transform: translate(0%, 50%);
+  height: calc(2rem + 10vh);
+  width: calc(2rem + 10vh);
+}
+
+#validate-icon {
+  font-size: calc(2rem + 10vh);
+  width: calc(2rem + 10vh);
+  height: calc(2rem + 10vh);
+  line-height: calc(2rem + 10vh);
 }
 
 .orange-snackbar {
@@ -140,6 +159,29 @@ snack-bar-container > div {
   transform: translate(-50%, -50%);
 }
 
+.mat-simple-snackbar > span {
+  width: 150px;
+}
+
 .orange-snackbar .mat-simple-snackbar {
   font-size: calc(1rem + 1.5vmin);
+}
+
+.sidebar {
+  background-color: rgba(242, 242, 242, 0.6);
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.text-box {
+  height: 50%;
+  width: 80%;
+  line-height: 25px;
+  background-color: #2984a0;
+  margin-top: 10%;
+  margin-bottom: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
