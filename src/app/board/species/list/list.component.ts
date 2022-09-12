@@ -137,6 +137,10 @@ export class ListComponent implements OnInit {
 
   public close() {
     this.dialogRef.close();
+  }
+
+  public validate() {
+    this.dialogRef.close();
     this.snackbar.open('Vous avez assimilé !', null, {
       duration: 800,
       panelClass: 'orange-snackbar',

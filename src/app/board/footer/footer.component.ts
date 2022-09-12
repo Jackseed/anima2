@@ -9,6 +9,9 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { TileQuery } from '../tiles/_state';
 import { Observable, of } from 'rxjs';
 import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
+import { GameQuery } from 'src/app/games/_state';
+// Rxjs
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-footer',
@@ -17,11 +20,14 @@ import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimi
 })
 export class FooterComponent implements OnInit {
   isTileActive$: Observable<boolean>;
+  colonizationCount$: Observable<number>;
+
   constructor(
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     public dialog: MatDialog,
-    private tileQuery: TileQuery
+    private tileQuery: TileQuery,
+    private gameQuery: GameQuery
   ) {
     this.matIconRegistry.addSvgIcon(
       'migrate',
@@ -75,6 +81,9 @@ export class FooterComponent implements OnInit {
 
   ngOnInit(): void {
     this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
+    this.colonizationCount$ = this.gameQuery
+      .selectActive()
+      .pipe(map((game) => Number(game.colonizationCount)));
   }
 
   public openAdaptationMenu(): void {

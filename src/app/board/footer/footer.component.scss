@@ -11,3 +11,22 @@
     line-height: calc(var(--s));
   }
 }
+
+.circle {
+  width: 30px;
+  height: 30px;
+  background-color: #f59c27;
+  bottom: 0;
+  right: -20%;
+  bottom: -25%;
+  border-radius: 50%;
+  border: solid white 3px;
+}
+
+.figures {
+  margin-top: 3px;
+  color: white;
+  font-size: calc(1rem + 1vmin);
+  font-weight: 600;
+  line-height: 16px;
+}

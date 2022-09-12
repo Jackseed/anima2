@@ -7,9 +7,14 @@
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
-    <button mat-icon-button>
-      <mat-icon svgIcon="migrate"></mat-icon>
-    </button>
+    <div class="relative">
+      <button mat-icon-button>
+        <mat-icon svgIcon="migrate"></mat-icon>
+      </button>
+      <div class="absolute circle" fxLayoutAlign="center center">
+        <div class="figures">{{ colonizationCount$ | async }}</div>
+      </div>
+    </div>
     <button mat-icon-button (click)="openAssimilationMenu()">
       <mat-icon svgIcon="assimilate"></mat-icon>
     </button>
