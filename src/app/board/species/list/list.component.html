@@ -11,13 +11,24 @@
     class="margin-top"
   >
     <article
-      *ngFor="let specie of species"
+      *ngFor="let specie of species; index as i"
       fxFlex="25"
       fxLayout="row"
       fxLayoutAlign="center center"
     >
       <div class="specie relative">
-        <mat-icon fxFlexFill [svgIcon]="specie.icon"></mat-icon>
+        <button
+          fxFlexFill
+          mat-icon-button
+          (click)="activate('specie', i)"
+          [disabled]="this.data.comp === 'passive-list'"
+        >
+          <mat-icon
+            fxFlexFill
+            [svgIcon]="specie.icon"
+            [ngClass]="{ activeSpecie: specie === activeSpecie }"
+          ></mat-icon>
+        </button>
         <div class="absolute circle" fxLayoutAlign="center center">
           <div class="figures">3</div>
         </div>
@@ -34,9 +45,12 @@
           mat-icon-button
           fxFlex="22"
           class="abilities"
-          (click)="activate(i)"
+          (click)="activate('ability', i)"
         >
-          <mat-icon [svgIcon]="ability.icon"></mat-icon>
+          <mat-icon
+            [svgIcon]="ability.icon"
+            [ngClass]="{ activeSpecie: ability === activeAbility }"
+          ></mat-icon>
         </button>
       </div>
     </article>
@@ -47,7 +61,7 @@
     fxFlexFill
     fxLayout="column"
     fxLayoutAlign="center center"
-    [ngClass]="{ 'no-padding-width': data.comp === 'list' }"
+    [ngClass]="{ 'no-padding-width': data.comp === 'passive-list' }"
   >
     <section
       fxFlexLayoutGap="10"

@@ -12,7 +12,6 @@ import { MatIconRegistry } from '@angular/material/icon';
 })
 export class ListComponent implements OnInit {
   public species = [
- 
     {
       icon: 'specie2',
     },
@@ -42,6 +41,7 @@ export class ListComponent implements OnInit {
     },
   ];
   public activeAbility: Object = {};
+  public activeSpecie: Object = {};
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -108,8 +108,15 @@ export class ListComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  public activate(i: number) {
-    this.activeAbility = this.abilities[i];
+  public activate(object: 'ability' | 'specie', i: number) {
+    // Activates the selected object and de-activates others.
+    if (object === 'ability') {
+      this.activeAbility = this.abilities[i];
+      this.activeSpecie = {};
+    } else if (object === 'specie') {
+      this.activeSpecie = this.species[i];
+      this.activeAbility = {};
+    }
   }
 
   public close() {
