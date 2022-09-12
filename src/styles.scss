@@ -28,9 +28,16 @@ h2 {
 }
 
 h3 {
+  color: $anima-color;
+  margin: 0;
+  font-size: calc(0.8rem + 1.5vmin);
+  font-weight: 700;
+}
+
+h4 {
   color: white;
   margin: 0;
-  font-size: calc(0.8rem + 0.5vmin);
+  font-size: calc(0.8rem + 1.5vmin);
 }
 
 p,
@@ -117,6 +124,21 @@ textarea {
   line-height: calc(2rem + 6vmin);
 }
 
+#validate-button {
+  position: absolute;
+  bottom: 0;
+  transform: translate(0%, 50%);
+  height: calc(2rem + 10vh);
+  width: calc(2rem + 10vh);
+}
+
+#validate-icon {
+  font-size: calc(2rem + 10vh);
+  width: calc(2rem + 10vh);
+  height: calc(2rem + 10vh);
+  line-height: calc(2rem + 10vh);
+}
+
 .orange-snackbar {
   background: $anima-color;
   text-align: center;
@@ -135,6 +157,10 @@ snack-bar-container > div {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.mat-simple-snackbar > span {
+  width: 150px;
 }
 
 .orange-snackbar .mat-simple-snackbar {

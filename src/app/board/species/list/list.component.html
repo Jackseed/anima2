@@ -26,7 +26,7 @@
           <mat-icon
             fxFlexFill
             [svgIcon]="specie.icon"
-            [ngClass]="{ activeSpecie: specie === activeSpecie }"
+            [ngClass]="{ activeSpecie: specie === active }"
           ></mat-icon>
         </button>
         <div class="absolute circle" fxLayoutAlign="center center">
@@ -49,30 +49,56 @@
         >
           <mat-icon
             [svgIcon]="ability.icon"
-            [ngClass]="{ activeSpecie: ability === activeAbility }"
+            [ngClass]="{ activeSpecie: ability === active }"
           ></mat-icon>
         </button>
       </div>
     </article>
   </section>
   <aside
-    *ngIf="activeAbility as ability"
     fxFlex="32"
     fxFlexFill
-    fxLayout="column"
-    fxLayoutAlign="center center"
     [ngClass]="{ 'no-padding-width': data.comp === 'passive-list' }"
   >
-    <section
-      fxFlexLayoutGap="10"
-      fxFlex="20"
-      fxFlexFill
+    <!----------------------ACTIVE ABILITY ONLY ---------------------->
+    <div
+      *ngIf="active.type! === 'ability'; else specie"
+      fxLayout="column"
       fxLayoutAlign="center center"
+      fxFlexFill
     >
-      <mat-icon id="title-icon" [svgIcon]="ability.icon"></mat-icon>
-    </section>
-    <textarea fxFlex readonly wrap="hard" rows="3" cols="25">{{
-      ability.definition
-    }}</textarea>
+      <h3
+        fxFlexLayoutGap="10"
+        fxFlex="20"
+        fxFlexFill
+        fxLayoutAlign="center center"
+      >
+        <mat-icon id="title-icon" [svgIcon]="active.icon"></mat-icon>
+      </h3>
+      <textarea fxFlex readonly wrap="hard" rows="3" cols="25">{{
+        active.definition
+      }}</textarea>
+    </div>
+    <!----------------------ACTIVE SPECIE ONLY ---------------------->
+    <ng-template #specie>
+      <div
+        *ngIf="active.type! === 'specie'"
+        fxLayout="column"
+        fxLayoutAlign="center center"
+        fxFlexFill
+      >
+        <h3
+          fxFlexLayoutGap="10"
+          fxFlex="40"
+          fxFlexFill
+          fxLayoutAlign="center start"
+        >
+          Assimiler cette espèce ?
+        </h3>
+        <button mat-icon-button id="validate-button" (click)="close()">
+          <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>
+        </button>
+      </div>
+    </ng-template>
   </aside>
 </main>
