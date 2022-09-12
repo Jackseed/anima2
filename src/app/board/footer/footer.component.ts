@@ -1,17 +1,21 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-// Components
+
+// App
 import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
+import { PlayService } from '../play.service';
+import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
+import { GameQuery } from 'src/app/games/_state';
+import { TileQuery } from '../tiles/_state';
+
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
-import { TileQuery } from '../tiles/_state';
-import { Observable, of } from 'rxjs';
-import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
-import { GameQuery } from 'src/app/games/_state';
+
 // Rxjs
 import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-footer',
@@ -27,7 +31,8 @@ export class FooterComponent implements OnInit {
     private domSanitizer: DomSanitizer,
     public dialog: MatDialog,
     private tileQuery: TileQuery,
-    private gameQuery: GameQuery
+    private gameQuery: GameQuery,
+    private playService: PlayService
   ) {
     this.matIconRegistry.addSvgIcon(
       'migrate',
@@ -108,5 +113,9 @@ export class FooterComponent implements OnInit {
       height: '100%',
       width: '100%',
     });
+  }
+
+  public startMigration() {
+    this.playService.startMigration();
   }
 }
