@@ -1,5 +1,5 @@
 // Angular
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 // App
@@ -15,16 +15,18 @@ import { MatIconRegistry } from '@angular/material/icon';
 
 // Rxjs
 import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
 })
-export class FooterComponent implements OnInit {
-  isTileActive$: Observable<boolean>;
-  migrationCount$: Observable<number>;
+export class FooterComponent implements OnInit, OnDestroy {
+  public isTileActive$: Observable<boolean>;
+  public migrationCount$: Observable<number>;
+  public isMigrationActive: boolean = false;
+  public activeMigrationSub: Subscription;
 
   constructor(
     private matIconRegistry: MatIconRegistry,
@@ -82,6 +84,12 @@ export class FooterComponent implements OnInit {
         '../../../assets/action-buttons/adaptation-disable.svg'
       )
     );
+    this.matIconRegistry.addSvgIcon(
+      'close',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/close-button.svg'
+      )
+    );
   }
 
   ngOnInit(): void {
@@ -89,6 +97,9 @@ export class FooterComponent implements OnInit {
     this.migrationCount$ = this.gameQuery
       .selectActive()
       .pipe(map((game) => Number(game.migrationCount)));
+    this.activeMigrationSub = this.isTileActive$.subscribe((bool) => {
+      if (!bool) this.isMigrationActive = false;
+    });
   }
 
   public openAdaptationMenu(): void {
@@ -116,6 +127,11 @@ export class FooterComponent implements OnInit {
   }
 
   public startMigration() {
+    this.isMigrationActive = true;
     this.playService.startMigration();
+  }
+
+  ngOnDestroy(): void {
+    this.activeMigrationSub.unsubscribe();
   }
 }

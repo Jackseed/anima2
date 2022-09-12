@@ -11,9 +11,21 @@
       <button mat-icon-button (click)="startMigration()">
         <mat-icon svgIcon="migrate"></mat-icon>
       </button>
-      <div class="absolute circle" fxLayoutAlign="center center">
+      <div
+        *ngIf="!isMigrationActive"
+        class="absolute circle"
+        fxLayoutAlign="center center"
+      >
         <div class="figures">{{ migrationCount$ | async }}</div>
       </div>
+      <button
+        *ngIf="isMigrationActive"
+        mat-icon-button
+        id="stop-migration"
+        (click)="close()"
+      >
+        <mat-icon svgIcon="close"></mat-icon>
+      </button>
     </div>
     <button mat-icon-button (click)="openAssimilationMenu()">
       <mat-icon svgIcon="assimilate"></mat-icon>
