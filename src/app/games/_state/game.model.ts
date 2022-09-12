@@ -9,11 +9,11 @@ export interface Game {
   eraCount: number;
   turnCount: number;
   actionType: 'newSpecies' | 'proliferate' | 'colonize' | 'newAbility' | '';
-  colonizationCount: number | firebase.firestore.FieldValue;
+  migrationCount: number | firebase.firestore.FieldValue;
 }
 
 export const actionPerTurn = 2;
-export const colonizationCount = 4;
+export const migrationCount = 4;
 
 export function createGame(params: Partial<Game>): Game {
   return {
@@ -25,7 +25,7 @@ export function createGame(params: Partial<Game>): Game {
     eraCount: 1,
     turnCount: 1,
     actionType: 'newSpecies',
-    colonizationCount: colonizationCount,
+    migrationCount,
     ...params,
   };
 }

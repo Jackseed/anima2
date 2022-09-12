@@ -32,7 +32,7 @@ export class ListComponent implements OnInit {
       name: 'Intimidation',
       icon: 'ability-1',
       definition:
-        'À la fin une colonisation, peut déplacer 1 pion adverse se trouvant sur sa case d’1 case.',
+        'À la fin une migration, peut déplacer 1 pion adverse se trouvant sur sa case d’1 case.',
     },
     {
       type: 'ability',

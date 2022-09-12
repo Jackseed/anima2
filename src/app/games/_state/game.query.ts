@@ -9,6 +9,6 @@ export class GameQuery extends QueryEntity<GameState> {
   }
 
   public get migrationCount() {
-    return this.getActive().colonizationCount;
+    return this.getActive().migrationCount;
   }
 }

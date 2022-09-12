@@ -12,7 +12,7 @@
         <mat-icon svgIcon="migrate"></mat-icon>
       </button>
       <div class="absolute circle" fxLayoutAlign="center center">
-        <div class="figures">{{ colonizationCount$ | async }}</div>
+        <div class="figures">{{ migrationCount$ | async }}</div>
       </div>
     </div>
     <button mat-icon-button (click)="openAssimilationMenu()">

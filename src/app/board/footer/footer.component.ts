@@ -24,7 +24,7 @@ import { Observable, of } from 'rxjs';
 })
 export class FooterComponent implements OnInit {
   isTileActive$: Observable<boolean>;
-  colonizationCount$: Observable<number>;
+  migrationCount$: Observable<number>;
 
   constructor(
     private matIconRegistry: MatIconRegistry,
@@ -86,9 +86,9 @@ export class FooterComponent implements OnInit {
 
   ngOnInit(): void {
     this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
-    this.colonizationCount$ = this.gameQuery
+    this.migrationCount$ = this.gameQuery
       .selectActive()
-      .pipe(map((game) => Number(game.colonizationCount)));
+      .pipe(map((game) => Number(game.migrationCount)));
   }
 
   public openAdaptationMenu(): void {

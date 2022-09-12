@@ -130,11 +130,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       await this.gameService.switchActionType('');
     }
 
-    // checks if a unit is active & tile reachable & colonization count > 1
+    // checks if a unit is active & tile reachable & migration count > 1
     if (this.tileQuery.hasActive() && tile.isReachable) {
-      // COLONIZATION
+      // MIGRATION
       // check move limit then colonizes
-      if (this.colonizationCount) {
+      if (this.migrationCount) {
         const activeTileId = this.tileQuery.getActiveId();
         await this.colonize(
           game,
@@ -164,11 +164,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       } else {
         this.tileService.removeReachable();
         this.tileService.select(tileId);
-        // COLONIZATION
-        /* this.tileService.markAdjacentReachableTiles(
-          tileId,
-          Number(game.colonizationCount)
-        ); */
       }
     }
   }
@@ -210,12 +205,13 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.speciesService
       .move(game, speciesId, previousTileId, newTileId, quantity)
       .then(async () => {
-        this.snackbar.open('Colonisation !', null, {
-          duration: 2000,
+        this.snackbar.open('Migration effectuée !', null, {
+          duration: 800,
+          panelClass: 'orange-snackbar',
         });
         this.tileService.resetRange();
-        // update remainingActions if that's the last colonizationCount
-        if (+this.colonizationCount + 1 === quantity) {
+        // update remainingActions if that's the last migrationCount
+        if (+this.migrationCount + 1 === quantity) {
           this.gameService.decrementRemainingActions();
         }
       })
@@ -244,14 +240,14 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return abilities[abilityId].value;
   }
 
-  public get colonizationCount(): number | firebase.firestore.FieldValue {
+  public get migrationCount(): number | firebase.firestore.FieldValue {
     const activeSpecies = this.speciesQuery.getActive();
     const activeAbilities = activeSpecies.abilityIds;
     const game = this.gameQuery.getActive();
 
     return activeAbilities.includes('agility')
-      ? +game.colonizationCount + abilities['agility'].value
-      : game.colonizationCount;
+      ? +game.migrationCount + abilities['agility'].value
+      : game.migrationCount;
   }
 
   // Cancel tile focus when using "esc" on keyboard
