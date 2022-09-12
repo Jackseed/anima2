@@ -92,8 +92,9 @@ footer {
 
 .reachable {
   z-index: 2;
-  background-color: rgb(45, 45, 255, 0.5) !important;
+  box-shadow: inset 0 0 0 2000px rgba(245, 156, 39, 0.2);
   cursor: pointer;
+  // background: linear-gradient(0deg, var(--color), #f59c27) !important;
 }
 .reachable:hover {
   opacity: 0.5;
@@ -116,28 +117,28 @@ footer {
 }
 .island {
   --color: #e5e4f1;
-  background: #e5e4f1;
+  background: var(--color);
 }
 .rockies {
   --color: #ebeac0;
-  background: #ebeac0;
+  background: var(--color);
 }
 
 .mountains {
   --color: #fce2b9;
-  background: #fce2b9;
+  background: var(--color);
 }
 .forest {
   --color: #d4e8d7;
-  background: #d4e8d7;
+  background: var(--color);
 }
 .swamps {
   --color: #c5e4f2;
-  background: #c5e4f2;
+  background: var(--color);
 }
 .plains {
   --color: #f9ec9a;
-  background: #f9ec9a;
+  background: var(--color);
 }
 /* GRID 1 */
 .grid1 .species {

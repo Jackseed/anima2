@@ -1,27 +1,40 @@
 // Angular
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-// Components
+
+// App
 import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
+import { PlayService } from '../play.service';
+import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
+import { GameQuery } from 'src/app/games/_state';
+import { TileQuery } from '../tiles/_state';
+
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
-import { TileQuery } from '../tiles/_state';
-import { Observable, of } from 'rxjs';
-import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
+
+// Rxjs
+import { map } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
 })
-export class FooterComponent implements OnInit {
-  isTileActive$: Observable<boolean>;
+export class FooterComponent implements OnInit, OnDestroy {
+  public isTileActive$: Observable<boolean>;
+  public migrationCount$: Observable<number>;
+  public isMigrationActive: boolean = false;
+  public activeMigrationSub: Subscription;
+
   constructor(
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     public dialog: MatDialog,
-    private tileQuery: TileQuery
+    private tileQuery: TileQuery,
+    private gameQuery: GameQuery,
+    private playService: PlayService
   ) {
     this.matIconRegistry.addSvgIcon(
       'migrate',
@@ -71,10 +84,22 @@ export class FooterComponent implements OnInit {
         '../../../assets/action-buttons/adaptation-disable.svg'
       )
     );
+    this.matIconRegistry.addSvgIcon(
+      'close',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/close-button.svg'
+      )
+    );
   }
 
   ngOnInit(): void {
     this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
+    this.migrationCount$ = this.gameQuery
+      .selectActive()
+      .pipe(map((game) => Number(game.migrationCount)));
+    this.activeMigrationSub = this.isTileActive$.subscribe((bool) => {
+      if (!bool) this.isMigrationActive = false;
+    });
   }
 
   public openAdaptationMenu(): void {
@@ -99,5 +124,14 @@ export class FooterComponent implements OnInit {
       height: '100%',
       width: '100%',
     });
+  }
+
+  public startMigration() {
+    this.isMigrationActive = true;
+    this.playService.startMigration();
+  }
+
+  ngOnDestroy(): void {
+    this.activeMigrationSub.unsubscribe();
   }
 }

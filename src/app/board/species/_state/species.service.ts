@@ -201,7 +201,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const newSpecies = this.getUpdatedSpeciesOnTile(tile, speciesId, quantity);
     batch.update(newTileDoc.ref, { species: newSpecies });
 
-    // update colonization count
+    // update migration count
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const UItile = this.tileQuery.ui.getEntity(newTileId.toString());
     const distance = UItile.range;
@@ -210,7 +210,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       -distance * quantity
     );
 
-    batch.update(gameRef, { colonizationCount: decrement });
+    batch.update(gameRef, { migrationCount: decrement });
 
     return batch.commit();
   }

@@ -22,13 +22,13 @@
       </li>
       <li>Actions restantes: {{ game.remainingActions }}</li>
       <li>
-        Colonisations possibles:
+        Migration restantes:
         <span *ngIf="(activeSpecies$ | async).abilityIds.includes('agility')">{{
-          game.colonizationCount + getAbilityValue("agility")
+          game.migrationCount + getAbilityValue("agility")
         }}</span>
         <span
           *ngIf="!(activeSpecies$ | async).abilityIds.includes('agility')"
-          >{{ game.colonizationCount }}</span
+          >{{ game.migrationCount }}</span
         >
       </li>
       <h3>Joueurs</h3>
