@@ -28,6 +28,7 @@ export class FooterComponent implements OnInit {
   public isMigrationActive$: Observable<boolean>;
   public canProliferate$: Observable<boolean>;
   public canAssimilate$: Observable<boolean>;
+  public canAdapt$: Observable<boolean>;
 
   constructor(
     private matIconRegistry: MatIconRegistry,
@@ -102,6 +103,7 @@ export class FooterComponent implements OnInit {
     this.isMigrationActive$ = this.tileQuery.isMigrationActive$;
     this.canProliferate$ = this.playService.canProliferate$;
     this.canAssimilate$ = this.playService.canAssimilate$;
+    this.canAdapt$ = this.playService.canAdapt$;
   }
 
   public openAdaptationMenu(): void {

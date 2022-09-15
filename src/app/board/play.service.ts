@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { GameQuery, GameService } from '../games/_state';
-import { SpeciesQuery, SpeciesService } from './species/_state';
+import { Species, SpeciesQuery, SpeciesService } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
 
 @Injectable({
@@ -26,6 +26,17 @@ export class PlayService {
     this.tileService.markAdjacentReachableTiles(activeTileId, migrationCount);
   }
 
+  public isSpecieQuantityGreatherThan(
+    specie: Species,
+    tileId: number,
+    num: number
+  ): boolean {
+    return specie.tileIds.filter((id) => id === tileId).length > num
+      ? true
+      : false;
+  }
+
+  // Indicates weither active specie can proliferate.
   public get canProliferate$(): Observable<boolean> {
     const activeSpecies$ = this.speciesQuery.selectActive();
     const activeTileId$ = this.tileQuery.selectActiveId();
@@ -33,9 +44,7 @@ export class PlayService {
     // Checks if more than 1 specie on the active tile to proliferate.
     return combineLatest([activeSpecies$, activeTileId$]).pipe(
       map(([specie, tileId]) => {
-        return specie.tileIds.filter((id) => id === Number(tileId)).length > 1
-          ? true
-          : false;
+        return this.isSpecieQuantityGreatherThan(specie, Number(tileId), 1);
       })
     );
   }
@@ -60,6 +69,7 @@ export class PlayService {
       });
   }
 
+  // Indicates weither active specie can assimilate.
   public get canAssimilate$(): Observable<boolean> {
     const activeTile$ = this.tileQuery.selectActive();
     const activeSpecieId$ = this.speciesQuery.selectActiveId();
@@ -71,7 +81,7 @@ export class PlayService {
         // 1st condition: needs at least 2 species on the same tile to assimilate.
         if (tileSpecies?.length < 2) return false;
 
-        // 2nd condition: needs to be more than others
+        // 2nd condition: needs to be more than others.
         const activeSpecieQuantity = tileSpecies.filter(
           (specie) => specie.id === activeSpecieId
         )[0].quantity;
@@ -81,6 +91,19 @@ export class PlayService {
         if (weakerSpecies.length === 0) return false;
 
         return true;
+      })
+    );
+  }
+
+  // Indicates weither active specie can adapt.
+  public get canAdapt$(): Observable<boolean> {
+    const activeSpecies$ = this.speciesQuery.selectActive();
+    const activeTileId$ = this.tileQuery.selectActiveId();
+
+    // Checks if more than 1 specie on the active tile to proliferate.
+    return combineLatest([activeSpecies$, activeTileId$]).pipe(
+      map(([specie, tileId]) => {
+        return this.isSpecieQuantityGreatherThan(specie, Number(tileId), 4);
       })
     );
   }
