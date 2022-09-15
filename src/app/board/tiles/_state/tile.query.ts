@@ -5,6 +5,8 @@ import {
   QueryConfig,
   QueryEntity,
 } from '@datorama/akita';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { cols, islandBridgeIds, Tile } from './tile.model';
 import { TileStore, TileState, TileUI, TileUIState } from './tile.store';
 
@@ -108,5 +110,11 @@ export class TileQuery extends QueryEntity<TileState> {
   public isBlank(id: number): boolean {
     const tile = this.getEntity(id.toString());
     return tile.type === 'blank';
+  }
+
+  public get isMigrationActive$(): Observable<boolean> {
+    return this.selectCount(({ isReachable }) => isReachable).pipe(
+      map((num) => (num > 0 ? true : false))
+    );
   }
 }

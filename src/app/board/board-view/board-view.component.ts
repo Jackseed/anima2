@@ -147,21 +147,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     }
     // checks if the tile includes an active species
     if (activeSpecies.tileIds.includes(tileId)) {
-      // then check if the tile was already selected
-      if (this.isActive(tileId)) {
-        // checks if enough species to proliferate
-        if (activeSpecies.tileIds.filter((id) => id === tileId).length > 1) {
-          // PROLIFERATE
-          // if so, proliferates
-          await this.proliferate(activeSpecies.id, tileId, 2);
-        } else {
-          this.snackbar.open("Manque d'unités pour proliférer.", null, {
-            duration: 3000,
-          });
-        }
-
-        // else selects the tile
-      } else {
+      // then selects the tile if it wasn't already.
+      if (!this.isActive(tileId)) {
         this.tileService.removeReachable();
         this.tileService.select(tileId);
       }
@@ -170,26 +157,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   public isActive(tileId: number): boolean {
     return this.tileQuery.hasActive(tileId.toString());
-  }
-
-  private async proliferate(
-    speciesId: string,
-    tileId: number,
-    quantity: number
-  ) {
-    this.tileService.removeActive();
-    this.tileService.removeReachable();
-    this.speciesService
-      .proliferate(speciesId, tileId, quantity)
-      .then(() => {
-        this.snackbar.open('Prolifération !', null, {
-          duration: 2000,
-        });
-        this.gameService.decrementRemainingActions();
-      })
-      .catch((error) => {
-        console.log('Transaction failed: ', error);
-      });
   }
 
   private async migrate(
@@ -216,7 +183,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
         }
       })
       .catch((error) => {
-        console.log('Transaction failed: ', error);
+        console.log('Migration failed: ', error);
       });
   }
 
