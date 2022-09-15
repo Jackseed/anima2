@@ -90,6 +90,14 @@ export class TileService extends CollectionService<TileState> {
     this.markAsReachable(tileIds);
   }
 
+  public markAllTilesReachable(): void {
+    const tiles = this.query.getAll({
+      filterBy: (tile) => tile.type !== 'blank',
+    });
+    const tileIds = tiles.map((tile) => tile.id);
+    this.markAsReachable(tileIds);
+  }
+
   public markAsReachable(tileIds: number[]) {
     this.store.update(
       tileIds.map((id) => id.toString()),

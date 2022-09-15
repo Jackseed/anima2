@@ -38,6 +38,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   private turnSub: Subscription;
   private activePlayerSub: Subscription;
   private activeSpeciesSub: Subscription;
+  private startGameSub: Subscription;
 
   constructor(
     private gameQuery: GameQuery,
@@ -66,6 +67,17 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.playingPlayerId = this.userQuery.getActiveId();
 
     this.turnSub = this.getTurnSub();
+    this.startGameSub = this.getStartGameSub();
+  }
+
+  private getStartGameSub(): Subscription {
+    return this.game$
+      .pipe(
+        tap((game) => {
+          if (game.isGameStarting) this.tileService.markAllTilesReachable();
+        })
+      )
+      .subscribe();
   }
 
   // If no more actions for the active player, skips turn
@@ -231,5 +243,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.turnSub.unsubscribe();
     this.activePlayerSub.unsubscribe();
     this.activeSpeciesSub.unsubscribe();
+    this.startGameSub.unsubscribe();
   }
 }

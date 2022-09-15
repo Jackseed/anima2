@@ -10,6 +10,7 @@ export interface Game {
   turnCount: number;
   actionType: 'newSpecies' | 'proliferate' | 'migrate' | 'newAbility' | '';
   migrationCount: number | firebase.firestore.FieldValue;
+  isGameStarting: boolean;
 }
 
 export const actionPerTurn = 2;
@@ -26,6 +27,7 @@ export function createGame(params: Partial<Game>): Game {
     turnCount: 1,
     actionType: 'newSpecies',
     migrationCount,
+    isGameStarting: true,
     ...params,
   };
 }
