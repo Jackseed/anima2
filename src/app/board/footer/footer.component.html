@@ -12,26 +12,43 @@
         <mat-icon svgIcon="migrate"></mat-icon>
       </button>
       <div
-        *ngIf="!isMigrationActive"
+        *ngIf="!(isMigrationActive$ | async)"
         class="absolute circle"
         fxLayoutAlign="center center"
       >
         <div class="figures">{{ migrationCount$ | async }}</div>
       </div>
       <button
-        *ngIf="isMigrationActive"
+        *ngIf="isMigrationActive$ | async"
         mat-icon-button
         id="stop-migration"
-        (click)="close()"
+        (click)="stopMigration()"
       >
         <mat-icon svgIcon="close"></mat-icon>
       </button>
     </div>
-    <button mat-icon-button (click)="openAssimilationMenu()">
+    <button
+      *ngIf="canAssimilate$ | async"
+      mat-icon-button
+      (click)="openAssimilationMenu()"
+    >
       <mat-icon svgIcon="assimilate"></mat-icon>
     </button>
-    <button mat-icon-button>
+
+    <button *ngIf="!(canAssimilate$ | async)" mat-icon-button>
+      <mat-icon svgIcon="assimilate-disable"></mat-icon>
+    </button>
+
+    <button
+      *ngIf="canProliferate$ | async"
+      mat-icon-button
+      (click)="proliferate()"
+    >
       <mat-icon svgIcon="proliferate"></mat-icon>
+    </button>
+
+    <button *ngIf="!(canProliferate$ | async)" mat-icon-button>
+      <mat-icon svgIcon="proliferate-disable"></mat-icon>
     </button>
     <button mat-icon-button (click)="openAdaptationMenu()">
       <mat-icon svgIcon="adaptation"></mat-icon>
@@ -48,7 +65,7 @@
       <button mat-icon-button>
         <mat-icon svgIcon="migrate-disable"></mat-icon>
       </button>
-      <button mat-icon-button (click)="openAssimilationMenu()">
+      <button mat-icon-button>
         <mat-icon svgIcon="assimilate-disable"></mat-icon>
       </button>
       <button mat-icon-button>

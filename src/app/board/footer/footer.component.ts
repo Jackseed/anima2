@@ -1,5 +1,5 @@
 // Angular
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 // App
@@ -7,7 +7,7 @@ import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation
 import { PlayService } from '../play.service';
 import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
 import { GameQuery } from 'src/app/games/_state';
-import { TileQuery } from '../tiles/_state';
+import { TileQuery, TileService } from '../tiles/_state';
 
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
@@ -15,18 +15,19 @@ import { MatIconRegistry } from '@angular/material/icon';
 
 // Rxjs
 import { map } from 'rxjs/operators';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
 })
-export class FooterComponent implements OnInit, OnDestroy {
+export class FooterComponent implements OnInit {
   public isTileActive$: Observable<boolean>;
   public migrationCount$: Observable<number>;
-  public isMigrationActive: boolean = false;
-  public activeMigrationSub: Subscription;
+  public isMigrationActive$: Observable<boolean>;
+  public canProliferate$: Observable<boolean>;
+  public canAssimilate$: Observable<boolean>;
 
   constructor(
     private matIconRegistry: MatIconRegistry,
@@ -34,7 +35,8 @@ export class FooterComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private tileQuery: TileQuery,
     private gameQuery: GameQuery,
-    private playService: PlayService
+    private playService: PlayService,
+    private tileService: TileService
   ) {
     this.matIconRegistry.addSvgIcon(
       'migrate',
@@ -97,9 +99,9 @@ export class FooterComponent implements OnInit, OnDestroy {
     this.migrationCount$ = this.gameQuery
       .selectActive()
       .pipe(map((game) => Number(game.migrationCount)));
-    this.activeMigrationSub = this.isTileActive$.subscribe((bool) => {
-      if (!bool) this.isMigrationActive = false;
-    });
+    this.isMigrationActive$ = this.tileQuery.isMigrationActive$;
+    this.canProliferate$ = this.playService.canProliferate$;
+    this.canAssimilate$ = this.playService.canAssimilate$;
   }
 
   public openAdaptationMenu(): void {
@@ -127,11 +129,14 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   public startMigration() {
-    this.isMigrationActive = true;
     this.playService.startMigration();
   }
 
-  ngOnDestroy(): void {
-    this.activeMigrationSub.unsubscribe();
+  public proliferate() {
+    this.playService.proliferate(2);
+  }
+
+  public stopMigration() {
+    this.tileService.removeReachable();
   }
 }
