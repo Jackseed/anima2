@@ -6,7 +6,7 @@
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
-    <div class="relative" *ngIf="isTileActive$ | async">
+    <div class="relative" *ngIf="canMigrate$ | async">
       <button mat-icon-button (click)="startMigration()">
         <mat-icon svgIcon="migrate"></mat-icon>
       </button>
@@ -26,7 +26,7 @@
         <mat-icon svgIcon="close"></mat-icon>
       </button>
     </div>
-    <button *ngIf="!(isTileActive$ | async)" mat-icon-button>
+    <button *ngIf="!(canMigrate$ | async)" mat-icon-button>
       <mat-icon svgIcon="migrate-disable"></mat-icon>
     </button>
     <button

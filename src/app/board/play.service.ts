@@ -35,7 +35,14 @@ export class PlayService {
 
   public setStartTileChoice() {
     this.gameService.switchStartState('tileChoice');
+    this.tileService.removeActive();
     this.tileService.markAllTilesReachable();
+  }
+
+  public selectStartTile(tileId: number) {
+    this.tileService.removeReachable();
+    this.tileService.select(tileId);
+    this.gameService.switchStartState('tileSelected');
   }
 
   public validateStartTile() {
@@ -60,6 +67,19 @@ export class PlayService {
     return specie.tileIds.filter((id) => id === tileId).length > num
       ? true
       : false;
+  }
+
+  // Indicates weither active specie can migrate.
+  public get canMigrate$(): Observable<boolean> {
+    const activeSpecies$ = this.speciesQuery.selectActive();
+    const activeTileId$ = this.tileQuery.selectActiveId();
+
+    // Checks there is a specie in the active tile.
+    return combineLatest([activeSpecies$, activeTileId$]).pipe(
+      map(([specie, tileId]) => {
+        return this.isSpecieQuantityGreatherThan(specie, Number(tileId), 0);
+      })
+    );
   }
 
   // Indicates weither active specie can proliferate.
@@ -110,7 +130,7 @@ export class PlayService {
         // 2nd condition: needs to be more than others.
         const activeSpecieQuantity = tileSpecies.filter(
           (specie) => specie.id === activeSpecieId
-        )[0].quantity;
+        )[0]?.quantity;
         const weakerSpecies = tileSpecies.filter(
           (specie) => specie.quantity < activeSpecieQuantity
         );

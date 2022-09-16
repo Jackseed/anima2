@@ -133,11 +133,13 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     const tile = this.tileQuery.getEntity(tileId.toString());
     const game = this.gameQuery.getActive();
     const activePlayerId = game.activePlayerId;
+    const isSelectingStartingTile =
+      game.isStarting && tile.isReachable && game.startState === 'tileChoice';
 
     // Click on a blank tile.
     if (tile.type === 'blank') return;
 
-    // Click during other player turn.
+    // Click during the other player turn.
     if (activePlayerId !== this.playingPlayerId) {
       this.snackbar.open("Ce n'est pas à votre tour.", null, {
         duration: 3000,
@@ -145,20 +147,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Creates a new specie if it's the start of the game.
-    if (
-      game.isStarting &&
-      tile.isReachable &&
-      game.startState === 'tileChoice'
-    ) {
-      this.tileService.removeReachable();
-      this.tileService.select(tileId);
-      this.gameService.switchStartState('tileSelected');
-    }
-    if (game.startState === 'tileValidated') {
-      this.speciesService.proliferate(activeSpecies.id, tileId, 4);
-      this.tileService.removeReachable();
-    }
+    if (isSelectingStartingTile)
+      return this.playService.selectStartTile(tileId);
 
     // checks if a unit is active & tile reachable & migration count > 1
     if (this.tileQuery.hasActive() && tile.isReachable) {
@@ -260,6 +250,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     event: KeyboardEvent
   ) {
     if (event.key === 'Escape') {
+      const game = this.gameQuery.getActive();
+      if (game.startState === 'tileChoice') return;
+      if (game.startState === 'tileSelected')
+        return this.cancelStartTileChoice();
       this.tileService.removeActive();
       this.tileService.removeReachable();
     }
