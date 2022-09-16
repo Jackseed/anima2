@@ -5,6 +5,13 @@ header {
   z-index: 2;
 }
 
+.start {
+  position: fixed;
+  z-index: 2;
+  height: auto;
+  margin-top: 100%;
+}
+
 pinch-zoom {
   background-color: white !important;
   height: 100%;
