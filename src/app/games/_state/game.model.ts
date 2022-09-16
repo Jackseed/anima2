@@ -15,7 +15,11 @@ export interface Game {
 
 export const actionPerTurn = 2;
 export const migrationCount = 4;
-export type startState = 'tileChoice' | 'tileSelected' | 'tileValidated';
+export type startState =
+  | 'launching'
+  | 'tileChoice'
+  | 'tileSelected'
+  | 'tileValidated';
 
 export function createGame(params: Partial<Game>): Game {
   return {
@@ -28,7 +32,7 @@ export function createGame(params: Partial<Game>): Game {
     turnCount: 1,
     migrationCount,
     isStarting: true,
-    startState: 'tileChoice',
+    startState: 'launching',
     ...params,
   };
 }

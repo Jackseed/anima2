@@ -7,11 +7,27 @@
   fxLayoutAlign="center center"
   *ngIf="game$ | async as game"
 >
-  <section class="start text-box">
-    <h2 *ngIf="game.startState === 'tileChoice'">
-      Sélectionnez votre case <br />de départ
-    </h2>
-    <h2 *ngIf="game.startState === 'tileSelected'">Choisir cette case ?</h2>
+  <section *ngIf="game.startState === 'tileChoice'" class="start text-box">
+    <h2>Sélectionnez votre case <br />de départ</h2>
+  </section>
+  <section *ngIf="game.startState === 'tileSelected'" class="start text-box">
+    <h2>Choisir cette case ?</h2>
+    <button
+      mat-icon-button
+      class="validation-buttons"
+      id="validate"
+      (click)="validateStartTile()"
+    >
+      <mat-icon svgIcon="validate"></mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      class="validation-buttons"
+      id="cancel"
+      (click)="cancelStartTileChoice()"
+    >
+      <mat-icon svgIcon="close"></mat-icon>
+    </button>
   </section>
 </div>
 

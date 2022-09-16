@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { GameQuery, GameService } from '../games/_state';
 import { Species, SpeciesQuery, SpeciesService } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
@@ -19,6 +19,32 @@ export class PlayService {
     private speciesService: SpeciesService,
     private snackbar: MatSnackBar
   ) {}
+
+  // Organizes the first steps of the game.
+  public getStartGameSub(): Subscription {
+    const game$ = this.gameQuery.selectActive();
+    return game$
+      .pipe(
+        tap((game) => {
+          if (!game.isStarting) return;
+          if (game.startState === 'launching') this.setStartTileChoice();
+        })
+      )
+      .subscribe();
+  }
+
+  public setStartTileChoice() {
+    this.gameService.switchStartState('tileChoice');
+    this.tileService.markAllTilesReachable();
+  }
+
+  public validateStartTile() {
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const activeSpecieId = this.speciesQuery.getActiveId();
+
+    this.gameService.switchStartState('tileValidated');
+    this.speciesService.proliferate(activeSpecieId, activeTileId, 4);
+  }
 
   public startMigration(): void {
     const activeTileId = Number(this.tileQuery.getActiveId());

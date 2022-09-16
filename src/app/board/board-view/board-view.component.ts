@@ -1,7 +1,9 @@
 // Angular
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { MatIconRegistry } from '@angular/material/icon';
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DomSanitizer } from '@angular/platform-browser';
 // Firebase
 import firebase from 'firebase/app';
 // Rxjs
@@ -9,7 +11,8 @@ import { iif, Observable, of, Subscription } from 'rxjs';
 import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 // States
 import { UserQuery } from 'src/app/auth/_state';
-import { Game, GameQuery, GameService } from 'src/app/games/_state';
+import { Game, GameQuery, GameService, startState } from 'src/app/games/_state';
+import { PlayService } from '../play.service';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
 import {
   Abilities,
@@ -26,21 +29,23 @@ import { Tile, TileQuery, TileService } from '../tiles/_state';
   styleUrls: ['./board-view.component.scss'],
 })
 export class BoardViewComponent implements OnInit, OnDestroy {
-  // variables
+  // Variables
   public playingPlayerId: string;
-  // observables
+  // Observables
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
   public players$: Observable<Player[]>;
   public activeSpecies$: Observable<Species>;
-  // subscriptions
+  // Subscriptions
   private turnSub: Subscription;
   private activePlayerSub: Subscription;
   private activeSpeciesSub: Subscription;
   private startGameSub: Subscription;
 
   constructor(
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer,
     private gameQuery: GameQuery,
     private gameService: GameService,
     private userQuery: UserQuery,
@@ -50,8 +55,22 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
+    private playService: PlayService,
     private snackbar: MatSnackBar
-  ) {}
+  ) {
+    this.matIconRegistry.addSvgIcon(
+      'close',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/close-button.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'validate',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/validate-button.svg'
+      )
+    );
+  }
 
   ngOnInit(): void {
     this.game$ = this.gameQuery.selectActive();
@@ -67,17 +86,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.playingPlayerId = this.userQuery.getActiveId();
 
     this.turnSub = this.getTurnSub();
-    this.startGameSub = this.getStartGameSub();
-  }
-
-  private getStartGameSub(): Subscription {
-    return this.game$
-      .pipe(
-        tap((game) => {
-          if (game.isStarting) this.tileService.markAllTilesReachable();
-        })
-      )
-      .subscribe();
+    this.startGameSub = this.playService.getStartGameSub();
   }
 
   // If no more actions for the active player, skips turn
@@ -236,6 +245,14 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return activeAbilities.includes('agility')
       ? +game.migrationCount + abilities['agility'].value
       : game.migrationCount;
+  }
+
+  public validateStartTile() {
+    this.playService.validateStartTile();
+  }
+
+  public cancelStartTileChoice() {
+    this.playService.setStartTileChoice();
   }
 
   // Cancel tile focus when using "esc" on keyboard
