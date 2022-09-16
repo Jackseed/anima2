@@ -74,7 +74,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return this.game$
       .pipe(
         tap((game) => {
-          if (game.isGameStarting) this.tileService.markAllTilesReachable();
+          if (game.isStarting) this.tileService.markAllTilesReachable();
         })
       )
       .subscribe();
@@ -136,10 +136,19 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Creates a new specie.
-    if (game.actionType === 'newSpecies') {
+    // Creates a new specie if it's the start of the game.
+    if (
+      game.isStarting &&
+      tile.isReachable &&
+      game.startState === 'tileChoice'
+    ) {
+      this.tileService.removeReachable();
+      this.tileService.select(tileId);
+      this.gameService.switchStartState('tileSelected');
+    }
+    if (game.startState === 'tileValidated') {
       this.speciesService.proliferate(activeSpecies.id, tileId, 4);
-      await this.gameService.switchActionType('');
+      this.tileService.removeReachable();
     }
 
     // checks if a unit is active & tile reachable & migration count > 1

@@ -2,9 +2,16 @@
   <app-header fxFlexFill></app-header>
 </header>
 
-<div fxLayout="column" fxLayoutAlign="center center">
+<div
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  *ngIf="game$ | async as game"
+>
   <section class="start text-box">
-    <h2>Sélectionnez votre<br />case de départ</h2>
+    <h2 *ngIf="game.startState === 'tileChoice'">
+      Sélectionnez votre case <br />de départ
+    </h2>
+    <h2 *ngIf="game.startState === 'tileSelected'">Choisir cette case ?</h2>
   </section>
 </div>
 
