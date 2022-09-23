@@ -25,6 +25,19 @@ export class ListComponent implements OnInit {
       type: 'specie',
       icon: 'specie4',
     },
+    {
+      type: 'specie',
+      icon: 'specie4',
+    },
+    {
+      type: 'specie',
+      icon: 'specie4',
+    },
+
+    {
+      type: 'specie',
+      icon: 'specie4',
+    },
   ];
   public abilities = [
     {

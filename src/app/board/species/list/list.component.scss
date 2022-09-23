@@ -2,6 +2,11 @@ main {
   background-color: white;
 }
 
+section {
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
 article {
   width: 90%;
 }
