@@ -8,7 +8,7 @@
   >
     <!------------------- MIGRATION -------------------->
     <div class="relative" *ngIf="canMigrate$ | async">
-      <button mat-icon-button (click)="startMigration()">
+      <button id="migration" mat-icon-button (click)="startMigration()">
         <mat-icon svgIcon="migrate"></mat-icon>
       </button>
       <div
