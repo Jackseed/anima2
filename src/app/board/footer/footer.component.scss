@@ -1,14 +1,11 @@
 .mat-icon-button {
-  --s: 3rem + 2.5vmin;
-  width: calc(var(--s));
-  height: calc(var(--s));
-  line-height: calc(var(--s));
-
+  width: 25%;
+  height: 100%;
   .mat-icon {
-    font-size: calc(var(--s));
-    width: calc(var(--s));
-    height: calc(var(--s));
-    line-height: calc(var(--s));
+    position: relative;
+    width: 140%;
+    height: 100%;
+    left: -20%;
   }
 }
 
