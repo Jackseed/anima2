@@ -50,7 +50,6 @@
           <div *ngIf="ability !== active">
             <mat-icon
               [svgIcon]="ability.icon"
-              [ngClass]="{ activeSpecie: ability === active }"
             ></mat-icon>
           </div>
           <div *ngIf="ability === active">
