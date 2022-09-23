@@ -1,7 +1,9 @@
 // Angular
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { MatIconRegistry } from '@angular/material/icon';
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DomSanitizer } from '@angular/platform-browser';
 // Firebase
 import firebase from 'firebase/app';
 // Rxjs
@@ -9,7 +11,8 @@ import { iif, Observable, of, Subscription } from 'rxjs';
 import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 // States
 import { UserQuery } from 'src/app/auth/_state';
-import { Game, GameQuery, GameService } from 'src/app/games/_state';
+import { Game, GameQuery, GameService, startState } from 'src/app/games/_state';
+import { PlayService } from '../play.service';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
 import {
   Abilities,
@@ -26,20 +29,23 @@ import { Tile, TileQuery, TileService } from '../tiles/_state';
   styleUrls: ['./board-view.component.scss'],
 })
 export class BoardViewComponent implements OnInit, OnDestroy {
-  // variables
+  // Variables
   public playingPlayerId: string;
-  // observables
+  // Observables
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
   public players$: Observable<Player[]>;
   public activeSpecies$: Observable<Species>;
-  // subscriptions
+  // Subscriptions
   private turnSub: Subscription;
   private activePlayerSub: Subscription;
   private activeSpeciesSub: Subscription;
+  private startGameSub: Subscription;
 
   constructor(
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer,
     private gameQuery: GameQuery,
     private gameService: GameService,
     private userQuery: UserQuery,
@@ -49,8 +55,22 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
+    private playService: PlayService,
     private snackbar: MatSnackBar
-  ) {}
+  ) {
+    this.matIconRegistry.addSvgIcon(
+      'close',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/close-button.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'validate',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/validate-button.svg'
+      )
+    );
+  }
 
   ngOnInit(): void {
     this.game$ = this.gameQuery.selectActive();
@@ -66,6 +86,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.playingPlayerId = this.userQuery.getActiveId();
 
     this.turnSub = this.getTurnSub();
+    this.startGameSub = this.playService.getStartGameSub();
   }
 
   // If no more actions for the active player, skips turn
@@ -112,11 +133,13 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     const tile = this.tileQuery.getEntity(tileId.toString());
     const game = this.gameQuery.getActive();
     const activePlayerId = game.activePlayerId;
+    const isSelectingStartingTile =
+      game.isStarting && tile.isReachable && game.startState === 'tileChoice';
 
     // Click on a blank tile.
     if (tile.type === 'blank') return;
 
-    // Click during other player turn.
+    // Click during the other player turn.
     if (activePlayerId !== this.playingPlayerId) {
       this.snackbar.open("Ce n'est pas à votre tour.", null, {
         duration: 3000,
@@ -124,11 +147,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Creates a new specie.
-    if (game.actionType === 'newSpecies') {
-      this.speciesService.proliferate(activeSpecies.id, tileId, 4);
-      await this.gameService.switchActionType('');
-    }
+    if (isSelectingStartingTile)
+      return this.playService.selectStartTile(tileId);
 
     // checks if a unit is active & tile reachable & migration count > 1
     if (this.tileQuery.hasActive() && tile.isReachable) {
@@ -217,11 +237,23 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       : game.migrationCount;
   }
 
+  public validateStartTile() {
+    this.playService.validateStartTile();
+  }
+
+  public cancelStartTileChoice() {
+    this.playService.setStartTileChoice();
+  }
+
   // Cancel tile focus when using "esc" on keyboard
   @HostListener('document:keydown', ['$event']) onKeydownHandler(
     event: KeyboardEvent
   ) {
     if (event.key === 'Escape') {
+      const game = this.gameQuery.getActive();
+      if (game.startState === 'tileChoice') return;
+      if (game.startState === 'tileSelected')
+        return this.cancelStartTileChoice();
       this.tileService.removeActive();
       this.tileService.removeReachable();
     }
@@ -231,5 +263,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.turnSub.unsubscribe();
     this.activePlayerSub.unsubscribe();
     this.activeSpeciesSub.unsubscribe();
+    this.startGameSub.unsubscribe();
   }
 }

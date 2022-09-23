@@ -8,12 +8,18 @@ export interface Game {
   remainingActions: number;
   eraCount: number;
   turnCount: number;
-  actionType: 'newSpecies' | 'proliferate' | 'migrate' | 'newAbility' | '';
   migrationCount: number | firebase.firestore.FieldValue;
+  isStarting: boolean;
+  startState: startState;
 }
 
 export const actionPerTurn = 2;
 export const migrationCount = 4;
+export type startState =
+  | 'launching'
+  | 'tileChoice'
+  | 'tileSelected'
+  | 'tileValidated';
 
 export function createGame(params: Partial<Game>): Game {
   return {
@@ -24,8 +30,9 @@ export function createGame(params: Partial<Game>): Game {
     remainingActions: actionPerTurn,
     eraCount: 1,
     turnCount: 1,
-    actionType: 'newSpecies',
     migrationCount,
+    isStarting: true,
+    startState: 'launching',
     ...params,
   };
 }

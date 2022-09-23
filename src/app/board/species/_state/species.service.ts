@@ -134,6 +134,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   }
 
   // TODO: mb change tileIds for quantity on species?
+  // TODO: rename func
   public async proliferate(id: string, tileId: number, quantity: number) {
     const batch = this.db.firestore.batch();
     // update species tileIds

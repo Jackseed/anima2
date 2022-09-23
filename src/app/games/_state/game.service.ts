@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
-import { actionPerTurn, migrationCount, createGame } from './game.model';
+import {
+  actionPerTurn,
+  migrationCount,
+  createGame,
+  startState,
+} from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
 import firebase from 'firebase/app';
@@ -34,8 +39,9 @@ export class GameService extends CollectionService<GameState> {
     const id = this.db.createId();
     const playerId = (await this.afAuth.currentUser).uid;
     const playerIds = [playerId];
-    const playerRef = this.db.collection(`games/${id}/players`).doc(playerId)
-      .ref;
+    const playerRef = this.db
+      .collection(`games/${id}/players`)
+      .doc(playerId).ref;
     // TODO: randomize first player
     const game = createGame({ id, name, playerIds, activePlayerId: playerId });
     const gameRef = this.db.collection('games').doc(game.id).ref;
@@ -48,8 +54,9 @@ export class GameService extends CollectionService<GameState> {
     batch.set(playerRef, player);
 
     // TODO: move species creation later
-    const speciesRef = this.db.collection(`games/${id}/species`).doc(speciesId)
-      .ref;
+    const speciesRef = this.db
+      .collection(`games/${id}/species`)
+      .doc(speciesId).ref;
     const randomAbility =
       abilityIds[Math.floor(Math.random() * abilityIds.length)];
     const species = createSpecies(speciesId, playerId, [randomAbility], []);
@@ -57,20 +64,18 @@ export class GameService extends CollectionService<GameState> {
 
     // Create the game
     await batch.commit().catch((error) => {
-      console.log('Transaction failed: ', error);
+      console.log('Game creation failed: ', error);
     });
     return id;
   }
 
-  public async switchActionType(
-    actionType: '' | 'newSpecies' | 'proliferate' | 'migrate' | 'newAbility'
-  ) {
+  public async switchStartState(startState: startState) {
     const id = this.query.getActiveId();
     await this.collection
       .doc(id)
-      .update({ actionType })
+      .update({ startState })
       .catch((error) => {
-        console.log('Transaction failed: ', error);
+        console.log('Switch start state failed: ', error);
       });
   }
 

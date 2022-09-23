@@ -23,11 +23,12 @@ import { Observable } from 'rxjs';
   styleUrls: ['./footer.component.scss'],
 })
 export class FooterComponent implements OnInit {
-  public isTileActive$: Observable<boolean>;
   public migrationCount$: Observable<number>;
   public isMigrationActive$: Observable<boolean>;
+  public canMigrate$: Observable<boolean>;
   public canProliferate$: Observable<boolean>;
   public canAssimilate$: Observable<boolean>;
+  public canAdapt$: Observable<boolean>;
 
   constructor(
     private matIconRegistry: MatIconRegistry,
@@ -95,13 +96,15 @@ export class FooterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isTileActive$ = this.tileQuery.selectActive((tile) => !!tile);
     this.migrationCount$ = this.gameQuery
       .selectActive()
       .pipe(map((game) => Number(game.migrationCount)));
     this.isMigrationActive$ = this.tileQuery.isMigrationActive$;
+
+    this.canMigrate$ = this.playService.canMigrate$;
     this.canProliferate$ = this.playService.canProliferate$;
     this.canAssimilate$ = this.playService.canAssimilate$;
+    this.canAdapt$ = this.playService.canAdapt$;
   }
 
   public openAdaptationMenu(): void {

@@ -1,13 +1,12 @@
 <div fxFlexFill fxLayout="column" fxLayoutAlign="start center">
   <section
     class="sidebar"
-    *ngIf="isTileActive$ | async; else inactive"
     fxFlexFill
     fxFlex="95"
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
-    <div class="relative">
+    <div class="relative" *ngIf="canMigrate$ | async">
       <button mat-icon-button (click)="startMigration()">
         <mat-icon svgIcon="migrate"></mat-icon>
       </button>
@@ -27,6 +26,9 @@
         <mat-icon svgIcon="close"></mat-icon>
       </button>
     </div>
+    <button *ngIf="!(canMigrate$ | async)" mat-icon-button>
+      <mat-icon svgIcon="migrate-disable"></mat-icon>
+    </button>
     <button
       *ngIf="canAssimilate$ | async"
       mat-icon-button
@@ -50,31 +52,17 @@
     <button *ngIf="!(canProliferate$ | async)" mat-icon-button>
       <mat-icon svgIcon="proliferate-disable"></mat-icon>
     </button>
-    <button mat-icon-button (click)="openAdaptationMenu()">
+
+    <button
+      *ngIf="canAdapt$ | async"
+      mat-icon-button
+      (click)="openAdaptationMenu()"
+    >
       <mat-icon svgIcon="adaptation"></mat-icon>
     </button>
+    <button *ngIf="!(canAdapt$ | async)" mat-icon-button>
+      <mat-icon svgIcon="adaptation-disable"></mat-icon>
+    </button>
   </section>
-  <ng-template #inactive>
-    <section
-      class="sidebar"
-      fxFlexFill
-      fxFlex="95"
-      fxLayout="row"
-      fxLayoutAlign="space-between center"
-    >
-      <button mat-icon-button>
-        <mat-icon svgIcon="migrate-disable"></mat-icon>
-      </button>
-      <button mat-icon-button>
-        <mat-icon svgIcon="assimilate-disable"></mat-icon>
-      </button>
-      <button mat-icon-button>
-        <mat-icon svgIcon="proliferate-disable"></mat-icon>
-      </button>
-      <button mat-icon-button (click)="openAdaptationMenu()">
-        <mat-icon svgIcon="adaptation-disable"></mat-icon>
-      </button>
-    </section>
-  </ng-template>
   <aside fxFlexFill fxFlex="5" class="orange"></aside>
 </div>
