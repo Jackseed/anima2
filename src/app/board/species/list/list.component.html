@@ -47,10 +47,15 @@
           class="abilities"
           (click)="activate('ability', i)"
         >
-          <mat-icon
-            [svgIcon]="ability.icon"
-            [ngClass]="{ activeSpecie: ability === active }"
-          ></mat-icon>
+          <div *ngIf="ability !== active">
+            <mat-icon
+              [svgIcon]="ability.icon"
+              [ngClass]="{ activeSpecie: ability === active }"
+            ></mat-icon>
+          </div>
+          <div *ngIf="ability === active">
+            <mat-icon [svgIcon]="ability.activeIcon"></mat-icon>
+          </div>
         </button>
       </div>
     </article>
@@ -60,7 +65,7 @@
     fxFlexFill
     [ngClass]="{ 'no-padding-width': data.comp === 'passive-list' }"
   >
-    <!----------------------ACTIVE ABILITY ONLY ---------------------->
+    <!---------------------- DEFINITION - ACTIVE ABILITY ONLY ---------------------->
     <div
       *ngIf="active.type! === 'ability'; else specie"
       fxLayout="column"
@@ -79,7 +84,7 @@
         active.definition
       }}</textarea>
     </div>
-    <!----------------------ACTIVE SPECIE ONLY ---------------------->
+    <!---------------------- DEFINITION - ACTIVE SPECIE ONLY ---------------------->
     <ng-template #specie>
       <div
         *ngIf="active.type! === 'specie'"

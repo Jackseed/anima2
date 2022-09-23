@@ -31,6 +31,7 @@ export class ListComponent implements OnInit {
       type: 'ability',
       name: 'Intimidation',
       icon: 'ability-1',
+      activeIcon: 'ability-1-active',
       definition:
         'À la fin une migration, peut déplacer 1 pion adverse se trouvant sur sa case d’1 case.',
     },
@@ -38,12 +39,14 @@ export class ListComponent implements OnInit {
       type: 'ability',
       name: 'Gigantisme',
       icon: 'ability-4',
+      activeIcon: 'ability-4-active',
       definition: 'yi',
     },
     {
       type: 'ability',
       name: 'Vol',
       icon: 'ability-3',
+      activeIcon: 'ability-3-active',
       definition: 'yu',
     },
   ];
@@ -95,25 +98,50 @@ export class ListComponent implements OnInit {
     this.matIconRegistry.addSvgIcon(
       'ability-1',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability_1.svg'
+        '../../../../assets/menu-buttons/ability1.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'ability-2',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability-2.svg'
+        '../../../../assets/menu-buttons/ability2.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'ability-3',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability-3.svg'
+        '../../../../assets/menu-buttons/ability3.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'ability-4',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability-4.svg'
+        '../../../../assets/menu-buttons/ability4.svg'
+      )
+    );
+
+    this.matIconRegistry.addSvgIcon(
+      'ability-1-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/menu-buttons/ability1-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'ability-2-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/menu-buttons/ability2-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'ability-3-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/menu-buttons/ability3-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'ability-4-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/menu-buttons/ability4-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
