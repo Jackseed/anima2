@@ -81,12 +81,6 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'active-species',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/active-species-wip.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
       'strategic-view',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/menu-buttons/strategic-view.svg'
@@ -246,6 +240,93 @@ export class BoardModule {
       'adaptation-active',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/adaptation-active.svg'
+      )
+    );
+
+    /// SPECIES
+    this.matIconRegistry.addSvgIcon(
+      'acceleration',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/acceleration.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'agility',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/agility.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'carnivore',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/carnivore.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'flying',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/flying.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'giantism',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/giantism.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'hermaphrodite',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/hermaphrodite.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'hounds',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/hounds.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'intimidate',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/intimidate.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'nest',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/nest.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'rallying',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/rallying.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'range',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/range.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'spontaneousGeneration',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/spontaneousGeneration.svg'
+      )
+    );    this.matIconRegistry.addSvgIcon(
+      'submersible',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/submersible.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'survival',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/survival.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'symbiosis',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/symbiosis.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'tunnel',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/tunnel.svg'
       )
     );
   }

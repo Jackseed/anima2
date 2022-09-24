@@ -1,10 +1,19 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
+
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
+
+// Components
 import { SettingsComponent } from '../settings/settings.component';
 import { ListComponent } from '../species/list/list.component';
 import { ScoreComponent } from '../score/score.component';
+
+// States
+import { Species, SpeciesQuery } from '../species/_state';
+
+// Rxjs
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -12,9 +21,13 @@ import { ScoreComponent } from '../score/score.component';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-  constructor(public dialog: MatDialog) {}
+  public activeSpecies$: Observable<Species>;
 
-  ngOnInit(): void {}
+  constructor(public dialog: MatDialog, private speciesQuery: SpeciesQuery) {}
+
+  ngOnInit(): void {
+    this.activeSpecies$ = this.speciesQuery.selectActive();
+  }
 
   public openSpeciesList(): void {
     const dialogRef = this.dialog.open(ListComponent, {

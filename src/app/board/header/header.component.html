@@ -1,8 +1,13 @@
 <div class="sidebar" fxFlexFill fxLayout="row" fxLayoutAlign="start center">
   <div fxFlex="55" class="container relative">
-    <button mat-icon-button class="active absolute" (click)="openSpeciesList()">
+    <button
+      *ngIf="activeSpecies$ | async as activeSpecies"
+      mat-icon-button
+      class="active absolute"
+      (click)="openSpeciesList()"
+    >
       <mat-icon id="circle" svgIcon="species-circle"></mat-icon>
-      <mat-icon id="active-species" svgIcon="active-species"></mat-icon>
+      <mat-icon id="active-species" [svgIcon]="activeSpecies.abilityIds[0]"></mat-icon>
     </button>
     <div
       class="small-text-box absolute"
