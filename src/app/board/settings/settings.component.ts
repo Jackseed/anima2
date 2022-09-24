@@ -1,8 +1,6 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 // Angular Material
-import { MatIconRegistry } from '@angular/material/icon';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -25,18 +23,7 @@ export class SettingsComponent implements OnInit {
       cta: 'Quittez',
     },
   ];
-  constructor(
-    public dialogRef: MatDialogRef<SettingsComponent>,
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
-  ) {
-    this.matIconRegistry.addSvgIcon(
-      'close',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/close-button.svg'
-      )
-    );
-  }
+  constructor(public dialogRef: MatDialogRef<SettingsComponent>) {}
 
   ngOnInit(): void {}
 

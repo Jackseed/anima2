@@ -5,9 +5,9 @@
   <li>Tours: {{ game.turnCount }}</li>
   <h3>Tour en cours</h3>
   <li>Joueur actif: {{ game.activePlayerId.slice(0, 4) }}</li>
-  <li *ngIf="activeSpecies$ | async as species">
+  <li *ngIf="activeSpecies$ | async as activeSpecies">
     Traits espèce active:
-    <span *ngFor="let abilityId of species.abilityIds; let isLast = last"
+    <span *ngFor="let abilityId of activeSpecies.abilityIds; let isLast = last"
       >{{ getAbilityFrName(abilityId) }}{{ isLast ? "" : ", " }}</span
     >
   </li>

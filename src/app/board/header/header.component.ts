@@ -1,9 +1,7 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
-import { MatIconRegistry } from '@angular/material/icon';
 import { SettingsComponent } from '../settings/settings.component';
 import { ListComponent } from '../species/list/list.component';
 import { ScoreComponent } from '../score/score.component';
@@ -14,42 +12,7 @@ import { ScoreComponent } from '../score/score.component';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-  constructor(
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
-    public dialog: MatDialog
-  ) {
-    this.matIconRegistry.addSvgIcon(
-      'species-circle',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/species-circle.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'active-specie',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/active-specie.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'active-species',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/active-species-wip.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'strategic-view',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/strategic-view.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'menu-button',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/close-button.svg'
-      )
-    );
-  }
+  constructor(public dialog: MatDialog) {}
 
   ngOnInit(): void {}
 

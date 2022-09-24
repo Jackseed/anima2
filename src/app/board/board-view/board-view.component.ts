@@ -1,9 +1,7 @@
 // Angular
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DomSanitizer } from '@angular/platform-browser';
 // Firebase
 import firebase from 'firebase/app';
 // Rxjs
@@ -41,8 +39,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   private startGameSub: Subscription;
 
   constructor(
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
     private gameQuery: GameQuery,
     private gameService: GameService,
     private userQuery: UserQuery,
@@ -54,20 +50,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     private speciesService: SpeciesService,
     private playService: PlayService,
     private snackbar: MatSnackBar
-  ) {
-    this.matIconRegistry.addSvgIcon(
-      'close',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/close-button.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'validate',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/validate-button.svg'
-      )
-    );
-  }
+  ) {}
 
   ngOnInit(): void {
     this.game$ = this.gameQuery.selectActive();

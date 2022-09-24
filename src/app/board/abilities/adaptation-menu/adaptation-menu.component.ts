@@ -51,18 +51,6 @@ export class AdaptationMenuComponent implements OnInit {
     private domSanitizer: DomSanitizer,
     private snackbar: MatSnackBar
   ) {
-    this.matIconRegistry.addSvgIcon(
-      'blank',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/blank-button.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'validate',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/validate-button.svg'
-      )
-    );
   }
 
   ngOnInit(): void {}
