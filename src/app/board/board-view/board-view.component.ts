@@ -189,7 +189,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     const species = this.speciesQuery.getEntity(speciesId);
 
     if (species.playerId === 'neutral') {
-      url = `/assets/neutrals/${species.id}.svg`;
+      url = `/assets/abilities/${species.id}.svg`;
     } else {
       url = `/assets/abilities/${species.abilityIds[0]}.svg`;
     }

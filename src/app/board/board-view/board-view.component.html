@@ -42,12 +42,12 @@
         class="hex relative"
         [ngClass]="{
           blank: tile.type === 'blank',
-          island: tile.type === 'island',
+          islands: tile.type === 'islands',
           mountains: tile.type === 'mountains',
           rockies: tile.type === 'rockies',
           plains: tile.type === 'plains',
           swamps: tile.type === 'swamps',
-          forest: tile.type === 'forest',
+          forests: tile.type === 'forests',
           selected: isActive(tile.id),
           reachable: tile?.isReachable
         }"

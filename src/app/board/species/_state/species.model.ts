@@ -196,7 +196,7 @@ export const neutrals: Species[] = [
     ),
   },
   {
-    id: 'island',
+    id: 'islands',
     playerId: 'neutral',
     tileIds: islandNeutralCoordinates.map(
       (coordinates) => coordinates[0] + coordinates[1] * cols
@@ -218,7 +218,7 @@ export const neutrals: Species[] = [
   },
 
   {
-    id: 'forest',
+    id: 'forests',
     playerId: 'neutral',
     tileIds: forestNeutralCoordinates.map(
       (coordinates) => coordinates[0] + coordinates[1] * cols

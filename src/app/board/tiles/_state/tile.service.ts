@@ -34,12 +34,12 @@ export class TileService extends CollectionService<TileState> {
           const tileId = j + cols * i;
           if (tileId < max) {
             let type: RegionType = 'blank';
-            if (islandIds.includes(tileId)) type = 'island';
+            if (islandIds.includes(tileId)) type = 'islands';
             if (mountainsIds.includes(tileId)) type = 'mountains';
             if (rockiesIds.includes(tileId)) type = 'rockies';
             if (plainsIds.includes(tileId)) type = 'plains';
             if (swampsIds.includes(tileId)) type = 'swamps';
-            if (forestIds.includes(tileId)) type = 'forest';
+            if (forestIds.includes(tileId)) type = 'forests';
             const tile = createTile(tileId, j, i, type);
             tiles.push(tile);
           }

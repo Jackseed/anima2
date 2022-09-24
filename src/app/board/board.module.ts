@@ -255,57 +255,68 @@ export class BoardModule {
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/agility.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'carnivore',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/carnivore.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'flying',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/flying.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'giantism',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/giantism.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'hermaphrodite',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/hermaphrodite.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'hounds',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/hounds.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'intimidate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/intimidate.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'nest',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/nest.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'rallying',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/rallying.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'range',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/range.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'spontaneousGeneration',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/spontaneousGeneration.svg'
       )
-    );    this.matIconRegistry.addSvgIcon(
+    );
+    this.matIconRegistry.addSvgIcon(
       'submersible',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/submersible.svg'
@@ -327,6 +338,44 @@ export class BoardModule {
       'tunnel',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/tunnel.svg'
+      )
+    );
+
+    /// NEUTRALS
+    this.matIconRegistry.addSvgIcon(
+      'forests',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/forests.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'islands',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/islands.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'mountains',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/mountains.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'plains',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/plains.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'rockies',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/rockies.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'swamps',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/species/swamps.svg'
       )
     );
   }
