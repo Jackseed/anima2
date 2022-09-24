@@ -6,8 +6,9 @@
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
+    <!------------------- MIGRATION -------------------->
     <div class="relative" *ngIf="canMigrate$ | async">
-      <button mat-icon-button (click)="startMigration()">
+      <button id="migration" mat-icon-button (click)="startMigration()">
         <mat-icon svgIcon="migrate"></mat-icon>
       </button>
       <div
@@ -29,6 +30,7 @@
     <button *ngIf="!(canMigrate$ | async)" mat-icon-button>
       <mat-icon svgIcon="migrate-disable"></mat-icon>
     </button>
+    <!------------------- ASSIMILATION -------------------->
     <button
       *ngIf="canAssimilate$ | async"
       mat-icon-button
@@ -41,6 +43,7 @@
       <mat-icon svgIcon="assimilate-disable"></mat-icon>
     </button>
 
+    <!------------------- PROLIFERATION -------------------->
     <button
       *ngIf="canProliferate$ | async"
       mat-icon-button
@@ -53,6 +56,7 @@
       <mat-icon svgIcon="proliferate-disable"></mat-icon>
     </button>
 
+    <!------------------- ADAPTATION -------------------->
     <button
       *ngIf="canAdapt$ | async"
       mat-icon-button

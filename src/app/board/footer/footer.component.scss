@@ -1,24 +1,24 @@
 .mat-icon-button {
-  --s: 3rem + 2.5vmin;
-  width: calc(var(--s));
-  height: calc(var(--s));
-  line-height: calc(var(--s));
-
+  width: 25%;
+  height: 100%;
   .mat-icon {
-    font-size: calc(var(--s));
-    width: calc(var(--s));
-    height: calc(var(--s));
-    line-height: calc(var(--s));
+    position: relative;
+    width: 140%;
+    height: 100%;
+    left: -20%;
   }
+}
+
+#migration {
+  width: 100%;
 }
 
 .circle {
   width: 30px;
   height: 30px;
   background-color: #f59c27;
-  bottom: 0;
-  right: -20%;
-  bottom: -25%;
+  bottom: 20%;
+  right: 0;
   border-radius: 50%;
   border: solid white 3px;
 }
@@ -37,8 +37,8 @@
   height: calc(var(--s));
   line-height: calc(var(--s));
   position: absolute;
-  top: 60%;
-  left: 50%;
+  top: 50%;
+  left: 57%;
   transform: translate(-50%, -50%);
 
   .mat-icon {

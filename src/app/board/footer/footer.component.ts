@@ -52,6 +52,12 @@ export class FooterComponent implements OnInit {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'migrate-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/action-buttons/migrate-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'assimilate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/assimilate.svg'
@@ -61,6 +67,12 @@ export class FooterComponent implements OnInit {
       'assimilate-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/assimilate-disable.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'assimilate-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/action-buttons/assimilate-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -76,6 +88,12 @@ export class FooterComponent implements OnInit {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'proliferate-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/action-buttons/proliferate-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'adaptation',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/adaptation.svg'
@@ -85,6 +103,12 @@ export class FooterComponent implements OnInit {
       'adaptation-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/adaptation-disable.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'adaptation-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/action-buttons/adaptation-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(

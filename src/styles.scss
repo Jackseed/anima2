@@ -12,7 +12,8 @@ h2,
 h3,
 h4,
 p,
-span {
+span,
+textarea {
   font-family: "Grandstander", "Helvetica Neue", sans-serif;
 }
 
@@ -148,7 +149,7 @@ textarea {
   width: 200px !important;
   height: 80px !important;
   position: absolute;
-  top: 20%;
+  top: 70%;
   left: 20%;
 }
 
