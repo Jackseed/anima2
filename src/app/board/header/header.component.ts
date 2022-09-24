@@ -20,6 +20,12 @@ export class HeaderComponent implements OnInit {
     public dialog: MatDialog
   ) {
     this.matIconRegistry.addSvgIcon(
+      'species-circle',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/species-circle.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'active-specie',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/menu-buttons/active-specie.svg'
