@@ -11,11 +11,10 @@ import { iif, Observable, of, Subscription } from 'rxjs';
 import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 // States
 import { UserQuery } from 'src/app/auth/_state';
-import { Game, GameQuery, GameService, startState } from 'src/app/games/_state';
+import { Game, GameQuery, GameService } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
-import { Player, PlayerQuery, PlayerService } from '../players/_state';
+import { PlayerQuery, PlayerService } from '../players/_state';
 import {
-  Abilities,
   abilities,
   Species,
   SpeciesQuery,
@@ -35,8 +34,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
-  public players$: Observable<Player[]>;
-  public activeSpecies$: Observable<Species>;
   // Subscriptions
   private turnSub: Subscription;
   private activePlayerSub: Subscription;
@@ -74,14 +71,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.game$ = this.gameQuery.selectActive();
-    this.players$ = this.playerQuery.selectAll();
-    this.activeSpecies$ = this.speciesQuery.selectActive();
     this.activePlayerSub = this.getActivePlayerSub();
     this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.tiles$ = this.tileQuery
       .selectAll()
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
-    this.species$ = this.speciesQuery.selectAll();
 
     this.playingPlayerId = this.userQuery.getActiveId();
 
@@ -218,13 +212,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     }
 
     return url;
-  }
-
-  public getAbilityFrName(abilityId: Abilities) {
-    return abilities[abilityId].fr;
-  }
-  public getAbilityValue(abilityId: Abilities) {
-    return abilities[abilityId].value;
   }
 
   public get migrationCount(): number | firebase.firestore.FieldValue {

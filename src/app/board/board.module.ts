@@ -20,6 +20,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 // Libs
 import { PinchZoomModule } from 'ngx-pinch-zoom';
 import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimilation-menu.component';
+import { ScoreComponent } from './score/score.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimil
     SettingsComponent,
     ListComponent,
     AssimilationMenuComponent,
+    ScoreComponent,
   ],
   imports: [
     CommonModule,

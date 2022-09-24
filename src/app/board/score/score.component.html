@@ -1,0 +1,28 @@
+<h2>Tableau des scores</h2>
+<main *ngIf="game$ | async as game">
+  <h3>Partie</h3>
+  <li>Ère: {{ game.eraCount }}</li>
+  <li>Tours: {{ game.turnCount }}</li>
+  <h3>Tour en cours</h3>
+  <li>Joueur actif: {{ game.activePlayerId.slice(0, 4) }}</li>
+  <li *ngIf="activeSpecies$ | async as species">
+    Traits espèce active:
+    <span *ngFor="let abilityId of species.abilityIds; let isLast = last"
+      >{{ getAbilityFrName(abilityId) }}{{ isLast ? "" : ", " }}</span
+    >
+  </li>
+  <li>Actions restantes: {{ game.remainingActions }}</li>
+  <li>
+    Migration restantes:
+    <span *ngIf="(activeSpecies$ | async).abilityIds.includes('agility')">{{
+      game.migrationCount + getAbilityValue("agility")
+    }}</span>
+    <span *ngIf="!(activeSpecies$ | async).abilityIds.includes('agility')">{{
+      game.migrationCount
+    }}</span>
+  </li>
+  <h3>Joueurs</h3>
+  <li *ngFor="let player of players$ | async">
+    {{ player.id.slice(0, 4) }}: {{ player.score }}
+  </li>
+</main>

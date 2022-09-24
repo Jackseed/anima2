@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { SettingsComponent } from '../settings/settings.component';
 import { ListComponent } from '../species/list/list.component';
+import { ScoreComponent } from '../score/score.component';
 
 @Component({
   selector: 'app-header',
@@ -48,6 +49,14 @@ export class HeaderComponent implements OnInit {
       height: '90%',
       width: '80%',
       panelClass: ['custom-container', 'no-padding-bottom'],
+      autoFocus: false,
+    });
+  }
+
+  public openScore(): void {
+    const dialogRef = this.dialog.open(ScoreComponent, {
+      height: '60%',
+      panelClass: 'custom-container',
       autoFocus: false,
     });
   }
