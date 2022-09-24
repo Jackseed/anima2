@@ -1,12 +1,16 @@
 // Angular
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
+
 // Firebase
 import firebase from 'firebase/app';
+
 // Rxjs
 import { iif, Observable, of, Subscription } from 'rxjs';
 import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
+
 // States
 import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
@@ -28,10 +32,12 @@ import { Tile, TileQuery, TileService } from '../tiles/_state';
 export class BoardViewComponent implements OnInit, OnDestroy {
   // Variables
   public playingPlayerId: string;
+
   // Observables
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
+
   // Subscriptions
   private turnSub: Subscription;
   private activePlayerSub: Subscription;
@@ -185,14 +191,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   }
 
   public getSpeciesImgUrl(speciesId: string): string {
-    let url: string;
     const species = this.speciesQuery.getEntity(speciesId);
-
-    if (species.playerId === 'neutral') {
-      url = `/assets/abilities/${species.id}.svg`;
-    } else {
-      url = `/assets/abilities/${species.abilityIds[0]}.svg`;
-    }
+    const url = `/assets/abilities/${species.abilityIds[0]}.svg`;
 
     return url;
   }

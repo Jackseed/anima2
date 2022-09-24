@@ -31,9 +31,8 @@
   </section>
 </div>
 
-<pinch-zoom>
+<pinch-zoom [double-tap]="false">
   <main>
-
     <!------------ MAP -------------->
     <div class="no-font">
       <!------------ TILE -------------->
@@ -77,9 +76,9 @@
               class="species tile{{ i }}"
               style="--img: url({{ getSpeciesImgUrl(species.id) }});"
             >
-              <div class="species-quantity">
+              <!--               <div class="species-quantity">
                 {{ species.quantity }}
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
