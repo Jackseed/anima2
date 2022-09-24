@@ -1,4 +1,5 @@
 import firebase from 'firebase/app';
+import { Abilities } from 'src/app/board/species/_state';
 
 export interface Game {
   id?: string;
@@ -11,6 +12,8 @@ export interface Game {
   migrationCount: number | firebase.firestore.FieldValue;
   isStarting: boolean;
   startState: startState;
+  // any is used to fix a type error when saving abilities
+  inGameAbilities: Abilities[] | any;
 }
 
 export const actionPerTurn = 2;
@@ -33,6 +36,7 @@ export function createGame(params: Partial<Game>): Game {
     migrationCount,
     isStarting: true,
     startState: 'launching',
+    inGameAbilities: [],
     ...params,
   };
 }

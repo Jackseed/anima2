@@ -54,7 +54,6 @@ export class HomepageComponent implements OnInit {
 
   ngOnInit(): void {}
 
-
   // TODO: rename & include it in game creation
   public async playNow() {
     resetStores({ exclude: ['game'] });
@@ -62,7 +61,7 @@ export class HomepageComponent implements OnInit {
     await this.tileService
       .setTiles(gameId)
       .then(() => {
-        this.speciesService.setNeutrals(gameId);
+        this.gameService.setNeutrals(gameId);
         this.router.navigate([`/games/${gameId}`]);
       })
       .catch((error) => console.log('Neutral creation failed: ', error));

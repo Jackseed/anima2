@@ -17,9 +17,12 @@ import {
   PlayerQuery,
 } from 'src/app/board/players/_state';
 import {
+  Abilities,
   abilityIds,
   createSpecies,
+  neutrals,
   SpeciesQuery,
+  SpeciesService,
 } from 'src/app/board/species/_state';
 
 @Injectable({ providedIn: 'root' })
@@ -30,6 +33,7 @@ export class GameService extends CollectionService<GameState> {
     private query: GameQuery,
     private playerQuery: PlayerQuery,
     private speciesQuery: SpeciesQuery,
+    private speciesService: SpeciesService,
     private afAuth: AngularFireAuth
   ) {
     super(store);
@@ -48,12 +52,13 @@ export class GameService extends CollectionService<GameState> {
     const batch = this.db.firestore.batch();
 
     batch.set(gameRef, game);
-
+    
+    // TODO: move species creation later
+    // Creates user's species
     const speciesId = this.db.createId();
     const player = createPlayer(playerId, [speciesId]);
     batch.set(playerRef, player);
 
-    // TODO: move species creation later
     const speciesRef = this.db
       .collection(`games/${id}/species`)
       .doc(speciesId).ref;
@@ -67,6 +72,52 @@ export class GameService extends CollectionService<GameState> {
       console.log('Game creation failed: ', error);
     });
     return id;
+  }
+
+  // Adds random ability to neutrals, creates them and saves abilities.
+  public setNeutrals(gameId: string) {
+    let usedAbilities: Abilities[] = [];
+    neutrals.forEach((species) => {
+      const ability = this.getRandomAbility(usedAbilities);
+      const neutralSpecies = {
+        ...species,
+        abilityIds: [ability],
+      };
+      this.speciesService.addSpecies(neutralSpecies, gameId);
+      usedAbilities.push(ability);
+    });
+    this.saveUsedAbilities(usedAbilities, gameId);
+  }
+
+  // Needs to receive existing abilities while game creation,
+  // gets it from game object afterwards.
+  public getRandomAbility(existingAbilities?: Abilities[]): Abilities {
+    const usedAbilities = existingAbilities
+      ? existingAbilities
+      : this.query.getActive().inGameAbilities;
+
+    // Selects an ability only within unused abilities.
+    const availableAbilities = abilityIds.filter(
+      (ability) => !usedAbilities.includes(ability)
+    );
+
+    const randomAbility =
+      availableAbilities[Math.floor(Math.random() * availableAbilities.length)];
+
+    return randomAbility;
+  }
+
+  private async saveUsedAbilities(abilities: Abilities[], gameId: string) {
+    const newAbilities = firebase.firestore.FieldValue.arrayUnion(...abilities);
+
+    await this.collection
+      .doc(gameId)
+      .update({
+        inGameAbilities: newAbilities,
+      })
+      .catch((error) => {
+        console.log('Updating used abilities failed: ', error);
+      });
   }
 
   public async switchStartState(startState: startState) {

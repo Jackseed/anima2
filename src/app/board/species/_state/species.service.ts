@@ -3,7 +3,7 @@ import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 import { Tile, TileQuery } from '../../tiles/_state';
-import { neutrals, Species } from './species.model';
+import { Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import firebase from 'firebase/app';
 import { Game } from 'src/app/games/_state';
@@ -19,10 +19,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     super(store);
   }
 
-  public setNeutrals(gameId: string) {
-    neutrals.forEach((species) => this.addSpecies(species, gameId));
-  }
-
   public setActive(id: string) {
     this.store.setActive(id);
   }
@@ -31,13 +27,12 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
-  public async addSpecies(species: Species, gameId?: string): Promise<any> {
-    const gId = gameId ? gameId : this.routerQuery.getParams().id;
+  public async addSpecies(species: Species, gameId: string): Promise<any> {
     await this.db.firestore
       .runTransaction(async (transaction) => {
         // set species
         const speciesCollection = this.db.firestore.collection(
-          `games/${gId}/species`
+          `games/${gameId}/species`
         );
         const speciesRef = speciesCollection.doc(species.id);
 
@@ -45,7 +40,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         // get tiles from species
         for (const tileId of species.tileIds) {
           const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
-            `games/${gId}/tiles/${tileId.toString()}`
+            `games/${gameId}/tiles/${tileId.toString()}`
           );
           await transaction.get(tileDoc.ref).then((tileDoc) => {
             if (!tileDoc.exists) {
@@ -68,7 +63,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         // update tiles with speciesIds
         for (const tileId of uniqueTileIds) {
           const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
-            `games/${gId}/tiles/${tileId.toString()}`
+            `games/${gameId}/tiles/${tileId.toString()}`
           );
 
           const tileIndex = tiles.findIndex(
