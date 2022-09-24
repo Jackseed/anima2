@@ -32,6 +32,12 @@ export class HeaderComponent implements OnInit {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'active-species',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/active-species-wip.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'strategic-view',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/menu-buttons/strategic-view.svg'
