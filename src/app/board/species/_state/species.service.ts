@@ -1,12 +1,27 @@
+// Angular
 import { Injectable } from '@angular/core';
+
+// Angular Material
+import { MatDialog } from '@angular/material/dialog';
+
+// Angularfire
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
+
+// Firebase
+import firebase from 'firebase/app';
+
+// Akita
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
+
+// States
 import { Tile, TileQuery } from '../../tiles/_state';
 import { Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
-import firebase from 'firebase/app';
 import { Game } from 'src/app/games/_state';
+
+// Components
+import { ListComponent } from '../list/list.component';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/species' })
@@ -14,9 +29,22 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   constructor(
     store: SpeciesStore,
     private tileQuery: TileQuery,
-    private routerQuery: RouterQuery
+    private routerQuery: RouterQuery,
+    public dialog: MatDialog
   ) {
     super(store);
+  }
+
+  public openSpeciesList() {
+    const dialogRef = this.dialog.open(ListComponent, {
+      data: {
+        comp: 'passive-list',
+      },
+      height: '90%',
+      width: '80%',
+      panelClass: ['custom-container', 'no-padding-bottom'],
+      autoFocus: false,
+    });
   }
 
   public setActive(id: string) {

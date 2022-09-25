@@ -1,4 +1,5 @@
 export interface Tile {
+  // TODO: transform it as a number everywhere
   id: number;
   x?: number;
   y?: number;
@@ -23,7 +24,6 @@ export type RegionType = typeof regionIds[number];
 export const cols = 12;
 export const lines = 13;
 export const max = cols * lines;
-
 
 export const islandCoordinates: [x: number, y: number][] = [
   [8, 2],

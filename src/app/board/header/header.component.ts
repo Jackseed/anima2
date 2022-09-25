@@ -6,11 +6,10 @@ import { MatDialog } from '@angular/material/dialog';
 
 // Components
 import { SettingsComponent } from '../settings/settings.component';
-import { ListComponent } from '../species/list/list.component';
 import { ScoreComponent } from '../score/score.component';
 
 // States
-import { Species, SpeciesQuery } from '../species/_state';
+import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 
 // Rxjs
 import { Observable } from 'rxjs';
@@ -23,22 +22,18 @@ import { Observable } from 'rxjs';
 export class HeaderComponent implements OnInit {
   public activeSpecies$: Observable<Species>;
 
-  constructor(public dialog: MatDialog, private speciesQuery: SpeciesQuery) {}
+  constructor(
+    public dialog: MatDialog,
+    private speciesQuery: SpeciesQuery,
+    private speciesService: SpeciesService
+  ) {}
 
   ngOnInit(): void {
     this.activeSpecies$ = this.speciesQuery.selectActive();
   }
 
   public openSpeciesList(): void {
-    const dialogRef = this.dialog.open(ListComponent, {
-      data: {
-        comp: 'passive-list',
-      },
-      height: '90%',
-      width: '80%',
-      panelClass: ['custom-container', 'no-padding-bottom'],
-      autoFocus: false,
-    });
+    this.speciesService.openSpeciesList();
   }
 
   public openScore(): void {

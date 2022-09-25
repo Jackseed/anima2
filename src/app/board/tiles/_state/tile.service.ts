@@ -1,5 +1,10 @@
+// Angular
 import { Injectable } from '@angular/core';
+
+// Akita
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
+
+// States
 import {
   cols,
   max,
@@ -54,7 +59,8 @@ export class TileService extends CollectionService<TileState> {
     }
   }
 
-  public select(tileId: number) {
+  public selectTile(tileId: number) {
+    this.removeReachable();
     this.store.setActive(tileId.toString());
   }
 

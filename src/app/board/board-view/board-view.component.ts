@@ -4,9 +4,6 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-// Firebase
-import firebase from 'firebase/app';
-
 // Rxjs
 import { iif, Observable, of, Subscription } from 'rxjs';
 import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
@@ -16,12 +13,7 @@ import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
 import { PlayerQuery, PlayerService } from '../players/_state';
-import {
-  abilities,
-  Species,
-  SpeciesQuery,
-  SpeciesService,
-} from '../species/_state';
+import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 
 @Component({
@@ -111,83 +103,35 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
+  // PLAY - Master function
+  // Dispatches clicks on tiles depending on the situation
   public async play(tileId: number) {
-    const activeSpecies = this.speciesQuery.getActive();
-    const tile = this.tileQuery.getEntity(tileId.toString());
-    const game = this.gameQuery.getActive();
-    const activePlayerId = game.activePlayerId;
-    const isSelectingStartingTile =
-      game.isStarting && tile.isReachable && game.startState === 'tileChoice';
+    // Dismisses clicks on blank tiles.
+    if (this.tileQuery.isBlank(tileId)) return;
 
-    // Click on a blank tile.
-    if (tile.type === 'blank') return;
-
-    // Click during the other player turn.
-    if (activePlayerId !== this.playingPlayerId) {
-      this.snackbar.open("Ce n'est pas à votre tour.", null, {
+    // Dismisses clicks during other player turn.
+    if (!this.playerQuery.isActive(this.playingPlayerId))
+      return this.snackbar.open("Ce n'est pas à votre tour.", null, {
         duration: 3000,
       });
-      return;
-    }
 
-    if (isSelectingStartingTile)
+    // Game start: selects the starting tile.
+    if (this.playService.isSelectingStartingTile(tileId))
       return this.playService.selectStartTile(tileId);
 
-    // checks if a unit is active & tile reachable & migration count > 1
-    if (this.tileQuery.hasActive() && tile.isReachable) {
-      // MIGRATION
-      // check move limit then migrates
-      if (this.migrationCount) {
-        const activeTileId = this.tileQuery.getActiveId();
-        await this.migrate(
-          game,
-          activeSpecies.id,
-          Number(activeTileId),
-          tileId,
-          1
-        );
-      }
-    }
-    // checks if the tile includes an active species
-    if (activeSpecies.tileIds.includes(tileId)) {
-      // then selects the tile if it wasn't already.
-      if (!this.isActive(tileId)) {
-        this.tileService.removeReachable();
-        this.tileService.select(tileId);
-      }
-    }
-  }
+    // Migration
+    if (this.playService.isMigrationValid(tileId))
+      return await this.playService.migrate(tileId, 1);
 
-  public isActive(tileId: number): boolean {
-    return this.tileQuery.hasActive(tileId.toString());
-  }
+    // Dismisses clicks on empty tiles.
+    if (this.tileQuery.isEmpty(tileId)) return;
 
-  private async migrate(
-    game: Game,
-    speciesId: string,
-    previousTileId: number,
-    newTileId: number,
-    quantity: number
-  ) {
-    this.tileService.removeActive();
-    this.tileService.removeReachable();
+    // Tile selection
+    if (this.playService.isSelectionValid(tileId))
+      return this.tileService.selectTile(tileId);
 
-    this.speciesService
-      .move(game, speciesId, previousTileId, newTileId, quantity)
-      .then(async () => {
-        this.snackbar.open('Migration effectuée !', null, {
-          duration: 800,
-          panelClass: 'orange-snackbar',
-        });
-        this.tileService.resetRange();
-        // update remainingActions if that's the last migrationCount
-        if (+this.migrationCount + 1 === quantity) {
-          this.gameService.decrementRemainingActions();
-        }
-      })
-      .catch((error) => {
-        console.log('Migration failed: ', error);
-      });
+    // Otherwise, opens species menu.
+    this.speciesService.openSpeciesList();
   }
 
   public getSpeciesImgUrl(speciesId: string): string {
@@ -197,14 +141,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return url;
   }
 
-  public get migrationCount(): number | firebase.firestore.FieldValue {
-    const activeSpecies = this.speciesQuery.getActive();
-    const activeAbilities = activeSpecies.abilityIds;
-    const game = this.gameQuery.getActive();
-
-    return activeAbilities.includes('agility')
-      ? +game.migrationCount + abilities['agility'].value
-      : game.migrationCount;
+  public isActive(tileId: number) {
+    return this.tileQuery.isActive(tileId);
   }
 
   public validateStartTile() {
@@ -215,7 +153,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.playService.setStartTileChoice();
   }
 
-  // Cancel tile focus when using "esc" on keyboard
+  // Cancels tile focus when using "esc" on keyboard.
   @HostListener('document:keydown', ['$event']) onKeydownHandler(
     event: KeyboardEvent
   ) {

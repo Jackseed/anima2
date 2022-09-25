@@ -1,12 +1,14 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
 
-// App
+// Components
 import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
-import { PlayService } from '../play.service';
 import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimilation-menu.component';
+
+// States
 import { GameQuery } from 'src/app/games/_state';
-import { TileQuery, TileService } from '../tiles/_state';
+import { TileService } from '../tiles/_state';
+import { PlayService } from '../play.service';
 
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
@@ -30,7 +32,6 @@ export class FooterComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    private tileQuery: TileQuery,
     private gameQuery: GameQuery,
     private playService: PlayService,
     private tileService: TileService
@@ -40,7 +41,7 @@ export class FooterComponent implements OnInit {
     this.migrationCount$ = this.gameQuery
       .selectActive()
       .pipe(map((game) => Number(game.migrationCount)));
-    this.isMigrationActive$ = this.tileQuery.isMigrationActive$;
+    this.isMigrationActive$ = this.playService.isMigrationOngoing$;
 
     this.canMigrate$ = this.playService.canMigrate$;
     this.canProliferate$ = this.playService.canProliferate$;
