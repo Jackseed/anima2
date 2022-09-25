@@ -1,6 +1,7 @@
 <button mat-icon-button id="close-button" (click)="close()">
   <mat-icon id="close-icon" svgIcon="close"></mat-icon>
 </button>
+<!---------------- SPECIES LIST -------------->
 <main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
   <section
     fxFlex="68"
@@ -10,12 +11,14 @@
     fxLayoutGap="12px"
     class="margin-top"
   >
+    <!---------------- SPECIES -------------->
     <article
       *ngFor="let specie of species; index as i"
       fxFlex="25"
       fxLayout="row"
       fxLayoutAlign="center center"
     >
+      <!---------------- SPECIES ICON -------------->
       <div class="specie relative">
         <button
           fxFlexFill
@@ -33,7 +36,7 @@
           <div class="figures">3</div>
         </div>
       </div>
-
+      <!---------------- SPECIES ABILITIES -------------->
       <div
         class="box"
         fxLayout="row"
@@ -48,9 +51,7 @@
           (click)="activate('ability', i)"
         >
           <div *ngIf="ability !== active">
-            <mat-icon
-              [svgIcon]="ability.icon"
-            ></mat-icon>
+            <mat-icon [svgIcon]="ability.icon"></mat-icon>
           </div>
           <div *ngIf="ability === active">
             <mat-icon [svgIcon]="ability.activeIcon"></mat-icon>

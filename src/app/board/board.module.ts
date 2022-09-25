@@ -81,9 +81,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'strategic-view',
+      'score-button',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/strategic-view.svg'
+        '../../../assets/menu-buttons/score-button.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(

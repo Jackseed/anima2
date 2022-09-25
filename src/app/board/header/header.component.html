@@ -1,5 +1,6 @@
 <div class="sidebar" fxFlexFill fxLayout="row" fxLayoutAlign="start center">
   <div fxFlex="55" class="container relative">
+    <!---------------- ACTIVE SPECIES ICON -------------->
     <button
       *ngIf="activeSpecies$ | async as activeSpecies"
       mat-icon-button
@@ -7,8 +8,12 @@
       (click)="openSpeciesList()"
     >
       <mat-icon id="circle" svgIcon="species-circle"></mat-icon>
-      <mat-icon id="active-species" [svgIcon]="activeSpecies.abilityIds[0]"></mat-icon>
+      <mat-icon
+        id="active-species"
+        [svgIcon]="activeSpecies.abilityIds[0]"
+      ></mat-icon>
     </button>
+    <!---------------- ACTIVE SPECIES ABILITIES -------------->
     <div
       class="small-text-box absolute"
       fxLayout="row"
@@ -32,6 +37,7 @@
       ></div>
       <div fxFlex="7" class="orange" fxLayout="column">
         <div fxFlex="20"></div>
+        <!---------------- REMAINING ACTIONS -------------->
         <div
           fxFlex="25"
           class="species"
@@ -48,12 +54,14 @@
     </div>
   </div>
   <div fxFlex="18"></div>
+  <!---------------- SCORE BUTTON -------------->
   <div fxFlex="15">
     <button mat-icon-button class="score-button" (click)="openScore()">
-      <mat-icon svgIcon="strategic-view"></mat-icon>
+      <mat-icon svgIcon="score-button"></mat-icon>
     </button>
   </div>
   <div fxFlex="1"></div>
+  <!---------------- SETTINGS BUTTON -------------->
   <div fxFlex="7">
     <button mat-icon-button class="menu-button" (click)="openSettings()">
       <mat-icon svgIcon="menu-button"></mat-icon>
