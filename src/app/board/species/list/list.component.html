@@ -19,16 +19,17 @@
       fxLayoutAlign="center center"
     >
       <!---------------- SPECIES ICON -------------->
-      <div class="specie relative">
+      <div class="species relative">
         <button
           fxFlexFill
           mat-icon-button
           (click)="activate('specie', i)"
           [disabled]="this.data.comp === 'passive-list'"
         >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
-            fxFlexFill
-            [svgIcon]="specie.icon"
+            id="species-icon"
+            svgIcon="agility"
             [ngClass]="{ activeSpecie: specie === active }"
           ></mat-icon>
         </button>

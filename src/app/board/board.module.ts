@@ -95,6 +95,12 @@ export class BoardModule {
 
     // SPECIES LIST
     this.matIconRegistry.addSvgIcon(
+      'hex',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/species-hex.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'specie1',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../../assets/specie1.svg'
