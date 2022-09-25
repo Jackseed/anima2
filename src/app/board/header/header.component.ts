@@ -1,5 +1,5 @@
 // Angular
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
 
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
@@ -12,24 +12,39 @@ import { ScoreComponent } from '../score/score.component';
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 
 // Rxjs
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { Player, PlayerQuery } from '../players/_state';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
+  @HostBinding('style.--primary-color')
+  public primaryColor: string;
+
+  @HostBinding('style.--secondary-color')
+  public secondaryColor: string;
+
+  private activePlayer$: Observable<Player>;
   public activeSpecies$: Observable<Species>;
+  private colorSub: Subscription;
 
   constructor(
     public dialog: MatDialog,
     private speciesQuery: SpeciesQuery,
-    private speciesService: SpeciesService
+    private speciesService: SpeciesService,
+    private playerQuery: PlayerQuery
   ) {}
 
   ngOnInit(): void {
     this.activeSpecies$ = this.speciesQuery.selectActive();
+    this.activePlayer$ = this.playerQuery.selectActive();
+    this.colorSub = this.activePlayer$.subscribe((player) => {
+      this.primaryColor = player?.primaryColor;
+      this.secondaryColor = player?.secondaryColor;
+    });
   }
 
   public openSpeciesList(): void {
@@ -50,5 +65,9 @@ export class HeaderComponent implements OnInit {
       panelClass: 'custom-container',
       autoFocus: false,
     });
+  }
+
+  ngOnDestroy(): void {
+    this.colorSub.unsubscribe();
   }
 }

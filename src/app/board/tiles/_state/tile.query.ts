@@ -131,6 +131,7 @@ export class TileQuery extends QueryEntity<TileState> {
   // Returns the quantity of a given species on the active tile.
   public getActiveTileSpeciesCount(species: Species): number {
     const tile = this.getActive();
+    if (!!!tile) return;
     const tileSpecies = tile.species;
 
     const filteredSpecies = tileSpecies.filter(

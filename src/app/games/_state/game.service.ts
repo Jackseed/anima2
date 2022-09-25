@@ -46,19 +46,27 @@ export class GameService extends CollectionService<GameState> {
     const playerRef = this.db
       .collection(`games/${id}/players`)
       .doc(playerId).ref;
+    const primaryColor = '#35A4B5';
+    const secondaryColor = '#2885A1';
     // TODO: randomize first player
     const game = createGame({ id, name, playerIds, activePlayerId: playerId });
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const batch = this.db.firestore.batch();
 
     batch.set(gameRef, game);
-    
+
     // TODO: move species creation later
-    // Creates user's species
+    // Creates players.
     const speciesId = this.db.createId();
-    const player = createPlayer(playerId, [speciesId]);
+    const player = createPlayer(
+      playerId,
+      [speciesId],
+      primaryColor,
+      secondaryColor
+    );
     batch.set(playerRef, player);
 
+    // Creates user's species.
     const speciesRef = this.db
       .collection(`games/${id}/species`)
       .doc(speciesId).ref;
