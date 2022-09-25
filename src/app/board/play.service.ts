@@ -9,10 +9,10 @@ import firebase from 'firebase/app';
 
 // Rxjs
 import { combineLatest, Observable, Subscription } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 
 // States
-import { Game, GameQuery, GameService } from '../games/_state';
+import { GameQuery, GameService } from '../games/_state';
 import {
   abilities,
   Species,
@@ -42,9 +42,20 @@ export class PlayService {
     return game$
       .pipe(
         tap((game) => {
+          // Acts only on starting game.
           if (!game.isStarting) return;
-          if (game.startState === 'launching') this.setStartTileChoice();
-        })
+
+          // Applies tile selection if it's a new game,
+          // if it's the current state (for reloads),
+          // if a tile was selected but lost after a reload.
+          if (
+            game.startState === 'launching' ||
+            game.startState === 'tileChoice' ||
+            (game.startState === 'tileSelected' && !this.tileQuery.hasActive())
+          )
+            this.setStartTileChoice();
+        }),
+        first()
       )
       .subscribe();
   }
@@ -133,6 +144,7 @@ export class PlayService {
         if (+this.migrationCount + 1 === quantity) {
           this.gameService.decrementRemainingActions();
         }
+        this.tileService.selectTile(destinationId);
       })
       .catch((error) => {
         console.log('Migration failed: ', error);
