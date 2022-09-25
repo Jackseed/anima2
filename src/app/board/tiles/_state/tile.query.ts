@@ -12,6 +12,7 @@ import {
 // States
 import { cols, islandBridgeIds, Tile } from './tile.model';
 import { TileStore, TileState, TileUI, TileUIState } from './tile.store';
+import { Species } from '../../species/_state/species.model';
 
 @Injectable({ providedIn: 'root' })
 @QueryConfig({
@@ -125,5 +126,16 @@ export class TileQuery extends QueryEntity<TileState> {
   // Checks if a tile is active.
   public isActive(tileId: number): boolean {
     return this.hasActive(tileId.toString());
+  }
+
+  // Returns the quantity of a given species on the active tile.
+  public getActiveTileSpeciesCount(species: Species): number {
+    const tile = this.getActive();
+    const tileSpecies = tile.species;
+
+    const filteredSpecies = tileSpecies.filter(
+      (tileSpecies) => tileSpecies.id === species.id
+    )[0];
+    return filteredSpecies.quantity;
   }
 }

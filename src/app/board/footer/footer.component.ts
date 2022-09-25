@@ -71,6 +71,7 @@ export class FooterComponent implements OnInit {
       data: {
         listType: 'active',
         species,
+        speciesCount: 'tile'
       },
       autoFocus: false,
       backdropClass: 'transparent-backdrop',
