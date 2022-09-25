@@ -24,7 +24,7 @@
           fxFlexFill
           mat-icon-button
           (click)="activate('specie', i)"
-          [disabled]="this.data.comp === 'passive-list'"
+          [disabled]="this.data.listType === 'passive'"
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
@@ -64,7 +64,7 @@
   <aside
     fxFlex="32"
     fxFlexFill
-    [ngClass]="{ 'no-padding-width': data.comp === 'passive-list' }"
+    [ngClass]="{ 'no-padding-width': data.listType === 'passive' }"
   >
     <!---------------------- DEFINITION - ACTIVE ABILITY ONLY ---------------------->
     <div

@@ -5,6 +5,14 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+// States
+import { Species } from '../../../board/species/_state';
+
+export interface dataType {
+  listType: 'active' | 'passive';
+  species: Species[];
+}
+
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
@@ -70,7 +78,7 @@ export class ListComponent implements OnInit {
   } = {};
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: dataType,
     public dialogRef: MatDialogRef<ListComponent>,
     private snackbar: MatSnackBar
   ) {}

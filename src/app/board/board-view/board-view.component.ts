@@ -131,7 +131,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       return this.tileService.selectTile(tileId);
 
     // Otherwise, opens species menu.
-    this.speciesService.openSpeciesList();
+    this.speciesService.openSpeciesList(tileId);
   }
 
   public getSpeciesImgUrl(speciesId: string): string {

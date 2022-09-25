@@ -15,10 +15,11 @@ import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { Tile, TileQuery } from '../../tiles/_state';
 import { Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
+import { SpeciesQuery } from './species.query';
 import { Game } from 'src/app/games/_state';
+import { Tile, TileQuery } from '../../tiles/_state';
 
 // Components
 import { ListComponent } from '../list/list.component';
@@ -28,6 +29,7 @@ import { ListComponent } from '../list/list.component';
 export class SpeciesService extends CollectionService<SpeciesState> {
   constructor(
     store: SpeciesStore,
+    private query: SpeciesQuery,
     private tileQuery: TileQuery,
     private routerQuery: RouterQuery,
     public dialog: MatDialog
@@ -35,10 +37,16 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     super(store);
   }
 
-  public openSpeciesList() {
-    const dialogRef = this.dialog.open(ListComponent, {
+  // Opens species list, either global or on a specific tile.
+  public openSpeciesList(tileId?: number) {
+    const species: Species[] = tileId
+      ? this.query.getTileSpecies(tileId)
+      : this.query.getAll();
+
+    this.dialog.open(ListComponent, {
       data: {
-        comp: 'passive-list',
+        listType: 'passive',
+        species,
       },
       height: '90%',
       width: '80%',

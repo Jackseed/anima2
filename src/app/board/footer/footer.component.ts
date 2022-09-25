@@ -7,8 +7,9 @@ import { AssimilationMenuComponent } from '../abilities/assimilation-menu/assimi
 
 // States
 import { GameQuery } from 'src/app/games/_state';
-import { TileService } from '../tiles/_state';
+import { TileQuery, TileService } from '../tiles/_state';
 import { PlayService } from '../play.service';
+import { SpeciesQuery } from '../species/_state';
 
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
@@ -34,7 +35,9 @@ export class FooterComponent implements OnInit {
     public dialog: MatDialog,
     private gameQuery: GameQuery,
     private playService: PlayService,
-    private tileService: TileService
+    private tileService: TileService,
+    private tileQuery: TileQuery,
+    private speciesQuery: SpeciesQuery
   ) {}
 
   ngOnInit(): void {
@@ -61,9 +64,13 @@ export class FooterComponent implements OnInit {
   }
 
   public openAssimilationMenu(): void {
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const species = this.speciesQuery.getTileSpecies(activeTileId);
+
     this.dialog.open(AssimilationMenuComponent, {
       data: {
-        comp: 'assimilation',
+        listType: 'active',
+        species,
       },
       autoFocus: false,
       backdropClass: 'transparent-backdrop',
