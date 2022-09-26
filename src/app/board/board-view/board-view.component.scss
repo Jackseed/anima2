@@ -85,10 +85,11 @@ footer {
 }
 
 .species {
-  background-image: var(--img);
+  /*   background-image: var(--img);
   background-position: center;
   background-size: 50%;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; */
+  color: var(--color);
   z-index: 0;
   display: flex;
   justify-content: center;

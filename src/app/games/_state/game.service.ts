@@ -72,7 +72,13 @@ export class GameService extends CollectionService<GameState> {
       .doc(speciesId).ref;
     const randomAbility =
       abilityIds[Math.floor(Math.random() * abilityIds.length)];
-    const species = createSpecies(speciesId, playerId, [randomAbility], []);
+    const species = createSpecies(
+      speciesId,
+      playerId,
+      [randomAbility],
+      [],
+      primaryColor
+    );
     batch.set(speciesRef, species);
 
     // Create the game

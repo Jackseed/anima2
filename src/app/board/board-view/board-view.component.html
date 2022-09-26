@@ -74,8 +74,14 @@
           >
             <div
               class="species tile{{ i }}"
-              style="--img: url({{ getSpeciesImgUrl(species.id) }});"
+              style="--img: url({{ getSpeciesImgUrl(species.id) }}); --color: {{
+                species.color
+              }}"
             >
+              <mat-icon
+                fxFlexFill
+                [svgIcon]="species.abilityId + '-ability'"
+              ></mat-icon>
               <!--               <div class="species-quantity">
                 {{ species.quantity }}
               </div> -->

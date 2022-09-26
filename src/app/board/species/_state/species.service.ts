@@ -56,6 +56,8 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     });
   }
 
+  // TODO: clean this service
+
   public setActive(id: string) {
     this.store.setActive(id);
   }
@@ -111,7 +113,9 @@ export class SpeciesService extends CollectionService<SpeciesState> {
           let newSpecies = this.getUpdatedSpeciesOnTile(
             tile,
             species.id,
-            tileSpecies[tileId]
+            tileSpecies[tileId],
+            species.color,
+            species.abilityIds[0]
           );
 
           transaction.update(tileDoc.ref, { species: newSpecies });
@@ -126,8 +130,10 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   public getUpdatedSpeciesOnTile(
     tile: Tile,
     speciesId: string,
-    quantity: number
-  ): { id: string; quantity: number }[] {
+    quantity: number,
+    color: string,
+    abilityId: string
+  ): { id: string; quantity: number; color: string; abilityId: string }[] {
     let updatedSpecies = [];
     // check if the tile already have species
     if (tile.species) {
@@ -139,6 +145,8 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         updatedSpecies = tile.species.concat({
           id: speciesId,
           quantity,
+          color,
+          abilityId,
         });
         // if so, increment quantity
       } else {
@@ -160,6 +168,8 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       updatedSpecies = tile.species.concat({
         id: speciesId,
         quantity,
+        color,
+        abilityId,
       });
     }
     return updatedSpecies;
@@ -167,11 +177,17 @@ export class SpeciesService extends CollectionService<SpeciesState> {
 
   // TODO: mb change tileIds for quantity on species?
   // TODO: rename func
-  public async proliferate(id: string, tileId: number, quantity: number) {
+  public async proliferate(
+    speciesId: string,
+    tileId: number,
+    quantity: number
+  ) {
+    const species = this.query.getEntity(speciesId);
+    console.log('proliferating ', species);
     const batch = this.db.firestore.batch();
     // update species tileIds
     const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
-      `games/${this.routerQuery.getParams().id}/species/${id}`
+      `games/${this.routerQuery.getParams().id}/species/${speciesId}`
     );
     let tileIds = (await speciesDoc.get().toPromise()).data().tileIds;
     for (let i = 0; i < quantity; i++) {
@@ -184,10 +200,19 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       `games/${this.routerQuery.getParams().id}/tiles/${tileId}`
     );
     const tile = this.tileQuery.getEntity(tileId.toString());
-    const species = this.getUpdatedSpeciesOnTile(tile, id, quantity);
-    batch.update(tileDoc.ref, { species });
+    const updatedSpecies = this.getUpdatedSpeciesOnTile(
+      tile,
+      speciesId,
+      quantity,
+      species.color,
+      species.abilityIds[0]
+    );
+    console.log('updated species: ', updatedSpecies);
+    batch.update(tileDoc.ref, { species: updatedSpecies });
 
-    return batch.commit();
+    return batch
+      .commit()
+      .catch((err) => console.log('Proliferate failed ', err));
   }
 
   public async move(
@@ -197,6 +222,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     newTileId: number,
     quantity: number
   ) {
+    const species = this.query.getEntity(speciesId);
     const batch = this.db.firestore.batch();
     // update species tileIds
     const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
@@ -222,7 +248,9 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const previousSpecies = this.getUpdatedSpeciesOnTile(
       previousTile,
       speciesId,
-      -quantity
+      -quantity,
+      species.color,
+      species.abilityIds[0]
     );
     batch.update(previousTileDoc.ref, { species: previousSpecies });
 
@@ -231,7 +259,13 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       `games/${game.id}/tiles/${newTileId}`
     );
     const tile = this.tileQuery.getEntity(newTileId.toString());
-    const newSpecies = this.getUpdatedSpeciesOnTile(tile, speciesId, quantity);
+    const newSpecies = this.getUpdatedSpeciesOnTile(
+      tile,
+      speciesId,
+      quantity,
+      species.color,
+      species.abilityIds[0]
+    );
     batch.update(newTileDoc.ref, { species: newSpecies });
 
     // update migration count

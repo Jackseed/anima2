@@ -7,6 +7,8 @@ export interface Tile {
   species?: {
     id: string;
     quantity: number;
+    color: string;
+    abilityId: string;
   }[];
   isReachable?: boolean;
 }

@@ -5,6 +5,7 @@ export interface Species {
   tileIds?: number[];
   playerId?: string;
   abilityIds?: Abilities[];
+  color?: string;
 }
 
 export const abilityIds = [
@@ -180,10 +181,13 @@ export const forestNeutralCoordinates: [x: number, y: number][] = [
   [8, 3],
 ];
 
+const neutralColor = 'grey';
+
 export const neutrals: Species[] = [
   {
     id: 'rockies',
     playerId: 'neutral',
+    color: neutralColor,
     tileIds: rockiesNeutralCoordinates.map(
       (coordinates) => coordinates[0] + coordinates[1] * cols
     ),
@@ -191,6 +195,7 @@ export const neutrals: Species[] = [
   {
     id: 'mountains',
     playerId: 'neutral',
+    color: neutralColor,
     tileIds: mountainsNeutralCoordinates.map(
       (coordinates) => coordinates[0] + coordinates[1] * cols
     ),
@@ -198,6 +203,7 @@ export const neutrals: Species[] = [
   {
     id: 'islands',
     playerId: 'neutral',
+    color: neutralColor,
     tileIds: islandNeutralCoordinates.map(
       (coordinates) => coordinates[0] + coordinates[1] * cols
     ),
@@ -205,6 +211,7 @@ export const neutrals: Species[] = [
   {
     id: 'plains',
     playerId: 'neutral',
+    color: neutralColor,
     tileIds: plainsNeutralCoordinates.map(
       (coordinates) => coordinates[0] + coordinates[1] * cols
     ),
@@ -212,6 +219,7 @@ export const neutrals: Species[] = [
   {
     id: 'swamps',
     playerId: 'neutral',
+    color: neutralColor,
     tileIds: swampsNeutralCoordinates.map(
       (coordinates) => coordinates[0] + coordinates[1] * cols
     ),
@@ -220,6 +228,7 @@ export const neutrals: Species[] = [
   {
     id: 'forests',
     playerId: 'neutral',
+    color: neutralColor,
     tileIds: forestNeutralCoordinates.map(
       (coordinates) => coordinates[0] + coordinates[1] * cols
     ),
@@ -231,6 +240,7 @@ export function createSpecies(
   playerId?: string,
   abilityIds?: Abilities[],
   tileIds?: number[],
+  color?: string,
   params?: Partial<Species>
 ): Species {
   return {
@@ -238,6 +248,7 @@ export function createSpecies(
     playerId,
     abilityIds,
     tileIds,
+    color,
     ...params,
   };
 }

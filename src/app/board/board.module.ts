@@ -347,41 +347,101 @@ export class BoardModule {
       )
     );
 
-    /// NEUTRALS
+    /// ABILITIES
     this.matIconRegistry.addSvgIcon(
-      'forests',
+      'acceleration-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/forests.svg'
+        '../../../assets/abilities/acceleration.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'islands',
+      'agility-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/islands.svg'
+        '../../../assets/abilities/agility.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'mountains',
+      'carnivore-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/mountains.svg'
+        '../../../assets/abilities/carnivore.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'plains',
+      'flying-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/plains.svg'
+        '../../../assets/abilities/flying.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'rockies',
+      'giantism-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/rockies.svg'
+        '../../../assets/abilities/giantism.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'swamps',
+      'hermaphrodite-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/swamps.svg'
+        '../../../assets/abilities/hermaphrodite.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'hounds-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/hounds.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'intimidate-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/intimidate.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'nest-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/nest.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'rallying-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/rallying.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'range-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/range.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'spontaneousGeneration-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/spontaneousGeneration.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'submersible-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/submersible.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'survival-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/survival.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'symbiosis-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/symbiosis.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'tunnel-ability',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/tunnel.svg'
       )
     );
   }
