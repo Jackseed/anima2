@@ -18,6 +18,7 @@ export interface dataType {
   listType: 'active' | 'passive';
   species: Species[];
   speciesCount: 'global' | 'tile';
+  tileId?: number;
 }
 
 @Component({
@@ -89,7 +90,7 @@ export class ListComponent implements OnInit {
   public getSpeciesCount(species: Species) {
     if (this.data.speciesCount === 'global') return species.tileIds.length;
 
-    return this.tileQuery.getActiveTileSpeciesCount(species);
+    return this.tileQuery.getTileSpeciesCount(species, this.data.tileId);
   }
 
   public activate(object: 'ability' | 'species', i: number) {

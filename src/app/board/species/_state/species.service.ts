@@ -48,6 +48,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         listType: 'passive',
         species,
         speciesCount: tileId ? 'tile' : 'global',
+        tileId
       },
       height: '90%',
       width: '80%',
