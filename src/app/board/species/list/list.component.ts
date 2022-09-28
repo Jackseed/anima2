@@ -6,7 +6,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
-import { Species } from '../../../board/species/_state';
+import {
+  primaryNeutralColor,
+  secondaryNeutralColor,
+  Species,
+} from '../../../board/species/_state/species.model';
+import { PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
 
 export interface dataType {
@@ -56,11 +61,30 @@ export class ListComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: dataType,
     public dialogRef: MatDialogRef<ListComponent>,
     private snackbar: MatSnackBar,
-    private tileQuery: TileQuery
+    private tileQuery: TileQuery,
+    private playerQuery: PlayerQuery
   ) {}
 
   ngOnInit(): void {}
 
+  // Gets species' player colors
+  public getSpeciesColors(
+    species: Species,
+    color: 'primary' | 'secondary'
+  ): string {
+    const player =
+      species?.playerId === 'neutral'
+        ? 'neutral'
+        : this.playerQuery.getEntity(species.playerId);
+    if (color === 'primary') {
+      if (player === 'neutral') return primaryNeutralColor;
+      return player.primaryColor;
+    }
+    if (color === 'secondary') {
+      if (player === 'neutral') return secondaryNeutralColor;
+      return player.secondaryColor;
+    }
+  }
   // Either returns the global species quantity or the tile species quantity
   public getSpeciesCount(species: Species) {
     if (this.data.speciesCount === 'global') return species.tileIds.length;
@@ -68,11 +92,11 @@ export class ListComponent implements OnInit {
     return this.tileQuery.getActiveTileSpeciesCount(species);
   }
 
-  public activate(object: 'ability' | 'specie', i: number) {
+  public activate(object: 'ability' | 'species', i: number) {
     // Activates the selected object and de-activates others.
     if (object === 'ability') {
       this.active = this.abilities[i];
-    } else if (object === 'specie') {
+    } else if (object === 'species') {
       //this.active = this.species[i];
     }
   }

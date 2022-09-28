@@ -35,7 +35,7 @@ export class PlayService {
     private snackbar: MatSnackBar
   ) {}
 
-  // Organizes the first steps of the game.
+  // GAME STATE - Organizes the first steps of the game.
   // GAME STATE - Launching
   public getStartGameSub(): Subscription {
     const game$ = this.gameQuery.selectActive();

@@ -182,6 +182,8 @@ export const forestNeutralCoordinates: [x: number, y: number][] = [
 ];
 
 const neutralColor = 'grey';
+export const primaryNeutralColor = '#bfbfbf';
+export const secondaryNeutralColor = '#9b9b9b';
 
 export const neutrals: Species[] = [
   {

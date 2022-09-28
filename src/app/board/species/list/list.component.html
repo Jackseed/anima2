@@ -13,7 +13,7 @@
   >
     <!---------------- SPECIES -------------->
     <article
-      *ngFor="let specie of data.species; index as i"
+      *ngFor="let species of data.species; index as i"
       fxFlex="25"
       fxLayout="row"
       fxLayoutAlign="center center"
@@ -23,18 +23,23 @@
         <button
           fxFlexFill
           mat-icon-button
-          (click)="activate('specie', i)"
+          (click)="activate('species', i)"
           [disabled]="data.listType === 'passive'"
         >
-          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            fxFlexFill
+            svgIcon="hex"
+            style="--primary-color: {{
+              getSpeciesColors(species, 'primary')
+            }}; --secondary-color: {{ getSpeciesColors(species, 'secondary') }}"
+          ></mat-icon>
           <mat-icon
             id="species-icon"
-            [svgIcon]="specie.abilityIds[0]"
-            [ngClass]="{ activeSpecie: specie === active }"
+            [svgIcon]="species.abilityIds[0]"
           ></mat-icon>
         </button>
         <div class="absolute circle" fxLayoutAlign="center center">
-          <div class="figures">{{ getSpeciesCount(specie) }}</div>
+          <div class="figures">{{ getSpeciesCount(species) }}</div>
         </div>
       </div>
       <!---------------- SPECIES ABILITIES -------------->

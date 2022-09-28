@@ -18,7 +18,7 @@ import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 import { Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
-import { Game } from 'src/app/games/_state';
+import { Game } from 'src/app/games/_state/game.model';
 import { Tile, TileQuery } from '../../tiles/_state';
 
 // Components
@@ -183,7 +183,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     quantity: number
   ) {
     const species = this.query.getEntity(speciesId);
-    console.log('proliferating ', species);
+
     const batch = this.db.firestore.batch();
     // update species tileIds
     const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
@@ -207,7 +207,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       species.color,
       species.abilityIds[0]
     );
-    console.log('updated species: ', updatedSpecies);
+
     batch.update(tileDoc.ref, { species: updatedSpecies });
 
     return batch
