@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 // Rxjs
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { PlayerQuery } from '../players/_state';
 
 @Component({
   selector: 'app-footer',
@@ -35,6 +36,7 @@ export class FooterComponent implements OnInit {
     public dialog: MatDialog,
     private gameQuery: GameQuery,
     private playService: PlayService,
+    private playerQuery: PlayerQuery,
     private tileService: TileService,
     private tileQuery: TileQuery,
     private speciesQuery: SpeciesQuery
@@ -66,12 +68,18 @@ export class FooterComponent implements OnInit {
   public openAssimilationMenu(): void {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const species = this.speciesQuery.getTileSpecies(activeTileId);
+    // Filters active species since you can't assimilate yourself.
+    const activePlayerId = this.playerQuery.getActiveId();
+    const otherSpecies = species.filter(
+      (species) => species.playerId !== activePlayerId
+    );
 
     this.dialog.open(AssimilationMenuComponent, {
       data: {
         listType: 'active',
-        species,
-        speciesCount: 'tile'
+        species: otherSpecies,
+        speciesCount: 'tile',
+        tileId: activeTileId,
       },
       autoFocus: false,
       backdropClass: 'transparent-backdrop',
