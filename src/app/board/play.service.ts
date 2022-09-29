@@ -79,7 +79,7 @@ export class PlayService {
     const activeSpecieId = this.speciesQuery.getActiveId();
 
     this.gameService.switchStartState('tileValidated');
-    this.speciesService.proliferate(activeSpecieId, activeTileId, 4);
+    this.speciesService.move(activeSpecieId, 4, activeTileId);
   }
 
   // GAME START - UTILS - Verifies if it's a starting tile selection.
@@ -126,12 +126,7 @@ export class PlayService {
     this.tileService.removeReachable();
 
     this.speciesService
-      .move(
-        activeSpeciesId,
-        previousTileId,
-        destinationId,
-        quantity
-      )
+      .move(activeSpeciesId, quantity, destinationId, previousTileId)
       .then(async () => {
         this.snackbar.open('Migration effectuée !', null, {
           duration: 800,
@@ -211,7 +206,7 @@ export class PlayService {
     this.tileService.removeActive();
     this.tileService.removeReachable();
     this.speciesService
-      .proliferate(activeSpeciesId, activeTileId, quantity)
+      .move(activeSpeciesId, quantity, activeTileId)
       .then(() => {
         this.snackbar.open('Prolifération effectuée !', null, {
           duration: 800,
