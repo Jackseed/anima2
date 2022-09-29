@@ -8,6 +8,13 @@ export interface Species {
   color?: string;
 }
 
+export interface TileSpecies {
+  id: string;
+  quantity: number;
+  color: string;
+  abilityId: string;
+}
+
 export const abilityIds = [
   'spontaneousGeneration',
   'hounds',

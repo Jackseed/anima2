@@ -15,7 +15,7 @@ import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { Species } from './species.model';
+import { Species, TileSpecies } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
 import { Tile, TileQuery } from '../../tiles/_state';
@@ -133,38 +133,12 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     quantity: number,
     color: string,
     abilityId: string
-  ): { id: string; quantity: number; color: string; abilityId: string }[] {
+  ): TileSpecies[] {
     let updatedSpecies = [];
-    // check if the tile already have species
-    if (tile.species) {
-      const speciesIndex = tile.species.findIndex(
-        (specie) => specie.id === speciesId
-      );
-      //then if it had that species, if not add it
-      if (speciesIndex === -1) {
-        updatedSpecies = tile.species.concat({
-          id: speciesId,
-          quantity,
-          color,
-          abilityId,
-        });
-        // if so, increment quantity
-      } else {
-        // copy tile species to be able to change it
-        updatedSpecies = [...tile.species].map((specie) => {
-          return { ...specie };
-        });
-        // check if there is no more species, if so delete it
-        if (updatedSpecies[speciesIndex].quantity + quantity === 0) {
-          updatedSpecies.splice(speciesIndex, 1);
-          // else update quantity
-        } else {
-          updatedSpecies[speciesIndex].quantity =
-            updatedSpecies[speciesIndex].quantity + quantity;
-        }
-      }
-      // if the tile hadn't species object, adds it
-    } else {
+    const isSpeciesOnTile = this.query.isSpeciesOnTile(speciesId, tile);
+
+    // If the species isn't on the tile yet, adds it.
+    if (!isSpeciesOnTile) {
       updatedSpecies = tile.species.concat({
         id: speciesId,
         quantity,
@@ -172,6 +146,25 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         abilityId,
       });
     }
+
+    // If species is already there, updates quantity.
+    else {
+      const speciesIndex = tile.species.findIndex(
+        (specie) => specie.id === speciesId
+      );
+      updatedSpecies = structuredClone(tile.species);
+      const existingQuantity = updatedSpecies[speciesIndex].quantity;
+      const newQuantity = existingQuantity + quantity;
+
+      // If there is no more species on this tile, removes it.
+      if (newQuantity === 0) {
+        updatedSpecies.splice(speciesIndex, 1);
+      } else {
+        // Otherwise, updates quantity.
+        updatedSpecies[speciesIndex].quantity = newQuantity;
+      }
+    }
+
     return updatedSpecies;
   }
 

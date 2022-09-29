@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { QueryEntity } from '@datorama/akita';
 
 // States
-import { TileQuery } from '../../tiles/_state';
+import { Tile, TileQuery } from '../../tiles/_state';
 import { Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 
@@ -21,5 +21,11 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     const speciesIds = tile.species.map((species) => species.id);
 
     return this.getAll().filter((species) => speciesIds.includes(species.id));
+  }
+
+  // Checks if a species is already on a tile.
+  public isSpeciesOnTile(speciesId: string, tile: Tile): boolean {
+    const species = tile.species.filter((species) => species.id === speciesId);
+    return species.length > 0;
   }
 }
