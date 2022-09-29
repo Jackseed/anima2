@@ -56,8 +56,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     });
   }
 
-  // TODO: clean this service
-
   public setActive(id: string) {
     this.store.setActive(id);
   }
@@ -66,40 +64,40 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
+  // TODO: refactor this function
   public async addSpecies(species: Species, gameId: string): Promise<any> {
     await this.db.firestore
       .runTransaction(async (transaction) => {
-        // set species
+        // Sets species.
         const speciesCollection = this.db.firestore.collection(
           `games/${gameId}/species`
         );
         const speciesRef = speciesCollection.doc(species.id);
 
         const tiles = [];
-        // get tiles from species
+        // Gets tiles from species.
         for (const tileId of species.tileIds) {
           const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
             `games/${gameId}/tiles/${tileId.toString()}`
           );
           await transaction.get(tileDoc.ref).then((tileDoc) => {
-            if (!tileDoc.exists) {
-              throw 'Document does not exist!';
-            }
+            if (!tileDoc.exists) throw 'Document does not exist!';
+
             tiles.push(tileDoc.data());
           });
         }
 
-        // get intermediate object with species count per tileId
+        // Gets intermediate object with species count per tileId.
         const tileSpecies = {};
         species.tileIds.forEach((tileId) => {
           tileSpecies.hasOwnProperty(tileId)
             ? tileSpecies[tileId]++
             : (tileSpecies[tileId] = 1);
         });
-        // extract unique tile ids
+        // Extracts unique tile ids.
         const uniqueTileIds: string[] = Object.keys(tileSpecies);
 
-        // update tiles with speciesIds
+        // Update tiles with speciesIds.
         for (const tileId of uniqueTileIds) {
           const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
             `games/${gameId}/tiles/${tileId.toString()}`
@@ -123,7 +121,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         transaction.set(speciesRef, species);
       })
       .catch((error) => {
-        console.log('Transaction failed: ', error);
+        console.log('Add species failed: ', error);
       });
   }
 
@@ -152,7 +150,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       const speciesIndex = tile.species.findIndex(
         (specie) => specie.id === speciesId
       );
-      updatedSpecies = structuredClone(tile.species);
+      updatedSpecies = JSON.parse(JSON.stringify(tile.species));
       const existingQuantity = updatedSpecies[speciesIndex].quantity;
       const newQuantity = existingQuantity + quantity;
 
@@ -252,7 +250,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
       `${gameDoc}/species/${species.id}`
     );
-    let tileIds = structuredClone(species.tileIds);
+    let tileIds = JSON.parse(JSON.stringify(species.tileIds));
     // Iterates as much as species to move.
     for (let i = 0; i < quantity; i++) {
       // Removes 1 species to previous tile id.
