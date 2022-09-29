@@ -21,6 +21,13 @@ export interface dataType {
   tileId?: number;
 }
 
+export interface active extends Species {
+  type?: string;
+  name?: string;
+  icon?: string;
+  definition?: string;
+}
+
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
@@ -51,12 +58,7 @@ export class ListComponent implements OnInit {
       definition: 'yu',
     },
   ];
-  public active: {
-    type?: string;
-    name?: string;
-    icon?: string;
-    definition?: string;
-  } = {};
+  public active: active = {};
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: dataType,
@@ -93,12 +95,12 @@ export class ListComponent implements OnInit {
     return this.tileQuery.getTileSpeciesCount(species, this.data.tileId);
   }
 
-  public activate(object: 'ability' | 'species', i: number) {
+  public activate(object: 'ability' | 'species', i: number, species?: Species) {
     // Activates the selected object and de-activates others.
     if (object === 'ability') {
       this.active = this.abilities[i];
     } else if (object === 'species') {
-      //this.active = this.species[i];
+      this.active = { ...species, type: 'species' };
     }
   }
 

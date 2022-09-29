@@ -11,10 +11,18 @@ article {
   width: 90%;
 }
 
+article:nth-child(1) {
+  margin-top: 12px;
+}
+
 .species {
   display: flex;
   height: 100%;
   width: auto;
+}
+
+.active {
+  filter: drop-shadow(0px 0px 8px var(--secondary-color));
 }
 
 #species-icon {

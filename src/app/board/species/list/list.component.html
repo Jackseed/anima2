@@ -23,16 +23,14 @@
         <button
           fxFlexFill
           mat-icon-button
-          (click)="activate('species', i)"
+          (click)="activate('species', i, species)"
           [disabled]="data.listType === 'passive'"
+          [ngClass]="{ active: species.id === active.id }"
+          style="--primary-color: {{
+            getSpeciesColors(species, 'primary')
+          }}; --secondary-color: {{ getSpeciesColors(species, 'secondary') }}"
         >
-          <mat-icon
-            fxFlexFill
-            svgIcon="hex"
-            style="--primary-color: {{
-              getSpeciesColors(species, 'primary')
-            }}; --secondary-color: {{ getSpeciesColors(species, 'secondary') }}"
-          ></mat-icon>
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
             id="species-icon"
             [svgIcon]="species.abilityIds[0]"
@@ -73,7 +71,7 @@
   >
     <!---------------------- DEFINITION - ACTIVE ABILITY ONLY ---------------------->
     <div
-      *ngIf="active.type! === 'ability'; else specie"
+      *ngIf="active.type! === 'ability'; else species"
       fxLayout="column"
       fxLayoutAlign="center center"
       fxFlexFill
@@ -91,9 +89,9 @@
       }}</textarea>
     </div>
     <!---------------------- DEFINITION - ACTIVE SPECIE ONLY ---------------------->
-    <ng-template #specie>
+    <ng-template #species>
       <div
-        *ngIf="active.type! === 'specie'"
+        *ngIf="active.type! === 'species'"
         fxLayout="column"
         fxLayoutAlign="center center"
         fxFlexFill
