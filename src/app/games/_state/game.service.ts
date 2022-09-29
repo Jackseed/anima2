@@ -1,6 +1,11 @@
+// Angular
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
+
+// Akita
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
+
+// States
 import {
   actionPerTurn,
   migrationCount,
@@ -9,7 +14,6 @@ import {
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
-import firebase from 'firebase/app';
 import { Regions, Region } from 'src/app/board/tiles/_state';
 import {
   createPlayer,
@@ -25,6 +29,9 @@ import {
   SpeciesService,
 } from 'src/app/board/species/_state';
 
+// Firebase
+import firebase from 'firebase/app';
+
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games' })
 export class GameService extends CollectionService<GameState> {
@@ -39,6 +46,7 @@ export class GameService extends CollectionService<GameState> {
     super(store);
   }
 
+  // TODO: refactor this
   public async createNewGame(name: string): Promise<string> {
     const id = this.db.createId();
     const playerId = (await this.afAuth.currentUser).uid;

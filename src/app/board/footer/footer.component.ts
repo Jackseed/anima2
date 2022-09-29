@@ -43,9 +43,7 @@ export class FooterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.migrationCount$ = this.gameQuery
-      .selectActive()
-      .pipe(map((game) => Number(game.migrationCount)));
+    this.migrationCount$ = this.gameQuery.migrationCount$;
     this.isMigrationActive$ = this.playService.isMigrationOngoing$;
 
     this.canMigrate$ = this.playService.canMigrate$;
