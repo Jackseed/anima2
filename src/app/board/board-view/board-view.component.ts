@@ -104,7 +104,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   }
 
   // PLAY - Master function
-  // Dispatches clicks on tiles depending on the situation
+  // Chooses click action when clicking on a tile.
   public async play(tileId: number) {
     // Dismisses clicks on blank tiles.
     if (this.tileQuery.isBlank(tileId)) return;

@@ -119,7 +119,6 @@ export class PlayService {
 
   // MIGRATION
   public async migrate(destinationId: number, quantity: number) {
-    const activeGame = this.gameQuery.getActive();
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const previousTileId = Number(this.tileQuery.getActiveId());
 
@@ -128,7 +127,6 @@ export class PlayService {
 
     this.speciesService
       .move(
-        activeGame,
         activeSpeciesId,
         previousTileId,
         destinationId,

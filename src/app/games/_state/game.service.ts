@@ -81,7 +81,7 @@ export class GameService extends CollectionService<GameState> {
     );
     batch.set(speciesRef, species);
 
-    // Create the game
+    // Creates the game.
     await batch.commit().catch((error) => {
       console.log('Game creation failed: ', error);
     });
