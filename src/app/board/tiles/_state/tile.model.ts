@@ -125,6 +125,22 @@ export const Regions: Region[] = [
   { name: 'forests', tileIds: forestIds, score: 8 },
 ];
 
+export function generateRandomRegionTileIds(
+  quantity: number,
+  regionName: RegionType
+): number[] {
+  let tileIds = [];
+  for (let i = 0; i < quantity; i++) {
+    const regionTileIds = Regions.filter(
+      (region) => region.name === regionName
+    )[0].tileIds;
+    const randomTileId =
+      regionTileIds[Math.floor(Math.random() * regionTileIds.length)];
+    tileIds.push(randomTileId);
+  }
+  return tileIds;
+}
+
 export function createTile(
   id: number,
   x: number,

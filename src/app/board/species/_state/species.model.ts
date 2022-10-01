@@ -1,4 +1,4 @@
-import { cols } from '../../tiles/_state';
+import { cols, generateRandomRegionTileIds } from '../../tiles/_state';
 
 export interface Species {
   id?: string;
@@ -127,67 +127,6 @@ export const abilities = {
   },
 };
 
-export const rockiesNeutralCoordinates: [x: number, y: number][] = [
-  [4, 3],
-  [4, 3],
-  [4, 4],
-  [6, 6],
-  [8, 2],
-  [7, 3],
-  [8, 3],
-];
-
-export const mountainsNeutralCoordinates: [x: number, y: number][] = [
-  [6, 6],
-  [6, 6],
-  [6, 6],
-  [4, 3],
-  [4, 4],
-  [8, 2],
-  [7, 3],
-  [8, 3],
-];
-
-export const islandNeutralCoordinates: [x: number, y: number][] = [
-  [8, 2],
-  [8, 2],
-  [7, 3],
-  [8, 3],
-  [8, 3],
-  [6, 6],
-  [4, 4],
-];
-
-export const plainsNeutralCoordinates: [x: number, y: number][] = [
-  [7, 8],
-  [5, 9],
-  [5, 10],
-  [7, 10],
-  [6, 6],
-  [8, 2],
-  [7, 3],
-  [8, 3],
-];
-
-export const swampsNeutralCoordinates: [x: number, y: number][] = [
-  [9, 6],
-  [8, 7],
-  [9, 8],
-  [6, 6],
-  [7, 3],
-  [8, 3],
-];
-
-export const forestNeutralCoordinates: [x: number, y: number][] = [
-  [2, 7],
-  [3, 7],
-  [3, 7],
-  [3, 7],
-  [3, 8],
-  [6, 6],
-  [8, 3],
-];
-
 const neutralColor = 'grey';
 export const primaryNeutralColor = '#bfbfbf';
 export const secondaryNeutralColor = '#9b9b9b';
@@ -197,50 +136,38 @@ export const neutrals: Species[] = [
     id: 'rockies',
     playerId: 'neutral',
     color: neutralColor,
-    tileIds: rockiesNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    tileIds: generateRandomRegionTileIds(7, 'rockies'),
   },
   {
     id: 'mountains',
     playerId: 'neutral',
     color: neutralColor,
-    tileIds: mountainsNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    tileIds: generateRandomRegionTileIds(4, 'mountains'),
   },
   {
     id: 'islands',
     playerId: 'neutral',
     color: neutralColor,
-    tileIds: islandNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    tileIds: generateRandomRegionTileIds(3, 'islands'),
   },
   {
     id: 'plains',
     playerId: 'neutral',
     color: neutralColor,
-    tileIds: plainsNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    tileIds: generateRandomRegionTileIds(9, 'plains'),
   },
   {
     id: 'swamps',
     playerId: 'neutral',
     color: neutralColor,
-    tileIds: swampsNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    tileIds: generateRandomRegionTileIds(6, 'swamps'),
   },
 
   {
     id: 'forests',
     playerId: 'neutral',
     color: neutralColor,
-    tileIds: forestNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    tileIds: generateRandomRegionTileIds(5, 'forests'),
   },
 ];
 
