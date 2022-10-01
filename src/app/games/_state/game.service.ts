@@ -14,7 +14,7 @@ import {
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
-import { Regions, Region } from 'src/app/board/tiles/_state';
+import { Regions, Region, TileService } from 'src/app/board/tiles/_state';
 import {
   createPlayer,
   Player,
@@ -25,8 +25,8 @@ import {
   abilityIds,
   createSpecies,
   neutrals,
+  Species,
   SpeciesQuery,
-  SpeciesService,
 } from 'src/app/board/species/_state';
 
 // Firebase
@@ -38,30 +38,59 @@ export class GameService extends CollectionService<GameState> {
   constructor(
     store: GameStore,
     private query: GameQuery,
+    private afAuth: AngularFireAuth,
+    private tileService: TileService,
     private playerQuery: PlayerQuery,
-    private speciesQuery: SpeciesQuery,
-    private speciesService: SpeciesService,
-    private afAuth: AngularFireAuth
+    private speciesQuery: SpeciesQuery
   ) {
     super(store);
   }
 
   // TODO: refactor this
   public async createNewGame(name: string): Promise<string> {
-    const id = this.db.createId();
+    const gameId = this.db.createId();
     const playerId = (await this.afAuth.currentUser).uid;
     const playerIds = [playerId];
     const playerRef = this.db
-      .collection(`games/${id}/players`)
+      .collection(`games/${gameId}/players`)
       .doc(playerId).ref;
     const primaryColor = '#35A4B5';
     const secondaryColor = '#2885A1';
-    // TODO: randomize first player
-    const game = createGame({ id, name, playerIds, activePlayerId: playerId });
-    const gameRef = this.db.collection('games').doc(game.id).ref;
-    const batch = this.db.firestore.batch();
 
-    batch.set(gameRef, game);
+    const gameRef = this.db.collection('games').doc(gameId).ref;
+    let batch = this.db.firestore.batch();
+    const completeNeutralSpecies: Species[] = [];
+
+    // Adds random ability to neutrals, creates them and saves their abilities.
+    let usedAbilities: Abilities[] = [];
+    neutrals.forEach((species) => {
+      const speciesRef = this.db
+        .collection(`games/${gameId}/species`)
+        .doc(species.id).ref;
+      const ability = this.getRandomAbility(usedAbilities);
+      const neutralSpecies = {
+        ...species,
+        abilityIds: [ability],
+      };
+      completeNeutralSpecies.push(neutralSpecies);
+      usedAbilities.push(ability);
+      batch.set(speciesRef, neutralSpecies);
+    });
+
+    const game = createGame({
+      id: gameId,
+      name,
+      playerIds,
+      activePlayerId: playerId,
+      inGameAbilities: usedAbilities,
+    });
+
+    // Sets tiles.
+    batch = this.tileService.batchSetTiles(
+      gameId,
+      batch,
+      completeNeutralSpecies
+    );
 
     // TODO: move species creation later
     // Creates players.
@@ -76,7 +105,7 @@ export class GameService extends CollectionService<GameState> {
 
     // Creates user's species.
     const speciesRef = this.db
-      .collection(`games/${id}/species`)
+      .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
     const randomAbility =
       abilityIds[Math.floor(Math.random() * abilityIds.length)];
@@ -90,25 +119,11 @@ export class GameService extends CollectionService<GameState> {
     batch.set(speciesRef, species);
 
     // Creates the game.
+    batch.set(gameRef, game);
     await batch.commit().catch((error) => {
       console.log('Game creation failed: ', error);
     });
-    return id;
-  }
-
-  // Adds random ability to neutrals, creates them and saves abilities.
-  public setNeutrals(gameId: string) {
-    let usedAbilities: Abilities[] = [];
-    neutrals.forEach((species) => {
-      const ability = this.getRandomAbility(usedAbilities);
-      const neutralSpecies = {
-        ...species,
-        abilityIds: [ability],
-      };
-      this.speciesService.addSpecies(neutralSpecies, gameId);
-      usedAbilities.push(ability);
-    });
-    this.saveUsedAbilities(usedAbilities, gameId);
+    return gameId;
   }
 
   // Needs to receive existing abilities while game creation,
@@ -225,7 +240,7 @@ export class GameService extends CollectionService<GameState> {
   public countScore(region: Region) {
     const players: Player[] = this.playerQuery.getAll();
     const playerTiles = {};
-    // iterates on player species to add their tileIds to playerTiles
+    // Iterates on player species to add their tileIds to playerTiles.
     players.forEach((player) =>
       player.speciesIds.forEach((speciesId) => {
         const species = this.speciesQuery.getEntity(speciesId);
@@ -238,10 +253,10 @@ export class GameService extends CollectionService<GameState> {
       })
     );
 
-    // creates a boolean to know if the player control the region
+    // Creates a boolean to know if the player control the region.
     const isPlayerControling = new Array(players.length).fill(true);
 
-    // iterates on region tiles to check if players control it
+    // Iterates on region tiles to check if players control it.
     region.tileIds.forEach((tileId) => {
       players.forEach((player, index: number) => {
         if (isPlayerControling[index])

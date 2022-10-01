@@ -64,67 +64,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
-  // TODO: refactor this function
-  public async addSpecies(species: Species, gameId: string): Promise<any> {
-    await this.db.firestore
-      .runTransaction(async (transaction) => {
-        // Sets species.
-        const speciesCollection = this.db.firestore.collection(
-          `games/${gameId}/species`
-        );
-        const speciesRef = speciesCollection.doc(species.id);
-
-        const tiles = [];
-        // Gets tiles from species.
-        for (const tileId of species.tileIds) {
-          const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
-            `games/${gameId}/tiles/${tileId.toString()}`
-          );
-          await transaction.get(tileDoc.ref).then((tileDoc) => {
-            if (!tileDoc.exists) throw 'Document does not exist!';
-
-            tiles.push(tileDoc.data());
-          });
-        }
-
-        // Gets intermediate object with species count per tileId.
-        const tileSpecies = {};
-        species.tileIds.forEach((tileId) => {
-          tileSpecies.hasOwnProperty(tileId)
-            ? tileSpecies[tileId]++
-            : (tileSpecies[tileId] = 1);
-        });
-        // Extracts unique tile ids.
-        const uniqueTileIds: string[] = Object.keys(tileSpecies);
-
-        // Update tiles with speciesIds.
-        for (const tileId of uniqueTileIds) {
-          const tileDoc: AngularFirestoreDocument<Tile> = this.db.doc<Tile>(
-            `games/${gameId}/tiles/${tileId.toString()}`
-          );
-
-          const tileIndex = tiles.findIndex(
-            (tile) => tile.id === parseInt(tileId)
-          );
-          const tile = tiles[tileIndex];
-
-          let newSpecies = this.getUpdatedSpeciesOnTile(
-            tile,
-            species.id,
-            tileSpecies[tileId],
-            species.color,
-            species.abilityIds[0]
-          );
-
-          transaction.update(tileDoc.ref, { species: newSpecies });
-        }
-        transaction.set(speciesRef, species);
-      })
-      .catch((error) => {
-        console.log('Add species failed: ', error);
-      });
-  }
-
   public getUpdatedSpeciesOnTile(
     tile: Tile,
     speciesId: string,

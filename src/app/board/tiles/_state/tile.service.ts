@@ -4,6 +4,9 @@ import { Injectable } from '@angular/core';
 // Akita
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
+// Firebase
+import firebase from 'firebase/app';
+
 // States
 import {
   cols,
@@ -20,6 +23,7 @@ import {
 } from './tile.model';
 import { TileQuery } from './tile.query';
 import { TileStore, TileState } from './tile.store';
+import { Species } from '../../species/_state';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/tiles' })
@@ -28,35 +32,81 @@ export class TileService extends CollectionService<TileState> {
     super(store);
   }
 
-  public async setTiles(gameId: string): Promise<any> {
+  // Gets a species and transform it to a tile species.
+  public fromSpeciesToTileSpecies(species: Species) {
+    // Gets intermediate object with species count per tileId.
+    // {tileId: quantity}
+    const tileSpecies = {};
+    species.tileIds.forEach((tileId) => {
+      tileSpecies.hasOwnProperty(tileId)
+        ? tileSpecies[tileId]++
+        : (tileSpecies[tileId] = 1);
+    });
+
+    return tileSpecies;
+  }
+
+  // Sets game tiles, including neutrals.
+  public batchSetTiles(
+    gameId: string,
+    batch: firebase.firestore.WriteBatch,
+    neutrals: Species[]
+  ): firebase.firestore.WriteBatch {
     const tiles: Tile[] = [];
     const collection = this.db.firestore.collection(`games/${gameId}/tiles`);
-    const batch = this.db.firestore.batch();
+    if (!gameId) return;
 
-    if (gameId) {
-      for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < cols; j++) {
-          const tileId = j + cols * i;
-          if (tileId < max) {
-            let type: RegionType = 'blank';
-            if (islandIds.includes(tileId)) type = 'islands';
-            if (mountainsIds.includes(tileId)) type = 'mountains';
-            if (rockiesIds.includes(tileId)) type = 'rockies';
-            if (plainsIds.includes(tileId)) type = 'plains';
-            if (swampsIds.includes(tileId)) type = 'swamps';
-            if (forestIds.includes(tileId)) type = 'forests';
-            const tile = createTile(tileId, j, i, type);
-            tiles.push(tile);
-          }
+    // Sets tiles id and type.
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < cols; j++) {
+        const tileId = j + cols * i;
+        if (tileId < max) {
+          let type: RegionType = 'blank';
+          if (islandIds.includes(tileId)) type = 'islands';
+          if (mountainsIds.includes(tileId)) type = 'mountains';
+          if (rockiesIds.includes(tileId)) type = 'rockies';
+          if (plainsIds.includes(tileId)) type = 'plains';
+          if (swampsIds.includes(tileId)) type = 'swamps';
+          if (forestIds.includes(tileId)) type = 'forests';
+          const tile = createTile(tileId, j, i, type);
+          tiles.push(tile);
         }
       }
-
-      for (const tile of tiles) {
-        const ref = collection.doc(tile.id.toString());
-        batch.set(ref, tile);
-      }
-      return batch.commit();
     }
+
+    // Updates tiles with neutral species.
+    for (const neutral of neutrals) {
+      const neutralTileSpecies = this.fromSpeciesToTileSpecies(neutral);
+      // Extracts unique tile ids.
+      const uniqueTileIds: string[] = Object.keys(neutralTileSpecies);
+      // Updates tiles with speciesIds.
+      for (const tileId of uniqueTileIds) {
+        // Gets the pre-created tile.
+        const tileIndex = tiles.findIndex(
+          (tile) => tile.id === parseInt(tileId)
+        );
+
+        // Adds the species to the tile.
+        tiles[tileIndex] = {
+          ...tiles[tileIndex],
+          species: [
+            {
+              id: neutral.id,
+              quantity: neutralTileSpecies[tileId],
+              color: neutral.color,
+              abilityId: neutral.abilityIds[0],
+            },
+          ],
+        };
+      }
+    }
+
+    // Saves tiles to Firestore.
+    for (const tile of tiles) {
+      const ref = collection.doc(tile.id.toString());
+      batch.set(ref, tile);
+    }
+    return batch;
   }
 
   public selectTile(tileId: number) {
@@ -71,7 +121,7 @@ export class TileService extends CollectionService<TileState> {
   public markAdjacentReachableTiles(tileId: number, range: number) {
     let tileIds = [];
     let reachables = [];
-    // iterates on adjacent tiles to get their adjacent tiles
+    // Iterates on adjacent tiles to get their adjacent tiles.
     for (let i = 0; i < range; i++) {
       i === 0
         ? (reachables = this.query.getAdjacentTiles(tileId, 1))
