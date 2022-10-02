@@ -1,8 +1,6 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 // Material
-import { MatIconRegistry } from '@angular/material/icon';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -47,11 +45,8 @@ export class AdaptationMenuComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<AdaptationMenuComponent>,
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
     private snackbar: MatSnackBar
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {}
 
