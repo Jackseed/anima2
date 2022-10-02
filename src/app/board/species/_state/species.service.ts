@@ -1,9 +1,6 @@
 // Angular
 import { Injectable } from '@angular/core';
 
-// Angular Material
-import { MatDialog } from '@angular/material/dialog';
-
 // Angularfire
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 
@@ -20,9 +17,6 @@ import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
 import { Tile, TileQuery } from '../../tiles/_state';
 
-// Components
-import { ListComponent } from '../list/list.component';
-
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/species' })
 export class SpeciesService extends CollectionService<SpeciesState> {
@@ -30,30 +24,9 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     store: SpeciesStore,
     private query: SpeciesQuery,
     private tileQuery: TileQuery,
-    private routerQuery: RouterQuery,
-    public dialog: MatDialog
+    private routerQuery: RouterQuery
   ) {
     super(store);
-  }
-
-  // Opens species list, either global or on a specific tile.
-  public openSpeciesList(tileId?: number) {
-    const species: Species[] = tileId
-      ? this.query.getTileSpecies(tileId)
-      : this.query.getAll();
-
-    this.dialog.open(ListComponent, {
-      data: {
-        listType: 'passive',
-        species,
-        speciesCount: tileId ? 'tile' : 'global',
-        tileId,
-      },
-      height: '90%',
-      width: '80%',
-      panelClass: ['custom-container', 'no-padding-bottom'],
-      autoFocus: false,
-    });
   }
 
   public setActive(id: string) {
@@ -62,6 +35,22 @@ export class SpeciesService extends CollectionService<SpeciesState> {
 
   public removeActive(id: string) {
     this.store.removeActive(id);
+  }
+
+  // ASSIMILATION
+  // Removes one species from a tile and adds one to the active species.
+  public async assimilate(
+    removedSpeciesId: string,
+    removedQuantity: number,
+    removedTileId: number,
+    addingQuantity: number
+  ) {
+    const activeSpeciesId = this.query.getActiveId();
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    // Removes the assimilated species.
+    await this.move(removedSpeciesId, removedQuantity, removedTileId);
+    // Adds quantity to the assimilating species.
+    await this.move(activeSpeciesId, addingQuantity, activeTileId);
   }
 
   public getUpdatedSpeciesOnTile(
@@ -92,7 +81,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       updatedSpecies = JSON.parse(JSON.stringify(tile.species));
       const existingQuantity = updatedSpecies[speciesIndex].quantity;
       const newQuantity = existingQuantity + quantity;
-
       // If there is no more species on this tile, removes it.
       if (newQuantity === 0) {
         updatedSpecies.splice(speciesIndex, 1);
@@ -101,7 +89,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         updatedSpecies[speciesIndex].quantity = newQuantity;
       }
     }
-
     return updatedSpecies;
   }
 

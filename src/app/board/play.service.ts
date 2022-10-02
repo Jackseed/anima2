@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 
 // Angular Material
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 // Firebase
 import firebase from 'firebase/app';
@@ -10,6 +11,9 @@ import firebase from 'firebase/app';
 // Rxjs
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { first, map, tap } from 'rxjs/operators';
+
+// Components
+import { ListComponent } from './species/list/list.component';
 
 // States
 import { GameQuery, GameService } from '../games/_state';
@@ -32,7 +36,8 @@ export class PlayService {
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    public dialog: MatDialog
   ) {}
 
   // GAME STATE - Organizes the first steps of the game.
@@ -273,5 +278,25 @@ export class PlayService {
         return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 4);
       })
     );
+  }
+
+  // Opens species list, either global or on a specific tile.
+  public openSpeciesList(tileId?: number) {
+    const species: Species[] = tileId
+      ? this.speciesQuery.getTileSpecies(tileId)
+      : this.speciesQuery.getAll();
+
+    this.dialog.open(ListComponent, {
+      data: {
+        listType: 'passive',
+        species,
+        speciesCount: tileId ? 'tile' : 'global',
+        tileId,
+      },
+      height: '90%',
+      width: '80%',
+      panelClass: ['custom-container', 'no-padding-bottom'],
+      autoFocus: false,
+    });
   }
 }

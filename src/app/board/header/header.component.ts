@@ -9,11 +9,12 @@ import { SettingsComponent } from '../settings/settings.component';
 import { ScoreComponent } from '../score/score.component';
 
 // States
-import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
+import { Species, SpeciesQuery } from '../species/_state';
+import { Player, PlayerQuery } from '../players/_state';
+import { PlayService } from '../play.service';
 
 // Rxjs
 import { Observable, Subscription } from 'rxjs';
-import { Player, PlayerQuery } from '../players/_state';
 
 @Component({
   selector: 'app-header',
@@ -34,8 +35,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private speciesQuery: SpeciesQuery,
-    private speciesService: SpeciesService,
-    private playerQuery: PlayerQuery
+    private playerQuery: PlayerQuery,
+    private playService: PlayService
   ) {}
 
   ngOnInit(): void {
@@ -48,7 +49,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public openSpeciesList(): void {
-    this.speciesService.openSpeciesList();
+    this.playService.openSpeciesList();
   }
 
   public openScore(): void {
