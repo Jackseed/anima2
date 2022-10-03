@@ -1,3 +1,5 @@
+import { AbilityId } from '../../species/_state';
+
 export interface Tile {
   // TODO: transform it as a number everywhere
   id: number;
@@ -8,7 +10,7 @@ export interface Tile {
     id: string;
     quantity: number;
     color: string;
-    abilityId: string;
+    mainAbilityId: AbilityId;
   }[];
   isReachable?: boolean;
 }

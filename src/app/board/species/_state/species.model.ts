@@ -1,10 +1,10 @@
-import { cols, generateRandomRegionTileIds } from '../../tiles/_state';
+import { generateRandomRegionTileIds } from '../../tiles/_state';
 
 export interface Species {
   id?: string;
   tileIds?: number[];
   playerId?: string;
-  abilityIds?: Abilities[];
+  abilities?: Ability[];
   color?: string;
 }
 
@@ -32,100 +32,202 @@ export const abilityIds = [
   'carnivore',
   'submersible',
 ] as const;
-export type Abilities = typeof abilityIds[number];
+export type AbilityId = typeof abilityIds[number];
+export interface Ability {
+  id: AbilityId;
+  en: {
+    name: string;
+    definition: string;
+  };
+  fr: {
+    name: string;
+    definition: string;
+  };
+  value: number;
+}
 
-export const abilities = {
-  spontaneousGeneration: {
+export const abilities: Ability[] = [
+  {
     id: 'spontaneousGeneration',
-    en: 'Spontaneous Generation',
-    fr: 'Génération spontanée',
+    en: {
+      name: 'Spontaneous Generation',
+      definition: '',
+    },
+    fr: {
+      name: 'Génération spontanée',
+      definition: '',
+    },
     value: 2,
   },
-  hounds: {
+  {
     id: 'hounds',
-    en: 'Hounds',
-    fr: 'Meute',
+    en: {
+      name: 'Hounds',
+      definition: '',
+    },
+    fr: {
+      name: 'Meute',
+      definition: '',
+    },
     value: 2,
   },
-  range: {
+  {
     id: 'range',
-    en: 'Range',
-    fr: 'Portée',
+    en: {
+      name: 'Range',
+      definition: '',
+    },
+    fr: {
+      name: 'Portée',
+      definition: '',
+    },
     value: 2,
   },
-  survival: {
+  {
     id: 'survival',
-    en: 'Survival Instinct',
-    fr: 'Instinct de survie',
+    en: {
+      name: 'Survival Instinct',
+      definition: '',
+    },
+    fr: {
+      name: 'Instinct de survie',
+      definition: '',
+    },
     value: 2,
   },
-  tunnel: {
+  {
     id: 'tunnel',
-    en: 'Tunnel',
-    fr: 'Tunnel',
+    en: {
+      name: 'Tunnel',
+      definition: '',
+    },
+    fr: {
+      name: 'Tunnel',
+      definition: '',
+    },
     value: 2,
   },
-  nest: {
+  {
     id: 'nest',
-    en: 'Nest',
-    fr: 'Nid',
+    en: {
+      name: 'Nest',
+      definition: '',
+    },
+    fr: {
+      name: 'Nid',
+      definition: '',
+    },
     value: 2,
   },
-  flying: {
+  {
     id: 'flying',
-    en: 'Flying',
-    fr: 'Vol',
+    en: {
+      name: 'Flying',
+      definition: '',
+    },
+    fr: {
+      name: 'Vol',
+      definition: '',
+    },
     value: 2,
   },
-  giantism: {
+  {
     id: 'giantism',
-    en: 'Giantism',
-    fr: 'Gigantisme',
+    en: {
+      name: 'Giantism',
+      definition: '',
+    },
+    fr: {
+      name: 'Gigantisme',
+      definition: '',
+    },
     value: 2,
   },
-  agility: {
+  {
     id: 'agility',
-    en: 'Agility',
-    fr: 'Agilité',
+    en: {
+      name: 'Agility',
+      definition: '',
+    },
+    fr: {
+      name: 'Agilité',
+      definition: '',
+    },
     value: 2,
   },
-  acceleration: {
+  {
     id: 'acceleration',
-    en: 'Acceleration',
-    fr: 'Accélération',
+    en: {
+      name: 'Acceleration',
+      definition: '',
+    },
+    fr: {
+      name: 'Acceleration',
+      definition: '',
+    },
     value: 2,
   },
-  rallying: {
+  {
     id: 'rallying',
-    en: 'Rallying Cry',
-    fr: 'Cri de ralliement',
+    en: {
+      name: 'Cry',
+      definition: '',
+    },
+    fr: {
+      name: 'Cri de ralliement',
+      definition: '',
+    },
     value: 2,
   },
-  intimidate: {
+  {
     id: 'intimidate',
-    en: 'Intimidate',
-    fr: 'Intimidation',
+    en: {
+      name: 'Intimidate',
+      definition: '',
+    },
+    fr: {
+      name: 'Intimidation',
+      definition: '',
+    },
     value: 2,
   },
-  hermaphrodite: {
+  {
     id: 'hermaphrodite',
-    en: 'Hermaphrodite',
-    fr: 'Hermaphrodite',
+    en: {
+      name: 'Hermaphrodite',
+      definition: '',
+    },
+    fr: {
+      name: 'Hermaphrodite',
+      definition: '',
+    },
     value: 2,
   },
-  carnivore: {
+  {
     id: 'carnivore',
-    en: 'Carnivore',
-    fr: 'Carnassier',
+    en: {
+      name: 'Carnivore',
+      definition: '',
+    },
+    fr: {
+      name: 'Carnassier',
+      definition: '',
+    },
     value: 2,
   },
-  submersible: {
+  {
     id: 'submersible',
-    en: 'Submersible',
-    fr: 'Submersible',
+    en: {
+      name: 'Submersible',
+      definition: '',
+    },
+    fr: {
+      name: 'Submersible',
+      definition: '',
+    },
     value: 2,
   },
-};
+];
 
 const neutralColor = 'grey';
 export const primaryNeutralColor = '#bfbfbf';
@@ -174,7 +276,7 @@ export const neutrals: Species[] = [
 export function createSpecies(
   id?: string,
   playerId?: string,
-  abilityIds?: Abilities[],
+  abilities?: Ability[],
   tileIds?: number[],
   color?: string,
   params?: Partial<Species>
@@ -182,7 +284,7 @@ export function createSpecies(
   return {
     id,
     playerId,
-    abilityIds,
+    abilities,
     tileIds,
     color,
     ...params,

@@ -4,6 +4,9 @@ import { Injectable } from '@angular/core';
 // Akita
 import { QueryEntity } from '@datorama/akita';
 
+// Rxjs
+import { map } from 'rxjs/operators';
+
 // States
 import { Tile, TileQuery } from '../../tiles/_state';
 import { Species } from './species.model';
@@ -27,5 +30,14 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
   public isSpeciesOnTile(speciesId: string, tile: Tile): boolean {
     const species = tile.species.filter((species) => species.id === speciesId);
     return species.length > 0;
+  }
+
+  get activeSpeciesAbilityIds() {
+    return this.getActive().abilities.map((ability) => ability.id);
+  }
+  get activeSpeciesAbilityIds$() {
+    return this.selectActive().pipe(
+      map((species) => species.abilities.map((ability) => ability.id))
+    );
   }
 }

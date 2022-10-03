@@ -1,3 +1,5 @@
+import { Ability } from '../../species/_state';
+
 export interface Player {
   id: string;
   speciesIds: string[];
@@ -5,6 +7,7 @@ export interface Player {
   tileIds?: number[];
   primaryColor: string;
   secondaryColor: string;
+  abilityChoices: Ability[];
 }
 
 export function createPlayer(
@@ -21,6 +24,7 @@ export function createPlayer(
     tileIds: [],
     primaryColor,
     secondaryColor,
+    abilityChoices: [],
     ...params,
   };
 }

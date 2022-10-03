@@ -12,7 +12,7 @@ import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { Species, TileSpecies } from './species.model';
+import { AbilityId, Species, TileSpecies } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
 import { Tile, TileQuery } from '../../tiles/_state';
@@ -58,7 +58,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     speciesId: string,
     quantity: number,
     color: string,
-    abilityId: string
+    mainAbilityId: AbilityId
   ): TileSpecies[] {
     let updatedSpecies = [];
     const isSpeciesOnTile = this.query.isSpeciesOnTile(speciesId, tile);
@@ -69,7 +69,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         id: speciesId,
         quantity,
         color,
-        abilityId,
+        mainAbilityId,
       });
     }
 
@@ -160,7 +160,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       species.id,
       quantity,
       species.color,
-      species.abilityIds[0]
+      species.abilities[0].id
     );
     return batch.update(tileDoc.ref, { species: updatedSpecies });
   }

@@ -94,7 +94,7 @@ export class TileService extends CollectionService<TileState> {
               id: neutral.id,
               quantity: neutralTileSpecies[tileId],
               color: neutral.color,
-              abilityId: neutral.abilityIds[0],
+              mainAbilityId: neutral.abilities[0].id,
             },
           ],
         };

@@ -194,11 +194,10 @@ export class PlayService {
   // MIGRATION - UTILS - Getter for current migration count.
   // Includes AGILITY count.
   public get migrationCount(): number | firebase.firestore.FieldValue {
-    const activeSpecies = this.speciesQuery.getActive();
-    const activeAbilities = activeSpecies.abilityIds;
+    const activeSpeciesAbilityIds = this.speciesQuery.activeSpeciesAbilityIds;
     const game = this.gameQuery.getActive();
 
-    return activeAbilities.includes('agility')
+    return activeSpeciesAbilityIds.includes('agility')
       ? +game.migrationCount + abilities['agility'].value
       : game.migrationCount;
   }

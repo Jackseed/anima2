@@ -1,5 +1,5 @@
 import firebase from 'firebase/app';
-import { Abilities } from 'src/app/board/species/_state';
+import { Ability } from 'src/app/board/species/_state';
 
 export interface Game {
   id?: string;
@@ -13,7 +13,7 @@ export interface Game {
   isStarting: boolean;
   startState: startState;
   // any is used to fix a type error when saving abilities
-  inGameAbilities: Abilities[] | any;
+  inGameAbilities: Ability[] | any;
 }
 
 export const actionPerTurn = 2;
