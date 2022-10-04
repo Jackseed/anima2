@@ -35,6 +35,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   private activePlayerSub: Subscription;
   private activeSpeciesSub: Subscription;
   private startGameSub: Subscription;
+  private isPlayerChoosingAbility: Subscription;
 
   constructor(
     private gameQuery: GameQuery,
@@ -62,8 +63,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
     this.turnSub = this.getTurnSub();
     this.startGameSub = this.playService.getStartGameSub();
+    this.isPlayerChoosingAbility = this.getPlayerChoosingAbilitySub();
   }
 
+  // TODO: rework subscriptions
   // If no more actions for the active player, skips turn
   private getTurnSub(): Subscription {
     return this.game$
@@ -99,6 +102,20 @@ export class BoardViewComponent implements OnInit, OnDestroy {
         filter((player) => !!player),
         pluck('speciesIds'),
         tap((ids) => this.speciesService.setActive(ids[0]))
+      )
+      .subscribe();
+  }
+
+  // Checks whether active player is choosing an ability
+  // If so, loads the adaptation menu (in case of reloading)
+  private getPlayerChoosingAbilitySub(): Subscription {
+    return this.playerQuery
+      .selectActive()
+      .pipe(
+        map((player) => player.isChoosingAbility),
+        tap((bool) => {
+          if (bool) this.playService.openAdaptationMenu();
+        })
       )
       .subscribe();
   }
@@ -173,5 +190,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.activePlayerSub.unsubscribe();
     this.activeSpeciesSub.unsubscribe();
     this.startGameSub.unsubscribe();
+    this.isPlayerChoosingAbility.unsubscribe();
   }
 }

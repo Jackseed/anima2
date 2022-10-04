@@ -7,7 +7,10 @@ export interface Player {
   tileIds?: number[];
   primaryColor: string;
   secondaryColor: string;
-  abilityChoices: Ability[];
+  isChoosingAbility: boolean;
+  // TODO: fix any
+  // any is used to fix a type error when saving abilities
+  abilityChoices: Ability[] | any;
 }
 
 export function createPlayer(
@@ -24,6 +27,7 @@ export function createPlayer(
     tileIds: [],
     primaryColor,
     secondaryColor,
+    isChoosingAbility: false,
     abilityChoices: [],
     ...params,
   };

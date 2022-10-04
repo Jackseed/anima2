@@ -15,19 +15,19 @@ import {
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
 import { Regions, Region, TileService } from 'src/app/board/tiles/_state';
+import { PlayerQuery } from 'src/app/board/players/_state/player.query';
 import {
   createPlayer,
   Player,
-  PlayerQuery,
-} from 'src/app/board/players/_state';
+} from 'src/app/board/players/_state/player.model';
 import {
-  Abilities,
-  abilityIds,
+  abilities,
+  Ability,
   createSpecies,
   neutrals,
   Species,
-  SpeciesQuery,
-} from 'src/app/board/species/_state';
+} from 'src/app/board/species/_state/species.model';
+import { SpeciesQuery } from 'src/app/board/species/_state/species.query';
 
 // Firebase
 import firebase from 'firebase/app';
@@ -62,15 +62,15 @@ export class GameService extends CollectionService<GameState> {
     const completeNeutralSpecies: Species[] = [];
 
     // Adds random ability to neutrals, creates them and saves their abilities.
-    let usedAbilities: Abilities[] = [];
+    let usedAbilities: Ability[] = [];
     neutrals.forEach((species) => {
       const speciesRef = this.db
         .collection(`games/${gameId}/species`)
         .doc(species.id).ref;
       const ability = this.getRandomAbility(usedAbilities);
-      const neutralSpecies = {
+      const neutralSpecies: Species = {
         ...species,
-        abilityIds: [ability],
+        abilities: [ability],
       };
       completeNeutralSpecies.push(neutralSpecies);
       usedAbilities.push(ability);
@@ -108,7 +108,7 @@ export class GameService extends CollectionService<GameState> {
       .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
     const randomAbility =
-      abilityIds[Math.floor(Math.random() * abilityIds.length)];
+      abilities[Math.floor(Math.random() * abilities.length)];
     const species = createSpecies(
       speciesId,
       playerId,
@@ -128,13 +128,13 @@ export class GameService extends CollectionService<GameState> {
 
   // Needs to receive existing abilities while game creation,
   // gets it from game object afterwards.
-  public getRandomAbility(existingAbilities?: Abilities[]): Abilities {
+  public getRandomAbility(existingAbilities?: Ability[]): Ability {
     const usedAbilities = existingAbilities
       ? existingAbilities
       : this.query.getActive().inGameAbilities;
 
     // Selects an ability only within unused abilities.
-    const availableAbilities = abilityIds.filter(
+    const availableAbilities = abilities.filter(
       (ability) => !usedAbilities.includes(ability)
     );
 
@@ -144,7 +144,8 @@ export class GameService extends CollectionService<GameState> {
     return randomAbility;
   }
 
-  private async saveUsedAbilities(abilities: Abilities[], gameId: string) {
+  // TODO: update this
+  private async saveUsedAbilities(abilities: Ability[], gameId: string) {
     const newAbilities = firebase.firestore.FieldValue.arrayUnion(...abilities);
 
     await this.collection

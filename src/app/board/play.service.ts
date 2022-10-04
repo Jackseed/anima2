@@ -12,9 +12,6 @@ import firebase from 'firebase/app';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { first, map, tap } from 'rxjs/operators';
 
-// Components
-import { ListComponent } from './species/list/list.component';
-
 // States
 import { GameQuery, GameService } from '../games/_state';
 import {
@@ -24,6 +21,12 @@ import {
   SpeciesService,
 } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
+import { PlayerQuery } from './players/_state';
+
+// Components
+import { AdaptationMenuComponent } from './abilities/adaptation-menu/adaptation-menu.component';
+import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimilation-menu.component';
+import { ListComponent } from './species/list/list.component';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +35,7 @@ export class PlayService {
   constructor(
     private gameQuery: GameQuery,
     private gameService: GameService,
+    private playerQuery: PlayerQuery,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
@@ -265,6 +269,30 @@ export class PlayService {
     );
   }
 
+  public openAssimilationMenu(): void {
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const species = this.speciesQuery.getTileSpecies(activeTileId);
+    // Filters active species since you can't assimilate yourself.
+    const activePlayerId = this.playerQuery.getActiveId();
+    const otherSpecies = species.filter(
+      (species) => species.playerId !== activePlayerId
+    );
+
+    this.dialog.open(AssimilationMenuComponent, {
+      data: {
+        listType: 'active',
+        species: otherSpecies,
+        speciesCount: 'tile',
+        tileId: activeTileId,
+      },
+      autoFocus: false,
+      backdropClass: 'transparent-backdrop',
+      panelClass: 'transparent-menu',
+      height: '100%',
+      width: '100%',
+    });
+  }
+
   // ADAPTATION - UTILS - Indicates weither active specie can adapt.
   // Verifies if there are at least 4 species individuals in the active tile.
   public get canAdapt$(): Observable<boolean> {
@@ -277,6 +305,18 @@ export class PlayService {
         return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 4);
       })
     );
+  }
+
+
+  public openAdaptationMenu(): void {
+    this.dialog.open(AdaptationMenuComponent, {
+      backdropClass: 'transparent-backdrop',
+      panelClass: 'transparent-menu',
+      disableClose: true,
+      autoFocus: false,
+      height: '100%',
+      width: '100%',
+    });
   }
 
   // Opens species list, either global or on a specific tile.

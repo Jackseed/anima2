@@ -12,6 +12,7 @@ export interface Game {
   migrationCount: number | firebase.firestore.FieldValue;
   isStarting: boolean;
   startState: startState;
+  // TODO: fix any
   // any is used to fix a type error when saving abilities
   inGameAbilities: Ability[] | any;
 }
