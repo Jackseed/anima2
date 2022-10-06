@@ -19,39 +19,8 @@ import { Ability } from '../../species/_state';
   styleUrls: ['./adaptation-menu.component.scss'],
 })
 export class AdaptationMenuComponent implements OnInit {
-  public abilityChoiceIds$: Observable<Ability[]>;
-  public abilities = [
-    {
-      name: 'Intimidation',
-      img: '/assets/vol.png',
-      definition:
-        'À la fin une migration, peut déplacer 1 pion adverse se trouvant sur sa case d’1 case.',
-      isActive: false,
-    },
-    {
-      name: 'Gigantisme',
-      img: '/assets/vol.png',
-      definition: 'yi',
-      isActive: false,
-    },
-    {
-      name: 'Vol',
-      img: '/assets/vol.png',
-      definition: 'yu',
-      isActive: false,
-    },
-  ];
-  public activeAbility: {
-    name: string;
-    img: string;
-    definition: string;
-    isActive: boolean;
-  } = {
-    name: 'default',
-    img: '',
-    definition: '',
-    isActive: true,
-  };
+  public abilityChoices$: Observable<Ability[]>;
+  public activeAbility: Ability = undefined;
 
   constructor(
     public dialogRef: MatDialogRef<AdaptationMenuComponent>,
@@ -63,25 +32,19 @@ export class AdaptationMenuComponent implements OnInit {
   ngOnInit(): void {
     // Either gets the already given choices (in case of reload)
     // or gets random ones.
-    this.abilityChoiceIds$ = this.playerQuery.selectActive().pipe(
-      map((player) => player.abilityChoices),
-      map((abilities) =>
-        abilities.length > 0
-          ? abilities
+    this.abilityChoices$ = this.playerQuery.areAbilityChoicesSet$.pipe(
+      map((bool) =>
+        bool
+          ? this.playerQuery.abilityChoices
           : this.playerService.setAbilityChoices(2)
       ),
       first()
     );
-    this.abilityChoiceIds$.subscribe(console.log);
   }
 
   public activate(i: number) {
-    this.activeAbility = this.abilities[i];
-    for (let j = 0; j < 3; j++) {
-      j === i
-        ? (this.abilities[i].isActive = true)
-        : (this.abilities[j].isActive = false);
-    }
+    const abilities = this.playerQuery.abilityChoices;
+    this.activeAbility = abilities[i];
   }
 
   public close() {

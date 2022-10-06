@@ -51,11 +51,13 @@ export const abilities: Ability[] = [
     id: 'spontaneousGeneration',
     en: {
       name: 'Spontaneous Generation',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Génération spontanée',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -63,11 +65,13 @@ export const abilities: Ability[] = [
     id: 'hounds',
     en: {
       name: 'Hounds',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Meute',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -75,11 +79,13 @@ export const abilities: Ability[] = [
     id: 'range',
     en: {
       name: 'Range',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Portée',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -87,11 +93,13 @@ export const abilities: Ability[] = [
     id: 'survival',
     en: {
       name: 'Survival Instinct',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Instinct de survie',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -99,11 +107,13 @@ export const abilities: Ability[] = [
     id: 'tunnel',
     en: {
       name: 'Tunnel',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Tunnel',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -111,11 +121,13 @@ export const abilities: Ability[] = [
     id: 'nest',
     en: {
       name: 'Nest',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Nid',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -123,11 +135,13 @@ export const abilities: Ability[] = [
     id: 'flying',
     en: {
       name: 'Flying',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Vol',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -135,11 +149,13 @@ export const abilities: Ability[] = [
     id: 'giantism',
     en: {
       name: 'Giantism',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Gigantisme',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -147,11 +163,13 @@ export const abilities: Ability[] = [
     id: 'agility',
     en: {
       name: 'Agility',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Agilité',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -159,11 +177,13 @@ export const abilities: Ability[] = [
     id: 'acceleration',
     en: {
       name: 'Acceleration',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Acceleration',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -171,11 +191,13 @@ export const abilities: Ability[] = [
     id: 'rallying',
     en: {
       name: 'Cry',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Cri de ralliement',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -183,11 +205,13 @@ export const abilities: Ability[] = [
     id: 'intimidate',
     en: {
       name: 'Intimidate',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Intimidation',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -195,11 +219,13 @@ export const abilities: Ability[] = [
     id: 'hermaphrodite',
     en: {
       name: 'Hermaphrodite',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Hermaphrodite',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -207,11 +233,13 @@ export const abilities: Ability[] = [
     id: 'carnivore',
     en: {
       name: 'Carnivore',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Carnassier',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },
@@ -219,11 +247,13 @@ export const abilities: Ability[] = [
     id: 'submersible',
     en: {
       name: 'Submersible',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
       name: 'Submersible',
-      definition: '',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
   },

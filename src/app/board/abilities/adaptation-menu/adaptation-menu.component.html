@@ -2,45 +2,53 @@
   <header fxFlex="10" class="text-box">
     <h2>Choisissez un <br />nouveau trait</h2>
   </header>
-  <main fxFlex="35" fxFlexFill fxLayout="row" fxLayoutAlign="center center">
-    <article fxFlex="45" [ngClass]="{ parentGlow: abilities[0].isActive }">
+  <main
+    *ngIf="abilityChoices$ | async as abilities"
+    fxFlex="35"
+    fxFlexFill
+    fxLayout="row"
+    fxLayoutAlign="center center"
+  >
+    <article
+      fxFlex="45"
+      [ngClass]="{ parentGlow: abilities[0] === activeAbility }"
+    >
       <button
         class="hex"
         mat-button
         fxLayout="row"
         fxLayoutAlign="center center"
         (click)="activate(0)"
-        [ngClass]="{ glow: abilities[0].isActive }"
+        [ngClass]="{ glow: abilities[0] === activeAbility }"
       >
         <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h4>{{ abilities[0].name }}</h4>
+        <h4>{{ abilities[0].fr.name }}</h4>
       </button>
     </article>
-    <article fxFlex="45" [ngClass]="{ parentGlow: abilities[1].isActive }">
+    <article
+      fxFlex="45"
+      [ngClass]="{ parentGlow: abilities[1] === activeAbility }"
+    >
       <button
         class="hex"
         mat-button
         (click)="activate(1)"
-        [ngClass]="{ glow: abilities[1].isActive }"
+        [ngClass]="{ glow: abilities[1] === activeAbility }"
       >
         <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h4>{{ abilities[1].name }}</h4>
+        <h4>{{ abilities[1].fr.name }}</h4>
       </button>
     </article>
   </main>
   <aside fxFlex="40" class="relative">
     <textarea readonly wrap="hard" rows="3" cols="25">{{
-      activeAbility.definition
+      activeAbility ? activeAbility.fr.definition : ""
     }}</textarea>
-    <button
-      *ngIf="activeAbility.name === 'default'"
-      mat-icon-button
-      id="validate-button"
-    >
+    <button *ngIf="!!!activeAbility" mat-icon-button id="validate-button">
       <mat-icon id="validate-icon" svgIcon="blank"></mat-icon>
     </button>
     <button
-      *ngIf="!(activeAbility.name === 'default')"
+      *ngIf="!!activeAbility"
       mat-icon-button
       id="validate-button"
       (click)="close()"
