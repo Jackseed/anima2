@@ -2,44 +2,31 @@
   <header fxFlex="10" class="text-box">
     <h2>Choisissez un <br />nouveau trait</h2>
   </header>
-  <main
-    *ngIf="abilityChoices$ | async as abilities"
-    fxFlex="35"
-    fxFlexFill
-    fxLayout="row"
-    fxLayoutAlign="center center"
-  >
+  <!---------------- ABILITIES -------------->
+  <main fxFlex="35" fxFlexFill fxLayout="row" fxLayoutAlign="center center">
     <article
+      *ngFor="let ability of abilityChoices$ | async"
       fxFlex="45"
-      [ngClass]="{ parentGlow: abilities[0] === activeAbility }"
+      [ngClass]="{ parentGlow: ability === activeAbility }"
+      fxLayout="row"
+      fxLayoutAlign="center center"
     >
       <button
-        class="hex"
-        mat-button
-        fxLayout="row"
-        fxLayoutAlign="center center"
+        class="ability-button"
+        mat-icon-button
         (click)="activate(0)"
-        [ngClass]="{ glow: abilities[0] === activeAbility }"
+        [ngClass]="{ glow: ability === activeAbility }"
+        style="--primary-color: {{
+          getPlayerSpeciesColors('primary')
+        }}; --secondary-color: {{ getPlayerSpeciesColors('secondary') }}"
       >
-        <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h4>{{ abilities[0].fr.name }}</h4>
-      </button>
-    </article>
-    <article
-      fxFlex="45"
-      [ngClass]="{ parentGlow: abilities[1] === activeAbility }"
-    >
-      <button
-        class="hex"
-        mat-button
-        (click)="activate(1)"
-        [ngClass]="{ glow: abilities[1] === activeAbility }"
-      >
-        <div class="species" style="--img: url(/assets/vol.png)"></div>
-        <h4>{{ abilities[1].fr.name }}</h4>
+        <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+        <mat-icon id="species-icon" [svgIcon]="ability.id"></mat-icon>
+        <h4 class="ability-name">{{ ability.fr.name }}</h4>
       </button>
     </article>
   </main>
+  <!---------------- DESCRIPTION -------------->
   <aside fxFlex="40" class="relative">
     <textarea readonly wrap="hard" rows="3" cols="25">{{
       activeAbility ? activeAbility.fr.definition : ""
@@ -56,6 +43,7 @@
       <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>
     </button>
   </aside>
+  <!---------------- ORANGE BAR -------------->
   <div fxFlex="9"></div>
   <footer fxFlex="1" fxFlexFill class="orange"></footer>
 </div>

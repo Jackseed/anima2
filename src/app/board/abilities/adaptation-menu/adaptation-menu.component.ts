@@ -42,6 +42,11 @@ export class AdaptationMenuComponent implements OnInit {
     );
   }
 
+  public getPlayerSpeciesColors(color: 'primary' | 'secondary'): string {
+    const playerId = this.playerQuery.getActiveId();
+    return this.playerQuery.getPlayerSpeciesColors(playerId, color);
+  }
+
   public activate(i: number) {
     const abilities = this.playerQuery.abilityChoices;
     this.activeAbility = abilities[i];
@@ -49,7 +54,7 @@ export class AdaptationMenuComponent implements OnInit {
 
   public close() {
     this.dialogRef.close();
-    this.snackbar.open('"Intimidation" obtenue !', null, {
+    this.snackbar.open(`${this.activeAbility.fr.name} obtenu !`, null, {
       duration: 800,
       panelClass: 'orange-snackbar',
     });

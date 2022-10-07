@@ -7,8 +7,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
 import {
-  primaryNeutralColor,
-  secondaryNeutralColor,
+  PRIMARY_NEUTRAL_COLOR,
+  SECONDARY_NEUTRAL_COLOR,
   Species,
 } from '../../../board/species/_state/species.model';
 import { PlayerQuery } from '../../players/_state';
@@ -72,24 +72,13 @@ export class ListComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  // Gets species' player colors
   public getSpeciesColors(
     species: Species,
     color: 'primary' | 'secondary'
   ): string {
-    const player =
-      species?.playerId === 'neutral'
-        ? 'neutral'
-        : this.playerQuery.getEntity(species.playerId);
-    if (color === 'primary') {
-      if (player === 'neutral') return primaryNeutralColor;
-      return player.primaryColor;
-    }
-    if (color === 'secondary') {
-      if (player === 'neutral') return secondaryNeutralColor;
-      return player.secondaryColor;
-    }
+    return this.playerQuery.getPlayerSpeciesColors(species.playerId, color);
   }
+
   // Either returns the global species quantity or the tile species quantity
   public getSpeciesCount(species: Species) {
     if (this.data.speciesCount === 'global') return species.tileIds.length;

@@ -260,8 +260,8 @@ export const abilities: Ability[] = [
 ];
 
 const neutralColor = 'grey';
-export const primaryNeutralColor = '#bfbfbf';
-export const secondaryNeutralColor = '#9b9b9b';
+export const PRIMARY_NEUTRAL_COLOR = '#bfbfbf';
+export const SECONDARY_NEUTRAL_COLOR = '#9b9b9b';
 
 export const neutrals: Species[] = [
   {

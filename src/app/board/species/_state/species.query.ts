@@ -35,6 +35,7 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
   get activeSpeciesAbilityIds() {
     return this.getActive().abilities.map((ability) => ability.id);
   }
+
   get activeSpeciesAbilityIds$() {
     return this.selectActive().pipe(
       map((species) => species.abilities.map((ability) => ability.id))
