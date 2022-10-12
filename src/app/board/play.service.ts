@@ -106,13 +106,15 @@ export class PlayService {
   // UTILS - Checks species quantity on a tile.
   // Indicates if a species is more than a specific amount on a tile.
   public isSpeciesQuantityGreatherThan(
-    specie: Species,
+    species: Species,
     tileId: number,
     num: number
   ): boolean {
-    return specie.tileIds.filter((id) => id === tileId).length >= num
-      ? true
-      : false;
+    const tileSpeciesCount = this.tileQuery.getTileSpeciesCount(
+      species,
+      tileId
+    );
+    return tileSpeciesCount >= num ? true : false;
   }
 
   // UTILS - Tile selection

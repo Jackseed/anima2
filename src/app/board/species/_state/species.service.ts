@@ -199,16 +199,23 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     );
     let tileIds = JSON.parse(JSON.stringify(species.tileIds));
     // Iterates as much as species to move.
-    for (let i = 0; i < quantity; i++) {
-      // Removes 1 species to previous tile id.
+    for (let i = 0; i < Math.abs(quantity); i++) {
+      // Adds 1 species to the new tile.
+      if (quantity > 0) tileIds.push(destinationTileId);
+      // TODO: refine this
+      if (quantity < 0) {
+        const index = tileIds.indexOf(destinationTileId);
+        if (index > -1) {
+          tileIds.splice(index, 1);
+        }
+      }
+      // Removes 1 species to previous tile id or if quantity is negative.
       if (previousTileId) {
         const index = tileIds.indexOf(previousTileId);
         if (index > -1) {
           tileIds.splice(index, 1);
         }
       }
-      // Adds 1 species to the new tile.
-      tileIds.push(destinationTileId);
     }
 
     return batch.update(speciesDoc.ref, { tileIds });

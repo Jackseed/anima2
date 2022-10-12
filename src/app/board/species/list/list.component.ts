@@ -6,11 +6,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
-import {
-  PRIMARY_NEUTRAL_COLOR,
-  SECONDARY_NEUTRAL_COLOR,
-  Species,
-} from '../../../board/species/_state/species.model';
+import { Species } from '../../../board/species/_state/species.model';
 import { PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
 import { SpeciesService } from '../_state';
