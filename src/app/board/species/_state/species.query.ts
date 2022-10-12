@@ -11,10 +11,15 @@ import { map } from 'rxjs/operators';
 import { Tile, TileQuery } from '../../tiles/_state';
 import { Species } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
+import { PlayerQuery } from '../../players/_state/player.query';
 
 @Injectable({ providedIn: 'root' })
 export class SpeciesQuery extends QueryEntity<SpeciesState> {
-  constructor(protected store: SpeciesStore, private tileQuery: TileQuery) {
+  constructor(
+    protected store: SpeciesStore,
+    private tileQuery: TileQuery,
+    private playerQuery: PlayerQuery
+  ) {
     super(store);
   }
 
@@ -40,5 +45,13 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     return this.selectActive().pipe(
       map((species) => species.abilities.map((ability) => ability.id))
     );
+  }
+
+  get otherActiveTileSpeciesThanActivePlayerSpecies(): Species[] {
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const species = this.getTileSpecies(activeTileId);
+    const activePlayerId = this.playerQuery.getActiveId();
+
+    return species.filter((species) => species.playerId !== activePlayerId);
   }
 }

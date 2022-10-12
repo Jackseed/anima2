@@ -2,18 +2,20 @@
 import { Injectable } from '@angular/core';
 
 // Akita
-import { QueryEntity } from '@datorama/akita';
+import { EntityUIQuery, QueryEntity } from '@datorama/akita';
 
 // Rxjs
 import { map } from 'rxjs/operators';
 
 // States
-import { GameStore, GameState } from './game.store';
+import { GameStore, GameState, GameUIState, GameUI } from './game.store';
 
 @Injectable({ providedIn: 'root' })
 export class GameQuery extends QueryEntity<GameState> {
+  ui: EntityUIQuery<GameUIState, GameUI>;
   constructor(protected store: GameStore) {
     super(store);
+    this.createUIQuery();
   }
 
   public get migrationCount() {
@@ -26,5 +28,9 @@ export class GameQuery extends QueryEntity<GameState> {
 
   public get inGameAbilities() {
     return this.getActive().inGameAbilities;
+  }
+
+  public get isAdaptationMenuOpen() {
+    return this.ui.getAll()[0].isAdaptationMenuOpen;
   }
 }

@@ -3,6 +3,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 // Rxjs
 import { iif, Observable, of, Subscription } from 'rxjs';
@@ -15,6 +16,10 @@ import { PlayService } from '../play.service';
 import { PlayerQuery, PlayerService } from '../players/_state';
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
+
+// Components
+
+import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
 
 @Component({
   selector: 'app-board-view',
@@ -48,7 +53,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
     private playService: PlayService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -112,9 +118,25 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     return this.playerQuery
       .selectActive()
       .pipe(
-        map((player) => player.isChoosingAbility),
-        tap((bool) => {
-          if (bool) this.playService.openAdaptationMenu();
+        map((player) => player.abilityChoice.isChoosingAbility),
+        tap((isChoosingAbility) => {
+          const isAdaptationMenuOpen = this.gameQuery.isAdaptationMenuOpen;
+          // Opens adaptation menu if it's saved as open on Firebase
+          // but closed on UI (means user reloaded).
+          if (isChoosingAbility && !isAdaptationMenuOpen) {
+            console.log('here with ', isChoosingAbility, !isAdaptationMenuOpen);
+            const activeTileId = this.playerQuery.abilityChoiceActiveTileId;
+            this.tileService.setActive(activeTileId);
+            this.dialog.open(AdaptationMenuComponent, {
+              backdropClass: 'transparent-backdrop',
+              panelClass: 'transparent-menu',
+              disableClose: true,
+              autoFocus: false,
+              height: '100%',
+              width: '100%',
+            });
+            this.gameService.updateUiAdaptationMenuOpen(true);
+          }
         })
       )
       .subscribe();

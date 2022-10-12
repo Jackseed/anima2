@@ -29,8 +29,8 @@ export class PlayerService extends CollectionService<PlayerState> {
     this.store.setActive(id);
   }
 
-  // ADAPTATION - UTILS - Selects random available abilities.
-  public setAbilityChoices(choiceQuantity: number) {
+  // ADAPTATION - UTILS - Gets random available abilities.
+  public getAbilityChoices(choiceQuantity: number) {
     let usedAbilities = [];
     usedAbilities.push(this.gameQuery.inGameAbilities);
     let abilities: Ability[] = [];
@@ -41,13 +41,10 @@ export class PlayerService extends CollectionService<PlayerState> {
       // Updates usedAbilities to avoid duplicates
       usedAbilities.push(abilities[i]);
     }
-
-    this.saveAbilityChoices(abilities);
-    
     return abilities;
   }
 
-  public async saveAbilityChoices(abilities: Ability[]) {
+  public async saveAbilityChoices(abilities: Ability[], tileId?: number) {
     const gameId = this.gameQuery.getActiveId();
     const activePlayerId = this.query.getActiveId();
     const abilityChoices = firebase.firestore.FieldValue.arrayUnion(
@@ -57,11 +54,33 @@ export class PlayerService extends CollectionService<PlayerState> {
       .collection(`games/${gameId}/players`)
       .doc(activePlayerId)
       .update({
-        isChoosingAbility: true,
-        abilityChoices,
+        abilityChoice: {
+          isChoosingAbility: true,
+          abilityChoices,
+          activeTileId: tileId ? tileId : null,
+        },
       })
       .catch((error) => {
         console.log('Updating ability choices failed: ', error);
+      });
+  }
+
+  public async resetAbilityChoices() {
+    const gameId = this.gameQuery.getActiveId();
+    const activePlayerId = this.query.getActiveId();
+    this.gameService.updateUiAdaptationMenuOpen(false);
+
+    await this.db.firestore
+      .doc(`games/${gameId}/players/${activePlayerId}`)
+      .update({
+        abilityChoice: {
+          isChoosingAbility: false,
+          abilityChoices: [],
+          activeTileId: null,
+        },
+      })
+      .catch((error) => {
+        console.log('Resetting ability choices failed: ', error);
       });
   }
 }

@@ -2,6 +2,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 
+// Firebase
+import firebase from 'firebase/app';
+
 // Akita
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
@@ -28,9 +31,6 @@ import {
   Species,
 } from 'src/app/board/species/_state/species.model';
 import { SpeciesQuery } from 'src/app/board/species/_state/species.query';
-
-// Firebase
-import firebase from 'firebase/app';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games' })
@@ -267,5 +267,9 @@ export class GameService extends CollectionService<GameState> {
       });
     });
     return isPlayerControling;
+  }
+
+  public updateUiAdaptationMenuOpen(bool: boolean) {
+    this.store.ui.update(null, { isAdaptationMenuOpen: bool });
   }
 }

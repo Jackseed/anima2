@@ -3,15 +3,15 @@ import { Component, OnInit } from '@angular/core';
 
 // Material
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 // Rxjs
 import { Observable } from 'rxjs';
-import { first, map } from 'rxjs/operators';
 
 // States
-import { PlayerQuery, PlayerService } from '../../players/_state';
+import { PlayerQuery } from '../../players/_state';
 import { Ability } from '../../species/_state';
+import { PlayService } from '../../play.service';
+import { GameService } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-menu',
@@ -24,22 +24,13 @@ export class AdaptationMenuComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<AdaptationMenuComponent>,
-    private snackbar: MatSnackBar,
+    private gameService: GameService,
     private playerQuery: PlayerQuery,
-    private playerService: PlayerService
+    private playService: PlayService
   ) {}
 
   ngOnInit(): void {
-    // Either gets the already given choices (in case of reload)
-    // or gets random ones.
-    this.abilityChoices$ = this.playerQuery.areAbilityChoicesSet$.pipe(
-      map((bool) =>
-        bool
-          ? this.playerQuery.abilityChoices
-          : this.playerService.setAbilityChoices(2)
-      ),
-      first()
-    );
+    this.abilityChoices$ = this.playerQuery.abilityChoices$;
   }
 
   public getPlayerSpeciesColors(color: 'primary' | 'secondary'): string {
@@ -52,11 +43,8 @@ export class AdaptationMenuComponent implements OnInit {
     this.activeAbility = abilities[i];
   }
 
-  public close() {
+  public validate() {
+    this.playService.adapt(this.activeAbility);
     this.dialogRef.close();
-    this.snackbar.open(`${this.activeAbility.fr.name} obtenu !`, null, {
-      duration: 800,
-      panelClass: 'orange-snackbar',
-    });
   }
 }

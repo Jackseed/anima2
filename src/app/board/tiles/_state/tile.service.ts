@@ -111,6 +111,10 @@ export class TileService extends CollectionService<TileState> {
 
   public selectTile(tileId: number) {
     this.removeReachable();
+    this.setActive(tileId);
+  }
+
+  public setActive(tileId: number) {
     this.store.setActive(tileId.toString());
   }
 

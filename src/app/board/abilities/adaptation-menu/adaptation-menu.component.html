@@ -5,7 +5,7 @@
   <!---------------- ABILITIES -------------->
   <main fxFlex="35" fxFlexFill fxLayout="row" fxLayoutAlign="center center">
     <article
-      *ngFor="let ability of abilityChoices$ | async"
+      *ngFor="let ability of abilityChoices$ | async; let i = index"
       fxFlex="45"
       [ngClass]="{ parentGlow: ability === activeAbility }"
       fxLayout="row"
@@ -14,7 +14,7 @@
       <button
         class="ability-button"
         mat-icon-button
-        (click)="activate(0)"
+        (click)="activate(i)"
         [ngClass]="{ glow: ability === activeAbility }"
         style="--primary-color: {{
           getPlayerSpeciesColors('primary')
@@ -38,7 +38,7 @@
       *ngIf="!!activeAbility"
       mat-icon-button
       id="validate-button"
-      (click)="close()"
+      (click)="validate()"
     >
       <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>
     </button>

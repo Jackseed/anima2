@@ -12,9 +12,9 @@ import { Observable } from 'rxjs';
 import { PlayerStore, PlayerState } from './player.store';
 import { GameQuery } from 'src/app/games/_state/game.query';
 import {
+  Ability,
   PRIMARY_NEUTRAL_COLOR,
   SECONDARY_NEUTRAL_COLOR,
-  Species,
 } from '../../species/_state/species.model';
 
 @Injectable({ providedIn: 'root' })
@@ -32,18 +32,21 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
   }
 
   public get areAbilityChoicesSet$(): Observable<boolean> {
+    return this.abilityChoices$.pipe(map((abilities) => abilities.length > 0));
+  }
+
+  public get abilityChoices$(): Observable<Ability[]> {
     return this.selectActive().pipe(
-      map((player) => player.abilityChoices),
-      map((abilities) => abilities.length > 0)
+      map((player) => player.abilityChoice.abilityChoices)
     );
   }
 
-  public get abilityChoices$() {
-    return this.selectActive().pipe(map((player) => player.abilityChoices));
+  public get abilityChoices(): Ability[] {
+    return this.getActive().abilityChoice.abilityChoices;
   }
 
-  public get abilityChoices() {
-    return this.getActive().abilityChoices;
+  public get abilityChoiceActiveTileId(): number {
+    return this.getActive().abilityChoice.activeTileId;
   }
 
   // Gets species' player colors

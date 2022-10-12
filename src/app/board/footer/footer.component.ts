@@ -9,6 +9,12 @@ import { GameQuery } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
 import { TileService } from '../tiles/_state';
 
+// Material
+import { MatDialog } from '@angular/material/dialog';
+
+// Components
+import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
+
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
@@ -25,7 +31,8 @@ export class FooterComponent implements OnInit {
   constructor(
     private gameQuery: GameQuery,
     private tileService: TileService,
-    private playService: PlayService
+    private playService: PlayService,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -38,8 +45,16 @@ export class FooterComponent implements OnInit {
     this.canAdapt$ = this.playService.canAdapt$;
   }
 
-  public openAdaptationMenu(): void {
-    this.playService.openAdaptationMenu();
+  public async openAdaptationMenu(): Promise<void> {
+    await this.playService.setupAdaptation();
+    this.dialog.open(AdaptationMenuComponent, {
+      backdropClass: 'transparent-backdrop',
+      panelClass: 'transparent-menu',
+      disableClose: true,
+      autoFocus: false,
+      height: '100%',
+      width: '100%',
+    });
   }
 
   public openAssimilationMenu(): void {

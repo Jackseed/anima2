@@ -12,10 +12,14 @@ import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { AbilityId, Species, TileSpecies } from './species.model';
+import { Ability, AbilityId, Species, TileSpecies } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
 import { Tile, TileQuery } from '../../tiles/_state';
+import { GameQuery } from 'src/app/games/_state';
+
+// Material
+import { MatDialog } from '@angular/material/dialog';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/species' })
@@ -23,8 +27,10 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   constructor(
     store: SpeciesStore,
     private query: SpeciesQuery,
+    private gameQuery: GameQuery,
     private tileQuery: TileQuery,
-    private routerQuery: RouterQuery
+    private routerQuery: RouterQuery,
+    public dialog: MatDialog
   ) {
     super(store);
   }
@@ -53,6 +59,21 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     await this.move(activeSpeciesId, addingQuantity, activeTileId);
   }
 
+  // Adds an ability to a species
+  public async addAbilityToSpecies(ability: Ability, species: Species) {
+    const gameId = this.gameQuery.getActiveId();
+    const firestoreAbility = firebase.firestore.FieldValue.arrayUnion(ability);
+    await this.db.firestore
+      .doc(`games/${gameId}/species/${species.id}`)
+      .update({
+        abilities: firestoreAbility,
+      })
+      .catch((error) => {
+        console.log('Adding ability failed: ', error);
+      });
+  }
+
+  // Updates a tile with an updated species object.
   public getUpdatedSpeciesOnTile(
     tile: Tile,
     speciesId: string,
