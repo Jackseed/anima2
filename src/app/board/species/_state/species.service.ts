@@ -136,15 +136,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     );
 
     // Then, updates tile docs with new species quantity.
-    if (previousTileId)
-      batch = this.batchUpdateTileWithSpeciesQuantity(
-        gameDoc,
-        batch,
-        previousTileId,
-        species,
-        -quantity
-      );
-
     batch = this.batchUpdateTileWithSpeciesQuantity(
       gameDoc,
       batch,
@@ -153,15 +144,23 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       quantity
     );
 
-    // Finally, updates migration count, if it's a move.
-    if (previousTileId)
+    if (previousTileId) {
+      batch = this.batchUpdateTileWithSpeciesQuantity(
+        gameDoc,
+        batch,
+        previousTileId,
+        species,
+        -quantity
+      );
+
+      // Finally, updates migration count, if it's a move.
       batch = this.batchUpdateMigrationCount(
         gameDoc,
         batch,
         destinationId,
         quantity
       );
-
+    }
     return batch.commit().catch((err) => console.log('Move failed ', err));
   }
 
@@ -202,8 +201,9 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     for (let i = 0; i < Math.abs(quantity); i++) {
       // Adds 1 species to the new tile.
       if (quantity > 0) tileIds.push(destinationTileId);
-      // TODO: refine this
-      if (quantity < 0) {
+      // TODO: refactor this
+      if ((quantity < 0) || previousTileId) {
+        const tileId = previousTileId ? previousTileId : destinationTileId;
         const index = tileIds.indexOf(destinationTileId);
         if (index > -1) {
           tileIds.splice(index, 1);
