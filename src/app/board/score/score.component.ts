@@ -19,6 +19,7 @@ export class ScoreComponent implements OnInit {
   public players$: Observable<Player[]>;
   public activeSpecies$: Observable<Species>;
   public activeSpeciesAbilityIds$: Observable<AbilityId[]>;
+
   constructor(
     private gameQuery: GameQuery,
     private playerQuery: PlayerQuery,

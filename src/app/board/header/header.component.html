@@ -35,17 +35,15 @@
         class="background-image"
         style="--img: url(/assets/menu-buttons/ability-3.png)"
       ></div>
-      <div fxFlex="7" class="orange" fxLayout="column">
-        <div fxFlex="20"></div>
+      <div
+        fxFlex="7"
+        class="orange"
+        fxLayout="column"
+        fxLayoutAlign="space-evenly"
+      >
         <!---------------- REMAINING ACTIONS -------------->
         <div
-          fxFlex="25"
-          class="background-image"
-          style="--img: url(/assets/menu-buttons/action.png)"
-        ></div>
-        <div fxFlex="10"></div>
-        <div
-          fxFlexOffset="10"
+          *ngFor="let remainingActions of remainingActions$ | async"
           fxFlex="25"
           class="background-image"
           style="--img: url(/assets/menu-buttons/action.png)"

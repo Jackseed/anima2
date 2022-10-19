@@ -1,6 +1,9 @@
 // Angular
 import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
 
+// Rxjs
+import { Observable, Subscription } from 'rxjs';
+
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
 
@@ -13,8 +16,7 @@ import { Species, SpeciesQuery } from '../species/_state';
 import { Player, PlayerQuery } from '../players/_state';
 import { PlayService } from '../play.service';
 
-// Rxjs
-import { Observable, Subscription } from 'rxjs';
+import { GameQuery } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-header',
@@ -31,9 +33,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private activePlayer$: Observable<Player>;
   public activeSpecies$: Observable<Species>;
   private colorSub: Subscription;
+  public remainingActions$: Observable<number[]>;
 
   constructor(
     public dialog: MatDialog,
+    private gameQuery: GameQuery,
     private speciesQuery: SpeciesQuery,
     private playerQuery: PlayerQuery,
     private playService: PlayService
@@ -46,6 +50,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.primaryColor = player?.primaryColor;
       this.secondaryColor = player?.secondaryColor;
     });
+    this.remainingActions$ = this.gameQuery.remainingActionsArray$;
   }
 
   public openSpeciesList(): void {

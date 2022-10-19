@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import { EntityUIQuery, QueryEntity } from '@datorama/akita';
 
 // Rxjs
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 // States
@@ -22,7 +23,7 @@ export class GameQuery extends QueryEntity<GameState> {
     return this.getActive().migrationCount;
   }
 
-  public get migrationCount$() {
+  public get migrationCount$(): Observable<number> {
     return this.selectActive().pipe(map((game) => Number(game.migrationCount)));
   }
 
@@ -30,7 +31,13 @@ export class GameQuery extends QueryEntity<GameState> {
     return this.getActive().inGameAbilities;
   }
 
-  public get isAdaptationMenuOpen() {
+  public get isAdaptationMenuOpen(): boolean {
     return this.ui.getAll()[0].isAdaptationMenuOpen;
+  }
+
+  public get remainingActionsArray$(): Observable<number[]> {
+    return this.selectActive().pipe(
+      map((game) => new Array(game.remainingActions))
+    );
   }
 }
