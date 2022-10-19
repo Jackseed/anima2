@@ -39,12 +39,17 @@
         fxFlex="7"
         class="orange"
         fxLayout="column"
-        fxLayoutAlign="space-evenly"
+        [fxLayoutAlign]="
+          (remainingActions$ | async).length > 1
+            ? 'center center'
+            : 'start center'
+        "
       >
         <!---------------- REMAINING ACTIONS -------------->
         <div
+          fxFlexFill
           *ngFor="let remainingActions of remainingActions$ | async"
-          fxFlex="25"
+          fxFlex="50"
           class="background-image"
           style="--img: url(/assets/menu-buttons/action.png)"
         ></div>
