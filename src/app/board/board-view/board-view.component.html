@@ -31,41 +31,8 @@
   </section>
 </div>
 
-<pinch-zoom>
+<pinch-zoom [double-tap]="false">
   <main>
-    <!-- <mat-card class="score absolute">
-    <mat-card-header
-      ><mat-card-title>Tableau des scores</mat-card-title></mat-card-header
-    >
-    <mat-card-content *ngIf="game$ | async as game">
-      <h3>Partie</h3>
-      <li>Ère: {{ game.eraCount }}</li>
-      <li>Tours: {{ game.turnCount }}</li>
-      <h3>Tour en cours</h3>
-      <li>Joueur actif: {{ game.activePlayerId.slice(0, 4) }}</li>
-      <li *ngIf="activeSpecies$ | async as species">
-        Traits espèce active:
-        <span *ngFor="let abilityId of species.abilityIds; let isLast = last"
-          >{{ getAbilityFrName(abilityId) }}{{ isLast ? "" : ", " }}</span
-        >
-      </li>
-      <li>Actions restantes: {{ game.remainingActions }}</li>
-      <li>
-        Migration restantes:
-        <span *ngIf="(activeSpecies$ | async).abilityIds.includes('agility')">{{
-          game.migrationCount + getAbilityValue("agility")
-        }}</span>
-        <span
-          *ngIf="!(activeSpecies$ | async).abilityIds.includes('agility')"
-          >{{ game.migrationCount }}</span
-        >
-      </li>
-      <h3>Joueurs</h3>
-      <li *ngFor="let player of players$ | async">
-        {{ player.id.slice(0, 4) }}: {{ player.score }}
-      </li>
-    </mat-card-content>
-  </mat-card> -->
     <!------------ MAP -------------->
     <div class="no-font">
       <!------------ TILE -------------->
@@ -74,12 +41,12 @@
         class="hex relative"
         [ngClass]="{
           blank: tile.type === 'blank',
-          island: tile.type === 'island',
+          islands: tile.type === 'islands',
           mountains: tile.type === 'mountains',
           rockies: tile.type === 'rockies',
           plains: tile.type === 'plains',
           swamps: tile.type === 'swamps',
-          forest: tile.type === 'forest',
+          forests: tile.type === 'forests',
           selected: isActive(tile.id),
           reachable: tile?.isReachable
         }"
@@ -107,11 +74,17 @@
           >
             <div
               class="species tile{{ i }}"
-              style="--img: url({{ getSpeciesImgUrl(species.id) }});"
+              style="--img: url({{ getSpeciesImgUrl(species.id) }}); --color: {{
+                species.color
+              }}"
             >
-              <div class="species-quantity">
+              <mat-icon
+                fxFlexFill
+                [svgIcon]="species.mainAbilityId + '-ability'"
+              ></mat-icon>
+              <!--               <div class="species-quantity">
                 {{ species.quantity }}
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 <button mat-icon-button id="close-button" (click)="close()">
   <mat-icon id="close-icon" svgIcon="close"></mat-icon>
 </button>
+<!---------------- SPECIES LIST -------------->
 <main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
   <section
     fxFlex="68"
@@ -10,30 +11,36 @@
     fxLayoutGap="12px"
     class="margin-top"
   >
+    <!---------------- SPECIES -------------->
     <article
-      *ngFor="let specie of species; index as i"
+      *ngFor="let species of data.species; index as i"
       fxFlex="25"
       fxLayout="row"
       fxLayoutAlign="center center"
     >
-      <div class="specie relative">
+      <!---------------- SPECIES ICON -------------->
+      <div class="species relative">
         <button
           fxFlexFill
           mat-icon-button
-          (click)="activate('specie', i)"
-          [disabled]="this.data.comp === 'passive-list'"
+          (click)="activate('species', i, species)"
+          [disabled]="data.listType === 'passive'"
+          [ngClass]="{ active: species.id === active.id }"
+          style="--primary-color: {{
+            getSpeciesColors(species, 'primary')
+          }}; --secondary-color: {{ getSpeciesColors(species, 'secondary') }}"
         >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
-            fxFlexFill
-            [svgIcon]="specie.icon"
-            [ngClass]="{ activeSpecie: specie === active }"
+            id="species-icon"
+            [svgIcon]="species.abilities[0].id"
           ></mat-icon>
         </button>
         <div class="absolute circle" fxLayoutAlign="center center">
-          <div class="figures">3</div>
+          <div class="figures">{{ getSpeciesCount(species) }}</div>
         </div>
       </div>
-
+      <!---------------- SPECIES ABILITIES -------------->
       <div
         class="box"
         fxLayout="row"
@@ -48,9 +55,7 @@
           (click)="activate('ability', i)"
         >
           <div *ngIf="ability !== active">
-            <mat-icon
-              [svgIcon]="ability.icon"
-            ></mat-icon>
+            <mat-icon [svgIcon]="ability.icon"></mat-icon>
           </div>
           <div *ngIf="ability === active">
             <mat-icon [svgIcon]="ability.activeIcon"></mat-icon>
@@ -62,11 +67,11 @@
   <aside
     fxFlex="32"
     fxFlexFill
-    [ngClass]="{ 'no-padding-width': data.comp === 'passive-list' }"
+    [ngClass]="{ 'no-padding-width': data.listType === 'passive' }"
   >
     <!---------------------- DEFINITION - ACTIVE ABILITY ONLY ---------------------->
     <div
-      *ngIf="active.type! === 'ability'; else specie"
+      *ngIf="active.type! === 'ability'; else species"
       fxLayout="column"
       fxLayoutAlign="center center"
       fxFlexFill
@@ -84,9 +89,9 @@
       }}</textarea>
     </div>
     <!---------------------- DEFINITION - ACTIVE SPECIE ONLY ---------------------->
-    <ng-template #specie>
+    <ng-template #species>
       <div
-        *ngIf="active.type! === 'specie'"
+        *ngIf="active.type! === 'species'"
         fxLayout="column"
         fxLayoutAlign="center center"
         fxFlexFill

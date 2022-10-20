@@ -1,8 +1,15 @@
+// Angular
 import { Injectable } from '@angular/core';
+
+// Akita
 import { CollectionGuard, CollectionGuardConfig } from 'akita-ng-fire';
+
+// States
 import { PlayerService, PlayerState, PlayerStore } from '../_state';
-import { tap, switchMap } from 'rxjs/operators';
 import { GameQuery } from 'src/app/games/_state';
+
+// Rxjs
+import { tap, switchMap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 @CollectionGuardConfig({ awaitSync: true })

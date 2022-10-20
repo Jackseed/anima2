@@ -1,14 +1,18 @@
+// Angular
 import { Injectable } from '@angular/core';
+
+// Akita
 import {
   EntityUIQuery,
   Order,
   QueryConfig,
   QueryEntity,
 } from '@datorama/akita';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+
+// States
 import { cols, islandBridgeIds, Tile } from './tile.model';
 import { TileStore, TileState, TileUI, TileUIState } from './tile.store';
+import { Species } from '../../species/_state/species.model';
 
 @Injectable({ providedIn: 'root' })
 @QueryConfig({
@@ -107,14 +111,34 @@ export class TileQuery extends QueryEntity<TileState> {
     return straightDistance + diagonalDistance;
   }
 
+  // Checks if a tile is blank.
   public isBlank(id: number): boolean {
     const tile = this.getEntity(id.toString());
     return tile.type === 'blank';
   }
 
-  public get isMigrationActive$(): Observable<boolean> {
-    return this.selectCount(({ isReachable }) => isReachable).pipe(
-      map((num) => (num > 0 ? true : false))
-    );
+  // Checks if a tile is empty.
+  public isEmpty(id: number): boolean {
+    const tile = this.getEntity(id.toString());
+    return tile.species.length === 0;
+  }
+
+  // Checks if a tile is active.
+  public isActive(tileId: number): boolean {
+    return this.hasActive(tileId.toString());
+  }
+
+  // Returns the quantity of a given species on the active tile.
+  public getTileSpeciesCount(species: Species, tileId: number): number {
+    if (!!!tileId) return;
+    const tile = this.getEntity(tileId.toString());
+    if (!!!tile) return;
+    const tileSpecies = tile.species;
+
+    const filteredSpecies = tileSpecies.filter(
+      (tileSpecies) => tileSpecies.id === species.id
+    )[0];
+
+    return filteredSpecies?.quantity;
   }
 }

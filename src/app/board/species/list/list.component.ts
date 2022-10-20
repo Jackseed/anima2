@@ -1,10 +1,29 @@
 // Angular
 import { Component, Inject, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+
 // Material
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatIconRegistry } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
+// States
+import { Species } from '../../../board/species/_state/species.model';
+import { PlayerQuery } from '../../players/_state';
+import { TileQuery } from '../../tiles/_state';
+import { SpeciesService } from '../_state';
+
+export interface dataType {
+  listType: 'active' | 'passive';
+  species: Species[];
+  speciesCount: 'global' | 'tile';
+  tileId?: number;
+}
+
+export interface active extends Species {
+  type?: string;
+  name?: string;
+  icon?: string;
+  definition?: string;
+}
 
 @Component({
   selector: 'app-list',
@@ -12,33 +31,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./list.component.scss'],
 })
 export class ListComponent implements OnInit {
-  public species = [
-    {
-      type: 'specie',
-      icon: 'specie2',
-    },
-    {
-      type: 'specie',
-      icon: 'specie3',
-    },
-    {
-      type: 'specie',
-      icon: 'specie4',
-    },
-    {
-      type: 'specie',
-      icon: 'specie4',
-    },
-    {
-      type: 'specie',
-      icon: 'specie4',
-    },
-
-    {
-      type: 'specie',
-      icon: 'specie4',
-    },
-  ];
   public abilities = [
     {
       type: 'ability',
@@ -63,116 +55,39 @@ export class ListComponent implements OnInit {
       definition: 'yu',
     },
   ];
-  public active: {
-    type?: string;
-    name?: string;
-    icon?: string;
-    definition?: string;
-  } = {};
+  public active: active = {};
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: dataType,
     public dialogRef: MatDialogRef<ListComponent>,
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
-    private snackbar: MatSnackBar
-  ) {
-    this.matIconRegistry.addSvgIcon(
-      'close',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/close-button.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'specie1',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/specie1.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'specie2',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/specie2.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'specie3',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/specie3.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'specie4',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/specie4.svg'
-      )
-    );
-
-    this.matIconRegistry.addSvgIcon(
-      'ability-1',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability1.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-2',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability2.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-3',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability3.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-4',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability4.svg'
-      )
-    );
-
-    this.matIconRegistry.addSvgIcon(
-      'ability-1-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability1-active.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-2-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability2-active.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-3-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability3-active.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-4-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability4-active.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'validate',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/validate-button.svg'
-      )
-    );
-  }
+    private snackbar: MatSnackBar,
+    private tileQuery: TileQuery,
+    private playerQuery: PlayerQuery,
+    private speciesService: SpeciesService
+  ) {}
 
   ngOnInit(): void {}
 
-  public activate(object: 'ability' | 'specie', i: number) {
+  public getSpeciesColors(
+    species: Species,
+    color: 'primary' | 'secondary'
+  ): string {
+    return this.playerQuery.getPlayerSpeciesColors(species.playerId, color);
+  }
+
+  // Either returns the global species quantity or the tile species quantity
+  public getSpeciesCount(species: Species) {
+    if (this.data.speciesCount === 'global') return species.tileIds.length;
+
+    return this.tileQuery.getTileSpeciesCount(species, this.data.tileId);
+  }
+
+  public activate(object: 'ability' | 'species', i: number, species?: Species) {
     // Activates the selected object and de-activates others.
     if (object === 'ability') {
       this.active = this.abilities[i];
-    } else if (object === 'specie') {
-      this.active = this.species[i];
+    } else if (object === 'species') {
+      this.active = { ...species, type: 'species' };
     }
   }
 
@@ -182,6 +97,7 @@ export class ListComponent implements OnInit {
 
   public validate() {
     this.dialogRef.close();
+    this.speciesService.assimilate(this.active.id, -1, this.data.tileId, 1);
     this.snackbar.open('Vous avez assimilé !', null, {
       duration: 800,
       panelClass: 'orange-snackbar',

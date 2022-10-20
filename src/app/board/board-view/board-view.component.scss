@@ -85,10 +85,11 @@ footer {
 }
 
 .species {
-  background-image: var(--img);
+  /*   background-image: var(--img);
   background-position: center;
   background-size: 50%;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; */
+  color: var(--color);
   z-index: 0;
   display: flex;
   justify-content: center;
@@ -132,10 +133,6 @@ footer {
   opacity: 0.5;
 }
 
-.score {
-  z-index: 3;
-}
-
 .no-font > div:hover {
   background: #f58787;
   cursor: pointer;
@@ -147,7 +144,7 @@ footer {
   background: #ffffff !important;
   cursor: auto !important;
 }
-.island {
+.islands {
   --color: #e5e4f1;
   background: var(--color);
 }
@@ -160,7 +157,7 @@ footer {
   --color: #fce2b9;
   background: var(--color);
 }
-.forest {
+.forests {
   --color: #d4e8d7;
   background: var(--color);
 }

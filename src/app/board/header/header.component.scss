@@ -1,27 +1,50 @@
-
 .container {
   height: 100%;
   align-items: center;
   display: flex;
 }
 
-.species {
+.background-image {
   background-image: var(--img);
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
 }
 
-.active {
-  --s: 4.5rem + 2.5vmin;
+.mat-icon-button {
   width: calc(var(--s));
   height: calc(var(--s));
-  z-index: 1;
+  line-height: calc(var(--s));
+
   .mat-icon {
     font-size: calc(var(--s));
     width: calc(var(--s));
     height: calc(var(--s));
     line-height: calc(var(--s));
+  }
+}
+
+.score-button {
+  --s: 2.5rem + 2.5vmin;
+}
+
+.menu-button {
+  --s: 1.8rem + 2.5vmin;
+}
+
+.active {
+  --s: 4.5rem + 2.5vmin;
+  z-index: 1;
+  #active-species {
+    font-size: calc(var(--s) - 2rem);
+    width: calc(var(--s) - 2rem);
+    height: calc(var(--s) - 2rem);
+    line-height: calc(var(--s) - 2rem);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
   }
 }
 
@@ -41,34 +64,5 @@
   background-color: orange;
   margin-top: -5%;
   margin-bottom: -5%;
-  padding-left: 2%;
-  padding-right: 2%;
-}
-
-.strategic-button {
-  --s: 2.5rem + 2.5vmin;
-  width: calc(var(--s));
-  height: calc(var(--s));
-  line-height: calc(var(--s));
-
-  .mat-icon {
-    font-size: calc(var(--s));
-    width: calc(var(--s));
-    height: calc(var(--s));
-    line-height: calc(var(--s));
-  }
-}
-
-.menu-button {
-  --s: 1.8rem + 2.5vmin;
-  width: calc(var(--s));
-  height: calc(var(--s));
-  line-height: calc(var(--s));
-
-  .mat-icon {
-    font-size: calc(var(--s));
-    width: calc(var(--s));
-    height: calc(var(--s));
-    line-height: calc(var(--s));
-  }
+  padding: 2%;
 }

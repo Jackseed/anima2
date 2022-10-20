@@ -1,10 +1,18 @@
-import { cols } from '../../tiles/_state';
+import { generateRandomRegionTileIds } from '../../tiles/_state';
 
 export interface Species {
   id?: string;
   tileIds?: number[];
   playerId?: string;
-  abilityIds?: Abilities[];
+  abilities?: Ability[];
+  color?: string;
+}
+
+export interface TileSpecies {
+  id: string;
+  quantity: number;
+  color: string;
+  abilityId: string;
 }
 
 export const abilityIds = [
@@ -24,220 +32,291 @@ export const abilityIds = [
   'carnivore',
   'submersible',
 ] as const;
-export type Abilities = typeof abilityIds[number];
+export type AbilityId = typeof abilityIds[number];
+export interface Ability {
+  id: AbilityId;
+  en: {
+    name: string;
+    definition: string;
+  };
+  fr: {
+    name: string;
+    definition: string;
+  };
+  value: number;
+}
 
-export const abilities = {
-  spontaneousGeneration: {
+export const abilities: Ability[] = [
+  {
     id: 'spontaneousGeneration',
-    en: 'Spontaneous Generation',
-    fr: 'Génération spontanée',
+    en: {
+      name: 'Spontaneous Generation',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Génération spontanée',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  hounds: {
+  {
     id: 'hounds',
-    en: 'Hounds',
-    fr: 'Meute',
+    en: {
+      name: 'Hounds',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Meute',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  range: {
+  {
     id: 'range',
-    en: 'Range',
-    fr: 'Portée',
+    en: {
+      name: 'Range',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Portée',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  survival: {
+  {
     id: 'survival',
-    en: 'Survival Instinct',
-    fr: 'Instinct de survie',
+    en: {
+      name: 'Survival Instinct',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Instinct de survie',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  tunnel: {
+  {
     id: 'tunnel',
-    en: 'Tunnel',
-    fr: 'Tunnel',
+    en: {
+      name: 'Tunnel',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Tunnel',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  nest: {
+  {
     id: 'nest',
-    en: 'Nest',
-    fr: 'Nid',
+    en: {
+      name: 'Nest',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Nid',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  flying: {
+  {
     id: 'flying',
-    en: 'Flying',
-    fr: 'Vol',
+    en: {
+      name: 'Flying',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Vol',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  giantism: {
+  {
     id: 'giantism',
-    en: 'Giantism',
-    fr: 'Gigantisme',
+    en: {
+      name: 'Giantism',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Gigantisme',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  agility: {
+  {
     id: 'agility',
-    en: 'Agility',
-    fr: 'Agilité',
+    en: {
+      name: 'Agility',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Agilité',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  acceleration: {
+  {
     id: 'acceleration',
-    en: 'Acceleration',
-    fr: 'Accélération',
+    en: {
+      name: 'Acceleration',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Acceleration',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  rallying: {
+  {
     id: 'rallying',
-    en: 'Rallying Cry',
-    fr: 'Cri de ralliement',
+    en: {
+      name: 'Cry',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Cri de ralliement',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  intimidate: {
+  {
     id: 'intimidate',
-    en: 'Intimidate',
-    fr: 'Intimidation',
+    en: {
+      name: 'Intimidate',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Intimidation',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  hermaphrodite: {
+  {
     id: 'hermaphrodite',
-    en: 'Hermaphrodite',
-    fr: 'Hermaphrodite',
+    en: {
+      name: 'Hermaphrodite',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Hermaphrodite',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  carnivore: {
+  {
     id: 'carnivore',
-    en: 'Carnivore',
-    fr: 'Carnassier',
+    en: {
+      name: 'Carnivore',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Carnassier',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-  submersible: {
+  {
     id: 'submersible',
-    en: 'Submersible',
-    fr: 'Submersible',
+    en: {
+      name: 'Submersible',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
+    fr: {
+      name: 'Submersible',
+      definition:
+        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+    },
     value: 2,
   },
-};
-
-export const rockiesNeutralCoordinates: [x: number, y: number][] = [
-  [4, 3],
-  [4, 3],
-  [4, 4],
-  [6, 6],
-  [8, 2],
-  [7, 3],
-  [8, 3],
 ];
 
-export const mountainsNeutralCoordinates: [x: number, y: number][] = [
-  [6, 6],
-  [6, 6],
-  [6, 6],
-  [4, 3],
-  [4, 4],
-  [8, 2],
-  [7, 3],
-  [8, 3],
-];
-
-export const islandNeutralCoordinates: [x: number, y: number][] = [
-  [8, 2],
-  [8, 2],
-  [7, 3],
-  [8, 3],
-  [8, 3],
-  [6, 6],
-  [4, 4],
-];
-
-export const plainsNeutralCoordinates: [x: number, y: number][] = [
-  [7, 8],
-  [5, 9],
-  [5, 10],
-  [7, 10],
-  [6, 6],
-  [8, 2],
-  [7, 3],
-  [8, 3],
-];
-
-export const swampsNeutralCoordinates: [x: number, y: number][] = [
-  [9, 6],
-  [8, 7],
-  [9, 8],
-  [6, 6],
-  [7, 3],
-  [8, 3],
-];
-
-export const forestNeutralCoordinates: [x: number, y: number][] = [
-  [2, 7],
-  [3, 7],
-  [3, 7],
-  [3, 7],
-  [3, 8],
-  [6, 6],
-  [8, 3],
-];
+const neutralColor = 'grey';
+export const PRIMARY_NEUTRAL_COLOR = '#bfbfbf';
+export const SECONDARY_NEUTRAL_COLOR = '#9b9b9b';
 
 export const neutrals: Species[] = [
   {
     id: 'rockies',
     playerId: 'neutral',
-    tileIds: rockiesNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    color: neutralColor,
+    tileIds: generateRandomRegionTileIds(7, 'rockies'),
   },
   {
     id: 'mountains',
     playerId: 'neutral',
-    tileIds: mountainsNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    color: neutralColor,
+    tileIds: generateRandomRegionTileIds(4, 'mountains'),
   },
   {
-    id: 'island',
+    id: 'islands',
     playerId: 'neutral',
-    tileIds: islandNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    color: neutralColor,
+    tileIds: generateRandomRegionTileIds(3, 'islands'),
   },
   {
     id: 'plains',
     playerId: 'neutral',
-    tileIds: plainsNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    color: neutralColor,
+    tileIds: generateRandomRegionTileIds(9, 'plains'),
   },
   {
     id: 'swamps',
     playerId: 'neutral',
-    tileIds: swampsNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    color: neutralColor,
+    tileIds: generateRandomRegionTileIds(6, 'swamps'),
   },
 
   {
-    id: 'forest',
+    id: 'forests',
     playerId: 'neutral',
-    tileIds: forestNeutralCoordinates.map(
-      (coordinates) => coordinates[0] + coordinates[1] * cols
-    ),
+    color: neutralColor,
+    tileIds: generateRandomRegionTileIds(5, 'forests'),
   },
 ];
 
 export function createSpecies(
   id?: string,
   playerId?: string,
-  abilityIds?: Abilities[],
+  abilities?: Ability[],
   tileIds?: number[],
+  color?: string,
   params?: Partial<Species>
 ): Species {
   return {
     id,
     playerId,
-    abilityIds,
+    abilities,
     tileIds,
+    color,
     ...params,
   };
 }

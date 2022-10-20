@@ -1,4 +1,7 @@
+import { AbilityId } from '../../species/_state';
+
 export interface Tile {
+  // TODO: transform it as a number everywhere
   id: number;
   x?: number;
   y?: number;
@@ -6,16 +9,18 @@ export interface Tile {
   species?: {
     id: string;
     quantity: number;
+    color: string;
+    mainAbilityId: AbilityId;
   }[];
   isReachable?: boolean;
 }
 export const regionIds = [
   'rockies',
   'mountains',
-  'island',
+  'islands',
   'plains',
   'swamps',
-  'forest',
+  'forests',
   'blank',
 ] as const;
 export type RegionType = typeof regionIds[number];
@@ -23,7 +28,6 @@ export type RegionType = typeof regionIds[number];
 export const cols = 12;
 export const lines = 13;
 export const max = cols * lines;
-
 
 export const islandCoordinates: [x: number, y: number][] = [
   [8, 2],
@@ -117,11 +121,27 @@ export interface Region {
 export const Regions: Region[] = [
   { name: 'rockies', tileIds: rockiesIds, score: 6 },
   { name: 'mountains', tileIds: mountainsIds, score: 7 },
-  { name: 'island', tileIds: islandIds, score: 3 },
+  { name: 'islands', tileIds: islandIds, score: 3 },
   { name: 'plains', tileIds: plainsIds, score: 9 },
   { name: 'swamps', tileIds: swampsIds, score: 6 },
-  { name: 'forest', tileIds: forestIds, score: 8 },
+  { name: 'forests', tileIds: forestIds, score: 8 },
 ];
+
+export function generateRandomRegionTileIds(
+  quantity: number,
+  regionName: RegionType
+): number[] {
+  let tileIds = [];
+  for (let i = 0; i < quantity; i++) {
+    const regionTileIds = Regions.filter(
+      (region) => region.name === regionName
+    )[0].tileIds;
+    const randomTileId =
+      regionTileIds[Math.floor(Math.random() * regionTileIds.length)];
+    tileIds.push(randomTileId);
+  }
+  return tileIds;
+}
 
 export function createTile(
   id: number,

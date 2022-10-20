@@ -1,10 +1,17 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+
 // Material
-import { MatIconRegistry } from '@angular/material/icon';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+
+// Rxjs
+import { Observable } from 'rxjs';
+
+// States
+import { PlayerQuery } from '../../players/_state';
+import { Ability } from '../../species/_state';
+import { PlayService } from '../../play.service';
+import { GameService } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-menu',
@@ -12,75 +19,32 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./adaptation-menu.component.scss'],
 })
 export class AdaptationMenuComponent implements OnInit {
-  public abilities = [
-    {
-      name: 'Intimidation',
-      img: '/assets/vol.png',
-      definition:
-        'À la fin une migration, peut déplacer 1 pion adverse se trouvant sur sa case d’1 case.',
-      isActive: false,
-    },
-    {
-      name: 'Gigantisme',
-      img: '/assets/vol.png',
-      definition: 'yi',
-      isActive: false,
-    },
-    {
-      name: 'Vol',
-      img: '/assets/vol.png',
-      definition: 'yu',
-      isActive: false,
-    },
-  ];
-  public activeAbility: {
-    name: string;
-    img: string;
-    definition: string;
-    isActive: boolean;
-  } = {
-    name: 'default',
-    img: '',
-    definition: '',
-    isActive: true,
-  };
+  public abilityChoices$: Observable<Ability[]>;
+  public activeAbility: Ability = undefined;
 
   constructor(
     public dialogRef: MatDialogRef<AdaptationMenuComponent>,
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
-    private snackbar: MatSnackBar
-  ) {
-    this.matIconRegistry.addSvgIcon(
-      'blank',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/blank-button.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'validate',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/validate-button.svg'
-      )
-    );
+    private gameService: GameService,
+    private playerQuery: PlayerQuery,
+    private playService: PlayService
+  ) {}
+
+  ngOnInit(): void {
+    this.abilityChoices$ = this.playerQuery.abilityChoices$;
   }
 
-  ngOnInit(): void {}
+  public getPlayerSpeciesColors(color: 'primary' | 'secondary'): string {
+    const playerId = this.playerQuery.getActiveId();
+    return this.playerQuery.getPlayerSpeciesColors(playerId, color);
+  }
 
   public activate(i: number) {
-    this.activeAbility = this.abilities[i];
-    for (let j = 0; j < 3; j++) {
-      j === i
-        ? (this.abilities[i].isActive = true)
-        : (this.abilities[j].isActive = false);
-    }
+    const abilities = this.playerQuery.abilityChoices;
+    this.activeAbility = abilities[i];
   }
 
-  public close() {
+  public validate() {
+    this.playService.adapt(this.activeAbility);
     this.dialogRef.close();
-    this.snackbar.open('"Intimidation" obtenue !', null, {
-      duration: 800,
-      panelClass: 'orange-snackbar',
-    });
   }
 }

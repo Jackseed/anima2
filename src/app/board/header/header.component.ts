@@ -1,53 +1,66 @@
 // Angular
-import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
+
+// Rxjs
+import { Observable, Subscription } from 'rxjs';
+
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
-import { MatIconRegistry } from '@angular/material/icon';
+
+// Components
 import { SettingsComponent } from '../settings/settings.component';
-import { ListComponent } from '../species/list/list.component';
+import { ScoreComponent } from '../score/score.component';
+
+// States
+import { Species, SpeciesQuery } from '../species/_state';
+import { Player, PlayerQuery } from '../players/_state';
+import { PlayService } from '../play.service';
+
+import { GameQuery } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
+  @HostBinding('style.--primary-color')
+  public primaryColor: string;
+
+  @HostBinding('style.--secondary-color')
+  public secondaryColor: string;
+
+  private activePlayer$: Observable<Player>;
+  public activeSpecies$: Observable<Species>;
+  private colorSub: Subscription;
+  public remainingActions$: Observable<number[]>;
+
   constructor(
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
-    public dialog: MatDialog
-  ) {
-    this.matIconRegistry.addSvgIcon(
-      'active-specie',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/active-specie.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'strategic-view',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/strategic-view.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'menu-button',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/close-button.svg'
-      )
-    );
+    public dialog: MatDialog,
+    private gameQuery: GameQuery,
+    private speciesQuery: SpeciesQuery,
+    private playerQuery: PlayerQuery,
+    private playService: PlayService
+  ) {}
+
+  ngOnInit(): void {
+    this.activeSpecies$ = this.speciesQuery.selectActive();
+    this.activePlayer$ = this.playerQuery.selectActive();
+    this.colorSub = this.activePlayer$.subscribe((player) => {
+      this.primaryColor = player?.primaryColor;
+      this.secondaryColor = player?.secondaryColor;
+    });
+    this.remainingActions$ = this.gameQuery.remainingActionsArray$;
   }
 
-  ngOnInit(): void {}
-
   public openSpeciesList(): void {
-    const dialogRef = this.dialog.open(ListComponent, {
-      data: {
-        comp: 'passive-list',
-      },
-      height: '90%',
-      width: '80%',
-      panelClass: ['custom-container', 'no-padding-bottom'],
+    this.playService.openSpeciesList();
+  }
+
+  public openScore(): void {
+    const dialogRef = this.dialog.open(ScoreComponent, {
+      height: '60%',
+      panelClass: 'custom-container',
       autoFocus: false,
     });
   }
@@ -58,5 +71,9 @@ export class HeaderComponent implements OnInit {
       panelClass: 'custom-container',
       autoFocus: false,
     });
+  }
+
+  ngOnDestroy(): void {
+    this.colorSub.unsubscribe();
   }
 }

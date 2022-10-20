@@ -1,8 +1,19 @@
 <div class="sidebar" fxFlexFill fxLayout="row" fxLayoutAlign="start center">
   <div fxFlex="55" class="container relative">
-    <button mat-icon-button class="active absolute" (click)="openSpeciesList()">
-      <mat-icon svgIcon="active-specie"></mat-icon>
+    <!---------------- ACTIVE SPECIES ICON -------------->
+    <button
+      *ngIf="activeSpecies$ | async as activeSpecies"
+      mat-icon-button
+      class="active absolute"
+      (click)="openSpeciesList()"
+    >
+      <mat-icon id="circle" svgIcon="species-circle"></mat-icon>
+      <mat-icon
+        id="active-species"
+        [svgIcon]="activeSpecies.abilities[0].id"
+      ></mat-icon>
     </button>
+    <!---------------- ACTIVE SPECIES ABILITIES -------------->
     <div
       class="small-text-box absolute"
       fxLayout="row"
@@ -11,43 +22,49 @@
       <div fxFlex="35"></div>
       <div
         fxFlex="18"
-        class="species"
+        class="background-image"
         style="--img: url(/assets/menu-buttons/ability-1.png)"
       ></div>
       <div
         fxFlex="18"
-        class="species"
+        class="background-image"
         style="--img: url(/assets/menu-buttons/ability-2.png)"
       ></div>
       <div
         fxFlex="18"
-        class="species"
+        class="background-image"
         style="--img: url(/assets/menu-buttons/ability-3.png)"
       ></div>
-      <div fxFlex="7" class="orange" fxLayout="column">
-        <div fxFlex="20"></div>
+      <div
+        fxFlex="7"
+        class="orange"
+        fxLayout="column"
+        [fxLayoutAlign]="
+          (remainingActions$ | async).length > 1
+            ? 'center center'
+            : 'start center'
+        "
+      >
+        <!---------------- REMAINING ACTIONS -------------->
         <div
-          fxFlex="25"
-          class="species"
-          style="--img: url(/assets/menu-buttons/action.png)"
-        ></div>
-        <div fxFlex="10"></div>
-        <div
-          fxFlexOffset="10"
-          fxFlex="25"
-          class="species"
+          fxFlexFill
+          *ngFor="let remainingActions of remainingActions$ | async"
+          fxFlex="50"
+          class="background-image"
           style="--img: url(/assets/menu-buttons/action.png)"
         ></div>
       </div>
     </div>
   </div>
   <div fxFlex="18"></div>
+  <!---------------- SCORE BUTTON -------------->
   <div fxFlex="15">
-    <button mat-icon-button class="strategic-button">
-      <mat-icon svgIcon="strategic-view"></mat-icon>
+    <button mat-icon-button class="score-button" (click)="openScore()">
+      <mat-icon svgIcon="score-button"></mat-icon>
     </button>
   </div>
   <div fxFlex="1"></div>
+  <!---------------- SETTINGS BUTTON -------------->
   <div fxFlex="7">
     <button mat-icon-button class="menu-button" (click)="openSettings()">
       <mat-icon svgIcon="menu-button"></mat-icon>

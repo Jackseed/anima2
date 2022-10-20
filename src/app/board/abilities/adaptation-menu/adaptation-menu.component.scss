@@ -1,35 +1,31 @@
-main {
-  --s: 42vw;
-  --m: 1.5vw;
-  --r: calc(var(--s) * 3 * 1.1547 / 2 + 4 * var(--m) - 2px);
-  display: flex;
-}
-
-.hex {
-  width: var(--s);
-  height: calc(var(--s) * 1.1547);
-  clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-  background-image: url("/assets/hexa-menu.png");
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-
-.parentGlow {
-  filter: drop-shadow(0 0 1rem #f59c27);
-}
-
 .glow {
-  border: 0.1rem solid #f59c27;
-  background-color: #f59c27;
+  filter: drop-shadow(0px 0px 20px #ff9100);
 }
 
-.species {
-  background-image: var(--img);
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  height: calc(1rem + 7vh);
+.ability-button {
+  height: 50%;
+  width: 90%;
+}
+
+#species-icon {
+  height: 65%;
+  width: 65%;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}
+
+.ability-name {
+  position: absolute;
+  left: 50%;
+  top: 72%;
+  width: 70%;
+  transform: translate(-50%, -50%);
+  line-height: 4vw;
+  font-size: 3.5vw;
+  white-space: break-spaces;
 }
 
 aside {
@@ -42,4 +38,3 @@ aside {
   justify-content: center;
   align-items: center;
 }
-
