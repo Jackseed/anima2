@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 // Components
 import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
+import { AbilityService } from '../ability.service';
 
 @Component({
   selector: 'app-footer',
@@ -32,29 +33,22 @@ export class FooterComponent implements OnInit {
     private gameQuery: GameQuery,
     private tileService: TileService,
     private playService: PlayService,
+    private abilityService: AbilityService,
     public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.migrationCount$ = this.gameQuery.migrationCount$;
-    this.isMigrationActive$ = this.playService.isMigrationOngoing$;
+    this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
 
-    this.canMigrate$ = this.playService.canMigrate$;
-    this.canProliferate$ = this.playService.canProliferate$;
-    this.canAssimilate$ = this.playService.canAssimilate$;
-    this.canAdapt$ = this.playService.canAdapt$;
+    this.canMigrate$ = this.abilityService.canMigrate$;
+    this.canProliferate$ = this.abilityService.canProliferate$;
+    this.canAssimilate$ = this.abilityService.canAssimilate$;
+    this.canAdapt$ = this.abilityService.canAdapt$;
   }
 
   public async openAdaptationMenu(): Promise<void> {
     await this.playService.setupAdaptation();
-    this.dialog.open(AdaptationMenuComponent, {
-      backdropClass: 'transparent-backdrop',
-      panelClass: 'transparent-menu',
-      disableClose: true,
-      autoFocus: false,
-      height: '100%',
-      width: '100%',
-    });
   }
 
   public openAssimilationMenu(): void {
@@ -62,11 +56,11 @@ export class FooterComponent implements OnInit {
   }
 
   public startMigration() {
-    this.playService.startMigration();
+    this.abilityService.startMigration();
   }
 
   public proliferate() {
-    this.playService.proliferate(2);
+    this.abilityService.proliferate(2);
   }
 
   public stopMigration() {

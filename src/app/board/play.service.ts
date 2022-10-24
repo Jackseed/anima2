@@ -2,45 +2,37 @@
 import { Injectable } from '@angular/core';
 
 // Angular Material
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
-// Firebase
-import firebase from 'firebase/app';
-
 // Rxjs
-import { combineLatest, Observable, Subscription } from 'rxjs';
-import { first, map, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { first, tap } from 'rxjs/operators';
 
 // States
 import { GameQuery, GameService } from '../games/_state';
-import {
-  abilities,
-  Ability,
-  Species,
-  SpeciesQuery,
-  SpeciesService,
-} from './species/_state';
+import { Species, SpeciesQuery, SpeciesService } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
-import { ABILITY_CHOICE_AMOUNT, PlayerService } from './players/_state';
 
 // Components
 import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimilation-menu.component';
 import { ListComponent } from './species/list/list.component';
+import { AdaptationMenuComponent } from './abilities/adaptation-menu/adaptation-menu.component';
+import { ABILITY_CHOICE_AMOUNT, PlayerService } from './players/_state';
 
 @Injectable({
   providedIn: 'root',
 })
+
+// This service is used by components to interact with the game.
 export class PlayService {
   constructor(
     private gameQuery: GameQuery,
     private gameService: GameService,
-    private playerService: PlayerService,
     private tileQuery: TileQuery,
     private tileService: TileService,
+    private playerService: PlayerService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
-    private snackbar: MatSnackBar,
     public dialog: MatDialog
   ) {}
 
@@ -54,7 +46,7 @@ export class PlayService {
           // Acts only on starting game.
           if (!game.isStarting) return;
 
-          if (game.startState === 'launching') this.setStartAbilityChoice();
+          if (game.startState === 'launching') this.setupAdaptation();
 
           // Applies tile selection if it's a new game,
           // if it's the current state (for reloads),
@@ -73,7 +65,7 @@ export class PlayService {
   // GAME STATE - Ability choice
   public setStartAbilityChoice() {
     this.gameService.switchStartState('abilityChoice');
-    this.setupAdaptation();
+    this.setRandomAbilityChoice();
   }
 
   // GAME STATE - Tile choice
@@ -110,20 +102,6 @@ export class PlayService {
     );
   }
 
-  // UTILS - Checks species quantity on a tile.
-  // Indicates if a species is more than a specific amount on a tile.
-  public isSpeciesQuantityGreatherThan(
-    species: Species,
-    tileId: number,
-    num: number
-  ): boolean {
-    const tileSpeciesCount = this.tileQuery.getTileSpeciesCount(
-      species,
-      tileId
-    );
-    return tileSpeciesCount >= num ? true : false;
-  }
-
   // UTILS - Tile selection
   // Verifies if a tile includes an active species and is not already selected.
   public isSelectionValid(selectedTileId: number): boolean {
@@ -135,171 +113,31 @@ export class PlayService {
     );
   }
 
-  // MIGRATION
-  public async migrate(destinationId: number, quantity: number) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
-    const previousTileId = Number(this.tileQuery.getActiveId());
-
-    this.tileService.removeActive();
-    this.tileService.removeReachable();
-
-    this.speciesService
-      .move(activeSpeciesId, quantity, destinationId, previousTileId)
-      .then(async () => {
-        this.snackbar.open('Migration effectuée !', null, {
-          duration: 800,
-          panelClass: 'orange-snackbar',
-        });
-        this.tileService.resetRange();
-        // Updates remainingActions if that's the last migrationCount.
-        if (+this.migrationCount + 1 === quantity) {
-          this.gameService.decrementRemainingActions();
-        }
-        this.tileService.selectTile(destinationId);
-      })
-      .catch((error) => {
-        console.log('Migration failed: ', error);
-      });
+  public async setupAdaptation() {
+    await this.setRandomAbilityChoice();
+    this.openAdaptationMenu();
   }
 
-  // MIGRATION - UTILS - Prepares migration by marking reachable tiles.
-  public startMigration(): void {
+  // UTILS - Gets random abilities and saves it with the active tile id.
+  public async setRandomAbilityChoice() {
+    this.gameService.updateUiAdaptationMenuOpen(true);
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const migrationCount = Number(this.gameQuery.migrationCount);
-    this.tileService.markAdjacentReachableTiles(activeTileId, migrationCount);
-  }
-
-  // MIGRATION - UTILS - Checks if a migration is ongoing.
-  public get isMigrationOngoing$(): Observable<boolean> {
-    return this.tileQuery
-      .selectCount(({ isReachable }) => isReachable)
-      .pipe(map((num) => (num > 0 ? true : false)));
-  }
-
-  // MIGRATION - UTILS - Indicates weither active species can migrate.
-  // Verifies if there is at least one active species on the active tile.
-  public get canMigrate$(): Observable<boolean> {
-    const activeSpecies$ = this.speciesQuery.selectActive();
-    const activeTileId$ = this.tileQuery.selectActiveId();
-
-    // Checks there is a specie in the active tile.
-    return combineLatest([activeSpecies$, activeTileId$]).pipe(
-      map(([specie, tileId]) => {
-        return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 1);
-      })
-    );
-  }
-
-  // MIGRATION - UTILS - Checks if it's a valid migration move.
-  // Verifies a tile is active, the destination is valid and the species can move.
-  public isMigrationValid(destinationTileId: number): boolean {
-    const destinationTile = this.tileQuery.getEntity(
-      destinationTileId.toString()
+    const randomAbilities = this.playerService.getAbilityChoices(
+      ABILITY_CHOICE_AMOUNT
     );
 
-    return (
-      this.tileQuery.hasActive() &&
-      destinationTile.isReachable &&
-      !!this.migrationCount
-    );
+    await this.playerService.saveAbilityChoices(randomAbilities, activeTileId);
   }
 
-  // MIGRATION - UTILS - Getter for current migration count.
-  // Includes AGILITY count.
-  public get migrationCount(): number | firebase.firestore.FieldValue {
-    const activeSpeciesAbilityIds = this.speciesQuery.activeSpeciesAbilityIds;
-    const game = this.gameQuery.getActive();
-
-    return activeSpeciesAbilityIds.includes('agility')
-      ? +game.migrationCount + abilities['agility'].value
-      : game.migrationCount;
-  }
-
-  // PROLIFERATION
-  public async proliferate(quantity: number) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
-    const activeTileId = Number(this.tileQuery.getActiveId());
-
-    this.tileService.removeActive();
-    this.tileService.removeReachable();
-    this.speciesService
-      .move(activeSpeciesId, quantity, activeTileId)
-      .then(() => {
-        this.gameService.decrementRemainingActions();
-        this.snackbar.open('Prolifération effectuée !', null, {
-          duration: 800,
-          panelClass: 'orange-snackbar',
-        });
-      })
-      .catch((error) => {
-        console.log('Proliferate failed: ', error);
-      });
-  }
-
-  // PROLIFERATION - UTILS - Indicates weither active species can proliferate
-  // by verifiying if there is more than 2 active species on the tile.
-  public get canProliferate$(): Observable<boolean> {
-    const activeSpecies$ = this.speciesQuery.selectActive();
-    const activeTileId$ = this.tileQuery.selectActiveId();
-
-    // Checks if more than 1 species on the active tile to proliferate.
-    return combineLatest([activeSpecies$, activeTileId$]).pipe(
-      map(([specie, tileId]) => {
-        return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 2);
-      })
-    );
-  }
-
-  // ASSIMILATION
-  // Removes one species from a tile and adds one to the active species.
-  public async assimilate(
-    removedSpeciesId: string,
-    removedQuantity: number,
-    removedTileId: number,
-    addingQuantity: number
-  ) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    // Removes the assimilated species.
-    await this.speciesService.move(
-      removedSpeciesId,
-      removedQuantity,
-      removedTileId
-    );
-    // Adds quantity to the assimilating species.
-    await this.speciesService.move(
-      activeSpeciesId,
-      addingQuantity,
-      activeTileId
-    );
-  }
-
-  // ASSIMILATION - UTILS - Indicates weither active specie can assimilate.
-  // Verifies that there are at least 2 species on the active tile
-  // and that they are more than another species on the tile.
-  public get canAssimilate$(): Observable<boolean> {
-    const activeTile$ = this.tileQuery.selectActive();
-    const activeSpecieId$ = this.speciesQuery.selectActiveId();
-
-    return combineLatest([activeTile$, activeSpecieId$]).pipe(
-      map(([tile, activeSpecieId]) => {
-        if (!!!tile) return false;
-        const tileSpecies = tile.species;
-        // 1st condition: needs at least 2 species on the same tile to assimilate.
-        if (tileSpecies?.length < 2) return false;
-
-        // 2nd condition: needs to be more than others.
-        const activeSpecieQuantity = tileSpecies.filter(
-          (specie) => specie.id === activeSpecieId
-        )[0]?.quantity;
-        const weakerSpecies = tileSpecies.filter(
-          (specie) => specie.quantity < activeSpecieQuantity
-        );
-        if (weakerSpecies.length === 0) return false;
-
-        return true;
-      })
-    );
+  public async openAdaptationMenu(): Promise<void> {
+    this.dialog.open(AdaptationMenuComponent, {
+      backdropClass: 'transparent-backdrop',
+      panelClass: 'transparent-menu',
+      disableClose: true,
+      autoFocus: false,
+      height: '100%',
+      width: '100%',
+    });
   }
 
   public openAssimilationMenu(): void {
@@ -320,63 +158,6 @@ export class PlayService {
       height: '100%',
       width: '100%',
     });
-  }
-
-  // ADAPTATION
-  public adapt(ability: Ability) {
-    const activeSpecies = this.speciesQuery.getActive();
-
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    const resetAbilityPromise = this.playerService.resetAbilityChoices();
-    const movePromise = this.speciesService.move(
-      activeSpecies.id,
-      -4,
-      activeTileId
-    );
-    const addAbilityPromise = this.speciesService.addAbilityToSpecies(
-      ability,
-      activeSpecies
-    );
-    const decrementActionPromise = this.gameService.decrementRemainingActions();
-
-    Promise.all([
-      resetAbilityPromise,
-      movePromise,
-      addAbilityPromise,
-      decrementActionPromise,
-    ])
-      .then(() => {
-        this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
-          duration: 800,
-          panelClass: 'orange-snackbar',
-        });
-      })
-      .catch((error) => console.log('Adapt failed: ', error));
-  }
-
-  // ADAPTATION - UTILS - Gets random abilities and saves it with the active tile id.
-  public async setupAdaptation() {
-    this.gameService.updateUiAdaptationMenuOpen(true);
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    const randomAbilities = this.playerService.getAbilityChoices(
-      ABILITY_CHOICE_AMOUNT
-    );
-
-    await this.playerService.saveAbilityChoices(randomAbilities, activeTileId);
-  }
-
-  // ADAPTATION - UTILS - Indicates weither active specie can adapt.
-  // Verifies if there are at least 4 species individuals in the active tile.
-  public get canAdapt$(): Observable<boolean> {
-    const activeSpecies$ = this.speciesQuery.selectActive();
-    const activeTileId$ = this.tileQuery.selectActiveId();
-
-    // Checks if more than 1 specie on the active tile to proliferate.
-    return combineLatest([activeSpecies$, activeTileId$]).pipe(
-      map(([specie, tileId]) => {
-        return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 4);
-      })
-    );
   }
 
   // Opens species list, either global or on a specific tile.
