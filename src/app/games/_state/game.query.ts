@@ -41,7 +41,8 @@ export class GameQuery extends QueryEntity<GameState> {
     );
   }
 
-  public get isGameStarting(): boolean {
+  public get isStarting(): boolean {
     return this.getActive().isStarting;
   }
+
 }

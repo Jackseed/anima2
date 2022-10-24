@@ -126,17 +126,9 @@ export class BoardViewComponent implements OnInit, OnDestroy {
           // Opens adaptation menu if it's saved as open on Firebase
           // but closed on UI (means user reloaded).
           if (isChoosingAbility && !isAdaptationMenuOpen) {
-            console.log('here with ', isChoosingAbility, !isAdaptationMenuOpen);
             const activeTileId = this.playerQuery.abilityChoiceActiveTileId;
-            this.tileService.setActive(activeTileId);
-            this.dialog.open(AdaptationMenuComponent, {
-              backdropClass: 'transparent-backdrop',
-              panelClass: 'transparent-menu',
-              disableClose: true,
-              autoFocus: false,
-              height: '100%',
-              width: '100%',
-            });
+            if (activeTileId) this.tileService.setActive(activeTileId);
+            this.playService.openAdaptationMenu();
             this.gameService.updateUiAdaptationMenuOpen(true);
           }
         })

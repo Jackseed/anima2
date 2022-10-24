@@ -114,6 +114,10 @@ export class PlayService {
   }
 
   public async setupAdaptation() {
+    const gameStartState = this.gameQuery.getActive().startState;
+
+    if (gameStartState === 'launching')
+      this.gameService.switchStartState('abilityChoice');
     await this.setRandomAbilityChoice();
     this.openAdaptationMenu();
   }
@@ -130,7 +134,7 @@ export class PlayService {
   }
 
   public async openAdaptationMenu(): Promise<void> {
-    const isGameStarting = this.gameQuery.isGameStarting;
+    const isGameStarting = this.gameQuery.isStarting;
     const dialogRef = this.dialog.open(AdaptationMenuComponent, {
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',

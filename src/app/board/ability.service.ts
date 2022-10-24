@@ -210,7 +210,7 @@ export class AbilityService {
   // ADAPTATION
   public adapt(ability: Ability) {
     const activeSpecies = this.speciesQuery.getActive();
-    const isGameStarting = this.gameQuery.isGameStarting;
+    const isGameStarting = this.gameQuery.isStarting;
     const adaptPromises = [];
 
     const resetAbilityPromise = this.playerService.resetAbilityChoices();
