@@ -210,26 +210,30 @@ export class AbilityService {
   // ADAPTATION
   public adapt(ability: Ability) {
     const activeSpecies = this.speciesQuery.getActive();
+    const isGameStarting = this.gameQuery.isGameStarting;
+    const adaptPromises = [];
 
-    const activeTileId = Number(this.tileQuery.getActiveId());
     const resetAbilityPromise = this.playerService.resetAbilityChoices();
-    const movePromise = this.speciesService.move(
-      activeSpecies.id,
-      -4,
-      activeTileId
-    );
     const addAbilityPromise = this.speciesService.addAbilityToSpecies(
       ability,
       activeSpecies
     );
-    const decrementActionPromise = this.gameService.decrementRemainingActions();
 
-    Promise.all([
-      resetAbilityPromise,
-      movePromise,
-      addAbilityPromise,
-      decrementActionPromise,
-    ])
+    adaptPromises.push(resetAbilityPromise, addAbilityPromise);
+
+    // If the game is started, count adaptation as the action otherwise do it for free.
+    if (!isGameStarting) {
+      const activeTileId = Number(this.tileQuery.getActiveId());
+      const movePromise = isGameStarting
+        ? Promise.resolve()
+        : this.speciesService.move(activeSpecies.id, -4, activeTileId);
+
+      const decrementActionPromise =
+        this.gameService.decrementRemainingActions();
+
+      adaptPromises.push(movePromise, decrementActionPromise);
+    }
+    Promise.all(adaptPromises)
       .then(() => {
         this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
           duration: 800,

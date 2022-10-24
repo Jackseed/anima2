@@ -40,4 +40,8 @@ export class GameQuery extends QueryEntity<GameState> {
       map((game) => new Array(game.remainingActions))
     );
   }
+
+  public get isGameStarting(): boolean {
+    return this.getActive().isStarting;
+  }
 }
