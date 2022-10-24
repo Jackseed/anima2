@@ -130,7 +130,8 @@ export class PlayService {
   }
 
   public async openAdaptationMenu(): Promise<void> {
-    this.dialog.open(AdaptationMenuComponent, {
+    const isGameStarting = this.gameQuery.isGameStarting;
+    const dialogRef = this.dialog.open(AdaptationMenuComponent, {
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
       disableClose: true,
@@ -138,6 +139,15 @@ export class PlayService {
       height: '100%',
       width: '100%',
     });
+
+    // If the game is starting, change the game state on dialog close.
+    if (isGameStarting)
+      dialogRef
+        .afterClosed()
+        .pipe(first())
+        .subscribe(() => {
+          this.setStartTileChoice();
+        });
   }
 
   public openAssimilationMenu(): void {

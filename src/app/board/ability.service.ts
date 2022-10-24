@@ -233,6 +233,7 @@ export class AbilityService {
 
       adaptPromises.push(movePromise, decrementActionPromise);
     }
+
     Promise.all(adaptPromises)
       .then(() => {
         this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
