@@ -31,8 +31,12 @@ export class PlayerService extends CollectionService<PlayerState> {
 
   // ADAPTATION - UTILS - Gets random available abilities.
   public getAbilityChoices(choiceQuantity: number) {
-    let usedAbilities = [];
-    usedAbilities.push(this.gameQuery.inGameAbilities);
+    let usedAbilities: Ability[] = [];
+    const inGameAbilities = this.gameQuery.inGameAbilities;
+    for (const inGameAbility of inGameAbilities) {
+      usedAbilities.push(inGameAbility);
+    }
+
     let abilities: Ability[] = [];
 
     for (let i = 0; i < choiceQuantity; i++) {
