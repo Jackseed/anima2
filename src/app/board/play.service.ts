@@ -54,11 +54,13 @@ export class PlayService {
           // Acts only on starting game.
           if (!game.isStarting) return;
 
+          if (game.startState === 'launching') this.setStartAbilityChoice();
+
           // Applies tile selection if it's a new game,
           // if it's the current state (for reloads),
           // if a tile was selected but lost after a reload.
           if (
-            game.startState === 'launching' ||
+            //game.startState === 'launching' ||
             game.startState === 'tileChoice' ||
             (game.startState === 'tileSelected' && !this.tileQuery.hasActive())
           )
@@ -67,6 +69,11 @@ export class PlayService {
         first()
       )
       .subscribe();
+  }
+  // GAME STATE - Ability choice
+  public setStartAbilityChoice() {
+    this.gameService.switchStartState('abilityChoice');
+    this.setupAdaptation();
   }
 
   // GAME STATE - Tile choice
@@ -240,6 +247,30 @@ export class PlayService {
       map(([specie, tileId]) => {
         return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 2);
       })
+    );
+  }
+
+  // ASSIMILATION
+  // Removes one species from a tile and adds one to the active species.
+  public async assimilate(
+    removedSpeciesId: string,
+    removedQuantity: number,
+    removedTileId: number,
+    addingQuantity: number
+  ) {
+    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    // Removes the assimilated species.
+    await this.speciesService.move(
+      removedSpeciesId,
+      removedQuantity,
+      removedTileId
+    );
+    // Adds quantity to the assimilating species.
+    await this.speciesService.move(
+      activeSpeciesId,
+      addingQuantity,
+      activeTileId
     );
   }
 

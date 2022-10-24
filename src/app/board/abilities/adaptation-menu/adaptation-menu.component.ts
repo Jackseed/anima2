@@ -11,7 +11,6 @@ import { Observable } from 'rxjs';
 import { PlayerQuery } from '../../players/_state';
 import { Ability } from '../../species/_state';
 import { PlayService } from '../../play.service';
-import { GameService } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-menu',
@@ -24,7 +23,6 @@ export class AdaptationMenuComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<AdaptationMenuComponent>,
-    private gameService: GameService,
     private playerQuery: PlayerQuery,
     private playService: PlayService
   ) {}
