@@ -92,6 +92,12 @@ export class BoardModule {
         '../../../assets/menu-buttons/close-button.svg'
       )
     );
+    this.matIconRegistry.addSvgIcon(
+      'question-mark',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/question-mark.svg'
+      )
+    );
 
     // SPECIES LIST
     this.matIconRegistry.addSvgIcon(
