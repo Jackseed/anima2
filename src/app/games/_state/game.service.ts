@@ -107,15 +107,8 @@ export class GameService extends CollectionService<GameState> {
     const speciesRef = this.db
       .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
-    const randomAbility =
-      abilities[Math.floor(Math.random() * abilities.length)];
-    const species = createSpecies(
-      speciesId,
-      playerId,
-      [randomAbility],
-      [],
-      primaryColor
-    );
+
+    const species = createSpecies(speciesId, playerId, primaryColor);
     batch.set(speciesRef, species);
 
     // Creates the game.
@@ -132,10 +125,11 @@ export class GameService extends CollectionService<GameState> {
     const usedAbilities = existingAbilities
       ? existingAbilities
       : this.query.getActive().inGameAbilities;
+    const usedAbilityIds = usedAbilities.map((ability: Ability) => ability.id);
 
     // Selects an ability only within unused abilities.
     const availableAbilities = abilities.filter(
-      (ability) => !usedAbilities.includes(ability)
+      (ability) => !usedAbilityIds.includes(ability.id)
     );
 
     const randomAbility =

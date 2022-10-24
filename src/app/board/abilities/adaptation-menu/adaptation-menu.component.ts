@@ -10,8 +10,7 @@ import { Observable } from 'rxjs';
 // States
 import { PlayerQuery } from '../../players/_state';
 import { Ability } from '../../species/_state';
-import { PlayService } from '../../play.service';
-import { GameService } from 'src/app/games/_state';
+import { AbilityService } from '../../ability.service';
 
 @Component({
   selector: 'app-menu',
@@ -24,9 +23,8 @@ export class AdaptationMenuComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<AdaptationMenuComponent>,
-    private gameService: GameService,
     private playerQuery: PlayerQuery,
-    private playService: PlayService
+    private abilityService: AbilityService
   ) {}
 
   ngOnInit(): void {
@@ -44,7 +42,7 @@ export class AdaptationMenuComponent implements OnInit {
   }
 
   public validate() {
-    this.playService.adapt(this.activeAbility);
+    this.abilityService.adapt(this.activeAbility);
     this.dialogRef.close();
   }
 }

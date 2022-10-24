@@ -21,6 +21,7 @@ export const actionPerTurn = 2;
 export const migrationCount = 4;
 export type startState =
   | 'launching'
+  | 'abilityChoice'
   | 'tileChoice'
   | 'tileSelected'
   | 'tileValidated';

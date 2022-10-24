@@ -20,6 +20,7 @@ import { Tile, TileQuery, TileService } from '../tiles/_state';
 // Components
 
 import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
+import { AbilityService } from '../ability.service';
 
 @Component({
   selector: 'app-board-view',
@@ -53,6 +54,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
     private playService: PlayService,
+    private abilityService: AbilityService,
     private snackbar: MatSnackBar,
     public dialog: MatDialog
   ) {}
@@ -124,17 +126,9 @@ export class BoardViewComponent implements OnInit, OnDestroy {
           // Opens adaptation menu if it's saved as open on Firebase
           // but closed on UI (means user reloaded).
           if (isChoosingAbility && !isAdaptationMenuOpen) {
-            console.log('here with ', isChoosingAbility, !isAdaptationMenuOpen);
             const activeTileId = this.playerQuery.abilityChoiceActiveTileId;
-            this.tileService.setActive(activeTileId);
-            this.dialog.open(AdaptationMenuComponent, {
-              backdropClass: 'transparent-backdrop',
-              panelClass: 'transparent-menu',
-              disableClose: true,
-              autoFocus: false,
-              height: '100%',
-              width: '100%',
-            });
+            if (activeTileId) this.tileService.setActive(activeTileId);
+            this.playService.openAdaptationMenu();
             this.gameService.updateUiAdaptationMenuOpen(true);
           }
         })
@@ -159,8 +153,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       return this.playService.selectStartTile(tileId);
 
     // Migration
-    if (this.playService.isMigrationValid(tileId))
-      return await this.playService.migrate(tileId, 1);
+    if (this.abilityService.isMigrationValid(tileId))
+      return await this.abilityService.migrate(tileId, 1);
 
     // Dismisses clicks on empty tiles.
     if (this.tileQuery.isEmpty(tileId)) return;
