@@ -13,7 +13,6 @@ import { TileService } from '../tiles/_state';
 import { MatDialog } from '@angular/material/dialog';
 
 // Components
-import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
 import { AbilityService } from '../ability.service';
 
 @Component({

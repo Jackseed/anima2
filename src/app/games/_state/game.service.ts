@@ -162,6 +162,16 @@ export class GameService extends CollectionService<GameState> {
       });
   }
 
+  public async updateIsStarting(isStarting: boolean) {
+    const id = this.query.getActiveId();
+    await this.collection
+      .doc(id)
+      .update({ isStarting })
+      .catch((error) => {
+        console.log('isStarting update failed: ', error);
+      });
+  }
+
   public async incrementTurnCount() {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;

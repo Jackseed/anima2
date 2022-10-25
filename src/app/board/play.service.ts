@@ -87,6 +87,7 @@ export class PlayService {
     const activeSpecieId = this.speciesQuery.getActiveId();
 
     this.gameService.switchStartState('tileValidated');
+    this.gameService.updateIsStarting(false);
     this.speciesService.move(activeSpecieId, 4, activeTileId);
   }
 
