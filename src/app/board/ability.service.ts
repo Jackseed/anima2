@@ -44,28 +44,29 @@ export class AbilityService {
   public async migrate(destinationId: number, quantity: number) {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const previousTileId = Number(this.tileQuery.getActiveId());
-    const migrationCount = Number(this.gameQuery.migrationCount);
-    const migrationDistance = this.tileQuery.getDistance(
-      previousTileId,
-      destinationId
-    );
-    console.log('migration distance: ', migrationDistance);
+
     this.tileService.removeActive();
     this.tileService.removeReachable();
 
     this.speciesService
       .move(activeSpeciesId, quantity, destinationId, previousTileId)
       .then(async () => {
+        this.tileService.selectTile(destinationId);
         this.snackbar.open('Migration effectuée !', null, {
           duration: 800,
           panelClass: 'orange-snackbar',
         });
         this.tileService.resetRange();
+
         // Updates remainingActions if that's the last migrationCount.
+        const migrationCount = Number(this.gameQuery.migrationCount);
+        const migrationDistance =
+          this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
+            destinationId
+          );
         if (migrationDistance === migrationCount) {
           this.gameService.decrementRemainingActions();
         }
-        this.tileService.selectTile(destinationId);
       })
       .catch((error) => {
         console.log('Migration failed: ', error);
