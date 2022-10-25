@@ -44,6 +44,11 @@ export class AbilityService {
   public async migrate(destinationId: number, quantity: number) {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const previousTileId = Number(this.tileQuery.getActiveId());
+    const migrationCount = Number(this.gameQuery.migrationCount);
+    const migrationDistance =
+      this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
+        destinationId
+      );
 
     this.tileService.removeActive();
     this.tileService.removeReachable();
@@ -59,11 +64,6 @@ export class AbilityService {
         this.tileService.resetRange();
 
         // Updates remainingActions if that's the last migrationCount.
-        const migrationCount = Number(this.gameQuery.migrationCount);
-        const migrationDistance =
-          this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
-            destinationId
-          );
         if (migrationDistance === migrationCount) {
           this.gameService.decrementRemainingActions();
         }
