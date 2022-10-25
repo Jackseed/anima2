@@ -202,22 +202,15 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       // Adds 1 species to the new tile.
       if (quantity > 0) tileIds.push(destinationTileId);
       // TODO: refactor this
-      if ((quantity < 0) || previousTileId) {
-        const tileId = previousTileId ? previousTileId : destinationTileId;
-        const index = tileIds.indexOf(destinationTileId);
-        if (index > -1) {
-          tileIds.splice(index, 1);
-        }
-      }
       // Removes 1 species to previous tile id or if quantity is negative.
-      if (previousTileId) {
+      if (quantity < 0 || previousTileId) {
+        const tileId = previousTileId ? previousTileId : destinationTileId;
         const index = tileIds.indexOf(previousTileId);
         if (index > -1) {
           tileIds.splice(index, 1);
         }
       }
     }
-
     return batch.update(speciesDoc.ref, { tileIds });
   }
 

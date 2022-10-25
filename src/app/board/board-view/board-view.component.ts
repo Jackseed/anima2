@@ -16,10 +16,6 @@ import { PlayService } from '../play.service';
 import { PlayerQuery, PlayerService } from '../players/_state';
 import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
-
-// Components
-
-import { AdaptationMenuComponent } from '../abilities/adaptation-menu/adaptation-menu.component';
 import { AbilityService } from '../ability.service';
 
 @Component({
