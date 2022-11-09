@@ -1,9 +1,6 @@
 // Angular
 import { Injectable } from '@angular/core';
 
-// Firebase
-import firebase from 'firebase/app';
-
 // Rxjs
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -16,8 +13,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { GameQuery, GameService } from '../games/_state';
 import { PlayerService } from './players/_state';
 import {
-  abilities,
+  ABILITIES,
   Ability,
+  AbilityId,
   Species,
   SpeciesQuery,
   SpeciesService,
@@ -44,7 +42,7 @@ export class AbilityService {
   public async migrate(destinationId: number, quantity: number) {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const previousTileId = Number(this.tileQuery.getActiveId());
-    const migrationCount = Number(this.gameQuery.migrationCount);
+    const migrationCount = this.migrationCount;
     const migrationDistance =
       this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
         destinationId
@@ -76,7 +74,7 @@ export class AbilityService {
   // MIGRATION - UTILS - Prepares migration by marking reachable tiles.
   public startMigration(): void {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const migrationCount = Number(this.gameQuery.migrationCount);
+    const migrationCount = this.migrationCount;
     this.tileService.markAdjacentReachableTiles(activeTileId, migrationCount);
   }
 
@@ -116,14 +114,18 @@ export class AbilityService {
   }
 
   // MIGRATION - UTILS - Getter for current migration count.
-  // Includes AGILITY count.
-  public get migrationCount(): number | firebase.firestore.FieldValue {
-    const activeSpeciesAbilityIds = this.speciesQuery.activeSpeciesAbilityIds;
-    const game = this.gameQuery.getActive();
+  public get migrationCount(): number {
+    let migrationCount = +this.gameQuery.migrationCount;
 
-    return activeSpeciesAbilityIds.includes('agility')
-      ? +game.migrationCount + abilities['agility'].value
-      : game.migrationCount;
+    migrationCount = this.addMigrationAbilityValue(migrationCount);
+
+    return migrationCount;
+  }
+
+  public get migrationCount$(): Observable<number> {
+    return this.gameQuery.migrationCount$.pipe(
+      map((migrationCount) => this.addMigrationAbilityValue(migrationCount))
+    );
   }
 
   // PROLIFERATION
@@ -276,5 +278,41 @@ export class AbilityService {
       tileId
     );
     return tileSpeciesCount >= num ? true : false;
+  }
+
+  // ABILITIES
+
+  // UTILS
+
+  get activeSpeciesAbilityIds() {
+    return this.speciesQuery.getActive().abilities.map((ability) => ability.id);
+  }
+
+  get activeSpeciesAbilityIds$() {
+    return this.speciesQuery
+      .selectActive()
+      .pipe(map((species) => species.abilities.map((ability) => ability.id)));
+  }
+
+  getAbilityWithId(abilityId: AbilityId): Ability {
+    return ABILITIES.filter((ability) => ability.id === abilityId)[0];
+  }
+
+  activeSpeciesHasAbility(abilityId: AbilityId): boolean {
+    const activeSpeciesAbilityIds = this.activeSpeciesAbilityIds;
+    return activeSpeciesAbilityIds.includes(abilityId);
+  }
+
+  getAbilityValue(abilityId: AbilityId): number {
+    const ability = this.getAbilityWithId(abilityId);
+    return ability.value;
+  }
+
+  // MIGRATION ABILITIES
+  addMigrationAbilityValue(gameMigrationCount: number): number {
+    if (this.activeSpeciesHasAbility('flying'))
+      gameMigrationCount += this.getAbilityValue('flying');
+
+    return gameMigrationCount;
   }
 }

@@ -5,7 +5,6 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
 // States
-import { GameQuery } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
 import { TileService } from '../tiles/_state';
 
@@ -29,7 +28,6 @@ export class FooterComponent implements OnInit {
   public canAdapt$: Observable<boolean>;
 
   constructor(
-    private gameQuery: GameQuery,
     private tileService: TileService,
     private playService: PlayService,
     private abilityService: AbilityService,
@@ -37,7 +35,7 @@ export class FooterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.migrationCount$ = this.gameQuery.migrationCount$;
+    this.migrationCount$ = this.abilityService.migrationCount$;
     this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
 
     this.canMigrate$ = this.abilityService.canMigrate$;

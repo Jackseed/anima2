@@ -24,7 +24,7 @@ import {
   Player,
 } from 'src/app/board/players/_state/player.model';
 import {
-  abilities,
+  ABILITIES,
   Ability,
   createSpecies,
   neutrals,
@@ -128,7 +128,7 @@ export class GameService extends CollectionService<GameState> {
     const usedAbilityIds = usedAbilities.map((ability: Ability) => ability.id);
 
     // Selects an ability only within unused abilities.
-    const availableAbilities = abilities.filter(
+    const availableAbilities = ABILITIES.filter(
       (ability) => !usedAbilityIds.includes(ability.id)
     );
 

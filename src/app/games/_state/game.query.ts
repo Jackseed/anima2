@@ -19,8 +19,8 @@ export class GameQuery extends QueryEntity<GameState> {
     this.createUIQuery();
   }
 
-  public get migrationCount() {
-    return this.getActive().migrationCount;
+  public get migrationCount(): number {
+    return +this.getActive().migrationCount;
   }
 
   public get migrationCount$(): Observable<number> {
@@ -44,5 +44,4 @@ export class GameQuery extends QueryEntity<GameState> {
   public get isStarting(): boolean {
     return this.getActive().isStarting;
   }
-
 }

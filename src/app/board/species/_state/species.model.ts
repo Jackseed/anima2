@@ -15,7 +15,7 @@ export interface TileSpecies {
   abilityId: string;
 }
 
-export const abilityIds = [
+export const ABILITY_IDS = [
   'spontaneousGeneration',
   'hounds',
   'range',
@@ -32,7 +32,7 @@ export const abilityIds = [
   'carnivore',
   'submersible',
 ] as const;
-export type AbilityId = typeof abilityIds[number];
+export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {
   id: AbilityId;
   en: {
@@ -46,7 +46,7 @@ export interface Ability {
   value: number;
 }
 
-export const abilities: Ability[] = [
+export const ABILITIES: Ability[] = [
   {
     id: 'spontaneousGeneration',
     en: {
