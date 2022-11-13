@@ -123,31 +123,33 @@ export class TileService extends CollectionService<TileState> {
   }
 
   public markAdjacentReachableTiles(tileId: number, range: number) {
-    let tileIds = [];
-    let reachables = [];
-    // Iterates on adjacent tiles to get their adjacent tiles.
+    let resultTileIds = [];
+    let previousRangeTiles = [tileId];
+    let currentRangeTiles = [];
+    // Iterates on each tiles per range to get their adjacent tiles.
     for (let i = 0; i < range; i++) {
-      i === 0
-        ? (reachables = this.query.getAdjacentTiles(tileId, 1))
-        : reachables.forEach(
-            (id) =>
-              (reachables = [
-                ...reachables,
-                ...this.query.getAdjacentTiles(id, 1),
-              ])
-          );
-      // get onlt this range tiles
-      let rangeTiles = reachables.filter((id) => !tileIds.includes(id));
-      // remove duplicates
-      rangeTiles = [...new Set(rangeTiles)];
-      this.updateRange(rangeTiles, i + 1);
+      // Gets adjacent tiles for each previous range tile.
+      previousRangeTiles.forEach((id) => {
+        currentRangeTiles.push(...this.query.getAdjacentTiles(id, 1));
+      });
 
-      tileIds = [...tileIds, ...rangeTiles];
+      // Filters to keep only the new one.
+      currentRangeTiles = currentRangeTiles.filter(
+        (id) => !resultTileIds.includes(id)
+      );
+      // Removes duplicates.
+      currentRangeTiles = [...new Set(currentRangeTiles)];
+      // Updates tiles UI with their range.
+      this.updateRange(currentRangeTiles, i + 1);
+      // Updates value to prepare next iteration.
+      previousRangeTiles = currentRangeTiles;
+      // Saves the result.
+      resultTileIds = [...resultTileIds, ...currentRangeTiles];
     }
 
-    // remove the center tileId
-    tileIds = tileIds.filter((id) => id !== tileId);
-    this.markAsReachable(tileIds);
+    // Removes the starting tileId
+    resultTileIds = resultTileIds.filter((id) => id !== tileId);
+    this.markAsReachable(resultTileIds);
   }
 
   public markAllTilesReachable(): void {

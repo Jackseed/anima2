@@ -221,8 +221,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     quantity: number
   ): firebase.firestore.WriteBatch {
     const gameRef = this.db.doc(gameDoc).ref;
-    const UItile = this.tileQuery.ui.getEntity(destinationTileId.toString());
-    const distance = UItile.range;
+    const distance = this.tileQuery.getTileRange(destinationTileId);
 
     const decrement = firebase.firestore.FieldValue.increment(
       -distance * quantity
