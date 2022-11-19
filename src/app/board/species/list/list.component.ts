@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
 import { Species } from '../../../board/species/_state/species.model';
+import { AbilityService } from '../../ability.service';
 import { PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
 import { SpeciesService } from '../_state';
@@ -63,7 +64,8 @@ export class ListComponent implements OnInit {
     private snackbar: MatSnackBar,
     private tileQuery: TileQuery,
     private playerQuery: PlayerQuery,
-    private speciesService: SpeciesService
+    private speciesService: SpeciesService,
+    private abilityService: AbilityService
   ) {}
 
   ngOnInit(): void {}
@@ -97,7 +99,7 @@ export class ListComponent implements OnInit {
 
   public validate() {
     this.dialogRef.close();
-    this.speciesService.assimilate(this.active.id, -1, this.data.tileId, 1);
+    this.abilityService.assimilate(this.active.id, -1, this.data.tileId, 1);
     this.snackbar.open('Vous avez assimilé !', null, {
       duration: 800,
       panelClass: 'orange-snackbar',

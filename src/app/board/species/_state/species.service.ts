@@ -43,22 +43,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
-  // ASSIMILATION
-  // Removes one species from a tile and adds one to the active species.
-  public async assimilate(
-    removedSpeciesId: string,
-    removedQuantity: number,
-    removedTileId: number,
-    addingQuantity: number
-  ) {
-    const activeSpeciesId = this.query.getActiveId();
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    // Removes the assimilated species.
-    await this.move(removedSpeciesId, removedQuantity, removedTileId);
-    // Adds quantity to the assimilating species.
-    await this.move(activeSpeciesId, addingQuantity, activeTileId);
-  }
-
   // Adds an ability to a species
   public async addAbilityToSpecies(ability: Ability, species: Species) {
     const gameId = this.gameQuery.getActiveId();
