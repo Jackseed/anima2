@@ -32,6 +32,6 @@ export class ScoreComponent implements OnInit {
     this.game$ = this.gameQuery.selectActive();
     this.players$ = this.playerQuery.selectAll();
     this.activeSpecies$ = this.speciesQuery.selectActive();
-    this.migrationCount$ = this.abilityService.migrationCount$;
+    this.migrationCount$ = this.abilityService.remainingMigrations$;
   }
 }

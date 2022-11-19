@@ -113,12 +113,14 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     return updatedSpecies;
   }
 
+  // TODO: cut into 2 functions: move & remove, mb also refactor migrateTo
   // Moves species (from a tile) to a tile.
   public async move(
     speciesId: string,
     quantity: number,
     destinationId: number,
-    previousTileId?: number
+    previousTileId?: number,
+    migrationUsed?: number
   ) {
     const gameId = this.routerQuery.getParams().id;
     const gameDoc = `games/${gameId}`;
@@ -153,12 +155,11 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         -quantity
       );
 
-      // Finally, updates migration count, if it's a move.
-      batch = this.batchUpdateMigrationCount(
+      // Finally, updates remaining migrations, if it's a move.
+      batch = this.batchUpdateRemainingMigrations(
         gameDoc,
         batch,
-        destinationId,
-        quantity
+        migrationUsed
       );
     }
     return batch.commit().catch((err) => console.log('Move failed ', err));
@@ -214,18 +215,13 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     return batch.update(speciesDoc.ref, { tileIds });
   }
 
-  private batchUpdateMigrationCount(
+  private batchUpdateRemainingMigrations(
     gameDoc: string,
     batch: firebase.firestore.WriteBatch,
-    destinationTileId: number,
-    quantity: number
+    migrationUsed: number
   ): firebase.firestore.WriteBatch {
     const gameRef = this.db.doc(gameDoc).ref;
-    const distance = this.tileQuery.getTileRange(destinationTileId);
-
-    const decrement = firebase.firestore.FieldValue.increment(
-      -distance * quantity
-    );
+    const decrement = firebase.firestore.FieldValue.increment(-migrationUsed);
 
     return batch.update(gameRef, { migrationCount: decrement });
   }

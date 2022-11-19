@@ -35,7 +35,7 @@ export class FooterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.migrationCount$ = this.abilityService.migrationCount$;
+    this.migrationCount$ = this.abilityService.remainingMigrations$;
     this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
 
     this.canMigrate$ = this.abilityService.canMigrate$;

@@ -150,7 +150,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
     // Migration
     if (this.abilityService.isMigrationValid(tileId))
-      return await this.abilityService.migrate(tileId, 1);
+      return await this.abilityService.migrateTo(tileId);
 
     // Dismisses clicks on empty tiles.
     if (this.tileQuery.isEmpty(tileId)) return;

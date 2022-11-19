@@ -19,12 +19,12 @@ export class GameQuery extends QueryEntity<GameState> {
     this.createUIQuery();
   }
 
-  public get migrationCount(): number {
-    return +this.getActive().migrationCount;
+  public get remainingMigrations(): number {
+    return +this.getActive().remainingMigrations;
   }
 
-  public get migrationCount$(): Observable<number> {
-    return this.selectActive().pipe(map((game) => Number(game.migrationCount)));
+  public get remainingMigrations$(): Observable<number> {
+    return this.selectActive().pipe(map((game) => Number(game.remainingMigrations)));
   }
 
   public get inGameAbilities() {

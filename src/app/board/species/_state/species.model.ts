@@ -15,6 +15,15 @@ export interface TileSpecies {
   abilityId: string;
 }
 
+export interface MigrationValues {
+  availableDistance?: number,
+  traveledDistance?: number;
+  movingQuantity?: number;
+  migrationUsed?: number;
+}
+
+export const DEFAULT_MOVING_QUANTITY = 1;
+
 export const ABILITY_IDS = [
   'spontaneousGeneration',
   'hounds',

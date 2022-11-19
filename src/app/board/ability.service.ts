@@ -16,6 +16,8 @@ import {
   ABILITIES,
   Ability,
   AbilityId,
+  DEFAULT_MOVING_QUANTITY,
+  MigrationValues,
   Species,
   SpeciesQuery,
   SpeciesService,
@@ -39,20 +41,23 @@ export class AbilityService {
   ) {}
 
   // MIGRATION
-  public async migrate(destinationId: number, quantity: number) {
+  public async migrateTo(destinationId: number) {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const previousTileId = Number(this.tileQuery.getActiveId());
-    const migrationCount = this.migrationCount;
-    const migrationDistance =
-      this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
-        destinationId
-      );
+    const migrationValues = this.getMigrationValues(destinationId);
+    const remainginMigrations = this.remainingMigrations;
 
     this.tileService.removeActive();
     this.tileService.removeReachable();
 
     this.speciesService
-      .move(activeSpeciesId, quantity, destinationId, previousTileId)
+      .move(
+        activeSpeciesId,
+        migrationValues.movingQuantity,
+        destinationId,
+        previousTileId,
+        migrationValues.migrationUsed
+      )
       .then(async () => {
         this.tileService.selectTile(destinationId);
         this.snackbar.open('Migration effectuée !', null, {
@@ -62,7 +67,7 @@ export class AbilityService {
         this.tileService.resetRange();
 
         // Updates remainingActions if that's the last migrationCount.
-        if (migrationDistance === migrationCount) {
+        if (migrationValues.migrationUsed === remainginMigrations) {
           this.gameService.decrementRemainingActions();
         }
       })
@@ -71,10 +76,32 @@ export class AbilityService {
       });
   }
 
-  // MIGRATION - UTILS - Prepares migration by marking reachable tiles.
+  // MIGRATION - UTILS
+  // Get migration values, applying relevant abilities.
+  private getMigrationValues(destinationTileId: number): MigrationValues {
+    // Gets default migration values.
+    const traveledDistance =
+      this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
+        destinationTileId
+      );
+    const movingQuantity = DEFAULT_MOVING_QUANTITY;
+    const migrationUsed = traveledDistance * DEFAULT_MOVING_QUANTITY;
+
+    // Then apply migration abilities.
+    const migrationValues = this.applyMigrationAbilities({
+      traveledDistance,
+      movingQuantity,
+      migrationUsed,
+    });
+
+    return migrationValues;
+  }
+
+  // MIGRATION - UTILS
+  // Prepares migration by marking reachable tiles.
   public startMigration(): void {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const migrationCount = this.migrationCount;
+    const migrationCount = this.remainingMigrations;
     this.tileService.markAdjacentReachableTiles(activeTileId, migrationCount);
   }
 
@@ -105,26 +132,33 @@ export class AbilityService {
     const destinationTile = this.tileQuery.getEntity(
       destinationTileId.toString()
     );
-
-    return (
+    const isMigrationValid =
       this.tileQuery.hasActive() &&
       destinationTile.isReachable &&
-      !!this.migrationCount
-    );
+      !!this.remainingMigrations;
+
+    return isMigrationValid;
   }
 
-  // MIGRATION - UTILS - Getter for current migration count.
-  public get migrationCount(): number {
-    let migrationCount = +this.gameQuery.migrationCount;
+  // MIGRATION - UTILS - Getter for current remaining migrations.
+  public get remainingMigrations(): number {
+    let remainingMigrations = +this.gameQuery.remainingMigrations;
 
-    migrationCount = this.addMigrationAbilityValue(migrationCount);
+    remainingMigrations = this.applyMigrationAbilities({
+      availableDistance: remainingMigrations,
+    }).availableDistance;
 
-    return migrationCount;
+    return remainingMigrations;
   }
 
-  public get migrationCount$(): Observable<number> {
-    return this.gameQuery.migrationCount$.pipe(
-      map((migrationCount) => this.addMigrationAbilityValue(migrationCount))
+  public get remainingMigrations$(): Observable<number> {
+    return this.gameQuery.remainingMigrations$.pipe(
+      map(
+        (remainingMigrations) =>
+          this.applyMigrationAbilities({
+            availableDistance: remainingMigrations,
+          }).availableDistance
+      )
     );
   }
 
@@ -309,10 +343,38 @@ export class AbilityService {
   }
 
   // MIGRATION ABILITIES
-  addMigrationAbilityValue(gameMigrationCount: number): number {
+  applyMigrationAbilities(defaultValues: MigrationValues): MigrationValues {
+    let updatedValue: MigrationValues = defaultValues;
+    // If active species is flying, adds available distance.
     if (this.activeSpeciesHasAbility('flying'))
-      gameMigrationCount += this.getAbilityValue('flying');
+      updatedValue.availableDistance += this.getAbilityValue('flying');
 
-    return gameMigrationCount;
+    // If active species has hounds,
+    // updates moving quantity, without modifying migration point used.
+    if (this.isActiveSpeciesAHound())
+      updatedValue = {
+        ...defaultValues,
+        movingQuantity: this.getAbilityValue('hounds'),
+        migrationUsed: defaultValues.traveledDistance,
+      };
+
+    return updatedValue;
+  }
+
+  // HOUNDS
+  // Checks if active species has Hounds ability
+  // and if individuals are enough to create a hound.
+  private isActiveSpeciesAHound(): boolean {
+    const activeSpecies = this.speciesQuery.getActive();
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const activeSpeciesQuantity = this.tileQuery.getTileSpeciesCount(
+      activeSpecies,
+      activeTileId
+    );
+
+    const isActiveSpeciesAHound =
+      activeSpeciesQuantity >= this.getAbilityValue('nest') &&
+      this.activeSpeciesHasAbility('nest');
+    return isActiveSpeciesAHound;
   }
 }
