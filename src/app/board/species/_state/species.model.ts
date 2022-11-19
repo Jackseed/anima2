@@ -24,22 +24,32 @@ export interface MigrationValues {
 
 export const DEFAULT_MOVING_QUANTITY = 1;
 
-export const DEFAULT_PROLIFERATE_QUANTITY = 2;
+export interface ProliferationValues {
+  neededIndividuals: number;
+  createdQuantity: number;
+}
+
+export const DEFAULT_PROLIFERATION_PARENTS = 2;
+export const DEFAULT_PROLIFERATION_CHILDREN = 2;
+export const DEFAULT_PROLIFERATION_VALUES = {
+  neededIndividuals: 2,
+  createdQuantity: 2,
+};
 
 export const ABILITY_IDS = [
-  'spontaneousGeneration',
+  'flying',
   'hounds',
+  'nest',
+  'hermaphrodite',
+  'spontaneousGeneration',
   'range',
   'survival',
   'tunnel',
-  'nest',
-  'flying',
   'giantism',
   'agility',
   'acceleration',
   'rallying',
   'intimidate',
-  'hermaphrodite',
   'carnivore',
   'submersible',
 ] as const;
@@ -241,7 +251,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
   },
   {
     id: 'carnivore',

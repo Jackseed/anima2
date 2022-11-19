@@ -17,11 +17,12 @@ import {
   Ability,
   AbilityId,
   DEFAULT_MOVING_QUANTITY,
-  DEFAULT_PROLIFERATE_QUANTITY,
   MigrationValues,
   Species,
   SpeciesQuery,
   SpeciesService,
+  ProliferationValues,
+  DEFAULT_PROLIFERATION_VALUES,
 } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
 
@@ -167,14 +168,14 @@ export class AbilityService {
   public async proliferate() {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const proliferateQuantity = this.applyProliferateAbilities(
-      DEFAULT_PROLIFERATE_QUANTITY
+    const proliferationValues = this.applyProliferateAbilities(
+      DEFAULT_PROLIFERATION_VALUES
     );
 
     this.tileService.removeActive();
     this.tileService.removeReachable();
     this.speciesService
-      .move(activeSpeciesId, proliferateQuantity, activeTileId)
+      .move(activeSpeciesId, proliferationValues.createdQuantity, activeTileId)
       .then(() => {
         this.gameService.decrementRemainingActions();
         this.snackbar.open('Prolifération effectuée !', null, {
@@ -187,16 +188,23 @@ export class AbilityService {
       });
   }
 
-  // PROLIFERATION - UTILS - Indicates weither active species can proliferate
-  // by verifiying if there is more than 2 active species on the tile.
+  // PROLIFERATION - UTILS -
+  // Indicates weither active species can proliferate
+  // by verifiying if there are more than the default needed individuals on the tile.
   public get canProliferate$(): Observable<boolean> {
     const activeSpecies$ = this.speciesQuery.selectActive();
     const activeTileId$ = this.tileQuery.selectActiveId();
+    const proliferationValues = this.applyProliferateAbilities(
+      DEFAULT_PROLIFERATION_VALUES
+    );
 
-    // Checks if more than 1 species on the active tile to proliferate.
     return combineLatest([activeSpecies$, activeTileId$]).pipe(
-      map(([specie, tileId]) => {
-        return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 2);
+      map(([species, tileId]) => {
+        return this.isSpeciesQuantityGreatherThan(
+          species,
+          Number(tileId),
+          proliferationValues.neededIndividuals
+        );
       })
     );
   }
@@ -344,35 +352,41 @@ export class AbilityService {
   }
 
   // PROLIFERATE ABILITIES
-  private applyProliferateAbilities(defaultQuantity: number): number {
-    let updatedQuantity: number = defaultQuantity;
-    // If active species has nest and enough individuals
-    // adds proliferation quantity.
-    if (this.isAbilityValid('nest'))
-      updatedQuantity += this.getAbilityValue('nest');
+  private applyProliferateAbilities(
+    defaultValues: ProliferationValues
+  ): ProliferationValues {
+    let updatedValues: ProliferationValues = defaultValues;
 
-    return updatedQuantity;
+    // If hermaphrodite, updates needed individuals.
+    if (this.activeSpeciesHasAbility('hermaphrodite'))
+      updatedValues.neededIndividuals = this.getAbilityValue('hermaphrodite');
+
+    // If nest and enough individuals, adds proliferation quantity.
+    if (this.isAbilityValid('nest'))
+      updatedValues.createdQuantity += this.getAbilityValue('nest');
+
+    return updatedValues;
   }
 
   // MIGRATION ABILITIES
   private applyMigrationAbilities(
     defaultValues: MigrationValues
   ): MigrationValues {
-    let updatedValue: MigrationValues = defaultValues;
+    let updatedValues: MigrationValues = defaultValues;
     // If active species is flying, adds available distance.
     if (this.activeSpeciesHasAbility('flying'))
-      updatedValue.availableDistance += this.getAbilityValue('flying');
+      updatedValues.availableDistance += this.getAbilityValue('flying');
 
     // If active species has hounds,
     // updates moving quantity, without modifying migration point used.
     if (this.isAbilityValid('hounds'))
-      updatedValue = {
+      updatedValues = {
         ...defaultValues,
         movingQuantity: this.getAbilityValue('hounds'),
         migrationUsed: defaultValues.traveledDistance,
       };
 
-    return updatedValue;
+    return updatedValues;
   }
 
   // ABILITY UTILS
