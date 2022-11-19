@@ -16,13 +16,15 @@ export interface TileSpecies {
 }
 
 export interface MigrationValues {
-  availableDistance?: number,
+  availableDistance?: number;
   traveledDistance?: number;
   movingQuantity?: number;
   migrationUsed?: number;
 }
 
 export const DEFAULT_MOVING_QUANTITY = 1;
+
+export const DEFAULT_PROLIFERATE_QUANTITY = 2;
 
 export const ABILITY_IDS = [
   'spontaneousGeneration',
@@ -53,6 +55,7 @@ export interface Ability {
     definition: string;
   };
   value: number;
+  constraintValue?: number;
 }
 
 export const ABILITIES: Ability[] = [
@@ -82,6 +85,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
+    constraintValue: 2,
     value: 2,
   },
   {
@@ -138,7 +142,8 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    constraintValue: 4,
+    value: 1,
   },
   {
     id: 'flying',

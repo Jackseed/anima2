@@ -17,6 +17,7 @@ import {
   Ability,
   AbilityId,
   DEFAULT_MOVING_QUANTITY,
+  DEFAULT_PROLIFERATE_QUANTITY,
   MigrationValues,
   Species,
   SpeciesQuery,
@@ -163,14 +164,17 @@ export class AbilityService {
   }
 
   // PROLIFERATION
-  public async proliferate(quantity: number) {
+  public async proliferate() {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const activeTileId = Number(this.tileQuery.getActiveId());
+    const proliferateQuantity = this.applyProliferateAbilities(
+      DEFAULT_PROLIFERATE_QUANTITY
+    );
 
     this.tileService.removeActive();
     this.tileService.removeReachable();
     this.speciesService
-      .move(activeSpeciesId, quantity, activeTileId)
+      .move(activeSpeciesId, proliferateQuantity, activeTileId)
       .then(() => {
         this.gameService.decrementRemainingActions();
         this.snackbar.open('Prolifération effectuée !', null, {
@@ -314,36 +318,46 @@ export class AbilityService {
     return tileSpeciesCount >= num ? true : false;
   }
 
-  // ABILITIES
-
-  // UTILS
-
-  get activeSpeciesAbilityIds() {
+  // ABILITY - UTILS
+  // GETTERS
+  private get activeSpeciesAbilityIds() {
     return this.speciesQuery.getActive().abilities.map((ability) => ability.id);
   }
 
-  get activeSpeciesAbilityIds$() {
-    return this.speciesQuery
-      .selectActive()
-      .pipe(map((species) => species.abilities.map((ability) => ability.id)));
-  }
-
-  getAbilityWithId(abilityId: AbilityId): Ability {
+  private getAbilityWithId(abilityId: AbilityId): Ability {
     return ABILITIES.filter((ability) => ability.id === abilityId)[0];
   }
 
-  activeSpeciesHasAbility(abilityId: AbilityId): boolean {
+  private activeSpeciesHasAbility(abilityId: AbilityId): boolean {
     const activeSpeciesAbilityIds = this.activeSpeciesAbilityIds;
     return activeSpeciesAbilityIds.includes(abilityId);
   }
 
-  getAbilityValue(abilityId: AbilityId): number {
+  private getAbilityValue(abilityId: AbilityId): number {
     const ability = this.getAbilityWithId(abilityId);
     return ability.value;
   }
 
+  private getConstraintValue(abilityId: AbilityId): number {
+    const ability = this.getAbilityWithId(abilityId);
+    return ability.constraintValue;
+  }
+
+  // PROLIFERATE ABILITIES
+  private applyProliferateAbilities(defaultQuantity: number): number {
+    let updatedQuantity: number = defaultQuantity;
+    // If active species has nest and enough individuals
+    // adds proliferation quantity.
+    if (this.isAbilityValid('nest'))
+      updatedQuantity += this.getAbilityValue('nest');
+
+    return updatedQuantity;
+  }
+
   // MIGRATION ABILITIES
-  applyMigrationAbilities(defaultValues: MigrationValues): MigrationValues {
+  private applyMigrationAbilities(
+    defaultValues: MigrationValues
+  ): MigrationValues {
     let updatedValue: MigrationValues = defaultValues;
     // If active species is flying, adds available distance.
     if (this.activeSpeciesHasAbility('flying'))
@@ -351,7 +365,7 @@ export class AbilityService {
 
     // If active species has hounds,
     // updates moving quantity, without modifying migration point used.
-    if (this.isActiveSpeciesAHound())
+    if (this.isAbilityValid('hounds'))
       updatedValue = {
         ...defaultValues,
         movingQuantity: this.getAbilityValue('hounds'),
@@ -361,10 +375,10 @@ export class AbilityService {
     return updatedValue;
   }
 
-  // HOUNDS
-  // Checks if active species has Hounds ability
-  // and if individuals are enough to create a hound.
-  private isActiveSpeciesAHound(): boolean {
+  // ABILITY UTILS
+  // Verifies that active species has the ability
+  // and enough individuals to activate it on the active tile.
+  private isAbilityValid(abilityId: AbilityId): boolean {
     const activeSpecies = this.speciesQuery.getActive();
     const activeTileId = Number(this.tileQuery.getActiveId());
     const activeSpeciesQuantity = this.tileQuery.getTileSpeciesCount(
@@ -372,9 +386,9 @@ export class AbilityService {
       activeTileId
     );
 
-    const isActiveSpeciesAHound =
-      activeSpeciesQuantity >= this.getAbilityValue('nest') &&
-      this.activeSpeciesHasAbility('nest');
-    return isActiveSpeciesAHound;
+    const isAbilityValid =
+      activeSpeciesQuantity >= this.getConstraintValue(abilityId) &&
+      this.activeSpeciesHasAbility(abilityId);
+    return isAbilityValid;
   }
 }

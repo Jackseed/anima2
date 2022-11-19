@@ -57,7 +57,7 @@ export class FooterComponent implements OnInit {
   }
 
   public proliferate() {
-    this.abilityService.proliferate(2);
+    this.abilityService.proliferate();
   }
 
   public stopMigration() {
