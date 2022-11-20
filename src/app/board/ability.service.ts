@@ -23,6 +23,8 @@ import {
   SpeciesService,
   ProliferationValues,
   DEFAULT_PROLIFERATION_VALUES,
+  DEFAULT_ASSIMILATION_VALUES,
+  AssimilationValues,
 } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
 
@@ -168,7 +170,7 @@ export class AbilityService {
   public async proliferate() {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const proliferationValues = this.applyProliferateAbilities(
+    const proliferationValues = this.applyProliferationAbilities(
       DEFAULT_PROLIFERATION_VALUES
     );
 
@@ -194,7 +196,7 @@ export class AbilityService {
   public get canProliferate$(): Observable<boolean> {
     const activeSpecies$ = this.speciesQuery.selectActive();
     const activeTileId$ = this.tileQuery.selectActiveId();
-    const proliferationValues = this.applyProliferateAbilities(
+    const proliferationValues = this.applyProliferationAbilities(
       DEFAULT_PROLIFERATION_VALUES
     );
 
@@ -211,31 +213,32 @@ export class AbilityService {
 
   // ASSIMILATION
   // Removes one species from a tile and adds one to the active species.
-  public async assimilate(
-    removedSpeciesId: string,
-    removedQuantity: number,
-    removedTileId: number,
-    addingQuantity: number
-  ) {
+  public async assimilate(removedSpeciesId: string, removedTileId: number) {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const activeTileId = Number(this.tileQuery.getActiveId());
+    const assimilationValues = this.applyAssimilationAbilitiesToSpecies(
+      DEFAULT_ASSIMILATION_VALUES,
+      activeSpeciesId
+    );
+
     // Removes the assimilated species.
     await this.speciesService.move(
       removedSpeciesId,
-      removedQuantity,
+      assimilationValues.assimilatedQuantity,
       removedTileId
     );
     // Adds quantity to the assimilating species.
     await this.speciesService.move(
       activeSpeciesId,
-      addingQuantity,
+      assimilationValues.createdQuantity,
       activeTileId
     );
   }
 
-  // ASSIMILATION - UTILS - Indicates weither active specie can assimilate.
-  // Verifies that there are at least 2 species on the active tile
-  // and that they are more than another species on the tile.
+  // ASSIMILATION - UTILS
+  // Indicates weither active specie can assimilate.
+  // Verifies that the active species individuals
+  // are more than another species on the tile.
   public get canAssimilate$(): Observable<boolean> {
     const activeTile$ = this.tileQuery.selectActive();
     const activeSpecieId$ = this.speciesQuery.selectActiveId();
@@ -244,15 +247,35 @@ export class AbilityService {
       map(([tile, activeSpecieId]) => {
         if (!!!tile) return false;
         const tileSpecies = tile.species;
-        // 1st condition: needs at least 2 species on the same tile to assimilate.
-        if (tileSpecies?.length < 2) return false;
+        // Supercharges species with their assimilation ability values.
+        const tileSpeciesWithAssimilationValues = tileSpecies.map((species) => {
+          return {
+            ...species,
+            ...this.applyAssimilationAbilitiesToSpecies(
+              {
+                ...DEFAULT_ASSIMILATION_VALUES,
+                strength: species.quantity,
+                defense: species.quantity,
+              },
+              species.id
+            ),
+          };
+        });
 
-        // 2nd condition: needs to be more than others.
-        const activeSpecieQuantity = tileSpecies.filter(
-          (specie) => specie.id === activeSpecieId
-        )[0]?.quantity;
-        const weakerSpecies = tileSpecies.filter(
-          (specie) => specie.quantity < activeSpecieQuantity
+        const otherTileSpeciesWithAssimilationValues =
+          tileSpeciesWithAssimilationValues.filter(
+            (abilitySpecies) => abilitySpecies.id !== activeSpecieId
+          );
+        const activeSpeciesWithAssimilationValues =
+          tileSpeciesWithAssimilationValues.filter(
+            (abilitySpecies) => abilitySpecies.id === activeSpecieId
+          )[0];
+
+        // Then checks if an other species is weaker than active.
+        const weakerSpecies = otherTileSpeciesWithAssimilationValues.filter(
+          (abilitySpecies) =>
+            abilitySpecies.defense <
+            activeSpeciesWithAssimilationValues.strength
         );
         if (weakerSpecies.length === 0) return false;
 
@@ -328,17 +351,14 @@ export class AbilityService {
 
   // ABILITY - UTILS
   // GETTERS
-  private get activeSpeciesAbilityIds() {
-    return this.speciesQuery.getActive().abilities.map((ability) => ability.id);
+  private speciesHasAbility(speciesId: string, abilityId: AbilityId): boolean {
+    const speciesAbilityIds = this.getSpeciesAbilityIds(speciesId);
+    return speciesAbilityIds.includes(abilityId);
   }
 
-  private getAbilityWithId(abilityId: AbilityId): Ability {
-    return ABILITIES.filter((ability) => ability.id === abilityId)[0];
-  }
-
-  private activeSpeciesHasAbility(abilityId: AbilityId): boolean {
-    const activeSpeciesAbilityIds = this.activeSpeciesAbilityIds;
-    return activeSpeciesAbilityIds.includes(abilityId);
+  private getSpeciesAbilityIds(speciesId: string) {
+    const species = this.speciesQuery.getEntity(speciesId);
+    return species.abilities.map((ability) => ability.id);
   }
 
   private getAbilityValue(abilityId: AbilityId): number {
@@ -351,14 +371,33 @@ export class AbilityService {
     return ability.constraintValue;
   }
 
+  private getAbilityWithId(abilityId: AbilityId): Ability {
+    return ABILITIES.filter((ability) => ability.id === abilityId)[0];
+  }
+
+  // ASSIMILATION ABILITIES
+  private applyAssimilationAbilitiesToSpecies(
+    defaultValues: AssimilationValues,
+    speciesId: string
+  ): AssimilationValues {
+    let updatedValues: AssimilationValues = defaultValues;
+
+    // If giantism, updates defense.
+    if (this.speciesHasAbility(speciesId, 'giantism'))
+      updatedValues.defense += this.getAbilityValue('giantism');
+
+    return updatedValues;
+  }
+
   // PROLIFERATE ABILITIES
-  private applyProliferateAbilities(
+  private applyProliferationAbilities(
     defaultValues: ProliferationValues
   ): ProliferationValues {
+    const activeSpeciesId = this.speciesQuery.getActiveId();
     let updatedValues: ProliferationValues = defaultValues;
 
     // If hermaphrodite, updates needed individuals.
-    if (this.activeSpeciesHasAbility('hermaphrodite'))
+    if (this.speciesHasAbility(activeSpeciesId, 'hermaphrodite'))
       updatedValues.neededIndividuals = this.getAbilityValue('hermaphrodite');
 
     // If nest and enough individuals, adds proliferation quantity.
@@ -372,9 +411,10 @@ export class AbilityService {
   private applyMigrationAbilities(
     defaultValues: MigrationValues
   ): MigrationValues {
+    const activeSpeciesId = this.speciesQuery.getActiveId();
     let updatedValues: MigrationValues = defaultValues;
     // If active species is flying, adds available distance.
-    if (this.activeSpeciesHasAbility('flying'))
+    if (this.speciesHasAbility(activeSpeciesId, 'flying'))
       updatedValues.availableDistance += this.getAbilityValue('flying');
 
     // If active species has hounds,
@@ -402,7 +442,7 @@ export class AbilityService {
 
     const isAbilityValid =
       activeSpeciesQuantity >= this.getConstraintValue(abilityId) &&
-      this.activeSpeciesHasAbility(abilityId);
+      this.speciesHasAbility(activeSpecies.id, abilityId);
     return isAbilityValid;
   }
 }

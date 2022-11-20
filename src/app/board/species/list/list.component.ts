@@ -10,7 +10,6 @@ import { Species } from '../../../board/species/_state/species.model';
 import { AbilityService } from '../../ability.service';
 import { PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
-import { SpeciesService } from '../_state';
 
 export interface dataType {
   listType: 'active' | 'passive';
@@ -64,7 +63,6 @@ export class ListComponent implements OnInit {
     private snackbar: MatSnackBar,
     private tileQuery: TileQuery,
     private playerQuery: PlayerQuery,
-    private speciesService: SpeciesService,
     private abilityService: AbilityService
   ) {}
 
@@ -99,7 +97,7 @@ export class ListComponent implements OnInit {
 
   public validate() {
     this.dialogRef.close();
-    this.abilityService.assimilate(this.active.id, -1, this.data.tileId, 1);
+    this.abilityService.assimilate(this.active.id, this.data.tileId);
     this.snackbar.open('Vous avez assimilé !', null, {
       duration: 800,
       panelClass: 'orange-snackbar',

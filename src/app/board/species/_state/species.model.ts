@@ -15,6 +15,7 @@ export interface TileSpecies {
   abilityId: string;
 }
 
+// TODO: create an ability model & query
 export interface MigrationValues {
   availableDistance?: number;
   traveledDistance?: number;
@@ -36,16 +37,30 @@ export const DEFAULT_PROLIFERATION_VALUES = {
   createdQuantity: 2,
 };
 
+export interface AssimilationValues {
+  strength?: number;
+  defense?: number;
+  assimilatedQuantity?: number;
+  createdQuantity?: number;
+}
+
+export const DEFAULT_ASSIMILATED_QUANTITY = -2;
+export const DEFAULT_ASSIMILATION_CREATED_QUANTITY = 1;
+export const DEFAULT_ASSIMILATION_VALUES: AssimilationValues = {
+  assimilatedQuantity: DEFAULT_ASSIMILATED_QUANTITY,
+  createdQuantity: DEFAULT_ASSIMILATION_CREATED_QUANTITY,
+};
+
 export const ABILITY_IDS = [
   'flying',
   'hounds',
   'nest',
   'hermaphrodite',
+  'giantism',
   'spontaneousGeneration',
   'range',
   'survival',
   'tunnel',
-  'giantism',
   'agility',
   'acceleration',
   'rallying',
@@ -181,7 +196,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
   },
   {
     id: 'agility',

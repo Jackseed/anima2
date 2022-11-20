@@ -87,7 +87,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       const existingQuantity = updatedSpecies[speciesIndex].quantity;
       const newQuantity = existingQuantity + quantity;
       // If there is no more species on this tile, removes it.
-      if (newQuantity === 0) {
+      if (newQuantity <= 0) {
         updatedSpecies.splice(speciesIndex, 1);
       } else {
         // Otherwise, updates quantity.
@@ -97,7 +97,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     return updatedSpecies;
   }
 
-  // TODO: cut into 2 functions: move & remove, mb also refactor migrateTo
   // Moves species (from a tile) to a tile.
   public async move(
     speciesId: string,
@@ -181,19 +180,16 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
       `${gameDoc}/species/${species.id}`
     );
-    let tileIds = JSON.parse(JSON.stringify(species.tileIds));
+    let tileIds: number[] = JSON.parse(JSON.stringify(species.tileIds));
     // Iterates as much as species to move.
     for (let i = 0; i < Math.abs(quantity); i++) {
       // Adds 1 species to the new tile.
       if (quantity > 0) tileIds.push(destinationTileId);
-      // TODO: refactor this
       // Removes 1 species to previous tile id or if quantity is negative.
       if (quantity < 0 || previousTileId) {
         const tileId = previousTileId ? previousTileId : destinationTileId;
-        const index = tileIds.indexOf(previousTileId);
-        if (index > -1) {
-          tileIds.splice(index, 1);
-        }
+        const index = tileIds.indexOf(tileId);
+        if (index !== -1) tileIds.splice(index, 1);
       }
     }
     return batch.update(speciesDoc.ref, { tileIds });
