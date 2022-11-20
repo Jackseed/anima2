@@ -390,6 +390,10 @@ export class AbilityService {
     if (this.speciesHasAbility(speciesId, 'predator'))
       updatedValues.strength += this.getAbilityValue('predator');
 
+    // If gluttony, updates assimilated quantities.
+    if (this.speciesHasAbility(speciesId, 'gluttony'))
+      updatedValues.assimilatedQuantity += this.getAbilityValue('gluttony');
+
     return updatedValues;
   }
 

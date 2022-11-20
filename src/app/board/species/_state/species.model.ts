@@ -57,16 +57,16 @@ export const ABILITY_IDS = [
   'nest',
   'hermaphrodite',
   'giantism',
+  'predator',
+  'gluttony',
+  'carnivore',
   'spontaneousGeneration',
   'range',
   'survival',
   'tunnel',
-  'agility',
   'acceleration',
   'rallying',
   'intimidate',
-  'carnivore',
-  'predator',
 ] as const;
 export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {
@@ -199,18 +199,18 @@ export const ABILITIES: Ability[] = [
     value: 1,
   },
   {
-    id: 'agility',
+    id: 'gluttony',
     en: {
-      name: 'Agility',
+      name: 'gluttony',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Agilité',
+      name: 'Gloutonnerie',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: -1,
   },
   {
     id: 'acceleration',

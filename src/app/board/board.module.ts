@@ -263,9 +263,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'agility',
+      'gluttony',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/agility.svg'
+        '../../../assets/species/gluttony.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -361,9 +361,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'agility-ability',
+      'gluttony-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/abilities/agility.svg'
+        '../../../assets/abilities/gluttony.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
