@@ -66,7 +66,7 @@ export const ABILITY_IDS = [
   'rallying',
   'intimidate',
   'carnivore',
-  'submersible',
+  'predator',
 ] as const;
 export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {
@@ -283,18 +283,18 @@ export const ABILITIES: Ability[] = [
     value: 2,
   },
   {
-    id: 'submersible',
+    id: 'predator',
     en: {
-      name: 'Submersible',
+      name: 'Predator',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Submersible',
+      name: 'Prédation',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
   },
 ];
 

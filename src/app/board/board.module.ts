@@ -329,9 +329,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'submersible',
+      'predator',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/submersible.svg'
+        '../../../assets/species/predator.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -427,9 +427,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'submersible-ability',
+      'predator-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/abilities/submersible.svg'
+        '../../../assets/abilities/predator.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(

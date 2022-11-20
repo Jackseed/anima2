@@ -386,6 +386,10 @@ export class AbilityService {
     if (this.speciesHasAbility(speciesId, 'giantism'))
       updatedValues.defense += this.getAbilityValue('giantism');
 
+    // If predator, updates strength.
+    if (this.speciesHasAbility(speciesId, 'predator'))
+      updatedValues.strength += this.getAbilityValue('predator');
+
     return updatedValues;
   }
 
