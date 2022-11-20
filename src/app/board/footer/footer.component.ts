@@ -20,7 +20,7 @@ import { AbilityService } from '../ability.service';
   styleUrls: ['./footer.component.scss'],
 })
 export class FooterComponent implements OnInit {
-  public migrationCount$: Observable<number>;
+  public remainingMigrations$: Observable<number>;
   public isMigrationActive$: Observable<boolean>;
   public canMigrate$: Observable<boolean>;
   public canProliferate$: Observable<boolean>;
@@ -35,7 +35,7 @@ export class FooterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.migrationCount$ = this.abilityService.remainingMigrations$;
+    this.remainingMigrations$ = this.abilityService.remainingMigrations$;
     this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
 
     this.canMigrate$ = this.abilityService.canMigrate$;

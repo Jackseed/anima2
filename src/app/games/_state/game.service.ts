@@ -10,8 +10,8 @@ import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
 import {
-  actionPerTurn,
-  migrationCount,
+  DEFAULT_ACTION_PER_TURN,
+  DEFAULT_REMAINING_MIGRATIONS,
   createGame,
   startState,
 } from './game.model';
@@ -179,7 +179,7 @@ export class GameService extends CollectionService<GameState> {
     const increment = firebase.firestore.FieldValue.increment(1);
 
     batch.update(gameRef, { turnCount: increment });
-    batch.update(gameRef, { remainingActions: actionPerTurn });
+    batch.update(gameRef, { remainingActions: DEFAULT_ACTION_PER_TURN });
 
     // every 3 turns, new era
     if ((game.turnCount + 1) % 3 === 0) {
@@ -199,7 +199,9 @@ export class GameService extends CollectionService<GameState> {
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
     batch.update(gameRef, { remainingActions: decrement });
-    batch.update(gameRef, { migrationCount });
+    batch.update(gameRef, {
+      remainingMigrations: DEFAULT_REMAINING_MIGRATIONS,
+    });
 
     return batch.commit().catch((error) => {
       console.log('Transaction failed: ', error);

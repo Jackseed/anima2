@@ -16,7 +16,7 @@
         class="absolute circle"
         fxLayoutAlign="center center"
       >
-        <div class="figures">{{ migrationCount$ | async }}</div>
+        <div class="figures">{{ remainingMigrations$ | async }}</div>
       </div>
       <button
         *ngIf="isMigrationActive$ | async"

@@ -203,6 +203,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const gameRef = this.db.doc(gameDoc).ref;
     const decrement = firebase.firestore.FieldValue.increment(-migrationUsed);
 
-    return batch.update(gameRef, { migrationCount: decrement });
+    return batch.update(gameRef, { remainingMigrations: decrement });
   }
 }

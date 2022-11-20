@@ -14,7 +14,7 @@
   <li>Actions restantes: {{ game.remainingActions }}</li>
   <li>
     Migration restantes:
-    <span>{{ migrationCount$ | async }}</span>
+    <span>{{ remainingMigrations$ | async }}</span>
   </li>
   <h3>Joueurs</h3>
   <li *ngFor="let player of players$ | async">

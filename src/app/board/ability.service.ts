@@ -22,9 +22,10 @@ import {
   SpeciesQuery,
   SpeciesService,
   ProliferationValues,
-  DEFAULT_PROLIFERATION_VALUES,
-  DEFAULT_ASSIMILATION_VALUES,
   AssimilationValues,
+  createAssimilationValues,
+  createProliferationValues,
+  createMigrationValues,
 } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
 
@@ -70,7 +71,7 @@ export class AbilityService {
         });
         this.tileService.resetRange();
 
-        // Updates remainingActions if that's the last migrationCount.
+        // Updates remainingActions if that's the last remainingAction.
         if (migrationValues.migrationUsed === remainginMigrations) {
           this.gameService.decrementRemainingActions();
         }
@@ -84,19 +85,18 @@ export class AbilityService {
   // Get migration values, applying relevant abilities.
   private getMigrationValues(destinationTileId: number): MigrationValues {
     // Gets default migration values.
+    const remainginMigrations = this.remainingMigrations;
     const traveledDistance =
       this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
         destinationTileId
       );
-    const movingQuantity = DEFAULT_MOVING_QUANTITY;
-    const migrationUsed = traveledDistance * DEFAULT_MOVING_QUANTITY;
+    let migrationValues = createMigrationValues(
+      remainginMigrations,
+      traveledDistance
+    );
 
     // Then apply migration abilities.
-    const migrationValues = this.applyMigrationAbilities({
-      traveledDistance,
-      movingQuantity,
-      migrationUsed,
-    });
+    migrationValues = this.applyMigrationAbilities(migrationValues);
 
     return migrationValues;
   }
@@ -105,8 +105,11 @@ export class AbilityService {
   // Prepares migration by marking reachable tiles.
   public startMigration(): void {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const migrationCount = this.remainingMigrations;
-    this.tileService.markAdjacentReachableTiles(activeTileId, migrationCount);
+    const remainingMigrations = this.remainingMigrations;
+    this.tileService.markAdjacentReachableTiles(
+      activeTileId,
+      remainingMigrations
+    );
   }
 
   // MIGRATION - UTILS - Checks if a migration is ongoing.
@@ -147,10 +150,10 @@ export class AbilityService {
   // MIGRATION - UTILS - Getter for current remaining migrations.
   public get remainingMigrations(): number {
     let remainingMigrations = +this.gameQuery.remainingMigrations;
+    const migrationValues = createMigrationValues(remainingMigrations);
 
-    remainingMigrations = this.applyMigrationAbilities({
-      availableDistance: remainingMigrations,
-    }).availableDistance;
+    remainingMigrations =
+      this.applyMigrationAbilities(migrationValues).availableDistance;
 
     return remainingMigrations;
   }
@@ -170,9 +173,7 @@ export class AbilityService {
   public async proliferate() {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const proliferationValues = this.applyProliferationAbilities(
-      DEFAULT_PROLIFERATION_VALUES
-    );
+    const proliferationValues = this.applyProliferationAbilities();
 
     this.tileService.removeActive();
     this.tileService.removeReachable();
@@ -196,9 +197,7 @@ export class AbilityService {
   public get canProliferate$(): Observable<boolean> {
     const activeSpecies$ = this.speciesQuery.selectActive();
     const activeTileId$ = this.tileQuery.selectActiveId();
-    const proliferationValues = this.applyProliferationAbilities(
-      DEFAULT_PROLIFERATION_VALUES
-    );
+    const proliferationValues = this.applyProliferationAbilities();
 
     return combineLatest([activeSpecies$, activeTileId$]).pipe(
       map(([species, tileId]) => {
@@ -217,7 +216,7 @@ export class AbilityService {
     const activeSpeciesId = this.speciesQuery.getActiveId();
     const activeTileId = Number(this.tileQuery.getActiveId());
     const assimilationValues = this.applyAssimilationAbilitiesToSpecies(
-      DEFAULT_ASSIMILATION_VALUES,
+      createAssimilationValues(),
       activeSpeciesId
     );
 
@@ -252,11 +251,7 @@ export class AbilityService {
           return {
             ...species,
             ...this.applyAssimilationAbilitiesToSpecies(
-              {
-                ...DEFAULT_ASSIMILATION_VALUES,
-                strength: species.quantity,
-                defense: species.quantity,
-              },
+              createAssimilationValues(species.quantity, species.quantity),
               species.id
             ),
           };
@@ -275,7 +270,7 @@ export class AbilityService {
         const weakerSpecies = otherTileSpeciesWithAssimilationValues.filter(
           (abilitySpecies) =>
             abilitySpecies.defense <
-            activeSpeciesWithAssimilationValues.strength
+            activeSpeciesWithAssimilationValues?.strength
         );
         if (weakerSpecies.length === 0) return false;
 
@@ -394,15 +389,21 @@ export class AbilityService {
     if (this.speciesHasAbility(speciesId, 'gluttony'))
       updatedValues.assimilatedQuantity += this.getAbilityValue('gluttony');
 
+    // If carnivore, updates created quantities.
+    if (this.speciesHasAbility(speciesId, 'carnivore'))
+      updatedValues.createdQuantity += this.getAbilityValue('carnivore');
+
     return updatedValues;
   }
 
   // PROLIFERATE ABILITIES
   private applyProliferationAbilities(
-    defaultValues: ProliferationValues
+    defaultValues?: ProliferationValues
   ): ProliferationValues {
     const activeSpeciesId = this.speciesQuery.getActiveId();
-    let updatedValues: ProliferationValues = defaultValues;
+    let updatedValues: ProliferationValues = defaultValues
+      ? defaultValues
+      : createProliferationValues();
 
     // If hermaphrodite, updates needed individuals.
     if (this.speciesHasAbility(activeSpeciesId, 'hermaphrodite'))

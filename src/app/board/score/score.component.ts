@@ -19,7 +19,7 @@ export class ScoreComponent implements OnInit {
   public game$: Observable<Game>;
   public players$: Observable<Player[]>;
   public activeSpecies$: Observable<Species>;
-  public migrationCount$: Observable<number>;
+  public remainingMigrations$: Observable<number>;
 
   constructor(
     private gameQuery: GameQuery,
@@ -32,6 +32,6 @@ export class ScoreComponent implements OnInit {
     this.game$ = this.gameQuery.selectActive();
     this.players$ = this.playerQuery.selectAll();
     this.activeSpecies$ = this.speciesQuery.selectActive();
-    this.migrationCount$ = this.abilityService.remainingMigrations$;
+    this.remainingMigrations$ = this.abilityService.remainingMigrations$;
   }
 }

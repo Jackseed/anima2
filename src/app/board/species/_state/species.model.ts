@@ -25,17 +25,38 @@ export interface MigrationValues {
 
 export const DEFAULT_MOVING_QUANTITY = 1;
 
+export function createMigrationValues(
+  availableDistance?: number,
+  traveledDistance?: number,
+  movingQuantity?: number,
+  migrationUsed?: number
+): MigrationValues {
+  return {
+    availableDistance,
+    traveledDistance,
+    movingQuantity: movingQuantity || DEFAULT_MOVING_QUANTITY,
+    migrationUsed: migrationUsed || traveledDistance * DEFAULT_MOVING_QUANTITY,
+  };
+}
+
 export interface ProliferationValues {
   neededIndividuals: number;
   createdQuantity: number;
 }
 
-export const DEFAULT_PROLIFERATION_PARENTS = 2;
-export const DEFAULT_PROLIFERATION_CHILDREN = 2;
-export const DEFAULT_PROLIFERATION_VALUES = {
-  neededIndividuals: 2,
-  createdQuantity: 2,
-};
+export const DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS = 2;
+export const DEFAULT_PROLIFERATION_CREATED_QUANTITY = 2;
+
+export function createProliferationValues(
+  neededIndividuals?: number,
+  createdQuantity?: number
+): ProliferationValues {
+  return {
+    neededIndividuals:
+      neededIndividuals || DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
+    createdQuantity: createdQuantity || DEFAULT_PROLIFERATION_CREATED_QUANTITY,
+  };
+}
 
 export interface AssimilationValues {
   strength?: number;
@@ -46,10 +67,20 @@ export interface AssimilationValues {
 
 export const DEFAULT_ASSIMILATED_QUANTITY = -2;
 export const DEFAULT_ASSIMILATION_CREATED_QUANTITY = 1;
-export const DEFAULT_ASSIMILATION_VALUES: AssimilationValues = {
-  assimilatedQuantity: DEFAULT_ASSIMILATED_QUANTITY,
-  createdQuantity: DEFAULT_ASSIMILATION_CREATED_QUANTITY,
-};
+
+export function createAssimilationValues(
+  strength?: number,
+  defense?: number,
+  assimilatedQuantity?: number,
+  createdQuantity?: number
+): AssimilationValues {
+  return {
+    strength,
+    defense,
+    assimilatedQuantity: assimilatedQuantity || DEFAULT_ASSIMILATED_QUANTITY,
+    createdQuantity: createdQuantity || DEFAULT_ASSIMILATION_CREATED_QUANTITY,
+  };
+}
 
 export const ABILITY_IDS = [
   'flying',
@@ -280,7 +311,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
   },
   {
     id: 'predator',
