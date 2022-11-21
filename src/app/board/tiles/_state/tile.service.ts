@@ -24,6 +24,7 @@ import {
 import { TileQuery } from './tile.query';
 import { TileStore, TileState } from './tile.store';
 import { Species } from '../../species/_state';
+import { EntityUIStore } from '@datorama/akita';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/tiles' })
@@ -122,34 +123,55 @@ export class TileService extends CollectionService<TileState> {
     this.store.setActive(null);
   }
 
-  public markAdjacentReachableTiles(tileId: number, range: number) {
-    let resultTileIds = [];
-    let previousRangeTiles = [tileId];
-    let currentRangeTiles = [];
+  public markAdjacentTilesReachable(tileId: number, range: number) {
+    const adjacentReacheableTileIds = this.getAdjacentTileIdsWithinRange(
+      tileId,
+      range,
+      // Updates tiles UI with their range.
+      this.updateRange
+    );
+    this.markAsReachable(adjacentReacheableTileIds);
+  }
+
+  // Gets adjacent tile ids within a given range.
+  // Also accepts callback function to work with each tile ids per range.
+  public getAdjacentTileIdsWithinRange(
+    tileId: number,
+    range: number,
+    rangeCallback?: (
+      currentRangeTileIds: number[],
+      currentRange: number,
+      store: EntityUIStore<any, Tile>
+    ) => void
+  ): number[] {
+    let resultTileIds = [tileId];
+    let previousRangeTileIds = [tileId];
+    let currentRangeTileIds = [];
     // Iterates on each tiles per range to get their adjacent tiles.
     for (let i = 0; i < range; i++) {
       // Gets adjacent tiles for each previous range tile.
-      previousRangeTiles.forEach((id) => {
-        currentRangeTiles.push(...this.query.getAdjacentTiles(id, 1));
+      previousRangeTileIds.forEach((id) => {
+        currentRangeTileIds.push(...this.query.getAdjacentTileIds(id, 1));
       });
 
       // Filters to keep only the new one.
-      currentRangeTiles = currentRangeTiles.filter(
+      currentRangeTileIds = currentRangeTileIds.filter(
         (id) => !resultTileIds.includes(id)
       );
       // Removes duplicates.
-      currentRangeTiles = [...new Set(currentRangeTiles)];
-      // Updates tiles UI with their range.
-      this.updateRange(currentRangeTiles, i + 1);
+      currentRangeTileIds = [...new Set(currentRangeTileIds)];
+      // Applies a callback to the current range tile ids and range.
+      rangeCallback(currentRangeTileIds, i + 1, this.store.ui);
       // Updates value to prepare next iteration.
-      previousRangeTiles = currentRangeTiles;
+      previousRangeTileIds = currentRangeTileIds;
       // Saves the result.
-      resultTileIds = [...resultTileIds, ...currentRangeTiles];
+      resultTileIds = [...resultTileIds, ...currentRangeTileIds];
     }
 
     // Removes the starting tileId
     resultTileIds = resultTileIds.filter((id) => id !== tileId);
-    this.markAsReachable(resultTileIds);
+
+    return resultTileIds;
   }
 
   public markAllTilesReachable(): void {
@@ -171,8 +193,12 @@ export class TileService extends CollectionService<TileState> {
     this.store.update(null, { isReachable: false });
   }
 
-  public updateRange(tileIds: number[], range: number) {
-    this.store.ui.update(
+  public updateRange(
+    tileIds: number[],
+    range: number,
+    store: EntityUIStore<any, Tile>
+  ) {
+    store.update(
       tileIds.map((id) => id.toString()),
       { range }
     );

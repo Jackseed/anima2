@@ -26,7 +26,7 @@ export class TileQuery extends QueryEntity<TileState> {
     this.createUIQuery();
   }
 
-  public getAdjacentTiles(tileId: number, range: number): number[] {
+  public getAdjacentTileIds(tileId: number, range: number): number[] {
     const tile: Tile = this.getEntity(tileId.toString());
     let tileIds: number[] = [];
     // Reads the whole x coordinates.
@@ -105,10 +105,5 @@ export class TileQuery extends QueryEntity<TileState> {
     )[0];
 
     return filteredSpecies?.quantity;
-  }
-
-  public getTileRange(tileId: number): number {
-    const UItile = this.ui.getEntity(tileId.toString());
-    return UItile.range;
   }
 }

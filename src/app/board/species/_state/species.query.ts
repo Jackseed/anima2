@@ -6,9 +6,11 @@ import { QueryEntity } from '@datorama/akita';
 
 // States
 import { Tile, TileQuery } from '../../tiles/_state';
-import { Species } from './species.model';
+import { Species, TileSpecies } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import { PlayerQuery } from '../../players/_state/player.query';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class SpeciesQuery extends QueryEntity<SpeciesState> {
@@ -34,11 +36,23 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     return species.length > 0;
   }
 
-  get otherActiveTileSpeciesThanActivePlayerSpecies(): Species[] {
+  public get otherActiveTileSpeciesThanActivePlayerSpecies(): Species[] {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const species = this.getTileSpecies(activeTileId);
     const activePlayerId = this.playerQuery.getActiveId();
 
     return species.filter((species) => species.playerId !== activePlayerId);
+  }
+
+  public get activeTileSpecies$(): Observable<TileSpecies> {
+    const activeTile$ = this.tileQuery.selectActive();
+    const activeSpeciesId = this.getActiveId();
+
+    return activeTile$.pipe(
+      map(
+        (tile) =>
+          tile?.species.filter((species) => species?.id === activeSpeciesId)[0]
+      )
+    );
   }
 }

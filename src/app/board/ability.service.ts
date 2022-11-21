@@ -25,8 +25,10 @@ import {
   createAssimilationValues,
   createProliferationValues,
   createMigrationValues,
+  TileSpecies,
+  TileSpeciesWithAssimilationValues,
 } from './species/_state';
-import { TileQuery, TileService } from './tiles/_state';
+import { Tile, TileQuery, TileService } from './tiles/_state';
 
 @Injectable({
   providedIn: 'root',
@@ -103,7 +105,7 @@ export class AbilityService {
   public startMigration(): void {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const remainingMigrations = this.remainingMigrations;
-    this.tileService.markAdjacentReachableTiles(
+    this.tileService.markAdjacentTilesReachable(
       activeTileId,
       remainingMigrations
     );
@@ -113,7 +115,11 @@ export class AbilityService {
   public get isMigrationOngoing$(): Observable<boolean> {
     return this.tileQuery
       .selectCount(({ isReachable }) => isReachable)
-      .pipe(map((num) => (num > 0 ? true : false)));
+      .pipe(
+        map((reachableTileQuantity) =>
+          reachableTileQuantity > 0 ? true : false
+        )
+      );
   }
 
   // MIGRATION - UTILS - Indicates weither active species can migrate.
@@ -236,49 +242,93 @@ export class AbilityService {
   // ASSIMILATION - UTILS
   // Indicates weither active specie can assimilate.
   // Verifies that the active species individuals
-  // are more than another species on the tile.
+  // are stronger than another species on the tile.
   public get canAssimilate$(): Observable<boolean> {
     const activeTile$ = this.tileQuery.selectActive();
-    const activeSpecieId$ = this.speciesQuery.selectActiveId();
+    const activeTileSpecies$ = this.speciesQuery.activeTileSpecies$;
 
-    return combineLatest([activeTile$, activeSpecieId$]).pipe(
-      map(([tile, activeSpecieId]) => {
-        if (!!!tile) return false;
-        const tileSpecies = tile.species;
-        // Supercharges species with their assimilation ability values.
-        const tileSpeciesWithAssimilationValues = tileSpecies.map((species) => {
-          return {
-            ...species,
-            ...this.applyAssimilationAbilitiesToSpecies(
-              createAssimilationValues({
-                strength: species.quantity,
-                defense: species.quantity,
-              }),
-              species.id
-            ),
-          };
-        });
-
-        const otherTileSpeciesWithAssimilationValues =
-          tileSpeciesWithAssimilationValues.filter(
-            (abilitySpecies) => abilitySpecies.id !== activeSpecieId
-          );
-        const activeSpeciesWithAssimilationValues =
-          tileSpeciesWithAssimilationValues.filter(
-            (abilitySpecies) => abilitySpecies.id === activeSpecieId
-          )[0];
-
-        // Then checks if an other species is weaker than active.
-        const weakerSpecies = otherTileSpeciesWithAssimilationValues.filter(
-          (abilitySpecies) =>
-            abilitySpecies.defense <
-            activeSpeciesWithAssimilationValues?.strength
-        );
-        if (weakerSpecies.length === 0) return false;
-
-        return true;
+    return combineLatest([activeTile$, activeTileSpecies$]).pipe(
+      map(([tile, activeTileSpecies]) => {
+        if (!!!tile || !!!activeTileSpecies) return false;
+        return this.isSpeciesStrongerThanRangeSpecies(tile, activeTileSpecies);
       })
     );
+  }
+
+  // ASSIMILATION - UTILS
+  // Compares strength and defense of a species versus range species.
+  private isSpeciesStrongerThanRangeSpecies(
+    originTile: Tile,
+    attackingSpecies: TileSpecies
+  ) {
+    const attackingSpeciesWithAssimilationValues =
+      this.superchargeTileSpeciesWithAssimilationValues([attackingSpecies])[0];
+    const range = attackingSpeciesWithAssimilationValues.range;
+
+    let otherReachableSpecies: TileSpecies[] = this.getOtherRangeSpecies(
+      originTile,
+      attackingSpecies,
+      range
+    );
+
+    const otherReachablSpeciesWithAssimilationValues =
+      this.superchargeTileSpeciesWithAssimilationValues(otherReachableSpecies);
+
+    console.log('other species: ', otherReachablSpeciesWithAssimilationValues);
+
+    // Then checks if at least one species is weaker than the attacking one.
+    const weakerSpecies = otherReachablSpeciesWithAssimilationValues.filter(
+      (abilitySpecies) =>
+        abilitySpecies.defense <
+        attackingSpeciesWithAssimilationValues?.strength
+    );
+    if (weakerSpecies.length === 0) return false;
+
+    return true;
+  }
+
+  // ASSIMILATION - UTILS
+  // Supercharges species with their assimilation ability values.
+  private superchargeTileSpeciesWithAssimilationValues(
+    species: TileSpecies[]
+  ): TileSpeciesWithAssimilationValues[] {
+    return species.map((species) => {
+      return {
+        ...species,
+        ...this.applyAssimilationAbilitiesToSpecies(
+          createAssimilationValues({
+            strength: species.quantity,
+            defense: species.quantity,
+          }),
+          species.id
+        ),
+      };
+    });
+  }
+
+  private getOtherRangeSpecies(
+    originTile: Tile,
+    originSpecies: TileSpecies,
+    range: number
+  ): TileSpecies[] {
+    // Adds by default other species from the origin tile.
+    const defaultOtherRangeSpecies = originTile.species.filter(
+      (species) => species.id !== originSpecies.id
+    );
+    let otherRangeSpecies: TileSpecies[] = defaultOtherRangeSpecies;
+
+    if (range === 0) return otherRangeSpecies;
+
+    const adjacentReacheableTileIds =
+      this.tileService.getAdjacentTileIdsWithinRange(originTile.id, range);
+
+    // Gets other species in the given range.
+    adjacentReacheableTileIds.forEach((tileId) => {
+      const tile = this.tileQuery.getEntity(tileId.toString());
+      otherRangeSpecies.push(
+        ...tile.species.filter((species) => species.id !== originSpecies.id)
+      );
+    });
   }
 
   // ADAPTATION

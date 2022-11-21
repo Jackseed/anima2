@@ -12,8 +12,12 @@ export interface TileSpecies {
   id: string;
   quantity: number;
   color: string;
-  abilityId: string;
+  mainAbilityId: AbilityId;
 }
+
+export interface TileSpeciesWithAssimilationValues
+  extends TileSpecies,
+    AssimilationValues {}
 
 // TODO: create an ability model & query
 // MIGRATION
@@ -30,11 +34,12 @@ export function createMigrationValues(
   values?: Partial<MigrationValues>
 ): MigrationValues {
   return {
-    availableDistance: values.availableDistance,
-    traveledDistance: values.traveledDistance,
-    movingQuantity: values.movingQuantity || DEFAULT_MOVING_QUANTITY,
+    availableDistance: values?.availableDistance,
+    traveledDistance: values?.traveledDistance,
+    movingQuantity: values?.movingQuantity || DEFAULT_MOVING_QUANTITY,
     migrationUsed:
-      values.migrationUsed || values.traveledDistance * DEFAULT_MOVING_QUANTITY,
+      values?.migrationUsed ||
+      values?.traveledDistance * DEFAULT_MOVING_QUANTITY,
   };
 }
 
@@ -52,9 +57,9 @@ export function createProliferationValues(
 ): ProliferationValues {
   return {
     neededIndividuals:
-      values.neededIndividuals || DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
+      values?.neededIndividuals || DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
     createdQuantity:
-      values.createdQuantity || DEFAULT_PROLIFERATION_CREATED_QUANTITY,
+      values?.createdQuantity || DEFAULT_PROLIFERATION_CREATED_QUANTITY,
   };
 }
 
@@ -75,13 +80,13 @@ export function createAssimilationValues(
   values?: Partial<AssimilationValues>
 ): AssimilationValues {
   return {
-    strength: values.strength,
-    defense: values.defense,
+    strength: values?.strength,
+    defense: values?.defense,
     assimilatedQuantity:
-      values.assimilatedQuantity || DEFAULT_ASSIMILATED_QUANTITY,
+      values?.assimilatedQuantity || DEFAULT_ASSIMILATED_QUANTITY,
     createdQuantity:
-      values.createdQuantity || DEFAULT_ASSIMILATION_CREATED_QUANTITY,
-    range: values.range || DEFAULT_ASSIMILATION_RANGE,
+      values?.createdQuantity || DEFAULT_ASSIMILATION_CREATED_QUANTITY,
+    range: values?.range || DEFAULT_ASSIMILATION_RANGE,
   };
 }
 
