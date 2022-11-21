@@ -16,6 +16,7 @@ export interface TileSpecies {
 }
 
 // TODO: create an ability model & query
+// MIGRATION
 export interface MigrationValues {
   availableDistance?: number;
   traveledDistance?: number;
@@ -26,19 +27,18 @@ export interface MigrationValues {
 export const DEFAULT_MOVING_QUANTITY = 1;
 
 export function createMigrationValues(
-  availableDistance?: number,
-  traveledDistance?: number,
-  movingQuantity?: number,
-  migrationUsed?: number
+  values?: Partial<MigrationValues>
 ): MigrationValues {
   return {
-    availableDistance,
-    traveledDistance,
-    movingQuantity: movingQuantity || DEFAULT_MOVING_QUANTITY,
-    migrationUsed: migrationUsed || traveledDistance * DEFAULT_MOVING_QUANTITY,
+    availableDistance: values.availableDistance,
+    traveledDistance: values.traveledDistance,
+    movingQuantity: values.movingQuantity || DEFAULT_MOVING_QUANTITY,
+    migrationUsed:
+      values.migrationUsed || values.traveledDistance * DEFAULT_MOVING_QUANTITY,
   };
 }
 
+// PROLIFERATION
 export interface ProliferationValues {
   neededIndividuals: number;
   createdQuantity: number;
@@ -48,37 +48,40 @@ export const DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS = 2;
 export const DEFAULT_PROLIFERATION_CREATED_QUANTITY = 2;
 
 export function createProliferationValues(
-  neededIndividuals?: number,
-  createdQuantity?: number
+  values?: Partial<ProliferationValues>
 ): ProliferationValues {
   return {
     neededIndividuals:
-      neededIndividuals || DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
-    createdQuantity: createdQuantity || DEFAULT_PROLIFERATION_CREATED_QUANTITY,
+      values.neededIndividuals || DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
+    createdQuantity:
+      values.createdQuantity || DEFAULT_PROLIFERATION_CREATED_QUANTITY,
   };
 }
 
+// ASSIMILATION
 export interface AssimilationValues {
   strength?: number;
   defense?: number;
   assimilatedQuantity?: number;
   createdQuantity?: number;
+  range?: number;
 }
 
 export const DEFAULT_ASSIMILATED_QUANTITY = -2;
 export const DEFAULT_ASSIMILATION_CREATED_QUANTITY = 1;
+export const DEFAULT_ASSIMILATION_RANGE = 0;
 
 export function createAssimilationValues(
-  strength?: number,
-  defense?: number,
-  assimilatedQuantity?: number,
-  createdQuantity?: number
+  values?: Partial<AssimilationValues>
 ): AssimilationValues {
   return {
-    strength,
-    defense,
-    assimilatedQuantity: assimilatedQuantity || DEFAULT_ASSIMILATED_QUANTITY,
-    createdQuantity: createdQuantity || DEFAULT_ASSIMILATION_CREATED_QUANTITY,
+    strength: values.strength,
+    defense: values.defense,
+    assimilatedQuantity:
+      values.assimilatedQuantity || DEFAULT_ASSIMILATED_QUANTITY,
+    createdQuantity:
+      values.createdQuantity || DEFAULT_ASSIMILATION_CREATED_QUANTITY,
+    range: values.range || DEFAULT_ASSIMILATION_RANGE,
   };
 }
 

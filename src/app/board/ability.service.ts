@@ -16,7 +16,6 @@ import {
   ABILITIES,
   Ability,
   AbilityId,
-  DEFAULT_MOVING_QUANTITY,
   MigrationValues,
   Species,
   SpeciesQuery,
@@ -85,15 +84,13 @@ export class AbilityService {
   // Get migration values, applying relevant abilities.
   private getMigrationValues(destinationTileId: number): MigrationValues {
     // Gets default migration values.
-    const remainginMigrations = this.remainingMigrations;
     const traveledDistance =
       this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
         destinationTileId
       );
-    let migrationValues = createMigrationValues(
-      remainginMigrations,
-      traveledDistance
-    );
+    let migrationValues = createMigrationValues({
+      traveledDistance,
+    });
 
     // Then apply migration abilities.
     migrationValues = this.applyMigrationAbilities(migrationValues);
@@ -150,7 +147,9 @@ export class AbilityService {
   // MIGRATION - UTILS - Getter for current remaining migrations.
   public get remainingMigrations(): number {
     let remainingMigrations = +this.gameQuery.remainingMigrations;
-    const migrationValues = createMigrationValues(remainingMigrations);
+    const migrationValues = createMigrationValues({
+      availableDistance: remainingMigrations,
+    });
 
     remainingMigrations =
       this.applyMigrationAbilities(migrationValues).availableDistance;
@@ -251,7 +250,10 @@ export class AbilityService {
           return {
             ...species,
             ...this.applyAssimilationAbilitiesToSpecies(
-              createAssimilationValues(species.quantity, species.quantity),
+              createAssimilationValues({
+                strength: species.quantity,
+                defense: species.quantity,
+              }),
               species.id
             ),
           };
