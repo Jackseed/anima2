@@ -67,15 +67,16 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   ): TileSpecies[] {
     let updatedSpecies = [];
     const isSpeciesOnTile = this.query.isSpeciesOnTile(speciesId, tile);
+    const species = this.query.getEntity(speciesId);
 
     // If the species isn't on the tile yet, adds it.
     if (!isSpeciesOnTile) {
-      updatedSpecies = tile.species.concat({
-        id: speciesId,
+      const tileSpecies: TileSpecies = {
+        ...species,
         quantity,
-        color,
         mainAbilityId,
-      });
+      };
+      updatedSpecies = tile.species.concat(tileSpecies);
     }
 
     // If species is already there, updates quantity.

@@ -58,9 +58,9 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
 
     const player = this.getEntity(playerId);
 
-    if (color === 'primary') return player.primaryColor;
+    if (color === 'primary') return player?.primaryColor;
 
-    if (color === 'secondary') return player.secondaryColor;
+    if (color === 'secondary') return player?.secondaryColor;
   }
 
   private getNeutralSpeciesColors(color: 'primary' | 'secondary'): string {

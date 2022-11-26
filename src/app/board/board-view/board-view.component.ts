@@ -140,7 +140,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
     // Dismisses clicks during other player turn.
     if (!this.playerQuery.isActive(this.playingPlayerId))
-      return this.snackbar.open("Ce n'est pas à votre tour.", null, {
+      return this.snackbar.open("Ce n'est pas votre tour.", null, {
         duration: 3000,
       });
 
@@ -151,6 +151,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     // Migration
     if (this.abilityService.isMigrationValid(tileId))
       return await this.abilityService.migrateTo(tileId);
+
+    // Assimilation
+    if (this.abilityService.isAssimilationValid(tileId))
+      return this.playService.setupAssimilation(tileId);
 
     // Dismisses clicks on empty tiles.
     if (this.tileQuery.isEmpty(tileId)) return;
@@ -194,6 +198,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
         return this.cancelStartTileChoice();
       this.tileService.removeActive();
       this.tileService.removeReachable();
+      this.tileService.removeAttackable();
     }
   }
 

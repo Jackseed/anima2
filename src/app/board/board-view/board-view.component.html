@@ -48,7 +48,8 @@
           swamps: tile.type === 'swamps',
           forests: tile.type === 'forests',
           selected: isActive(tile.id),
-          reachable: tile?.isReachable
+          reachable: tile?.isReachable,
+          attackable: tile?.isAttackable
         }"
         (click)="play(i)"
       >

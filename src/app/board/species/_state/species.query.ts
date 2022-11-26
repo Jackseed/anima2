@@ -4,21 +4,18 @@ import { Injectable } from '@angular/core';
 // Akita
 import { QueryEntity } from '@datorama/akita';
 
+// Rxjs
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 // States
 import { Tile, TileQuery } from '../../tiles/_state';
 import { Species, TileSpecies } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
-import { PlayerQuery } from '../../players/_state/player.query';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class SpeciesQuery extends QueryEntity<SpeciesState> {
-  constructor(
-    protected store: SpeciesStore,
-    private tileQuery: TileQuery,
-    private playerQuery: PlayerQuery
-  ) {
+  constructor(protected store: SpeciesStore, private tileQuery: TileQuery) {
     super(store);
   }
 
@@ -36,14 +33,6 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     return species.length > 0;
   }
 
-  public get otherActiveTileSpeciesThanActivePlayerSpecies(): Species[] {
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    const species = this.getTileSpecies(activeTileId);
-    const activePlayerId = this.playerQuery.getActiveId();
-
-    return species.filter((species) => species.playerId !== activePlayerId);
-  }
-
   public get activeTileSpecies$(): Observable<TileSpecies> {
     const activeTile$ = this.tileQuery.selectActive();
     const activeSpeciesId = this.getActiveId();
@@ -54,5 +43,20 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
           tile?.species.filter((species) => species?.id === activeSpeciesId)[0]
       )
     );
+  }
+
+  public get activeTileSpecies(): TileSpecies {
+    const activeTile = this.tileQuery.getActive();
+    const activeSpeciesId = this.getActiveId();
+
+    return activeTile?.species.filter(
+      (species) => species?.id === activeSpeciesId
+    )[0];
+  }
+
+  public otherTileSpecies(tile: Tile): TileSpecies[] {
+    const activeSpeciesId = this.getActiveId();
+
+    return tile.species.filter((species) => species.id !== activeSpeciesId);
   }
 }

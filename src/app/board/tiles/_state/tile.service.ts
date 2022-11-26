@@ -33,17 +33,18 @@ export class TileService extends CollectionService<TileState> {
     super(store);
   }
 
-  // Gets a species and transform it to a tile species.
-  public fromSpeciesToTileSpecies(species: Species) {
+  // Gets a species and transforms it to get quantity per tile id.
+  // Returns {tileId: quantity}[]
+  public fromSpeciesToSpeciesQuantityPerTileId(species: Species) {
     // Gets intermediate object with species count per tileId.
-    // {tileId: quantity}
+
     const tileSpecies = {};
     species.tileIds.forEach((tileId) => {
       tileSpecies.hasOwnProperty(tileId)
         ? tileSpecies[tileId]++
         : (tileSpecies[tileId] = 1);
     });
-
+    
     return tileSpecies;
   }
 
@@ -77,7 +78,8 @@ export class TileService extends CollectionService<TileState> {
 
     // Updates tiles with neutral species.
     for (const neutral of neutrals) {
-      const neutralTileSpecies = this.fromSpeciesToTileSpecies(neutral);
+      const neutralTileSpecies =
+        this.fromSpeciesToSpeciesQuantityPerTileId(neutral);
       // Extracts unique tile ids.
       const uniqueTileIds: string[] = Object.keys(neutralTileSpecies);
       // Updates tiles with speciesIds.
@@ -92,9 +94,8 @@ export class TileService extends CollectionService<TileState> {
           ...tiles[tileIndex],
           species: [
             {
-              id: neutral.id,
+              ...neutral,
               quantity: neutralTileSpecies[tileId],
-              color: neutral.color,
               mainAbilityId: neutral.abilities[0].id,
             },
           ],
@@ -112,6 +113,7 @@ export class TileService extends CollectionService<TileState> {
 
   public selectTile(tileId: number) {
     this.removeReachable();
+    this.removeAttackable();
     this.setActive(tileId);
   }
 
@@ -161,7 +163,8 @@ export class TileService extends CollectionService<TileState> {
       // Removes duplicates.
       currentRangeTileIds = [...new Set(currentRangeTileIds)];
       // Applies a callback to the current range tile ids and range.
-      rangeCallback(currentRangeTileIds, i + 1, this.store.ui);
+      if (rangeCallback)
+        rangeCallback(currentRangeTileIds, i + 1, this.store.ui);
       // Updates value to prepare next iteration.
       previousRangeTileIds = currentRangeTileIds;
       // Saves the result.
@@ -189,8 +192,19 @@ export class TileService extends CollectionService<TileState> {
     );
   }
 
+  public markAsAttackable(tileIds: number[]) {
+    this.store.update(
+      tileIds.map((id) => id?.toString()),
+      { isAttackable: true }
+    );
+  }
+
   public removeReachable() {
     this.store.update(null, { isReachable: false });
+  }
+
+  public removeAttackable() {
+    this.store.update(null, { isAttackable: false });
   }
 
   public updateRange(

@@ -48,8 +48,8 @@ export class FooterComponent implements OnInit {
     await this.playService.setupAdaptation();
   }
 
-  public openAssimilationMenu(): void {
-    this.playService.openAssimilationMenu();
+  public setupAssimilation(): void {
+    this.playService.setupAssimilation();
   }
 
   public startMigration() {

@@ -225,6 +225,8 @@ export class AbilityService {
       activeSpeciesId
     );
 
+    this.tileService.removeAttackable();
+
     // Removes the assimilated species.
     await this.speciesService.move(
       removedSpeciesId,
@@ -239,10 +241,20 @@ export class AbilityService {
     );
   }
 
+  // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
+  // Verifies a tile is active, the attacked tile is valid and the species can act.
+  public isAssimilationValid(attackedTileId: number): boolean {
+    const attackedTile = this.tileQuery.getEntity(attackedTileId.toString());
+    const isAssimilationValid =
+      this.tileQuery.hasActive() &&
+      attackedTile.isAttackable &&
+      !!this.remainingMigrations;
+
+    return isAssimilationValid;
+  }
+
   // ASSIMILATION - UTILS
-  // Indicates weither active specie can assimilate.
-  // Verifies that the active species individuals
-  // are stronger than another species on the tile.
+  // Verifies that active species is stronger than another species on range.
   public get canAssimilate$(): Observable<boolean> {
     const activeTile$ = this.tileQuery.selectActive();
     const activeTileSpecies$ = this.speciesQuery.activeTileSpecies$;
@@ -265,24 +277,14 @@ export class AbilityService {
       this.superchargeTileSpeciesWithAssimilationValues([attackingSpecies])[0];
     const range = attackingSpeciesWithAssimilationValues.range;
 
-    let otherReachableSpecies: TileSpecies[] = this.getOtherRangeSpecies(
+    // Checks if at least one species is weaker than the attacking one.
+    let weakerInRangeSpecies: TileSpecies[] = this.getWeakerInRangeSpecies(
       originTile,
       attackingSpecies,
       range
     );
 
-    const otherReachablSpeciesWithAssimilationValues =
-      this.superchargeTileSpeciesWithAssimilationValues(otherReachableSpecies);
-
-    console.log('other species: ', otherReachablSpeciesWithAssimilationValues);
-
-    // Then checks if at least one species is weaker than the attacking one.
-    const weakerSpecies = otherReachablSpeciesWithAssimilationValues.filter(
-      (abilitySpecies) =>
-        abilitySpecies.defense <
-        attackingSpeciesWithAssimilationValues?.strength
-    );
-    if (weakerSpecies.length === 0) return false;
+    if (weakerInRangeSpecies.length === 0) return false;
 
     return true;
   }
@@ -306,18 +308,26 @@ export class AbilityService {
     });
   }
 
-  private getOtherRangeSpecies(
+  // ASSIMILATION - UTILS
+  // Gets all the range species that are weaker than the attacking one.
+  public getWeakerInRangeSpecies(
     originTile: Tile,
-    originSpecies: TileSpecies,
+    attackingSpecies: TileSpecies,
     range: number
   ): TileSpecies[] {
     // Adds by default other species from the origin tile.
-    const defaultOtherRangeSpecies = originTile.species.filter(
-      (species) => species.id !== originSpecies.id
-    );
-    let otherRangeSpecies: TileSpecies[] = defaultOtherRangeSpecies;
+    const defaultOtherRangeSpecies =
+      this.speciesQuery.otherTileSpecies(originTile);
 
-    if (range === 0) return otherRangeSpecies;
+    let otherWeakerSpecies: TileSpecies[] = defaultOtherRangeSpecies.filter(
+      (defendingTileSpecies) =>
+        this.isAttackingSpeciesStrongerThan(
+          attackingSpecies,
+          defendingTileSpecies
+        )
+    );
+
+    if (range === 0) return otherWeakerSpecies;
 
     const adjacentReacheableTileIds =
       this.tileService.getAdjacentTileIdsWithinRange(originTile.id, range);
@@ -325,10 +335,39 @@ export class AbilityService {
     // Gets other species in the given range.
     adjacentReacheableTileIds.forEach((tileId) => {
       const tile = this.tileQuery.getEntity(tileId.toString());
-      otherRangeSpecies.push(
-        ...tile.species.filter((species) => species.id !== originSpecies.id)
+      const otherTileSpecies = this.speciesQuery.otherTileSpecies(tile);
+      // Filters tile species with only weaker ones.
+      const weakerSpecies = otherTileSpecies.filter((defendingTileSpecies) =>
+        this.isAttackingSpeciesStrongerThan(
+          attackingSpecies,
+          defendingTileSpecies
+        )
+      );
+      // Adds tile id to results.
+      const weakerSpeciesWithTileId = weakerSpecies.map((species) => {
+        return { ...species, tileId: tile.id };
+      });
+
+      // Pushes results and filters the attacking species.
+      otherWeakerSpecies.push(
+        ...weakerSpeciesWithTileId.filter(
+          (species) => species.id !== attackingSpecies.id
+        )
       );
     });
+    return otherWeakerSpecies;
+  }
+
+  private isAttackingSpeciesStrongerThan(
+    attackingSpecies: TileSpecies,
+    defendingSpecies: TileSpecies
+  ): boolean {
+    const superAttackingSpecies =
+      this.superchargeTileSpeciesWithAssimilationValues([attackingSpecies])[0];
+    const superDefendingSpecies =
+      this.superchargeTileSpeciesWithAssimilationValues([defendingSpecies])[0];
+
+    return superAttackingSpecies.strength > superDefendingSpecies.defense;
   }
 
   // ADAPTATION
@@ -398,7 +437,7 @@ export class AbilityService {
 
   // ABILITY - UTILS
   // GETTERS
-  private speciesHasAbility(speciesId: string, abilityId: AbilityId): boolean {
+  public speciesHasAbility(speciesId: string, abilityId: AbilityId): boolean {
     const speciesAbilityIds = this.getSpeciesAbilityIds(speciesId);
     return speciesAbilityIds.includes(abilityId);
   }
@@ -408,7 +447,7 @@ export class AbilityService {
     return species.abilities.map((ability) => ability.id);
   }
 
-  private getAbilityValue(abilityId: AbilityId): number {
+  public getAbilityValue(abilityId: AbilityId): number {
     const ability = this.getAbilityWithId(abilityId);
     return ability.value;
   }
@@ -423,7 +462,7 @@ export class AbilityService {
   }
 
   // ASSIMILATION ABILITIES
-  private applyAssimilationAbilitiesToSpecies(
+  public applyAssimilationAbilitiesToSpecies(
     defaultValues: AssimilationValues,
     speciesId: string
   ): AssimilationValues {
@@ -444,6 +483,10 @@ export class AbilityService {
     // If carnivore, updates created quantities.
     if (this.speciesHasAbility(speciesId, 'carnivore'))
       updatedValues.createdQuantity += this.getAbilityValue('carnivore');
+
+    // If range, updates range.
+    if (this.speciesHasAbility(speciesId, 'range'))
+      updatedValues.range += this.getAbilityValue('range');
 
     return updatedValues;
   }

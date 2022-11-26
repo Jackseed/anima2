@@ -8,11 +8,10 @@ export interface Species {
   color?: string;
 }
 
-export interface TileSpecies {
-  id: string;
+export interface TileSpecies extends Species {
   quantity: number;
-  color: string;
   mainAbilityId: AbilityId;
+  tileId?: number;
 }
 
 export interface TileSpeciesWithAssimilationValues
@@ -99,8 +98,8 @@ export const ABILITY_IDS = [
   'predator',
   'gluttony',
   'carnivore',
-  'spontaneousGeneration',
   'range',
+  'spontaneousGeneration',
   'survival',
   'tunnel',
   'acceleration',
@@ -164,7 +163,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
   },
   {
     id: 'survival',
