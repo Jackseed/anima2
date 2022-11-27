@@ -24,6 +24,7 @@ export class FooterComponent implements OnInit {
   public isMigrationActive$: Observable<boolean>;
   public canMigrate$: Observable<boolean>;
   public canProliferate$: Observable<boolean>;
+  public isAssimilationActive$: Observable<boolean>;
   public canAssimilate$: Observable<boolean>;
   public canAdapt$: Observable<boolean>;
 
@@ -37,6 +38,7 @@ export class FooterComponent implements OnInit {
   ngOnInit(): void {
     this.remainingMigrations$ = this.abilityService.remainingMigrations$;
     this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
+    this.isAssimilationActive$ = this.abilityService.isAssimilationOngoing$;
 
     this.canMigrate$ = this.abilityService.canMigrate$;
     this.canProliferate$ = this.abilityService.canProliferate$;
@@ -52,15 +54,19 @@ export class FooterComponent implements OnInit {
     this.playService.setupAssimilation();
   }
 
+  public stopAssimilation() {
+    this.tileService.removeAttackable();
+  }
+
   public startMigration() {
     this.abilityService.startMigration();
   }
 
-  public proliferate() {
-    this.abilityService.proliferate();
-  }
-
   public stopMigration() {
     this.tileService.removeReachable();
+  }
+
+  public proliferate() {
+    this.abilityService.proliferate();
   }
 }

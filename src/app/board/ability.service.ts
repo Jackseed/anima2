@@ -111,7 +111,8 @@ export class AbilityService {
     );
   }
 
-  // MIGRATION - UTILS - Checks if a migration is ongoing.
+  // MIGRATION - UTILS
+  // Checks if there is at least 1 tile reachable.
   public get isMigrationOngoing$(): Observable<boolean> {
     return this.tileQuery
       .selectCount(({ isReachable }) => isReachable)
@@ -239,6 +240,18 @@ export class AbilityService {
       assimilationValues.createdQuantity,
       activeTileId
     );
+  }
+
+  // ASSIMILATION - UTILS
+  // Checks if there is at least 1 tile attackable
+  public get isAssimilationOngoing$(): Observable<boolean> {
+    return this.tileQuery
+      .selectCount(({ isAttackable }) => isAttackable)
+      .pipe(
+        map((attackableTileQuantity) =>
+          attackableTileQuantity > 0 ? true : false
+        )
+      );
   }
 
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.

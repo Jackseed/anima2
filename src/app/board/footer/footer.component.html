@@ -8,7 +8,11 @@
   >
     <!------------------- MIGRATION -------------------->
     <div class="relative" *ngIf="canMigrate$ | async">
-      <button id="migration" mat-icon-button (click)="startMigration()">
+      <button
+        class="buttons-with-close"
+        mat-icon-button
+        (click)="startMigration()"
+      >
         <mat-icon svgIcon="migrate"></mat-icon>
       </button>
       <div
@@ -21,7 +25,7 @@
       <button
         *ngIf="isMigrationActive$ | async"
         mat-icon-button
-        id="stop-migration"
+        class="close-button"
         (click)="stopMigration()"
       >
         <mat-icon svgIcon="close"></mat-icon>
@@ -31,14 +35,23 @@
       <mat-icon svgIcon="migrate-disable"></mat-icon>
     </button>
     <!------------------- ASSIMILATION -------------------->
-    <button
-      *ngIf="canAssimilate$ | async"
-      mat-icon-button
-      (click)="setupAssimilation()"
-    >
-      <mat-icon svgIcon="assimilate"></mat-icon>
-    </button>
-
+    <div class="relative" *ngIf="canAssimilate$ | async">
+      <button
+        class="buttons-with-close"
+        mat-icon-button
+        (click)="setupAssimilation()"
+      >
+        <mat-icon svgIcon="assimilate"></mat-icon>
+      </button>
+      <button
+        *ngIf="isAssimilationActive$ | async"
+        mat-icon-button
+        class="close-button"
+        (click)="stopAssimilation()"
+      >
+        <mat-icon svgIcon="close"></mat-icon>
+      </button>
+    </div>
     <button *ngIf="!(canAssimilate$ | async)" mat-icon-button>
       <mat-icon svgIcon="assimilate-disable"></mat-icon>
     </button>

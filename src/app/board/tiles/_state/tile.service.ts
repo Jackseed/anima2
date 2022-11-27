@@ -44,7 +44,7 @@ export class TileService extends CollectionService<TileState> {
         ? tileSpecies[tileId]++
         : (tileSpecies[tileId] = 1);
     });
-    
+
     return tileSpecies;
   }
 

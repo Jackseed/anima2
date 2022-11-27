@@ -9,8 +9,9 @@
   }
 }
 
-#migration {
+.buttons-with-close {
   width: 100%;
+  padding-top: 8px;
 }
 
 .circle {
@@ -31,7 +32,7 @@
   line-height: 16px;
 }
 
-#stop-migration {
+.close-button {
   --s: 1.5rem + 2vmin;
   width: calc(var(--s));
   height: calc(var(--s));
