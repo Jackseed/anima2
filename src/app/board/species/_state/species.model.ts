@@ -9,8 +9,8 @@ export interface Species {
 }
 
 export interface TileSpecies extends Species {
-  quantity: number;
-  mainAbilityId: AbilityId;
+  quantity?: number;
+  mainAbilityId?: AbilityId;
   tileId?: number;
 }
 
@@ -99,8 +99,8 @@ export const ABILITY_IDS = [
   'gluttony',
   'carnivore',
   'range',
-  'spontaneousGeneration',
   'survival',
+  'spontaneousGeneration',
   'tunnel',
   'acceleration',
   'rallying',
@@ -118,7 +118,7 @@ export interface Ability {
     definition: string;
   };
   value: number;
-  constraintValue?: number;
+  requiredValue?: number;
 }
 
 export const ABILITIES: Ability[] = [
@@ -148,7 +148,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    constraintValue: 2,
+    requiredValue: 2,
     value: 2,
   },
   {
@@ -177,7 +177,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1000,
   },
   {
     id: 'tunnel',
@@ -205,7 +205,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    constraintValue: 4,
+    requiredValue: 4,
     value: 1,
   },
   {

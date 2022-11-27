@@ -62,7 +62,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     tile: Tile,
     speciesId: string,
     quantity: number,
-    color: string,
     mainAbilityId: AbilityId
   ): TileSpecies[] {
     let updatedSpecies = [];
@@ -73,6 +72,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     if (!isSpeciesOnTile) {
       const tileSpecies: TileSpecies = {
         ...species,
+        tileId: tile.id,
         quantity,
         mainAbilityId,
       };
@@ -164,7 +164,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       tile,
       species.id,
       quantity,
-      species.color,
       species.abilities[0].id
     );
     return batch.update(tileDoc.ref, { species: updatedSpecies });

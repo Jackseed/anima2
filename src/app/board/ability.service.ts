@@ -281,7 +281,7 @@ export class AbilityService {
   }
 
   // ASSIMILATION - UTILS
-  // Compares strength and defense of a species versus range species.
+  // Compares strength and defense of a species versus in range species.
   private isSpeciesStrongerThanRangeSpecies(
     originTile: Tile,
     attackingSpecies: TileSpecies
@@ -315,7 +315,8 @@ export class AbilityService {
             strength: species.quantity,
             defense: species.quantity,
           }),
-          species.id
+          species.id,
+          species
         ),
       };
     });
@@ -465,9 +466,9 @@ export class AbilityService {
     return ability.value;
   }
 
-  private getConstraintValue(abilityId: AbilityId): number {
+  private getAbilityRequiredValue(abilityId: AbilityId): number {
     const ability = this.getAbilityWithId(abilityId);
-    return ability.constraintValue;
+    return ability.requiredValue;
   }
 
   private getAbilityWithId(abilityId: AbilityId): Ability {
@@ -475,9 +476,12 @@ export class AbilityService {
   }
 
   // ASSIMILATION ABILITIES
+  // Uses tile species for defensive values
+  // (active species is always the attacker).
   public applyAssimilationAbilitiesToSpecies(
     defaultValues: AssimilationValues,
-    speciesId: string
+    speciesId: string,
+    tileSpecies?: TileSpecies
   ): AssimilationValues {
     let updatedValues: AssimilationValues = defaultValues;
 
@@ -501,6 +505,13 @@ export class AbilityService {
     if (this.speciesHasAbility(speciesId, 'range'))
       updatedValues.range += this.getAbilityValue('range');
 
+    // If survival and species as no co-species nearby, updates defense (to be invincible).
+    if (
+      this.speciesHasAbility(speciesId, 'survival') &&
+      (this.isSpeciesAbilityValid('survival'), tileSpecies)
+    )
+      updatedValues.defense += this.getAbilityValue('survival');
+
     return updatedValues;
   }
 
@@ -518,7 +529,10 @@ export class AbilityService {
       updatedValues.neededIndividuals = this.getAbilityValue('hermaphrodite');
 
     // If nest and enough individuals, adds proliferation quantity.
-    if (this.isAbilityValid('nest'))
+    if (
+      this.speciesHasAbility(activeSpeciesId, 'nest') &&
+      this.isSpeciesAbilityValid('nest')
+    )
       updatedValues.createdQuantity += this.getAbilityValue('nest');
 
     return updatedValues;
@@ -536,7 +550,10 @@ export class AbilityService {
 
     // If active species has hounds,
     // updates moving quantity, without modifying migration point used.
-    if (this.isAbilityValid('hounds'))
+    if (
+      this.speciesHasAbility(activeSpeciesId, 'hounds') &&
+      this.isSpeciesAbilityValid('hounds')
+    )
       updatedValues = {
         ...defaultValues,
         movingQuantity: this.getAbilityValue('hounds'),
@@ -547,19 +564,47 @@ export class AbilityService {
   }
 
   // ABILITY UTILS
-  // Verifies that active species has the ability
-  // and enough individuals to activate it on the active tile.
-  private isAbilityValid(abilityId: AbilityId): boolean {
-    const activeSpecies = this.speciesQuery.getActive();
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    const activeSpeciesQuantity = this.tileQuery.getTileSpeciesCount(
-      activeSpecies,
-      activeTileId
-    );
+  // Checks ability requirements.
+  private isSpeciesAbilityValid(
+    abilityId: AbilityId,
+    checkedSpecies?: TileSpecies
+  ): boolean {
+    // If no species is specified, then takes active.
+    checkedSpecies = checkedSpecies
+      ? checkedSpecies
+      : this.speciesQuery.getActive();
+    const requiredValue = this.getAbilityRequiredValue(abilityId);
 
-    const isAbilityValid =
-      activeSpeciesQuantity >= this.getConstraintValue(abilityId) &&
-      this.speciesHasAbility(activeSpecies.id, abilityId);
+    let isAbilityValid: boolean;
+
+    // Checks that species quantity is enough.
+    if (abilityId === 'nest' || 'hounds') {
+      const speciesQuantity = this.tileQuery.getTileSpeciesCount(
+        checkedSpecies,
+        checkedSpecies.tileId
+      );
+
+      isAbilityValid = speciesQuantity >= requiredValue;
+    }
+
+    // Checks that the species has no co-species around
+    if (abilityId === 'survival' && !!checkedSpecies.tileId) {
+      console.log(abilityId, checkedSpecies);
+      let adjacentSpecies: Species[];
+      const adjacentTileIds = this.tileService.getAdjacentTileIdsWithinRange(
+        checkedSpecies.tileId,
+        1
+      );
+      adjacentTileIds.forEach((tileId) =>
+        adjacentSpecies.push(...this.speciesQuery.getTileSpecies(tileId))
+      );
+      const adjacentCoSpecies = adjacentSpecies.filter(
+        (species) => species.id === checkedSpecies.id
+      );
+
+      isAbilityValid = adjacentCoSpecies.length === 0;
+    }
+
     return isAbilityValid;
   }
 }
