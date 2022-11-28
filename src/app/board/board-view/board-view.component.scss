@@ -37,6 +37,27 @@ header {
   left: 15%;
 }
 
+section {
+  height: 16%;
+  width: 100%;
+  z-index: 2;
+  position: absolute;
+  top: 70%;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+#secondary-action-button {
+  width: 25%;
+  height: 100%;
+  .mat-icon {
+    position: relative;
+    width: 120%;
+    height: 100%;
+    left: -10%;
+  }
+}
+
 pinch-zoom {
   background-color: white !important;
   height: 100%;
@@ -85,10 +106,6 @@ footer {
 }
 
 .species {
-  /*   background-image: var(--img);
-  background-position: center;
-  background-size: 50%;
-  background-repeat: no-repeat; */
   color: var(--color);
   z-index: 0;
   display: flex;
@@ -112,7 +129,7 @@ footer {
 .selected {
   background: #f59c27 !important;
 }
-// adds a smaller tile so the older tile acts as a border
+// Adds a smaller tile so the older tile acts as a border.
 .selected:before {
   content: "";
   width: calc(var(--s) - var(--border));

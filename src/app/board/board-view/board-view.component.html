@@ -1,7 +1,9 @@
+<!------------ HEADER -------------->
 <header>
   <app-header fxFlexFill></app-header>
 </header>
 
+<!------------ GAME START HEADER -------------->
 <div
   fxLayout="column"
   fxLayoutAlign="center center"
@@ -30,6 +32,16 @@
     </button>
   </section>
 </div>
+
+<!------------ SECONDARY ACTION BUTTON -------------->
+<section fxLayout="row" fxLayoutAlign="space-between center">
+  <div fxFlex></div>
+  <div fxFlex></div>
+  <div fxFlex></div>
+  <button fxFlex mat-icon-button id="secondary-action-button">
+    <mat-icon svgIcon="adaptation"></mat-icon>
+  </button>
+</section>
 
 <pinch-zoom [double-tap]="false">
   <main>
@@ -93,6 +105,7 @@
     </div>
   </main>
 </pinch-zoom>
+<!------------ FOOTER -------------->
 <footer>
   <app-footer fxFlexFill></app-footer>
 </footer>
