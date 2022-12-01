@@ -436,7 +436,7 @@ export class AbilityService {
   }
 
   // ACTIVE ACTIONS
-  public get canActiveAction$(): Observable<boolean> {
+  public get canActiveAbility$(): Observable<boolean> {
     return this.speciesQuery.activeSpeciesActiveAbilities$.pipe(
       map((abilities) =>
         abilities.map((ability) => this.isSpeciesAbilityValid(ability.id))
