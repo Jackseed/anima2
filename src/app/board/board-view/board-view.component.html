@@ -35,6 +35,7 @@
 
 <!------------ SECONDARY ACTION BUTTON -------------->
 <section
+  *ngIf="hasActiveAbility$ | async"
   id="secondary-action-button-bar"
   fxLayout="row"
   fxLayoutAlign="space-between center"

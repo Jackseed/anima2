@@ -100,11 +100,11 @@ export const ABILITY_IDS = [
   'carnivore',
   'range',
   'survival',
+  'intimidate',
   'spontaneousGeneration',
   'tunnel',
   'acceleration',
   'rallying',
-  'intimidate',
 ] as const;
 export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {
@@ -119,6 +119,7 @@ export interface Ability {
   };
   value: number;
   requiredValue?: number;
+  type: 'active' | 'passive';
 }
 
 export const ABILITIES: Ability[] = [
@@ -135,6 +136,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'passive',
   },
   {
     id: 'hounds',
@@ -150,6 +152,7 @@ export const ABILITIES: Ability[] = [
     },
     requiredValue: 2,
     value: 2,
+    type: 'passive',
   },
   {
     id: 'range',
@@ -164,6 +167,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
+    type: 'passive',
   },
   {
     id: 'survival',
@@ -178,6 +182,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1000,
+    type: 'passive',
   },
   {
     id: 'tunnel',
@@ -192,6 +197,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'passive',
   },
   {
     id: 'nest',
@@ -207,6 +213,7 @@ export const ABILITIES: Ability[] = [
     },
     requiredValue: 4,
     value: 1,
+    type: 'passive',
   },
   {
     id: 'flying',
@@ -221,6 +228,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'passive',
   },
   {
     id: 'giantism',
@@ -235,6 +243,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
+    type: 'passive',
   },
   {
     id: 'gluttony',
@@ -249,6 +258,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: -1,
+    type: 'passive',
   },
   {
     id: 'acceleration',
@@ -263,6 +273,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'passive',
   },
   {
     id: 'rallying',
@@ -277,6 +288,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'passive',
   },
   {
     id: 'intimidate',
@@ -291,6 +303,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'active',
   },
   {
     id: 'hermaphrodite',
@@ -305,6 +318,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
+    type: 'passive',
   },
   {
     id: 'carnivore',
@@ -319,6 +333,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
+    type: 'passive',
   },
   {
     id: 'predator',
@@ -333,6 +348,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
+    type: 'passive',
   },
 ];
 

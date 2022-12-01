@@ -59,4 +59,15 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
 
     return tile.species.filter((species) => species.id !== activeSpeciesId);
   }
+
+  public get hasActiveSpeciesActiveAbility$(): Observable<boolean> {
+    const hasActiveSpeciesActiveAbility = this.selectActive().pipe(
+      map((species) =>
+        species?.abilities.map((ability) => ability.type === 'active')
+      ),
+      map((booleans) => booleans?.filter((boolean) => boolean)),
+      map((trueValues) => trueValues?.length > 0)
+    );
+    return hasActiveSpeciesActiveAbility;
+  }
 }

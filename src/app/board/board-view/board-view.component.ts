@@ -31,6 +31,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
+  public hasActiveAbility$: Observable<boolean>;
 
   // Subscriptions
   private turnSub: Subscription;
@@ -56,15 +57,19 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.playingPlayerId = this.userQuery.getActiveId();
+
+    // Observables init
     this.game$ = this.gameQuery.selectActive();
-    this.activePlayerSub = this.getActivePlayerSub();
-    this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.tiles$ = this.tileQuery
       .selectAll()
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
-
     this.playingPlayerId = this.userQuery.getActiveId();
+    this.hasActiveAbility$ = this.speciesQuery.hasActiveSpeciesActiveAbility$;
 
+    // Subscriptions init
+    this.activePlayerSub = this.getActivePlayerSub();
+    this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.turnSub = this.getTurnSub();
     this.startGameSub = this.playService.getStartGameSub();
     this.isPlayerChoosingAbility = this.getPlayerChoosingAbilitySub();
