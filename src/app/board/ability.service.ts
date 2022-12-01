@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 // Rxjs
 import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 // Material
 import { MatDialog } from '@angular/material/dialog';
@@ -437,9 +437,10 @@ export class AbilityService {
 
   // ACTIVE ACTIONS
   public get canActiveAbility$(): Observable<boolean> {
-    return this.speciesQuery.activeSpeciesActiveAbilities$.pipe(
+    return this.tileQuery.selectActiveId().pipe(
+      switchMap((_) => this.speciesQuery.activeSpeciesActiveAbilities$),
       map((abilities) =>
-        abilities.map((ability) => this.isSpeciesAbilityValid(ability.id))
+        abilities?.map((ability) => this.isSpeciesAbilityValid(ability.id))
       ),
       map((booleans) => this.speciesQuery.doesBooleansContainsTrue(booleans))
     );
@@ -597,7 +598,7 @@ export class AbilityService {
       isAbilityValid = speciesQuantity >= requiredValue;
     }
 
-    // Checks that the species has no co-species around
+    // Checks that the defending species has no co-species around.
     if (abilityId === 'survival' && !!checkedSpecies.tileId) {
       console.log(abilityId, checkedSpecies);
       let adjacentSpecies: Species[];
@@ -613,6 +614,13 @@ export class AbilityService {
       );
 
       isAbilityValid = adjacentCoSpecies.length === 0;
+    }
+
+    // Checks that there is at least one other species on the active tile.
+    if (abilityId === 'range') {
+      const otherSpecies = this.speciesQuery.otherTileSpecies();
+
+      isAbilityValid = otherSpecies?.length > 0;
     }
 
     return isAbilityValid;

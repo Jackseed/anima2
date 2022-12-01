@@ -27,12 +27,7 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     return this.getAll().filter((species) => speciesIds.includes(species.id));
   }
 
-  // Checks if a species is already on a tile.
-  public isSpeciesOnTile(speciesId: string, tile: Tile): boolean {
-    const species = tile.species.filter((species) => species.id === speciesId);
-    return species.length > 0;
-  }
-
+  // Gets observable active species on the active tile.
   public get activeTileSpecies$(): Observable<TileSpecies> {
     const activeTile$ = this.tileQuery.selectActive();
     const activeSpeciesId = this.getActiveId();
@@ -45,6 +40,7 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     );
   }
 
+  // Gets active species on the active tile.
   public get activeTileSpecies(): TileSpecies {
     const activeTile = this.tileQuery.getActive();
     const activeSpeciesId = this.getActiveId();
@@ -54,10 +50,19 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     )[0];
   }
 
-  public otherTileSpecies(tile: Tile): TileSpecies[] {
+  // Gets other species than the active one.
+  // If no tile is specified, takes the active tile.
+  public otherTileSpecies(checkedTile?: Tile): TileSpecies[] {
+    const tile = checkedTile ? checkedTile : this.tileQuery.getActive();
     const activeSpeciesId = this.getActiveId();
 
-    return tile.species.filter((species) => species.id !== activeSpeciesId);
+    return tile?.species.filter((species) => species.id !== activeSpeciesId);
+  }
+
+  // Checks if a species is already on a tile.
+  public isSpeciesOnTile(speciesId: string, tile: Tile): boolean {
+    const species = tile.species.filter((species) => species.id === speciesId);
+    return species.length > 0;
   }
 
   public get hasActiveSpeciesActiveAbility$(): Observable<boolean> {
@@ -78,8 +83,8 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
   }
 
   public doesBooleansContainsTrue(booleans: boolean[]): boolean {
-    const trueValues = booleans.filter((boolean) => boolean);
+    const trueValues = booleans?.filter((boolean) => boolean);
 
-    return trueValues.length > 0;
+    return trueValues?.length > 0;
   }
 }
