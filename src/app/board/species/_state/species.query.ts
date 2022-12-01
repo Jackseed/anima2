@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 
 // States
 import { Tile, TileQuery } from '../../tiles/_state';
-import { Species, TileSpecies } from './species.model';
+import { Ability, Species, TileSpecies } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 
 @Injectable({ providedIn: 'root' })
@@ -61,13 +61,25 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
   }
 
   public get hasActiveSpeciesActiveAbility$(): Observable<boolean> {
-    const hasActiveSpeciesActiveAbility = this.selectActive().pipe(
+    return this.selectActive().pipe(
       map((species) =>
         species?.abilities.map((ability) => ability.type === 'active')
       ),
-      map((booleans) => booleans?.filter((boolean) => boolean)),
-      map((trueValues) => trueValues?.length > 0)
+      map((booleans) => this.doesBooleansContainsTrue(booleans))
     );
-    return hasActiveSpeciesActiveAbility;
+  }
+
+  public get activeSpeciesActiveAbilities$(): Observable<Ability[]> {
+    return this.selectActive().pipe(
+      map((species) =>
+        species?.abilities.filter((ability) => ability.type === 'active')
+      )
+    );
+  }
+
+  public doesBooleansContainsTrue(booleans: boolean[]): boolean {
+    const trueValues = booleans.filter((boolean) => boolean);
+
+    return trueValues.length > 0;
   }
 }

@@ -36,15 +36,28 @@
 <!------------ SECONDARY ACTION BUTTON -------------->
 <section
   *ngIf="hasActiveAbility$ | async"
-  id="secondary-action-button-bar"
+  id="active-action-button-bar"
   fxLayout="row"
   fxLayoutAlign="space-between center"
 >
   <div fxFlex></div>
   <div fxFlex></div>
   <div fxFlex></div>
-  <button fxFlex mat-icon-button id="secondary-action-button">
+  <button
+    *ngIf="canActiveAction$ | async"
+    fxFlex
+    mat-icon-button
+    id="active-action-button"
+  >
     <mat-icon svgIcon="adaptation"></mat-icon>
+  </button>
+  <button
+    *ngIf="!(canActiveAction$ | async)"
+    fxFlex
+    mat-icon-button
+    id="active-action-button"
+  >
+    <mat-icon svgIcon="adaptation-disable"></mat-icon>
   </button>
 </section>
 

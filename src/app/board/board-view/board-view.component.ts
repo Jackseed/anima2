@@ -32,6 +32,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
   public hasActiveAbility$: Observable<boolean>;
+  public canActiveAction$: Observable<boolean>;
 
   // Subscriptions
   private turnSub: Subscription;
@@ -64,8 +65,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.tiles$ = this.tileQuery
       .selectAll()
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
-    this.playingPlayerId = this.userQuery.getActiveId();
     this.hasActiveAbility$ = this.speciesQuery.hasActiveSpeciesActiveAbility$;
+    this.canActiveAction$ = this.abilityService.canActiveAction$;
 
     // Subscriptions init
     this.activePlayerSub = this.getActivePlayerSub();

@@ -435,6 +435,16 @@ export class AbilityService {
     );
   }
 
+  // ACTIVE ACTIONS
+  public get canActiveAction$(): Observable<boolean> {
+    return this.speciesQuery.activeSpeciesActiveAbilities$.pipe(
+      map((abilities) =>
+        abilities.map((ability) => this.isSpeciesAbilityValid(ability.id))
+      ),
+      map((booleans) => this.speciesQuery.doesBooleansContainsTrue(booleans))
+    );
+  }
+
   // UTILS - Checks species quantity on a tile.
   // Indicates if a species is more than a specific amount on a tile.
   public isSpeciesQuantityGreatherThan(
