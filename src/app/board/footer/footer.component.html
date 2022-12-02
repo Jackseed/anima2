@@ -1,85 +1,112 @@
-<div fxFlexFill fxLayout="column" fxLayoutAlign="start center">
+<div fxFlexFill fxLayout="column">
+  <!------------ ACTIVE ABILITIES -------------->
   <section
-    class="sidebar"
+    fxFlex="50"
     fxFlexFill
-    fxFlex="95"
+    *ngIf="hasActiveAbility$ | async"
+    id="active-ability-button-bar"
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
-    <!------------------- MIGRATION -------------------->
-    <div class="relative" *ngIf="canMigrate$ | async">
-      <button
-        class="buttons-with-close"
-        mat-icon-button
-        (click)="startMigration()"
-      >
-        <mat-icon svgIcon="migrate"></mat-icon>
-      </button>
-      <div
-        *ngIf="!(isMigrationActive$ | async)"
-        class="absolute circle"
-        fxLayoutAlign="center center"
-      >
-        <div class="figures">{{ remainingMigrations$ | async }}</div>
-      </div>
-      <button
-        *ngIf="isMigrationActive$ | async"
-        mat-icon-button
-        class="close-button"
-        (click)="stopMigration()"
-      >
-        <mat-icon svgIcon="close"></mat-icon>
-      </button>
-    </div>
-    <button *ngIf="!(canMigrate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="migrate-disable"></mat-icon>
-    </button>
-    <!------------------- ASSIMILATION -------------------->
-    <div class="relative" *ngIf="canAssimilate$ | async">
-      <button
-        class="buttons-with-close"
-        mat-icon-button
-        (click)="setupAssimilation()"
-      >
-        <mat-icon svgIcon="assimilate"></mat-icon>
-      </button>
-      <button
-        *ngIf="isAssimilationActive$ | async"
-        mat-icon-button
-        class="close-button"
-        (click)="stopAssimilation()"
-      >
-        <mat-icon svgIcon="close"></mat-icon>
-      </button>
-    </div>
-    <button *ngIf="!(canAssimilate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="assimilate-disable"></mat-icon>
-    </button>
-
-    <!------------------- PROLIFERATION -------------------->
-    <button
-      *ngIf="canProliferate$ | async"
-      mat-icon-button
-      (click)="proliferate()"
-    >
-      <mat-icon svgIcon="proliferate"></mat-icon>
-    </button>
-
-    <button *ngIf="!(canProliferate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="proliferate-disable"></mat-icon>
-    </button>
-
-    <!------------------- ADAPTATION -------------------->
-    <button
-      *ngIf="canAdapt$ | async"
-      mat-icon-button
-      (click)="openAdaptationMenu()"
-    >
+    <div fxFlex></div>
+    <div fxFlex></div>
+    <div fxFlex></div>
+    <button *ngIf="canActiveAbility$ | async" fxFlex mat-icon-button>
       <mat-icon svgIcon="adaptation"></mat-icon>
     </button>
-    <button *ngIf="!(canAdapt$ | async)" mat-icon-button>
+    <button *ngIf="!(canActiveAbility$ | async)" fxFlex mat-icon-button>
       <mat-icon svgIcon="adaptation-disable"></mat-icon>
     </button>
   </section>
-  <aside fxFlexFill fxFlex="5" class="orange"></aside>
+  <!------------ CLASSIC ABILITIES -------------->
+  <section
+    fxFlex="50"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+  >
+    <section
+      class="sidebar"
+      fxFlexFill
+      fxFlex="95"
+      fxLayout="row"
+      fxLayoutAlign="space-between center"
+    >
+      <!------------------- MIGRATION -------------------->
+      <div class="relative" *ngIf="canMigrate$ | async">
+        <button
+          class="buttons-with-close"
+          mat-icon-button
+          (click)="startMigration()"
+        >
+          <mat-icon svgIcon="migrate"></mat-icon>
+        </button>
+        <div
+          *ngIf="!(isMigrationActive$ | async)"
+          class="absolute circle"
+          fxLayoutAlign="center center"
+        >
+          <div class="figures">{{ remainingMigrations$ | async }}</div>
+        </div>
+        <button
+          *ngIf="isMigrationActive$ | async"
+          mat-icon-button
+          class="close-button"
+          (click)="stopMigration()"
+        >
+          <mat-icon svgIcon="close"></mat-icon>
+        </button>
+      </div>
+      <button *ngIf="!(canMigrate$ | async)" mat-icon-button>
+        <mat-icon svgIcon="migrate-disable"></mat-icon>
+      </button>
+      <!------------------- ASSIMILATION -------------------->
+      <div class="relative" *ngIf="canAssimilate$ | async">
+        <button
+          class="buttons-with-close"
+          mat-icon-button
+          (click)="setupAssimilation()"
+        >
+          <mat-icon svgIcon="assimilate"></mat-icon>
+        </button>
+        <button
+          *ngIf="isAssimilationActive$ | async"
+          mat-icon-button
+          class="close-button"
+          (click)="stopAssimilation()"
+        >
+          <mat-icon svgIcon="close"></mat-icon>
+        </button>
+      </div>
+      <button *ngIf="!(canAssimilate$ | async)" mat-icon-button>
+        <mat-icon svgIcon="assimilate-disable"></mat-icon>
+      </button>
+
+      <!------------------- PROLIFERATION -------------------->
+      <button
+        *ngIf="canProliferate$ | async"
+        mat-icon-button
+        (click)="proliferate()"
+      >
+        <mat-icon svgIcon="proliferate"></mat-icon>
+      </button>
+
+      <button *ngIf="!(canProliferate$ | async)" mat-icon-button>
+        <mat-icon svgIcon="proliferate-disable"></mat-icon>
+      </button>
+
+      <!------------------- ADAPTATION -------------------->
+      <button
+        *ngIf="canAdapt$ | async"
+        mat-icon-button
+        (click)="openAdaptationMenu()"
+      >
+        <mat-icon svgIcon="adaptation"></mat-icon>
+      </button>
+      <button *ngIf="!(canAdapt$ | async)" mat-icon-button>
+        <mat-icon svgIcon="adaptation-disable"></mat-icon>
+      </button>
+    </section>
+    <aside fxFlexFill fxFlex="5" class="orange"></aside>
+  </section>
 </div>

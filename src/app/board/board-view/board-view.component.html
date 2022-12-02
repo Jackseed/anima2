@@ -33,34 +33,6 @@
   </section>
 </div>
 
-<!------------ SECONDARY ACTION BUTTON -------------->
-<section
-  *ngIf="hasActiveAbility$ | async"
-  id="active-ability-button-bar"
-  fxLayout="row"
-  fxLayoutAlign="space-between center"
->
-  <div fxFlex></div>
-  <div fxFlex></div>
-  <div fxFlex></div>
-  <button
-    *ngIf="canActiveAbility$ | async"
-    fxFlex
-    mat-icon-button
-    id="active-ability-button"
-  >
-    <mat-icon svgIcon="adaptation"></mat-icon>
-  </button>
-  <button
-    *ngIf="!(canActiveAbility$ | async)"
-    fxFlex
-    mat-icon-button
-    id="active-ability-button"
-  >
-    <mat-icon svgIcon="adaptation-disable"></mat-icon>
-  </button>
-</section>
-
 <pinch-zoom [double-tap]="false">
   <main>
     <!------------ MAP -------------->

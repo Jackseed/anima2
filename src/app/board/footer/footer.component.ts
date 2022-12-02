@@ -4,15 +4,14 @@ import { Component, OnInit } from '@angular/core';
 // Rxjs
 import { Observable } from 'rxjs';
 
-// States
-import { PlayService } from '../play.service';
-import { TileService } from '../tiles/_state';
-
 // Material
 import { MatDialog } from '@angular/material/dialog';
 
-// Components
+// States
+import { PlayService } from '../play.service';
+import { TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
+import { SpeciesQuery } from '../species/_state';
 
 @Component({
   selector: 'app-footer',
@@ -27,11 +26,14 @@ export class FooterComponent implements OnInit {
   public isAssimilationActive$: Observable<boolean>;
   public canAssimilate$: Observable<boolean>;
   public canAdapt$: Observable<boolean>;
+  public hasActiveAbility$: Observable<boolean>;
+  public canActiveAbility$: Observable<boolean>;
 
   constructor(
     private tileService: TileService,
     private playService: PlayService,
     private abilityService: AbilityService,
+    private speciesQuery: SpeciesQuery,
     public dialog: MatDialog
   ) {}
 
@@ -39,11 +41,13 @@ export class FooterComponent implements OnInit {
     this.remainingMigrations$ = this.abilityService.remainingMigrations$;
     this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
     this.isAssimilationActive$ = this.abilityService.isAssimilationOngoing$;
+    this.hasActiveAbility$ = this.speciesQuery.hasActiveSpeciesActiveAbility$;
 
     this.canMigrate$ = this.abilityService.canMigrate$;
     this.canProliferate$ = this.abilityService.canProliferate$;
     this.canAssimilate$ = this.abilityService.canAssimilate$;
     this.canAdapt$ = this.abilityService.canAdapt$;
+    this.canActiveAbility$ = this.abilityService.canActiveAbility$;
   }
 
   public async openAdaptationMenu(): Promise<void> {

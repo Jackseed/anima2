@@ -37,27 +37,6 @@ header {
   left: 15%;
 }
 
-#active-ability-button-bar {
-  height: 16%;
-  width: 100%;
-  z-index: 2;
-  position: absolute;
-  top: 70%;
-  padding-left: 5%;
-  padding-right: 5%;
-}
-
-#active-ability-button {
-  width: 25%;
-  height: 100%;
-  .mat-icon {
-    position: relative;
-    width: 120%;
-    height: 100%;
-    left: -10%;
-  }
-}
-
 pinch-zoom {
   background-color: white !important;
   height: 100%;
@@ -77,7 +56,7 @@ footer {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 16%;
+  height: 32%;
 }
 
 .no-font {
