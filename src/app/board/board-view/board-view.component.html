@@ -33,7 +33,7 @@
   </section>
 </div>
 
-<pinch-zoom [double-tap]="false">
+<pinch-zoom [double-tap]="false" disableZoomControl="disable">
   <main>
     <!------------ MAP -------------->
     <div class="no-font">
@@ -96,6 +96,12 @@
   </main>
 </pinch-zoom>
 <!------------ FOOTER -------------->
+
 <footer>
-  <app-footer fxFlexFill></app-footer>
+  <section class="active-bar">
+    <app-active-bar *ngIf="hasActiveAbility$ | async"></app-active-bar>
+  </section>
+  <section class="action-bar">
+    <app-footer fxFlexFill></app-footer>
+  </section>
 </footer>

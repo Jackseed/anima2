@@ -1,0 +1,15 @@
+main {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.mat-icon-button {
+  width: 25%;
+  height: 100%;
+  .mat-icon {
+    position: relative;
+    width: 140%;
+    height: 100%;
+    left: -20%;
+  }
+}

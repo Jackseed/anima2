@@ -1,0 +1,24 @@
+<!------------ ACTIVE ABILITIES -------------->
+<main
+  fxFlexFill
+  id="active-ability-button-bar"
+  fxLayout="row"
+  fxLayoutAlign="space-between center"
+>
+  <div fxFlexFill>
+    <div fxFlex></div>
+    <div fxFlex></div>
+    <div fxFlex></div>
+    <button
+      *ngIf="canActiveAbility$ | async"
+      (click)="startMigration()"
+      fxFlex
+      mat-icon-button
+    >
+      <mat-icon svgIcon="adaptation"></mat-icon>
+    </button>
+    <button *ngIf="!(canActiveAbility$ | async)" fxFlex mat-icon-button>
+      <mat-icon svgIcon="adaptation-disable"></mat-icon>
+    </button>
+  </div>
+</main>

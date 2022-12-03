@@ -31,6 +31,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
+  public hasActiveAbility$: Observable<boolean>;
 
   // Subscriptions
   private turnSub: Subscription;
@@ -63,6 +64,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.tiles$ = this.tileQuery
       .selectAll()
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
+    this.hasActiveAbility$ = this.speciesQuery.hasActiveSpeciesActiveAbility$;
 
     // Subscriptions init
     this.activePlayerSub = this.getActivePlayerSub();

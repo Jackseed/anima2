@@ -12,6 +12,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { ListComponent } from './species/list/list.component';
 import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimilation-menu.component';
 import { ScoreComponent } from './score/score.component';
+import { ActiveBarComponent } from './abilities/active-bar/active-bar.component';
 // Flex Layout
 import { FlexLayoutModule } from '@angular/flex-layout';
 // Material
@@ -33,6 +34,7 @@ import { PinchZoomModule } from 'ngx-pinch-zoom';
     ListComponent,
     AssimilationMenuComponent,
     ScoreComponent,
+    ActiveBarComponent,
   ],
   imports: [
     CommonModule,
