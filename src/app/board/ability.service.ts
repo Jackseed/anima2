@@ -616,11 +616,13 @@ export class AbilityService {
       isAbilityValid = adjacentCoSpecies.length === 0;
     }
 
-    // Checks that there is at least one other species on the active tile.
-    if (abilityId === 'range') {
-      const otherSpecies = this.speciesQuery.otherTileSpecies();
+    // Checks that there is at least one other species and the active species on the active tile.
+    if (abilityId === 'flying') {
+      const isActiveSpeciesOnActiveTile = !!this.speciesQuery.activeTileSpecies;
+      const isThereOtherSpecies =
+        this.speciesQuery.otherTileSpecies()?.length > 0;
 
-      isAbilityValid = otherSpecies?.length > 0;
+      isAbilityValid = isActiveSpeciesOnActiveTile && isThereOtherSpecies;
     }
 
     return isAbilityValid;
