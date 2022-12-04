@@ -54,17 +54,13 @@ main {
 footer {
   position: fixed;
   bottom: 0;
-  left: 0;
   right: 0;
-}
-.height-16 {
   height: 16%;
 }
-.height-32 {
-  height: 32%;
-}
-.active-bar {
-  height: 50%;
+
+#active-bar {
+  top: 68%;
+  width: var(--width-value)
 }
 
 .no-font {

@@ -97,16 +97,13 @@
 </pinch-zoom>
 
 <!------------ FOOTER -------------->
-<footer *ngIf="!(hasActiveAbility$ | async)" class="height-16">
-  <section fxFlexFill>
-    <app-footer></app-footer>
-  </section>
+<footer
+  *ngIf="hasActiveAbility$ | async"
+  id="active-bar"
+  style="--width-value: {{ 25 * (activeAbilityNumber$ | async) }}%"
+>
+  <app-active-bar></app-active-bar>
 </footer>
-<footer *ngIf="hasActiveAbility$ | async" class="height-32">
-  <section class="active-bar">
-    <app-active-bar></app-active-bar>
-  </section>
-  <section class="active-bar">
-    <app-footer></app-footer>
-  </section>
+<footer>
+  <app-footer></app-footer>
 </footer>

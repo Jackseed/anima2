@@ -1,24 +1,37 @@
-<!------------ ACTIVE ABILITIES -------------->
-<main
-  fxFlexFill
-  id="active-ability-button-bar"
+<section
   fxLayout="row"
-  fxLayoutAlign="space-between center"
+  fxLayoutAlign="end start"
+  style="--padding-value: {{
+    5 * (5 / (activeAbilityNumber$ | async))
+  }}%; --margin-value: {{ 30 / (activeAbilityNumber$ | async) }}%"
 >
-  <div fxFlexFill>
-    <div fxFlex></div>
-    <div fxFlex></div>
-    <div fxFlex></div>
-    <button
-      *ngIf="canActiveAbility$ | async"
-      (click)="startMigration()"
-      fxFlex
-      mat-icon-button
-    >
-      <mat-icon svgIcon="adaptation"></mat-icon>
-    </button>
-    <button *ngIf="!(canActiveAbility$ | async)" fxFlex mat-icon-button>
-      <mat-icon svgIcon="adaptation-disable"></mat-icon>
-    </button>
-  </div>
-</main>
+  <button
+    *ngIf="canActiveAbility$ | async"
+    (click)="startMigration()"
+    mat-icon-button
+  >
+    <mat-icon svgIcon="adaptation"></mat-icon>
+  </button>
+  <button
+    *ngIf="!(canActiveAbility$ | async)"
+    mat-icon-button
+    style="--width-value: {{ 100 / (activeAbilityNumber$ | async) }}%"
+  >
+    <mat-icon svgIcon="adaptation-disable"></mat-icon>
+  </button>
+  <button
+    *ngIf="!(canActiveAbility$ | async)"
+    mat-icon-button
+    style="--width-value: {{ 100 / (activeAbilityNumber$ | async) }}%"
+  >
+    <mat-icon svgIcon="migrate-disable"></mat-icon>
+  </button>
+
+  <button
+    *ngIf="!(canActiveAbility$ | async)"
+    mat-icon-button
+    style="--width-value: {{ 100 / (activeAbilityNumber$ | async) }}%"
+  >
+    <mat-icon svgIcon="migrate-disable"></mat-icon>
+  </button>
+</section>

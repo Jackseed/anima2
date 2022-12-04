@@ -82,6 +82,16 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     );
   }
 
+  public get activeSpeciesActiveAbilitiesNumber$(): Observable<number> {
+    return this.selectActive().pipe(
+      map(
+        (species) =>
+          species?.abilities.filter((ability) => ability.type === 'active')
+            .length
+      )
+    );
+  }
+
   public doesBooleansContainsTrue(booleans: boolean[]): boolean {
     const trueValues = booleans?.filter((boolean) => boolean);
 

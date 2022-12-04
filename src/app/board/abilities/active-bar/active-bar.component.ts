@@ -16,6 +16,7 @@ import { Ability, SpeciesQuery } from '../../species/_state';
 export class ActiveBarComponent implements OnInit {
   public activeSpeciesActiveAbilities$: Observable<Ability[]>;
   public canActiveAbility$: Observable<boolean>;
+  public activeAbilityNumber$: Observable<number>;
 
   constructor(
     private speciesQuery: SpeciesQuery,
@@ -26,5 +27,7 @@ export class ActiveBarComponent implements OnInit {
     this.canActiveAbility$ = this.abilityService.canActiveAbility$;
     this.activeSpeciesActiveAbilities$ =
       this.speciesQuery.activeSpeciesActiveAbilities$;
+    this.activeAbilityNumber$ =
+      this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
   }
 }
