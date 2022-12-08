@@ -113,10 +113,10 @@ export const ABILITY_IDS = [
   'range',
   'survival',
   'intimidate',
-  'spontaneousGeneration',
   'tunnel',
   'acceleration',
   'rallying',
+  'spontaneousGeneration',
 ] as const;
 export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {

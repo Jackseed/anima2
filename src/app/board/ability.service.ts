@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 // Rxjs
 import { combineLatest, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 // Material
 import { MatDialog } from '@angular/material/dialog';
@@ -458,12 +458,9 @@ export class AbilityService {
         ? intimidatedSpecies.quantity
         : activeTileSpecies.quantity;
 
-    this.speciesService.move(
-      intimidatedSpecies.id,
-      movingQuantity,
-      randomAdjacentTileId,
-      tileId
-    );
+    this.speciesService
+      .move(intimidatedSpecies.id, movingQuantity, randomAdjacentTileId, tileId)
+      .then((_) => this.gameService.decrementRemainingActions());
   }
 
   // UTILS - Checks species quantity on a tile.
