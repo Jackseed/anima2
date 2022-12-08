@@ -245,7 +245,7 @@ export class PlayService {
     this.dialog.open(ListComponent, {
       data: {
         listType: 'passive',
-        species,
+        speciesToList: species,
         speciesCount: tileId ? 'tile' : 'global',
         tileId,
       },

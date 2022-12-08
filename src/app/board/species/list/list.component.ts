@@ -9,13 +9,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   Species,
   SpeciesListData,
+  TileSpecies,
 } from '../../../board/species/_state/species.model';
 import { AbilityService } from '../../ability.service';
 import { PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
 
 // TODO: refactor this
-export interface active extends Species {
+export interface active extends TileSpecies {
   type?: string;
   name?: string;
   icon?: string;
@@ -104,6 +105,7 @@ export class ListComponent implements OnInit {
       successMessage = 'Vous avez assimilé !';
     }
     if (this.data.action === 'intimider') {
+      this.abilityService.intimidate(this.active, this.data.tileId);
       successMessage = 'Vous avez intimidé !';
     }
     this.snackbar.open(successMessage, null, {

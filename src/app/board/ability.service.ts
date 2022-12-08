@@ -442,6 +442,30 @@ export class AbilityService {
       .pipe(map((_) => this.isSpeciesAbilityValid(abilityId)));
   }
 
+  // Moves a species to a random adjacent tile.
+  public intimidate(intimidatedSpecies: TileSpecies, tileId: number) {
+    const activeTileSpecies = this.speciesQuery.activeTileSpecies;
+    const intimidateValue = this.getAbilityValue('intimidate');
+    const adjacentTileIds = this.tileQuery.getAdjacentTileIds(
+      tileId,
+      intimidateValue
+    );
+    const randomAdjacentTileId =
+      adjacentTileIds[Math.floor(Math.random() * adjacentTileIds.length)];
+    // Moves the same quantity as the active species.
+    const movingQuantity =
+      activeTileSpecies.quantity > intimidatedSpecies.quantity
+        ? intimidatedSpecies.quantity
+        : activeTileSpecies.quantity;
+
+    this.speciesService.move(
+      intimidatedSpecies.id,
+      movingQuantity,
+      randomAdjacentTileId,
+      tileId
+    );
+  }
+
   // UTILS - Checks species quantity on a tile.
   // Indicates if a species is more than a specific amount on a tile.
   public isSpeciesQuantityGreatherThan(

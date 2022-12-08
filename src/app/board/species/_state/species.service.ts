@@ -138,7 +138,8 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         species,
         -quantity
       );
-
+    }
+    if (migrationUsed) {
       // Finally, updates remaining migrations, if it's a move.
       batch = this.batchUpdateRemainingMigrations(
         gameDoc,
