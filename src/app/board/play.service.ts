@@ -13,8 +13,11 @@ import { GameQuery, GameService } from '../games/_state';
 import {
   createAssimilationValues,
   Species,
+  SpeciesListActions,
+  SpeciesListData,
   SpeciesQuery,
   SpeciesService,
+  TileSpecies,
 } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
 import { ABILITY_CHOICE_AMOUNT, PlayerService } from './players/_state';
@@ -200,14 +203,31 @@ export class PlayService {
       attackingTileSpecies,
       0
     );
+    this.openActiveSpeciesList(attackableSpecies, attackedTileId, 'assimiler');
+  }
 
+  public openIntimidateMenu() {
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const otherSpecies = this.speciesQuery.otherTileSpecies();
+    const action = 'intimider';
+    this.openActiveSpeciesList(otherSpecies, activeTileId, action);
+  }
+
+  // TODO: merge AssimilationMenuComponent with List Component
+  private openActiveSpeciesList(
+    speciesToList: TileSpecies[],
+    tileId: number,
+    action: SpeciesListActions
+  ) {
+    const speciesListData: SpeciesListData = {
+      listType: 'active',
+      speciesCount: 'tile',
+      speciesToList,
+      tileId,
+      action,
+    };
     this.dialog.open(AssimilationMenuComponent, {
-      data: {
-        listType: 'active',
-        species: attackableSpecies,
-        speciesCount: 'tile',
-        tileId: attackedTileId,
-      },
+      data: speciesListData,
       autoFocus: false,
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',

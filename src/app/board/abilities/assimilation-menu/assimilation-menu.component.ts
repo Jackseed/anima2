@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+// Angular
+import { Component, Inject, OnInit } from '@angular/core';
+// Material
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+// States
+import { SpeciesListData } from '../../species/_state';
 
 @Component({
   selector: 'app-assimilation-menu',
@@ -6,7 +11,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./assimilation-menu.component.scss'],
 })
 export class AssimilationMenuComponent implements OnInit {
-  constructor() {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: SpeciesListData) {}
 
   ngOnInit(): void {}
 }

@@ -50,6 +50,7 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     )[0];
   }
 
+  // TODO: transform in other than player's species
   // Gets other species than the active one.
   // If no tile is specified, takes the active tile.
   public otherTileSpecies(checkedTile?: Tile): TileSpecies[] {

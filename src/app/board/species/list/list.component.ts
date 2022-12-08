@@ -6,18 +6,15 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
-import { Species } from '../../../board/species/_state/species.model';
+import {
+  Species,
+  SpeciesListData,
+} from '../../../board/species/_state/species.model';
 import { AbilityService } from '../../ability.service';
 import { PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
 
-export interface dataType {
-  listType: 'active' | 'passive';
-  species: Species[];
-  speciesCount: 'global' | 'tile';
-  tileId?: number;
-}
-
+// TODO: refactor this
 export interface active extends Species {
   type?: string;
   name?: string;
@@ -58,7 +55,7 @@ export class ListComponent implements OnInit {
   public active: active = {};
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: dataType,
+    @Inject(MAT_DIALOG_DATA) public data: SpeciesListData,
     public dialogRef: MatDialogRef<ListComponent>,
     private snackbar: MatSnackBar,
     private tileQuery: TileQuery,
@@ -91,14 +88,25 @@ export class ListComponent implements OnInit {
     }
   }
 
+  public capitalizeFirstLetter(word: string) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
   public close() {
     this.dialogRef.close();
   }
 
   public validate() {
     this.dialogRef.close();
-    this.abilityService.assimilate(this.active.id, this.data.tileId);
-    this.snackbar.open('Vous avez assimilé !', null, {
+    let successMessage: string;
+    if (this.data.action === 'assimiler') {
+      this.abilityService.assimilate(this.active.id, this.data.tileId);
+      successMessage = 'Vous avez assimilé !';
+    }
+    if (this.data.action === 'intimider') {
+      successMessage = 'Vous avez intimidé !';
+    }
+    this.snackbar.open(successMessage, null, {
       duration: 800,
       panelClass: 'orange-snackbar',
     });

@@ -435,15 +435,11 @@ export class AbilityService {
     );
   }
 
-  // ACTIVE ACTIONS
-  public get canActiveAbility$(): Observable<boolean> {
-    return this.tileQuery.selectActiveId().pipe(
-      switchMap((_) => this.speciesQuery.activeSpeciesActiveAbilities$),
-      map((abilities) =>
-        abilities?.map((ability) => this.isSpeciesAbilityValid(ability.id))
-      ),
-      map((booleans) => this.speciesQuery.doesBooleansContainsTrue(booleans))
-    );
+  // ACTIVE ABILITIES
+  public canActiveAbility$(abilityId: AbilityId): Observable<boolean> {
+    return this.tileQuery
+      .selectActiveId()
+      .pipe(map((_) => this.isSpeciesAbilityValid(abilityId)));
   }
 
   // UTILS - Checks species quantity on a tile.
@@ -617,7 +613,7 @@ export class AbilityService {
     }
 
     // Checks that there is at least one other species and the active species on the active tile.
-    if (abilityId === 'flying') {
+    if (abilityId === 'intimidate') {
       const isActiveSpeciesOnActiveTile = !!this.speciesQuery.activeTileSpecies;
       const isThereOtherSpecies =
         this.speciesQuery.otherTileSpecies()?.length > 0;

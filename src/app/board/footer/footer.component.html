@@ -6,6 +6,7 @@
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
+    <!-- TODO: remove both states and use disabled ----->
     <!------------------- MIGRATION -------------------->
     <div class="relative" *ngIf="canMigrate$ | async">
       <button
