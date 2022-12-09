@@ -115,8 +115,8 @@ export const ABILITY_IDS = [
   'intimidate',
   'spontaneousGeneration',
   'tunnel',
-  'acceleration',
   'rallying',
+  'acceleration',
 ] as const;
 export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {
@@ -299,7 +299,7 @@ export const ABILITIES: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
     type: 'active',
   },
   {

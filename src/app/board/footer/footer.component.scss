@@ -9,11 +9,6 @@
   }
 }
 
-.buttons-with-close {
-  width: 100%;
-  padding-top: 8px;
-}
-
 .circle {
   width: 30px;
   height: 30px;
@@ -30,6 +25,11 @@
   font-size: calc(1rem + 1vmin);
   font-weight: 600;
   line-height: 16px;
+}
+
+.buttons-with-close {
+  width: 100%;
+  padding-top: 8px;
 }
 
 .close-button {

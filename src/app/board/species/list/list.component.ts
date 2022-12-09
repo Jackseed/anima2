@@ -77,7 +77,7 @@ export class ListComponent implements OnInit {
   public getSpeciesCount(species: Species) {
     if (this.data.speciesCount === 'global') return species.tileIds.length;
 
-    return this.tileQuery.getTileSpeciesCount(species, this.data.tileId);
+    return this.tileQuery.getTileSpeciesCount(species.id, this.data.tileId);
   }
 
   public activate(object: 'ability' | 'species', i: number, species?: Species) {

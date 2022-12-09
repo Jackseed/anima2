@@ -24,5 +24,29 @@ article {
 }
 
 .disabled {
-  color: grey
+  color: grey;
+}
+
+// TODO: factorize this with footer css
+.buttons-with-close {
+  width: 100%;
+  padding-top: 8px;
+}
+
+.close-button {
+  --s: 1.5rem + 2vmin;
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
+  position: absolute;
+  top: 50%;
+  left: 57%;
+  transform: translate(-50%, -50%);
+
+  .mat-icon {
+    font-size: calc(var(--s));
+    width: calc(var(--s));
+    height: calc(var(--s));
+    line-height: calc(var(--s));
+  }
 }

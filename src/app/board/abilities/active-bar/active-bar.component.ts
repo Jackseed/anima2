@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { AbilityService } from '../../ability.service';
 import { PlayService } from '../../play.service';
 import { Ability, AbilityId, SpeciesQuery } from '../../species/_state';
+import { TileService } from '../../tiles/_state';
 
 @Component({
   selector: 'app-active-bar',
@@ -18,8 +19,10 @@ export class ActiveBarComponent implements OnInit {
   public activeSpeciesActiveAbilities$: Observable<Ability[]>;
   public activeAbilityNumber$: Observable<number>;
   public activeAbilities$: Observable<Ability[]>;
+  public isRallyingActive$: Observable<boolean>;
 
   constructor(
+    private tileService: TileService,
     private speciesQuery: SpeciesQuery,
     private abilityService: AbilityService,
     private playService: PlayService
@@ -31,6 +34,7 @@ export class ActiveBarComponent implements OnInit {
     this.activeAbilityNumber$ =
       this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
     this.activeAbilities$ = this.speciesQuery.activeSpeciesActiveAbilities$;
+    this.isRallyingActive$ = this.abilityService.isRallyingOngoing$;
   }
   public canActiveAbility$(abilityId: AbilityId): Observable<boolean> {
     return this.abilityService.canActiveAbility$(abilityId);
@@ -39,9 +43,14 @@ export class ActiveBarComponent implements OnInit {
   public activeAbility(abilityId: AbilityId) {
     if (abilityId === 'intimidate') this.intimidate();
     if (abilityId === 'tunnel') this.abilityService.tunnel();
+    if (abilityId === 'rallying') this.abilityService.setupRallying();
   }
 
   public intimidate() {
     this.playService.openIntimidateMenu();
+  }
+
+  public stopRallying() {
+    this.tileService.removeRallyable();
   }
 }

@@ -177,6 +177,7 @@ export class TileService extends CollectionService<TileState> {
     return resultTileIds;
   }
 
+  // TODO: factorize these functions ?
   public markAllTilesReachable(): void {
     const tiles = this.query.getAll({
       filterBy: (tile) => tile.type !== 'blank',
@@ -206,6 +207,13 @@ export class TileService extends CollectionService<TileState> {
     );
   }
 
+  public markAsRallyable(tileIds: number[]) {
+    this.store.update(
+      tileIds.map((id) => id?.toString()),
+      { isRallyable: true }
+    );
+  }
+
   public removeReachable() {
     this.store.update(null, { isReachable: false });
   }
@@ -216,6 +224,10 @@ export class TileService extends CollectionService<TileState> {
 
   public removeProliferable() {
     this.store.update(null, { isProliferable: false });
+  }
+
+  public removeRallyable() {
+    this.store.update(null, { isRallyable: false });
   }
 
   public updateRange(

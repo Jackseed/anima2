@@ -94,14 +94,14 @@ export class TileQuery extends QueryEntity<TileState> {
   }
 
   // Returns the quantity of a given species on a tile.
-  public getTileSpeciesCount(species: Species, tileId: number): number {
+  public getTileSpeciesCount(speciesId: string, tileId: number): number {
     if (!!!tileId) return;
     const tile = this.getEntity(tileId.toString());
     if (!!!tile) return;
     const tileSpecies = tile.species;
 
     const filteredSpecies = tileSpecies.filter(
-      (tileSpecies) => tileSpecies.id === species.id
+      (tileSpecies) => tileSpecies.id === speciesId
     )[0];
 
     return filteredSpecies?.quantity;

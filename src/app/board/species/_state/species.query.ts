@@ -60,6 +60,23 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     return tile?.species.filter((species) => species.id !== activeSpeciesId);
   }
 
+  public adjacentActiveSpeciesTileIds(
+    centerTileId: number,
+    range: number
+  ): number[] {
+    const activeSpeciesTileIds = this.getActive().tileIds;
+    const adjacentTileIds = this.tileQuery.getAdjacentTileIds(
+      centerTileId,
+      range
+    );
+    const adjacentTileIdsWithActiveSpecies = adjacentTileIds.filter(
+      (tileId) =>
+        activeSpeciesTileIds.includes(tileId) && tileId !== centerTileId
+    );
+
+    return adjacentTileIdsWithActiveSpecies;
+  }
+
   // Checks if a species is already on a tile.
   public isSpeciesOnTile(speciesId: string, tile: Tile): boolean {
     const species = tile.species.filter((species) => species.id === speciesId);

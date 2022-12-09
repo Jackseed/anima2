@@ -167,6 +167,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     if (this.abilityService.isProliferationValid(tileId))
       return this.abilityService.proliferate(tileId);
 
+    // Rallying
+    if (this.abilityService.isRallyingValid(tileId))
+      return this.abilityService.rallying(tileId);
+
     // Dismisses clicks on empty tiles.
     if (this.tileQuery.isEmpty(tileId)) return;
 

@@ -10,6 +10,7 @@ export interface Tile {
   isReachable?: boolean;
   isAttackable?: boolean;
   isProliferable?: boolean;
+  isRallyable?: boolean;
 }
 export const regionIds = [
   'rockies',

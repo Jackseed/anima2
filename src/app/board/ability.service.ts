@@ -233,9 +233,7 @@ export class AbilityService {
   public isProliferationValid(selectedTileId: number): boolean {
     const selectedTile = this.tileQuery.getEntity(selectedTileId.toString());
     const isProliferationValid =
-      this.tileQuery.hasActive() &&
-      selectedTile.isProliferable &&
-      !!this.remainingMigrations;
+      this.tileQuery.hasActive() && selectedTile.isProliferable;
 
     return isProliferationValid;
   }
@@ -485,6 +483,57 @@ export class AbilityService {
       .pipe(map((_) => this.isSpeciesAbilityValid(abilityId)));
   }
 
+  // Moves rallied species to the active tile species.
+  public rallying(ralliedTileId: number) {
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const movingQuantity = this.tileQuery.getTileSpeciesCount(
+      activeSpeciesId,
+      ralliedTileId
+    );
+
+    this.tileService.removeRallyable();
+
+    this.speciesService
+      .move(activeSpeciesId, movingQuantity, activeTileId, ralliedTileId)
+      .then((_) => {
+        // TODO: factorize this
+        this.gameService.decrementRemainingActions();
+        this.snackbar.open('Cri de ralliement effectué !', null, {
+          duration: 800,
+          panelClass: 'orange-snackbar',
+        });
+      });
+  }
+
+  // Marks adjacent active species rallyable.
+  public setupRallying() {
+    const range = this.getAbilityValue('rallying');
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const adjacentActiveSpeciesTileIds =
+      this.speciesQuery.adjacentActiveSpeciesTileIds(activeTileId, range);
+    this.tileService.markAsRallyable(adjacentActiveSpeciesTileIds);
+  }
+
+  public isRallyingValid(selectedTileId: number): boolean {
+    const selectedTile = this.tileQuery.getEntity(selectedTileId.toString());
+    const isRallyingValid =
+      this.tileQuery.hasActive() && selectedTile.isRallyable;
+
+    return isRallyingValid;
+  }
+
+  // TODO: factorize this
+  public get isRallyingOngoing$(): Observable<boolean> {
+    return this.tileQuery
+      .selectCount(({ isRallyable }) => isRallyable)
+      .pipe(
+        map((rallyableTileQuantity) =>
+          rallyableTileQuantity > 0 ? true : false
+        )
+      );
+  }
+
   // Allows to move on any other active species individual.
   public tunnel() {
     const activeTileId = Number(this.tileQuery.getActiveId());
@@ -528,7 +577,7 @@ export class AbilityService {
     num: number
   ): boolean {
     const tileSpeciesCount = this.tileQuery.getTileSpeciesCount(
-      species,
+      species.id,
       tileId
     );
     return tileSpeciesCount >= num ? true : false;
@@ -682,7 +731,7 @@ export class AbilityService {
     // Checks that species quantity is enough.
     if (abilityId === 'nest' || 'hounds') {
       const speciesQuantity = this.tileQuery.getTileSpeciesCount(
-        checkedSpecies,
+        checkedSpecies.id,
         checkedSpecies.tileId
       );
 
@@ -721,6 +770,19 @@ export class AbilityService {
     if (abilityId === 'tunnel') {
       const activeSpecies = this.speciesQuery.activeTileSpecies;
       isAbilityValid = this.remainingMigrations > 0 && !!activeSpecies;
+    }
+
+    // Checks if an active species is around active tile & species
+    if (abilityId === 'rallying') {
+      const activeTileSpecies = this.speciesQuery.activeTileSpecies;
+      if (!activeTileSpecies) return false;
+      const range = this.getAbilityValue('rallying');
+      const adjacentTileIdsWithActiveSpecies =
+        this.speciesQuery.adjacentActiveSpeciesTileIds(
+          activeTileSpecies.tileId,
+          range
+        );
+      isAbilityValid = adjacentTileIdsWithActiveSpecies.length > 0;
     }
 
     return isAbilityValid;

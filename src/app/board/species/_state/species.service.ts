@@ -72,7 +72,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     if (!isSpeciesOnTile) {
       const tileSpecies: TileSpecies = {
         ...species,
-        tileId: tile.id,
+        tileId: Number(tile.id),
         quantity,
         mainAbilityId,
       };
