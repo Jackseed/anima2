@@ -86,10 +86,12 @@ export class AbilityService {
   // Get migration values, applying relevant abilities.
   private getMigrationValues(destinationTileId: number): MigrationValues {
     // Gets default migration values.
-    const traveledDistance =
+    let traveledDistance =
       this.tileQuery.getDistanceFromActiveTileToDestinationTileId(
         destinationTileId
       );
+    // Traveled distance can be null if classic migration is not used (tunnel), then set to 1.
+    if (!traveledDistance) traveledDistance = 1;
     let migrationValues = createMigrationValues({
       traveledDistance,
     });
@@ -131,8 +133,8 @@ export class AbilityService {
 
     // Checks there is a specie in the active tile.
     return combineLatest([activeSpecies$, activeTileId$]).pipe(
-      map(([specie, tileId]) => {
-        return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 1);
+      map(([species, tileId]) => {
+        return this.isSpeciesQuantityGreatherThan(species, Number(tileId), 1);
       })
     );
   }
@@ -483,6 +485,20 @@ export class AbilityService {
       .pipe(map((_) => this.isSpeciesAbilityValid(abilityId)));
   }
 
+  // Allows to move on any other active species individual.
+  public tunnel() {
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const activeSpeciesTileIds = this.speciesQuery.getActive().tileIds;
+    // Removes active & duplicates.
+    const activeSpeciesPossibleTileIds = [
+      ...new Set(
+        activeSpeciesTileIds.filter((tileId) => tileId !== activeTileId)
+      ),
+    ];
+
+    this.tileService.markAsReachable(activeSpeciesPossibleTileIds);
+  }
+
   // Moves a species to a random adjacent tile.
   public intimidate(intimidatedSpecies: TileSpecies, tileId: number) {
     const activeTileSpecies = this.speciesQuery.activeTileSpecies;
@@ -698,6 +714,13 @@ export class AbilityService {
         this.speciesQuery.otherTileSpecies()?.length > 0;
 
       isAbilityValid = isActiveSpeciesOnActiveTile && isThereOtherSpecies;
+    }
+
+    // Checks that migration is possible,
+    // meaning a species is in the active tile and it remains migration points.
+    if (abilityId === 'tunnel') {
+      const activeSpecies = this.speciesQuery.activeTileSpecies;
+      isAbilityValid = this.remainingMigrations > 0 && !!activeSpecies;
     }
 
     return isAbilityValid;

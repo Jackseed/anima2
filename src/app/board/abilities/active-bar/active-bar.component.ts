@@ -16,7 +16,6 @@ import { Ability, AbilityId, SpeciesQuery } from '../../species/_state';
 })
 export class ActiveBarComponent implements OnInit {
   public activeSpeciesActiveAbilities$: Observable<Ability[]>;
-
   public activeAbilityNumber$: Observable<number>;
   public activeAbilities$: Observable<Ability[]>;
 
@@ -39,6 +38,7 @@ export class ActiveBarComponent implements OnInit {
 
   public activeAbility(abilityId: AbilityId) {
     if (abilityId === 'intimidate') this.intimidate();
+    if (abilityId === 'tunnel') this.abilityService.tunnel();
   }
 
   public intimidate() {
