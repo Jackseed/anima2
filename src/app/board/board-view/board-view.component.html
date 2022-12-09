@@ -51,7 +51,8 @@
           forests: tile.type === 'forests',
           selected: isActive(tile.id),
           reachable: tile?.isReachable,
-          attackable: tile?.isAttackable
+          attackable: tile?.isAttackable,
+          proliferable: tile?.isProliferable
         }"
         (click)="play(i)"
       >

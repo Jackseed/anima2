@@ -176,15 +176,23 @@ export class AbilityService {
   }
 
   // PROLIFERATION
-  public async proliferate() {
+  // Proliferates on active tile or specific tileId if set.
+  public async proliferate(tileId?: number) {
     const activeSpeciesId = this.speciesQuery.getActiveId();
-    const activeTileId = Number(this.tileQuery.getActiveId());
+    const proliferationTileId = tileId
+      ? tileId
+      : Number(this.tileQuery.getActiveId());
     const proliferationValues = this.applyProliferationAbilities();
 
     this.tileService.removeActive();
-    this.tileService.removeReachable();
+    this.tileService.removeProliferable();
+
     this.speciesService
-      .move(activeSpeciesId, proliferationValues.createdQuantity, activeTileId)
+      .move(
+        activeSpeciesId,
+        proliferationValues.createdQuantity,
+        proliferationTileId
+      )
       .then(() => {
         this.gameService.decrementRemainingActions();
         this.snackbar.open('Prolifération effectuée !', null, {
@@ -197,7 +205,40 @@ export class AbilityService {
       });
   }
 
-  // PROLIFERATION - UTILS -
+  // PROLIFERATION - UTILS
+  public setupProliferation() {
+    const activeSpeciesId = this.speciesQuery.getActiveId();
+    if (this.speciesHasAbility(activeSpeciesId, 'spontaneousGeneration'))
+      return this.applyProliferationAbilities();
+    this.proliferate();
+  }
+
+  // PROLIFERATION - UTILS
+  // Checks if there is at least 1 tile attackable
+  public get isProliferationOngoing$(): Observable<boolean> {
+    return this.tileQuery
+      .selectCount(({ isProliferable }) => isProliferable)
+      .pipe(
+        map((proliferableTileQuantity) =>
+          proliferableTileQuantity > 0 ? true : false
+        )
+      );
+  }
+
+  // TODO: refactor & factorize abilities utils
+  // PROLIFERATION - UTILS - Checks if it's a valid proliferation.
+  // Verifies a tile is active, the attacked tile is valid and the species can act.
+  public isProliferationValid(selectedTileId: number): boolean {
+    const selectedTile = this.tileQuery.getEntity(selectedTileId.toString());
+    const isProliferationValid =
+      this.tileQuery.hasActive() &&
+      selectedTile.isProliferable &&
+      !!this.remainingMigrations;
+
+    return isProliferationValid;
+  }
+
+  // PROLIFERATION - UTILS
   // Indicates weither active species can proliferate
   // by verifiying if there are more than the default needed individuals on the tile.
   public get canProliferate$(): Observable<boolean> {
@@ -562,6 +603,23 @@ export class AbilityService {
       this.isSpeciesAbilityValid('nest')
     )
       updatedValues.createdQuantity += this.getAbilityValue('nest');
+
+    // If spontaneous generation and no tile proliferable, marks in range tile proliferable.
+    if (
+      this.speciesHasAbility(activeSpeciesId, 'spontaneousGeneration') &&
+      !this.tileQuery.hasProliferableTile() &&
+      this.tileQuery.hasActive()
+    ) {
+      const activeTileId = Number(this.tileQuery.getActiveId());
+      const range = this.getAbilityValue('spontaneousGeneration');
+      let inRangeTileIds = this.tileQuery.getAdjacentTileIds(
+        activeTileId,
+        range
+      );
+      inRangeTileIds.push(activeTileId);
+
+      this.tileService.markAsProliferable(inRangeTileIds);
+    }
 
     return updatedValues;
   }

@@ -58,13 +58,23 @@
     </button>
 
     <!------------------- PROLIFERATION -------------------->
-    <button
-      *ngIf="canProliferate$ | async"
-      mat-icon-button
-      (click)="proliferate()"
-    >
-      <mat-icon svgIcon="proliferate"></mat-icon>
-    </button>
+    <div class="relative" *ngIf="canProliferate$ | async">
+      <button
+        class="buttons-with-close"
+        mat-icon-button
+        (click)="proliferate()"
+      >
+        <mat-icon svgIcon="proliferate"></mat-icon>
+      </button>
+      <button
+        *ngIf="isProliferationActive$ | async"
+        mat-icon-button
+        class="close-button"
+        (click)="stopProliferation()"
+      >
+        <mat-icon svgIcon="close"></mat-icon>
+      </button>
+    </div>
     <button *ngIf="!(canProliferate$ | async)" mat-icon-button>
       <mat-icon svgIcon="proliferate-disable"></mat-icon>
     </button>

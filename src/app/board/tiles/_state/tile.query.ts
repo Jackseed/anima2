@@ -106,4 +106,8 @@ export class TileQuery extends QueryEntity<TileState> {
 
     return filteredSpecies?.quantity;
   }
+
+  public hasProliferableTile(): boolean {
+    return this.hasEntity(({ isProliferable }) => isProliferable);
+  }
 }

@@ -21,6 +21,7 @@ export class FooterComponent implements OnInit {
   public remainingMigrations$: Observable<number>;
   public isMigrationActive$: Observable<boolean>;
   public canMigrate$: Observable<boolean>;
+  public isProliferationActive$: Observable<boolean>;
   public canProliferate$: Observable<boolean>;
   public isAssimilationActive$: Observable<boolean>;
   public canAssimilate$: Observable<boolean>;
@@ -37,6 +38,7 @@ export class FooterComponent implements OnInit {
     this.remainingMigrations$ = this.abilityService.remainingMigrations$;
     this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
     this.isAssimilationActive$ = this.abilityService.isAssimilationOngoing$;
+    this.isProliferationActive$ = this.abilityService.isProliferationOngoing$;
 
     this.canMigrate$ = this.abilityService.canMigrate$;
     this.canProliferate$ = this.abilityService.canProliferate$;
@@ -65,6 +67,10 @@ export class FooterComponent implements OnInit {
   }
 
   public proliferate() {
-    this.abilityService.proliferate();
+    this.abilityService.setupProliferation();
+  }
+
+  public stopProliferation() {
+    this.tileService.removeProliferable();
   }
 }

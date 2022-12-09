@@ -9,6 +9,7 @@ export interface Tile {
   species?: TileSpecies[];
   isReachable?: boolean;
   isAttackable?: boolean;
+  isProliferable?: boolean;
 }
 export const regionIds = [
   'rockies',

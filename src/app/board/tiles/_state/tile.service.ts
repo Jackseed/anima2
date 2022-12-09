@@ -199,12 +199,23 @@ export class TileService extends CollectionService<TileState> {
     );
   }
 
+  public markAsProliferable(tileIds: number[]) {
+    this.store.update(
+      tileIds.map((id) => id?.toString()),
+      { isProliferable: true }
+    );
+  }
+
   public removeReachable() {
     this.store.update(null, { isReachable: false });
   }
 
   public removeAttackable() {
     this.store.update(null, { isAttackable: false });
+  }
+
+  public removeProliferable() {
+    this.store.update(null, { isProliferable: false });
   }
 
   public updateRange(
