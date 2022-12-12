@@ -36,6 +36,7 @@ export class FooterComponent implements OnInit {
 
   ngOnInit(): void {
     this.remainingMigrations$ = this.abilityService.remainingMigrations$;
+
     this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
     this.isAssimilationActive$ = this.abilityService.isAssimilationOngoing$;
     this.isProliferationActive$ = this.abilityService.isProliferationOngoing$;
@@ -44,6 +45,12 @@ export class FooterComponent implements OnInit {
     this.canProliferate$ = this.abilityService.canProliferate$;
     this.canAssimilate$ = this.abilityService.canAssimilate$;
     this.canAdapt$ = this.abilityService.canAdapt$;
+  }
+
+  public isAnotherActionActive$(
+    than?: 'assimilation' | 'migration' | 'proliferation'
+  ): Observable<boolean> {
+    return this.abilityService.isSomethingElseOngoing$(than);
   }
 
   public async openAdaptationMenu(): Promise<void> {

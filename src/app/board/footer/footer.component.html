@@ -6,25 +6,38 @@
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
-    <!-- TODO: remove both states and use disabled ----->
+    <!-- TODO: merge into an ngFor? ----->
     <!------------------- MIGRATION -------------------->
-    <div class="relative" *ngIf="canMigrate$ | async">
+    <div
+      class="relative"
+      *ngIf="{
+        canActive:
+          (canMigrate$ | async) &&
+          !(isAnotherActionActive$('migration') | async),
+        isActive: (isMigrationActive$ | async)
+      } as activeObservables"
+    >
       <button
         class="buttons-with-close"
         mat-icon-button
         (click)="startMigration()"
+        [disabled]="!activeObservables.canActive"
       >
-        <mat-icon svgIcon="migrate"></mat-icon>
+        <mat-icon
+          [svgIcon]="
+            activeObservables.canActive ? 'migrate' : 'migrate-disable'
+          "
+        ></mat-icon>
       </button>
       <div
-        *ngIf="!(isMigrationActive$ | async)"
+        *ngIf="activeObservables.canActive"
         class="absolute circle"
         fxLayoutAlign="center center"
       >
         <div class="figures">{{ remainingMigrations$ | async }}</div>
       </div>
       <button
-        *ngIf="isMigrationActive$ | async"
+        *ngIf="activeObservables.canActive && activeObservables.isActive"
         mat-icon-button
         class="close-button"
         (click)="stopMigration()"
@@ -32,20 +45,30 @@
         <mat-icon svgIcon="close"></mat-icon>
       </button>
     </div>
-    <button *ngIf="!(canMigrate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="migrate-disable"></mat-icon>
-    </button>
     <!------------------- ASSIMILATION -------------------->
-    <div class="relative" *ngIf="canAssimilate$ | async">
+    <div
+      class="relative"
+      *ngIf="{
+        canActive:
+          (canAssimilate$ | async) &&
+          !(isAnotherActionActive$('assimilation') | async),
+        isActive: isAssimilationActive$ | async
+      } as activeObservables"
+    >
       <button
         class="buttons-with-close"
         mat-icon-button
         (click)="setupAssimilation()"
+        [disabled]="!activeObservables.canActive"
       >
-        <mat-icon svgIcon="assimilate"></mat-icon>
+        <mat-icon
+          [svgIcon]="
+            activeObservables.canActive ? 'assimilate' : 'assimilate-disable'
+          "
+        ></mat-icon>
       </button>
       <button
-        *ngIf="isAssimilationActive$ | async"
+        *ngIf="activeObservables.isActive"
         mat-icon-button
         class="close-button"
         (click)="stopAssimilation()"
@@ -53,21 +76,31 @@
         <mat-icon svgIcon="close"></mat-icon>
       </button>
     </div>
-    <button *ngIf="!(canAssimilate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="assimilate-disable"></mat-icon>
-    </button>
 
     <!------------------- PROLIFERATION -------------------->
-    <div class="relative" *ngIf="canProliferate$ | async">
+    <div
+      class="relative"
+      *ngIf="{
+        canActive:
+          (canProliferate$ | async) &&
+          !(isAnotherActionActive$('proliferation') | async),
+        isActive: isProliferationActive$ | async
+      } as activeObservables"
+    >
       <button
         class="buttons-with-close"
         mat-icon-button
         (click)="proliferate()"
+        [disabled]="!activeObservables.canActive"
       >
-        <mat-icon svgIcon="proliferate"></mat-icon>
+        <mat-icon
+          [svgIcon]="
+            activeObservables.canActive ? 'proliferate' : 'proliferate-disable'
+          "
+        ></mat-icon>
       </button>
       <button
-        *ngIf="isProliferationActive$ | async"
+        *ngIf="activeObservables.isActive"
         mat-icon-button
         class="close-button"
         (click)="stopProliferation()"
@@ -75,20 +108,21 @@
         <mat-icon svgIcon="close"></mat-icon>
       </button>
     </div>
-    <button *ngIf="!(canProliferate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="proliferate-disable"></mat-icon>
-    </button>
 
     <!------------------- ADAPTATION -------------------->
     <button
-      *ngIf="canAdapt$ | async"
+      *ngIf="{
+        canActive: (canAdapt$ | async) && !(isAnotherActionActive$() | async)
+      } as activeObservables"
       mat-icon-button
       (click)="openAdaptationMenu()"
+      [disabled]="!activeObservables.canActive"
     >
-      <mat-icon svgIcon="adaptation"></mat-icon>
-    </button>
-    <button *ngIf="!(canAdapt$ | async)" mat-icon-button>
-      <mat-icon svgIcon="adaptation-disable"></mat-icon>
+      <mat-icon
+        [svgIcon]="
+          activeObservables.canActive ? 'adaptation' : 'adaptation-disable'
+        "
+      ></mat-icon>
     </button>
   </section>
   <aside fxFlexFill fxFlex="5" class="orange"></aside>

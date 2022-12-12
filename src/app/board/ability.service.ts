@@ -787,4 +787,22 @@ export class AbilityService {
 
     return isAbilityValid;
   }
+
+  // Checks if another multi step action is ongoing.
+  public isSomethingElseOngoing$(
+    than?: 'assimilation' | 'migration' | 'proliferation'
+  ): Observable<boolean> {
+    return combineLatest([
+      this.isAssimilationOngoing$,
+      this.isMigrationOngoing$,
+      this.isProliferationOngoing$,
+    ]).pipe(
+      map(([assimilation, migration, proliferation]) => {
+        if (than === 'assimilation') return migration || proliferation;
+        if (than === 'migration') return assimilation || proliferation;
+        if (than === 'proliferation') return assimilation || migration;
+        if (!than) return assimilation || migration || proliferation;
+      })
+    );
+  }
 }
