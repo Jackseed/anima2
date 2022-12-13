@@ -185,55 +185,55 @@ export class BoardModule {
 
     /// ACTION BUTTONS
     this.matIconRegistry.addSvgIcon(
-      'migrate',
+      'migration',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/migrate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'migrate-disable',
+      'migration-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/migrate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'migrate-active',
+      'migration-active',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/migrate-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'assimilate',
+      'assimilation',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/assimilate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'assimilate-disable',
+      'assimilation-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/assimilate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'assimilate-active',
+      'assimilation-active',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/assimilate-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'proliferate',
+      'proliferation',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/proliferate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'proliferate-disable',
+      'proliferation-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/proliferate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'proliferate-active',
+      'proliferation-active',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/proliferate-active.svg'
       )

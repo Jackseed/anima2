@@ -22,6 +22,18 @@ export interface SpeciesListData {
   action: SpeciesListActions;
 }
 
+export const BASIC_ACTIONS = [
+  'migration',
+  'assimilation',
+  'proliferation',
+  'adaptation',
+];
+export const ACTIVE_ACTIONS = ['rallying'];
+
+export const GAME_ACTIONS = BASIC_ACTIONS.concat(ACTIVE_ACTIONS);
+export type BasicAction = typeof BASIC_ACTIONS[number];
+export type GameAction = typeof GAME_ACTIONS[number];
+
 export const SPECIES_LIST_ACTIONS = ['assimiler', 'intimider'];
 
 export type SpeciesListActions = typeof SPECIES_LIST_ACTIONS[number];

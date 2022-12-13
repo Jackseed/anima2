@@ -27,6 +27,8 @@ import {
   createMigrationValues,
   TileSpecies,
   TileSpeciesWithAssimilationValues,
+  GameAction,
+  GAME_ACTIONS,
 } from './species/_state';
 import { Tile, TileQuery, TileService } from './tiles/_state';
 
@@ -113,32 +115,6 @@ export class AbilityService {
     );
   }
 
-  // MIGRATION - UTILS
-  // Checks if there is at least 1 tile reachable.
-  public get isMigrationOngoing$(): Observable<boolean> {
-    return this.tileQuery
-      .selectCount(({ isReachable }) => isReachable)
-      .pipe(
-        map((reachableTileQuantity) =>
-          reachableTileQuantity > 0 ? true : false
-        )
-      );
-  }
-
-  // MIGRATION - UTILS - Indicates weither active species can migrate.
-  // Verifies if there is at least one active species on the active tile.
-  public get canMigrate$(): Observable<boolean> {
-    const activeSpecies$ = this.speciesQuery.selectActive();
-    const activeTileId$ = this.tileQuery.selectActiveId();
-
-    // Checks there is a specie in the active tile.
-    return combineLatest([activeSpecies$, activeTileId$]).pipe(
-      map(([species, tileId]) => {
-        return this.isSpeciesQuantityGreatherThan(species, Number(tileId), 1);
-      })
-    );
-  }
-
   // MIGRATION - UTILS - Checks if it's a valid migration move.
   // Verifies a tile is active, the destination is valid and the species can move.
   public isMigrationValid(destinationTileId: number): boolean {
@@ -215,18 +191,6 @@ export class AbilityService {
     this.proliferate();
   }
 
-  // PROLIFERATION - UTILS
-  // Checks if there is at least 1 tile attackable
-  public get isProliferationOngoing$(): Observable<boolean> {
-    return this.tileQuery
-      .selectCount(({ isProliferable }) => isProliferable)
-      .pipe(
-        map((proliferableTileQuantity) =>
-          proliferableTileQuantity > 0 ? true : false
-        )
-      );
-  }
-
   // TODO: refactor & factorize abilities utils
   // PROLIFERATION - UTILS - Checks if it's a valid proliferation.
   // Verifies a tile is active, the attacked tile is valid and the species can act.
@@ -236,25 +200,6 @@ export class AbilityService {
       this.tileQuery.hasActive() && selectedTile.isProliferable;
 
     return isProliferationValid;
-  }
-
-  // PROLIFERATION - UTILS
-  // Indicates weither active species can proliferate
-  // by verifiying if there are more than the default needed individuals on the tile.
-  public get canProliferate$(): Observable<boolean> {
-    const activeSpecies$ = this.speciesQuery.selectActive();
-    const activeTileId$ = this.tileQuery.selectActiveId();
-    const proliferationValues = this.applyProliferationAbilities();
-
-    return combineLatest([activeSpecies$, activeTileId$]).pipe(
-      map(([species, tileId]) => {
-        return this.isSpeciesQuantityGreatherThan(
-          species,
-          Number(tileId),
-          proliferationValues.neededIndividuals
-        );
-      })
-    );
   }
 
   // ASSIMILATION
@@ -283,18 +228,6 @@ export class AbilityService {
     );
   }
 
-  // ASSIMILATION - UTILS
-  // Checks if there is at least 1 tile attackable
-  public get isAssimilationOngoing$(): Observable<boolean> {
-    return this.tileQuery
-      .selectCount(({ isAttackable }) => isAttackable)
-      .pipe(
-        map((attackableTileQuantity) =>
-          attackableTileQuantity > 0 ? true : false
-        )
-      );
-  }
-
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
   // Verifies a tile is active, the attacked tile is valid and the species can act.
   public isAssimilationValid(attackedTileId: number): boolean {
@@ -305,20 +238,6 @@ export class AbilityService {
       !!this.remainingMigrations;
 
     return isAssimilationValid;
-  }
-
-  // ASSIMILATION - UTILS
-  // Verifies that active species is stronger than another species on range.
-  public get canAssimilate$(): Observable<boolean> {
-    const activeTile$ = this.tileQuery.selectActive();
-    const activeTileSpecies$ = this.speciesQuery.activeTileSpecies$;
-
-    return combineLatest([activeTile$, activeTileSpecies$]).pipe(
-      map(([tile, activeTileSpecies]) => {
-        if (!!!tile || !!!activeTileSpecies) return false;
-        return this.isSpeciesStrongerThanRangeSpecies(tile, activeTileSpecies);
-      })
-    );
   }
 
   // ASSIMILATION - UTILS
@@ -462,20 +381,6 @@ export class AbilityService {
       .catch((error) => console.log('Adapt failed: ', error));
   }
 
-  // ADAPTATION - UTILS - Indicates weither active specie can adapt.
-  // Verifies if there are at least 4 species individuals in the active tile.
-  public get canAdapt$(): Observable<boolean> {
-    const activeSpecies$ = this.speciesQuery.selectActive();
-    const activeTileId$ = this.tileQuery.selectActiveId();
-
-    // Checks if more than 1 specie on the active tile to proliferate.
-    return combineLatest([activeSpecies$, activeTileId$]).pipe(
-      map(([specie, tileId]) => {
-        return this.isSpeciesQuantityGreatherThan(specie, Number(tileId), 4);
-      })
-    );
-  }
-
   // ACTIVE ABILITIES
   public canActiveAbility$(abilityId: AbilityId): Observable<boolean> {
     return this.tileQuery
@@ -572,12 +477,12 @@ export class AbilityService {
   // UTILS - Checks species quantity on a tile.
   // Indicates if a species is more than a specific amount on a tile.
   public isSpeciesQuantityGreatherThan(
-    species: Species,
+    speciesId: string,
     tileId: number,
     num: number
   ): boolean {
     const tileSpeciesCount = this.tileQuery.getTileSpeciesCount(
-      species.id,
+      speciesId,
       tileId
     );
     return tileSpeciesCount >= num ? true : false;
@@ -607,6 +512,77 @@ export class AbilityService {
 
   private getAbilityWithId(abilityId: AbilityId): Ability {
     return ABILITIES.filter((ability) => ability.id === abilityId)[0];
+  }
+
+  public isActionOngoing$(action: GameAction): Observable<boolean> {
+    // Gets tile count concerned by the action
+    let concernedTiles: Observable<number> = this.tileQuery.selectCount(
+      (tile) => {
+        if (action === 'assimilation') return tile.isAttackable;
+        if (action === 'migration') return tile.isReachable;
+        if (action === 'proliferation') return tile.isProliferable;
+        if (action === 'rallying') return tile.isRallyable;
+      }
+    );
+
+    return concernedTiles.pipe(
+      map((tileQuantity) => (tileQuantity > 0 ? true : false))
+    );
+  }
+
+  public isAnotherActionOngoing$(action: GameAction): Observable<boolean> {
+    const otherActions = GAME_ACTIONS.filter(
+      (actionItem) => actionItem !== action
+    );
+    const areOtherActionsOngoing$: Observable<boolean>[] = otherActions.map(
+      (action) => this.isActionOngoing$(action)
+    );
+
+    return combineLatest(areOtherActionsOngoing$).pipe(
+      map((areOtherActionsOngoing: boolean[]) => {
+        let finalResult: boolean = false;
+        for (const result of areOtherActionsOngoing) {
+          finalResult = result || finalResult;
+        }
+        return finalResult;
+      })
+    );
+  }
+
+  // Indicates weither active species can activate an action.
+  public canActivateAction$(action: GameAction): Observable<boolean> {
+    const activeTileSpecies$ = this.speciesQuery.activeTileSpecies$;
+    const activeTile$ = this.tileQuery.selectActive();
+    const proliferationValues = this.applyProliferationAbilities();
+
+    return combineLatest([activeTileSpecies$, activeTile$]).pipe(
+      map(([activeTileSpecies, tile]) => {
+        if (!!!tile || !!!activeTileSpecies) return false;
+        // Checks that active species is stronger than another species on range.
+        if (action === 'assimilation') {
+          return this.isSpeciesStrongerThanRangeSpecies(
+            tile,
+            activeTileSpecies
+          );
+        }
+
+        // Checks there is an active species in the active tile.
+        if (action === 'migration')
+          return this.isSpeciesQuantityGreatherThan(
+            activeTileSpecies.id,
+            Number(tile.id),
+            1
+          );
+
+        // Checks if there are more than the needed individuals on the tile.
+        if (action === 'proliferation')
+          return this.isSpeciesQuantityGreatherThan(
+            activeTileSpecies.id,
+            Number(tile.id),
+            proliferationValues.neededIndividuals
+          );
+      })
+    );
   }
 
   // ASSIMILATION ABILITIES
@@ -786,23 +762,5 @@ export class AbilityService {
     }
 
     return isAbilityValid;
-  }
-
-  // Checks if another multi step action is ongoing.
-  public isSomethingElseOngoing$(
-    than?: 'assimilation' | 'migration' | 'proliferation'
-  ): Observable<boolean> {
-    return combineLatest([
-      this.isAssimilationOngoing$,
-      this.isMigrationOngoing$,
-      this.isProliferationOngoing$,
-    ]).pipe(
-      map(([assimilation, migration, proliferation]) => {
-        if (than === 'assimilation') return migration || proliferation;
-        if (than === 'migration') return assimilation || proliferation;
-        if (than === 'proliferation') return assimilation || migration;
-        if (!than) return assimilation || migration || proliferation;
-      })
-    );
   }
 }
