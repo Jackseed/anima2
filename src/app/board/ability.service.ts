@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 
 // Rxjs
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 // Material
@@ -515,6 +515,8 @@ export class AbilityService {
   }
 
   public isActionOngoing$(action: GameAction): Observable<boolean> {
+    const game = this.gameQuery.getActive();
+    if (game.isStarting) return of(false);
     // Gets tile count concerned by the action
     let concernedTiles: Observable<number> = this.tileQuery.selectCount(
       (tile) => {
@@ -530,7 +532,8 @@ export class AbilityService {
     );
   }
 
-  public isAnotherActionOngoing$(action: GameAction): Observable<boolean> {
+  // If no action is given, tells if an action is ongoing.
+  public isAnotherActionOngoing$(action?: GameAction): Observable<boolean> {
     const otherActions = GAME_ACTIONS.filter(
       (actionItem) => actionItem !== action
     );

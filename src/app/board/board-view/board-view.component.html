@@ -3,12 +3,13 @@
   <app-header fxFlexFill></app-header>
 </header>
 
-<!------------ GAME START HEADER -------------->
+<!------------ TEXT HEADER -------------->
 <div
   fxLayout="column"
   fxLayoutAlign="center center"
   *ngIf="game$ | async as game"
 >
+  <!------------ GAME START -------------->
   <section *ngIf="game.startState === 'tileChoice'" class="start text-box">
     <h2>Sélectionnez votre case <br />de départ</h2>
   </section>
@@ -30,6 +31,28 @@
     >
       <mat-icon svgIcon="close"></mat-icon>
     </button>
+  </section>
+  <!------------ MULTI STEP ACTIONS -------------->
+  <section *ngIf="isActionActive$('migration') | async" class="start text-box">
+    <h2>Choisissez une case <br />vers laquelle migrer</h2>
+  </section>
+  <section
+    *ngIf="isActionActive$('proliferation') | async"
+    class="start text-box"
+  >
+    <h2>Choisissez une case <br />sur laquelle proliférer</h2>
+  </section>
+  <section
+    *ngIf="isActionActive$('assimilation') | async"
+    class="start text-box"
+  >
+    <h2>Choisissez une case <br />à assimiler</h2>
+  </section>
+  <section
+    *ngIf="isActionActive$('assimilation') | async"
+    class="start text-box"
+  >
+    <h2>Choisissez une case <br />à rallier</h2>
   </section>
 </div>
 

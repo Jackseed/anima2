@@ -14,7 +14,12 @@ import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
 import { PlayerQuery, PlayerService } from '../players/_state';
-import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
+import {
+  GameAction,
+  Species,
+  SpeciesQuery,
+  SpeciesService,
+} from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
 
@@ -75,6 +80,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.turnSub = this.getTurnSub();
     this.startGameSub = this.playService.getStartGameSub();
     this.isPlayerChoosingAbility = this.getPlayerChoosingAbilitySub();
+  }
+
+  public isActionActive$(action: GameAction): Observable<boolean> {
+    return this.abilityService.isActionOngoing$(action);
   }
 
   // TODO: rework subscriptions
