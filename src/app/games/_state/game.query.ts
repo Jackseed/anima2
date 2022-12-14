@@ -24,7 +24,9 @@ export class GameQuery extends QueryEntity<GameState> {
   }
 
   public get remainingMigrations$(): Observable<number> {
-    return this.selectActive().pipe(map((game) => Number(game.remainingMigrations)));
+    return this.selectActive().pipe(
+      map((game) => Number(game.remainingMigrations))
+    );
   }
 
   public get inGameAbilities() {

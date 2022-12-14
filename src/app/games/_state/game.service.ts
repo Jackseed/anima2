@@ -138,20 +138,6 @@ export class GameService extends CollectionService<GameState> {
     return randomAbility;
   }
 
-  // TODO: update this
-  private async saveUsedAbilities(abilities: Ability[], gameId: string) {
-    const newAbilities = firebase.firestore.FieldValue.arrayUnion(...abilities);
-
-    await this.collection
-      .doc(gameId)
-      .update({
-        inGameAbilities: newAbilities,
-      })
-      .catch((error) => {
-        console.log('Updating used abilities failed: ', error);
-      });
-  }
-
   public async switchStartState(startState: startState) {
     const id = this.query.getActiveId();
     await this.collection
@@ -192,16 +178,17 @@ export class GameService extends CollectionService<GameState> {
     });
   }
 
-  public async decrementRemainingActions() {
+  public async decrementRemainingActions(resetMigration?: boolean) {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const batch = this.db.firestore.batch();
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
     batch.update(gameRef, { remainingActions: decrement });
-    batch.update(gameRef, {
-      remainingMigrations: DEFAULT_REMAINING_MIGRATIONS,
-    });
+    if (resetMigration)
+      batch.update(gameRef, {
+        remainingMigrations: DEFAULT_REMAINING_MIGRATIONS,
+      });
 
     return batch.commit().catch((error) => {
       console.log('Transaction failed: ', error);

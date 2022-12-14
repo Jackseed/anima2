@@ -76,7 +76,7 @@ export class AbilityService {
 
         // Updates remainingActions if that's the last remainingAction.
         if (migrationValues.migrationUsed === remainginMigrations) {
-          this.gameService.decrementRemainingActions();
+          this.gameService.decrementRemainingActions(true);
         }
       })
       .catch((error) => {
@@ -150,6 +150,16 @@ export class AbilityService {
             availableDistance: remainingMigrations,
           }).availableDistance
       )
+    );
+  }
+
+  public get isThereMigrationToFinish(): boolean {
+    const game = this.gameQuery.getActive();
+
+    return (
+      this.remainingMigrations < 4 &&
+      this.remainingMigrations > 0 &&
+      game.remainingActions === 1
     );
   }
 
@@ -557,17 +567,11 @@ export class AbilityService {
     const activeTileSpecies$ = this.speciesQuery.activeTileSpecies$;
     const activeTile$ = this.tileQuery.selectActive();
     const proliferationValues = this.applyProliferationAbilities();
+    const game = this.gameQuery.getActive();
 
     return combineLatest([activeTileSpecies$, activeTile$]).pipe(
       map(([activeTileSpecies, tile]) => {
         if (!!!tile || !!!activeTileSpecies) return false;
-        // Checks that active species is stronger than another species on range.
-        if (action === 'assimilation') {
-          return this.isSpeciesStrongerThanRangeSpecies(
-            tile,
-            activeTileSpecies
-          );
-        }
 
         // Checks there is an active species in the active tile.
         if (action === 'migration')
@@ -577,12 +581,31 @@ export class AbilityService {
             1
           );
 
+        // Disables new action if a migration is ongoing on the last action.
+        if (this.isThereMigrationToFinish) return false;
+
+        // Checks that active species is stronger than another species on range.
+        if (action === 'assimilation') {
+          return this.isSpeciesStrongerThanRangeSpecies(
+            tile,
+            activeTileSpecies
+          );
+        }
+
         // Checks if there are more than the needed individuals on the tile.
         if (action === 'proliferation')
           return this.isSpeciesQuantityGreatherThan(
             activeTileSpecies.id,
             Number(tile.id),
             proliferationValues.neededIndividuals
+          );
+
+        // Checks if there are at least 4 species individuals in the active tile.
+        if (action === 'adaptation')
+          return this.isSpeciesQuantityGreatherThan(
+            activeTileSpecies.id,
+            Number(tile.id),
+            4
           );
       })
     );
