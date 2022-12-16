@@ -14,7 +14,12 @@ import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
 import { PlayerQuery, PlayerService } from '../players/_state';
-import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
+import {
+  GameAction,
+  Species,
+  SpeciesQuery,
+  SpeciesService,
+} from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
 
@@ -31,6 +36,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
   public game$: Observable<Game>;
+  public hasActiveAbility$: Observable<boolean>;
+  public activeAbilityNumber$: Observable<number>;
 
   // Subscriptions
   private turnSub: Subscription;
@@ -56,18 +63,27 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.playingPlayerId = this.userQuery.getActiveId();
+
+    // Observables init
     this.game$ = this.gameQuery.selectActive();
-    this.activePlayerSub = this.getActivePlayerSub();
-    this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.tiles$ = this.tileQuery
       .selectAll()
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
+    this.hasActiveAbility$ = this.speciesQuery.hasActiveSpeciesActiveAbility$;
+    this.activeAbilityNumber$ =
+      this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
 
-    this.playingPlayerId = this.userQuery.getActiveId();
-
+    // Subscriptions init
+    this.activePlayerSub = this.getActivePlayerSub();
+    this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.turnSub = this.getTurnSub();
     this.startGameSub = this.playService.getStartGameSub();
     this.isPlayerChoosingAbility = this.getPlayerChoosingAbilitySub();
+  }
+
+  public isActionActive$(action: GameAction): Observable<boolean> {
+    return this.abilityService.isActionOngoing$(action);
   }
 
   // TODO: rework subscriptions
@@ -140,7 +156,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
     // Dismisses clicks during other player turn.
     if (!this.playerQuery.isActive(this.playingPlayerId))
-      return this.snackbar.open("Ce n'est pas à votre tour.", null, {
+      return this.snackbar.open("Ce n'est pas votre tour.", null, {
         duration: 3000,
       });
 
@@ -150,7 +166,19 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
     // Migration
     if (this.abilityService.isMigrationValid(tileId))
-      return await this.abilityService.migrate(tileId, 1);
+      return await this.abilityService.migrateTo(tileId);
+
+    // Assimilation
+    if (this.abilityService.isAssimilationValid(tileId))
+      return this.playService.setupAssimilation(tileId);
+
+    // Proliferation
+    if (this.abilityService.isProliferationValid(tileId))
+      return this.abilityService.proliferate(tileId);
+
+    // Rallying
+    if (this.abilityService.isRallyingValid(tileId))
+      return this.abilityService.rallying(tileId);
 
     // Dismisses clicks on empty tiles.
     if (this.tileQuery.isEmpty(tileId)) return;
@@ -194,6 +222,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
         return this.cancelStartTileChoice();
       this.tileService.removeActive();
       this.tileService.removeReachable();
+      this.tileService.removeAttackable();
     }
   }
 

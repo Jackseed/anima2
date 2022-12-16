@@ -24,6 +24,7 @@ import {
 import { TileQuery } from './tile.query';
 import { TileStore, TileState } from './tile.store';
 import { Species } from '../../species/_state';
+import { EntityUIStore } from '@datorama/akita';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/tiles' })
@@ -32,10 +33,11 @@ export class TileService extends CollectionService<TileState> {
     super(store);
   }
 
-  // Gets a species and transform it to a tile species.
-  public fromSpeciesToTileSpecies(species: Species) {
+  // Gets a species and transforms it to get quantity per tile id.
+  // Returns {tileId: quantity}[]
+  public fromSpeciesToSpeciesQuantityPerTileId(species: Species) {
     // Gets intermediate object with species count per tileId.
-    // {tileId: quantity}
+
     const tileSpecies = {};
     species.tileIds.forEach((tileId) => {
       tileSpecies.hasOwnProperty(tileId)
@@ -76,7 +78,8 @@ export class TileService extends CollectionService<TileState> {
 
     // Updates tiles with neutral species.
     for (const neutral of neutrals) {
-      const neutralTileSpecies = this.fromSpeciesToTileSpecies(neutral);
+      const neutralTileSpecies =
+        this.fromSpeciesToSpeciesQuantityPerTileId(neutral);
       // Extracts unique tile ids.
       const uniqueTileIds: string[] = Object.keys(neutralTileSpecies);
       // Updates tiles with speciesIds.
@@ -91,9 +94,8 @@ export class TileService extends CollectionService<TileState> {
           ...tiles[tileIndex],
           species: [
             {
-              id: neutral.id,
+              ...neutral,
               quantity: neutralTileSpecies[tileId],
-              color: neutral.color,
               mainAbilityId: neutral.abilities[0].id,
             },
           ],
@@ -111,6 +113,7 @@ export class TileService extends CollectionService<TileState> {
 
   public selectTile(tileId: number) {
     this.removeReachable();
+    this.removeAttackable();
     this.setActive(tileId);
   }
 
@@ -122,34 +125,59 @@ export class TileService extends CollectionService<TileState> {
     this.store.setActive(null);
   }
 
-  public markAdjacentReachableTiles(tileId: number, range: number) {
-    let tileIds = [];
-    let reachables = [];
-    // Iterates on adjacent tiles to get their adjacent tiles.
-    for (let i = 0; i < range; i++) {
-      i === 0
-        ? (reachables = this.query.getAdjacentTiles(tileId, 1))
-        : reachables.forEach(
-            (id) =>
-              (reachables = [
-                ...reachables,
-                ...this.query.getAdjacentTiles(id, 1),
-              ])
-          );
-      // get onlt this range tiles
-      let rangeTiles = reachables.filter((id) => !tileIds.includes(id));
-      // remove duplicates
-      rangeTiles = [...new Set(rangeTiles)];
-      this.updateRange(rangeTiles, i + 1);
-
-      tileIds = [...tileIds, ...rangeTiles];
-    }
-
-    // remove the center tileId
-    tileIds = tileIds.filter((id) => id !== tileId);
-    this.markAsReachable(tileIds);
+  public markAdjacentTilesReachable(tileId: number, range: number) {
+    const adjacentReacheableTileIds = this.getAdjacentTileIdsWithinRange(
+      tileId,
+      range,
+      // Updates tiles UI with their range.
+      this.updateRange
+    );
+    this.markAsReachable(adjacentReacheableTileIds);
   }
 
+  // Gets adjacent tile ids within a given range.
+  // Also accepts callback function to work with each tile ids per range.
+  public getAdjacentTileIdsWithinRange(
+    tileId: number,
+    range: number,
+    rangeCallback?: (
+      currentRangeTileIds: number[],
+      currentRange: number,
+      store: EntityUIStore<any, Tile>
+    ) => void
+  ): number[] {
+    let resultTileIds = [tileId];
+    let previousRangeTileIds = [tileId];
+    let currentRangeTileIds = [];
+    // Iterates on each tiles per range to get their adjacent tiles.
+    for (let i = 0; i < range; i++) {
+      // Gets adjacent tiles for each previous range tile.
+      previousRangeTileIds.forEach((id) => {
+        currentRangeTileIds.push(...this.query.getAdjacentTileIds(id, 1));
+      });
+
+      // Filters to keep only the new one.
+      currentRangeTileIds = currentRangeTileIds.filter(
+        (id) => !resultTileIds.includes(id)
+      );
+      // Removes duplicates.
+      currentRangeTileIds = [...new Set(currentRangeTileIds)];
+      // Applies a callback to the current range tile ids and range.
+      if (rangeCallback)
+        rangeCallback(currentRangeTileIds, i + 1, this.store.ui);
+      // Updates value to prepare next iteration.
+      previousRangeTileIds = currentRangeTileIds;
+      // Saves the result.
+      resultTileIds = [...resultTileIds, ...currentRangeTileIds];
+    }
+
+    // Removes the starting tileId
+    resultTileIds = resultTileIds.filter((id) => id !== tileId);
+
+    return resultTileIds;
+  }
+
+  // TODO: factorize these functions ?
   public markAllTilesReachable(): void {
     const tiles = this.query.getAll({
       filterBy: (tile) => tile.type !== 'blank',
@@ -165,12 +193,49 @@ export class TileService extends CollectionService<TileState> {
     );
   }
 
+  public markAsAttackable(tileIds: number[]) {
+    this.store.update(
+      tileIds.map((id) => id?.toString()),
+      { isAttackable: true }
+    );
+  }
+
+  public markAsProliferable(tileIds: number[]) {
+    this.store.update(
+      tileIds.map((id) => id?.toString()),
+      { isProliferable: true }
+    );
+  }
+
+  public markAsRallyable(tileIds: number[]) {
+    this.store.update(
+      tileIds.map((id) => id?.toString()),
+      { isRallyable: true }
+    );
+  }
+
   public removeReachable() {
     this.store.update(null, { isReachable: false });
   }
 
-  public updateRange(tileIds: number[], range: number) {
-    this.store.ui.update(
+  public removeAttackable() {
+    this.store.update(null, { isAttackable: false });
+  }
+
+  public removeProliferable() {
+    this.store.update(null, { isProliferable: false });
+  }
+
+  public removeRallyable() {
+    this.store.update(null, { isRallyable: false });
+  }
+
+  public updateRange(
+    tileIds: number[],
+    range: number,
+    store: EntityUIStore<any, Tile>
+  ) {
+    store.update(
       tileIds.map((id) => id.toString()),
       { range }
     );

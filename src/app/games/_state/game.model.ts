@@ -9,7 +9,7 @@ export interface Game {
   remainingActions: number;
   eraCount: number;
   turnCount: number;
-  migrationCount: number | firebase.firestore.FieldValue;
+  remainingMigrations: number | firebase.firestore.FieldValue;
   isStarting: boolean;
   startState: startState;
   // TODO: fix any
@@ -17,8 +17,8 @@ export interface Game {
   inGameAbilities: Ability[] | any;
 }
 
-export const actionPerTurn = 2;
-export const migrationCount = 4;
+export const DEFAULT_ACTION_PER_TURN = 2;
+export const DEFAULT_REMAINING_MIGRATIONS = 4;
 export type startState =
   | 'launching'
   | 'abilityChoice'
@@ -32,10 +32,10 @@ export function createGame(params: Partial<Game>): Game {
     name: params.name,
     playerIds: params.playerIds,
     activePlayerId: params.activePlayerId,
-    remainingActions: actionPerTurn,
+    remainingActions: DEFAULT_ACTION_PER_TURN,
     eraCount: 1,
     turnCount: 1,
-    migrationCount,
+    remainingMigrations: DEFAULT_REMAINING_MIGRATIONS,
     isStarting: true,
     startState: 'launching',
     inGameAbilities: [],

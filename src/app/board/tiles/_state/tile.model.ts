@@ -1,4 +1,4 @@
-import { AbilityId } from '../../species/_state';
+import { TileSpecies } from '../../species/_state';
 
 export interface Tile {
   // TODO: transform it as a number everywhere
@@ -6,13 +6,11 @@ export interface Tile {
   x?: number;
   y?: number;
   type?: RegionType;
-  species?: {
-    id: string;
-    quantity: number;
-    color: string;
-    mainAbilityId: AbilityId;
-  }[];
+  species?: TileSpecies[];
   isReachable?: boolean;
+  isAttackable?: boolean;
+  isProliferable?: boolean;
+  isRallyable?: boolean;
 }
 export const regionIds = [
   'rockies',

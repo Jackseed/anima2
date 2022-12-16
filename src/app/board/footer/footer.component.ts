@@ -4,16 +4,14 @@ import { Component, OnInit } from '@angular/core';
 // Rxjs
 import { Observable } from 'rxjs';
 
-// States
-import { GameQuery } from 'src/app/games/_state';
-import { PlayService } from '../play.service';
-import { TileService } from '../tiles/_state';
-
 // Material
 import { MatDialog } from '@angular/material/dialog';
 
-// Components
+// States
+import { PlayService } from '../play.service';
+import { TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
+import { BasicAction, BASIC_ACTIONS } from '../species/_state';
 
 @Component({
   selector: 'app-footer',
@@ -21,15 +19,10 @@ import { AbilityService } from '../ability.service';
   styleUrls: ['./footer.component.scss'],
 })
 export class FooterComponent implements OnInit {
-  public migrationCount$: Observable<number>;
-  public isMigrationActive$: Observable<boolean>;
-  public canMigrate$: Observable<boolean>;
-  public canProliferate$: Observable<boolean>;
-  public canAssimilate$: Observable<boolean>;
-  public canAdapt$: Observable<boolean>;
+  public remainingMigrations$: Observable<number>;
+  public basicActions = BASIC_ACTIONS;
 
   constructor(
-    private gameQuery: GameQuery,
     private tileService: TileService,
     private playService: PlayService,
     private abilityService: AbilityService,
@@ -37,32 +30,31 @@ export class FooterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.migrationCount$ = this.gameQuery.migrationCount$;
-    this.isMigrationActive$ = this.abilityService.isMigrationOngoing$;
-
-    this.canMigrate$ = this.abilityService.canMigrate$;
-    this.canProliferate$ = this.abilityService.canProliferate$;
-    this.canAssimilate$ = this.abilityService.canAssimilate$;
-    this.canAdapt$ = this.abilityService.canAdapt$;
+    this.remainingMigrations$ = this.abilityService.remainingMigrations$;
   }
 
-  public async openAdaptationMenu(): Promise<void> {
-    await this.playService.setupAdaptation();
+  public isActionActive$(action: BasicAction): Observable<boolean> {
+    return this.abilityService.isActionOngoing$(action);
   }
 
-  public openAssimilationMenu(): void {
-    this.playService.openAssimilationMenu();
+  public isAnotherActionActive$(action: BasicAction): Observable<boolean> {
+    return this.abilityService.isAnotherActionOngoing$(action);
   }
 
-  public startMigration() {
-    this.abilityService.startMigration();
+  public canActivateAction$(action: BasicAction): Observable<boolean> {
+    return this.abilityService.canActivateAction$(action);
   }
 
-  public proliferate() {
-    this.abilityService.proliferate(2);
+  public async activeAction(action: BasicAction) {
+    if (action === 'assimilation') this.playService.setupAssimilation();
+    if (action === 'migration') this.abilityService.startMigration();
+    if (action === 'proliferation') this.abilityService.setupProliferation();
+    if (action === 'adaptation') await this.playService.setupAdaptation();
   }
 
-  public stopMigration() {
-    this.tileService.removeReachable();
+  public async stopAction(action: BasicAction) {
+    if (action === 'assimilation') this.tileService.removeAttackable();
+    if (action === 'migration') this.tileService.removeReachable();
+    if (action === 'proliferation') this.tileService.removeProliferable();
   }
 }

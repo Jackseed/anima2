@@ -26,18 +26,22 @@ export class TileQuery extends QueryEntity<TileState> {
     this.createUIQuery();
   }
 
-  public getAdjacentTiles(tileId: number, range: number): number[] {
+  public getAdjacentTileIds(tileId: number, range: number): number[] {
     const tile: Tile = this.getEntity(tileId.toString());
     let tileIds: number[] = [];
+    // Reads the whole x coordinates.
     for (let x = -range; x <= range; x++) {
+      // Reads the whole y coordinates.
       for (let y = -range; y <= range; y++) {
-        // Removes diagonal values for hexa grid
-        // different values depending on odd or even lines.
+        // Removes diagonal values for hexa grid.
+        // Values are different depending on odd or even lines.
         if (
+          // Removes diagonal values for odd lines.
           !(
             tile.y % 2 === 0 &&
             ((x === range && y === -range) || (x === range && y === range))
           ) &&
+          // Removes diagonal values for even lines.
           !(
             tile.y % 2 !== 0 &&
             ((x === -range && y === -range) || (x === -range && y === range))
@@ -60,7 +64,6 @@ export class TileQuery extends QueryEntity<TileState> {
     // Adds the island bridge.
     if (islandBridgeIds.includes(tileId))
       islandBridgeIds.forEach((id) => tileIds.push(id));
-
     return tileIds;
   }
 
@@ -90,17 +93,21 @@ export class TileQuery extends QueryEntity<TileState> {
     return this.hasActive(tileId.toString());
   }
 
-  // Returns the quantity of a given species on the active tile.
-  public getTileSpeciesCount(species: Species, tileId: number): number {
+  // Returns the quantity of a given species on a tile.
+  public getTileSpeciesCount(speciesId: string, tileId: number): number {
     if (!!!tileId) return;
     const tile = this.getEntity(tileId.toString());
     if (!!!tile) return;
     const tileSpecies = tile.species;
 
     const filteredSpecies = tileSpecies.filter(
-      (tileSpecies) => tileSpecies.id === species.id
+      (tileSpecies) => tileSpecies.id === speciesId
     )[0];
 
     return filteredSpecies?.quantity;
+  }
+
+  public hasProliferableTile(): boolean {
+    return this.hasEntity(({ isProliferable }) => isProliferable);
   }
 }

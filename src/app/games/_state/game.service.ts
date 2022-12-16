@@ -10,8 +10,8 @@ import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
 import {
-  actionPerTurn,
-  migrationCount,
+  DEFAULT_ACTION_PER_TURN,
+  DEFAULT_REMAINING_MIGRATIONS,
   createGame,
   startState,
 } from './game.model';
@@ -24,7 +24,7 @@ import {
   Player,
 } from 'src/app/board/players/_state/player.model';
 import {
-  abilities,
+  ABILITIES,
   Ability,
   createSpecies,
   neutrals,
@@ -128,7 +128,7 @@ export class GameService extends CollectionService<GameState> {
     const usedAbilityIds = usedAbilities.map((ability: Ability) => ability.id);
 
     // Selects an ability only within unused abilities.
-    const availableAbilities = abilities.filter(
+    const availableAbilities = ABILITIES.filter(
       (ability) => !usedAbilityIds.includes(ability.id)
     );
 
@@ -136,20 +136,6 @@ export class GameService extends CollectionService<GameState> {
       availableAbilities[Math.floor(Math.random() * availableAbilities.length)];
 
     return randomAbility;
-  }
-
-  // TODO: update this
-  private async saveUsedAbilities(abilities: Ability[], gameId: string) {
-    const newAbilities = firebase.firestore.FieldValue.arrayUnion(...abilities);
-
-    await this.collection
-      .doc(gameId)
-      .update({
-        inGameAbilities: newAbilities,
-      })
-      .catch((error) => {
-        console.log('Updating used abilities failed: ', error);
-      });
   }
 
   public async switchStartState(startState: startState) {
@@ -179,7 +165,7 @@ export class GameService extends CollectionService<GameState> {
     const increment = firebase.firestore.FieldValue.increment(1);
 
     batch.update(gameRef, { turnCount: increment });
-    batch.update(gameRef, { remainingActions: actionPerTurn });
+    batch.update(gameRef, { remainingActions: DEFAULT_ACTION_PER_TURN });
 
     // every 3 turns, new era
     if ((game.turnCount + 1) % 3 === 0) {
@@ -192,14 +178,17 @@ export class GameService extends CollectionService<GameState> {
     });
   }
 
-  public async decrementRemainingActions() {
+  public async decrementRemainingActions(resetMigration?: boolean) {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const batch = this.db.firestore.batch();
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
     batch.update(gameRef, { remainingActions: decrement });
-    batch.update(gameRef, { migrationCount });
+    if (resetMigration)
+      batch.update(gameRef, {
+        remainingMigrations: DEFAULT_REMAINING_MIGRATIONS,
+      });
 
     return batch.commit().catch((error) => {
       console.log('Transaction failed: ', error);

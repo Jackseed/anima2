@@ -12,6 +12,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { ListComponent } from './species/list/list.component';
 import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimilation-menu.component';
 import { ScoreComponent } from './score/score.component';
+import { ActiveBarComponent } from './abilities/active-bar/active-bar.component';
 // Flex Layout
 import { FlexLayoutModule } from '@angular/flex-layout';
 // Material
@@ -33,6 +34,7 @@ import { PinchZoomModule } from 'ngx-pinch-zoom';
     ListComponent,
     AssimilationMenuComponent,
     ScoreComponent,
+    ActiveBarComponent,
   ],
   imports: [
     CommonModule,
@@ -183,55 +185,55 @@ export class BoardModule {
 
     /// ACTION BUTTONS
     this.matIconRegistry.addSvgIcon(
-      'migrate',
+      'migration',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/migrate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'migrate-disable',
+      'migration-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/migrate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'migrate-active',
+      'migration-active',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/migrate-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'assimilate',
+      'assimilation',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/assimilate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'assimilate-disable',
+      'assimilation-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/assimilate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'assimilate-active',
+      'assimilation-active',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/assimilate-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'proliferate',
+      'proliferation',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/proliferate.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'proliferate-disable',
+      'proliferation-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/proliferate-disable.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'proliferate-active',
+      'proliferation-active',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/action-buttons/proliferate-active.svg'
       )
@@ -263,9 +265,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'agility',
+      'gluttony',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/agility.svg'
+        '../../../assets/species/gluttony.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -329,9 +331,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'submersible',
+      'predator',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/submersible.svg'
+        '../../../assets/species/predator.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -361,9 +363,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'agility-ability',
+      'gluttony-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/abilities/agility.svg'
+        '../../../assets/abilities/gluttony.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -427,9 +429,9 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'submersible-ability',
+      'predator-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/abilities/submersible.svg'
+        '../../../assets/abilities/predator.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(

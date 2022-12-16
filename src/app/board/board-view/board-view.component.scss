@@ -54,9 +54,13 @@ main {
 footer {
   position: fixed;
   bottom: 0;
-  left: 0;
   right: 0;
   height: 16%;
+}
+
+#active-bar {
+  top: 68%;
+  width: var(--width-value);
 }
 
 .no-font {
@@ -85,10 +89,6 @@ footer {
 }
 
 .species {
-  /*   background-image: var(--img);
-  background-position: center;
-  background-size: 50%;
-  background-repeat: no-repeat; */
   color: var(--color);
   z-index: 0;
   display: flex;
@@ -112,7 +112,7 @@ footer {
 .selected {
   background: #f59c27 !important;
 }
-// adds a smaller tile so the older tile acts as a border
+// Adds a smaller tile so the older tile acts as a border.
 .selected:before {
   content: "";
   width: calc(var(--s) - var(--border));
@@ -123,13 +123,19 @@ footer {
   position: absolute;
 }
 
-.reachable {
+.reachable,
+.attackable,
+.proliferable,
+.rallyable {
   z-index: 2;
   box-shadow: inset 0 0 0 2000px rgba(245, 156, 39, 0.2);
   cursor: pointer;
   // background: linear-gradient(0deg, var(--color), #f59c27) !important;
 }
-.reachable:hover {
+.reachable:hover,
+.attackable:hover,
+.proliferable:hover,
+.rallyable:hover {
   opacity: 0.5;
 }
 

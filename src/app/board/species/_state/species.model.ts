@@ -8,31 +8,128 @@ export interface Species {
   color?: string;
 }
 
-export interface TileSpecies {
-  id: string;
-  quantity: number;
-  color: string;
-  abilityId: string;
+export interface TileSpecies extends Species {
+  quantity?: number;
+  mainAbilityId?: AbilityId;
+  tileId?: number;
 }
 
-export const abilityIds = [
-  'spontaneousGeneration',
+export interface SpeciesListData {
+  listType: 'active' | 'passive';
+  speciesToList: Species[];
+  speciesCount: 'global' | 'tile';
+  tileId?: number;
+  action: SpeciesListActions;
+}
+
+export const BASIC_ACTIONS = [
+  'migration',
+  'assimilation',
+  'proliferation',
+  'adaptation',
+];
+export const ACTIVE_ACTIONS = ['rallying'];
+
+export const GAME_ACTIONS = BASIC_ACTIONS.concat(ACTIVE_ACTIONS);
+export type BasicAction = typeof BASIC_ACTIONS[number];
+export type GameAction = typeof GAME_ACTIONS[number];
+
+export const SPECIES_LIST_ACTIONS = ['assimiler', 'intimider'];
+
+export type SpeciesListActions = typeof SPECIES_LIST_ACTIONS[number];
+
+export interface TileSpeciesWithAssimilationValues
+  extends TileSpecies,
+    AssimilationValues {}
+
+// TODO: create an ability model & query
+// MIGRATION
+export interface MigrationValues {
+  availableDistance?: number;
+  traveledDistance?: number;
+  movingQuantity?: number;
+  migrationUsed?: number;
+}
+
+export const DEFAULT_MOVING_QUANTITY = 1;
+
+export function createMigrationValues(
+  values?: Partial<MigrationValues>
+): MigrationValues {
+  return {
+    availableDistance: values?.availableDistance,
+    traveledDistance: values?.traveledDistance,
+    movingQuantity: values?.movingQuantity || DEFAULT_MOVING_QUANTITY,
+    migrationUsed:
+      values?.migrationUsed ||
+      values?.traveledDistance * DEFAULT_MOVING_QUANTITY,
+  };
+}
+
+// PROLIFERATION
+export interface ProliferationValues {
+  neededIndividuals: number;
+  createdQuantity: number;
+}
+
+export const DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS = 2;
+export const DEFAULT_PROLIFERATION_CREATED_QUANTITY = 2;
+
+export function createProliferationValues(
+  values?: Partial<ProliferationValues>
+): ProliferationValues {
+  return {
+    neededIndividuals:
+      values?.neededIndividuals || DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
+    createdQuantity:
+      values?.createdQuantity || DEFAULT_PROLIFERATION_CREATED_QUANTITY,
+  };
+}
+
+// ASSIMILATION
+export interface AssimilationValues {
+  strength?: number;
+  defense?: number;
+  assimilatedQuantity?: number;
+  createdQuantity?: number;
+  range?: number;
+}
+
+export const DEFAULT_ASSIMILATED_QUANTITY = -2;
+export const DEFAULT_ASSIMILATION_CREATED_QUANTITY = 1;
+export const DEFAULT_ASSIMILATION_RANGE = 0;
+
+export function createAssimilationValues(
+  values?: Partial<AssimilationValues>
+): AssimilationValues {
+  return {
+    strength: values?.strength,
+    defense: values?.defense,
+    assimilatedQuantity:
+      values?.assimilatedQuantity || DEFAULT_ASSIMILATED_QUANTITY,
+    createdQuantity:
+      values?.createdQuantity || DEFAULT_ASSIMILATION_CREATED_QUANTITY,
+    range: values?.range || DEFAULT_ASSIMILATION_RANGE,
+  };
+}
+
+export const ABILITY_IDS = [
+  'flying',
   'hounds',
+  'nest',
+  'hermaphrodite',
+  'giantism',
+  'predator',
+  'gluttony',
+  'carnivore',
   'range',
   'survival',
-  'tunnel',
-  'nest',
-  'flying',
-  'giantism',
-  'agility',
-  'acceleration',
-  'rallying',
   'intimidate',
-  'hermaphrodite',
-  'carnivore',
-  'submersible',
+  'spontaneousGeneration',
+  'tunnel',
+  'rallying',
 ] as const;
-export type AbilityId = typeof abilityIds[number];
+export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {
   id: AbilityId;
   en: {
@@ -44,9 +141,11 @@ export interface Ability {
     definition: string;
   };
   value: number;
+  requiredValue?: number;
+  type: 'active' | 'passive';
 }
 
-export const abilities: Ability[] = [
+export const ABILITIES: Ability[] = [
   {
     id: 'spontaneousGeneration',
     en: {
@@ -60,6 +159,7 @@ export const abilities: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'passive',
   },
   {
     id: 'hounds',
@@ -73,7 +173,9 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
+    requiredValue: 2,
     value: 2,
+    type: 'passive',
   },
   {
     id: 'range',
@@ -87,7 +189,8 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
+    type: 'passive',
   },
   {
     id: 'survival',
@@ -101,7 +204,8 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1000,
+    type: 'passive',
   },
   {
     id: 'tunnel',
@@ -116,6 +220,7 @@ export const abilities: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'active',
   },
   {
     id: 'nest',
@@ -129,7 +234,9 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    requiredValue: 4,
+    value: 1,
+    type: 'passive',
   },
   {
     id: 'flying',
@@ -144,6 +251,7 @@ export const abilities: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
+    type: 'passive',
   },
   {
     id: 'giantism',
@@ -157,35 +265,23 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
+    type: 'passive',
   },
   {
-    id: 'agility',
+    id: 'gluttony',
     en: {
-      name: 'Agility',
+      name: 'gluttony',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Agilité',
+      name: 'Gloutonnerie',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
-  },
-  {
-    id: 'acceleration',
-    en: {
-      name: 'Acceleration',
-      definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
-    },
-    fr: {
-      name: 'Acceleration',
-      definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
-    },
-    value: 2,
+    value: -1,
+    type: 'passive',
   },
   {
     id: 'rallying',
@@ -199,7 +295,8 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
+    type: 'active',
   },
   {
     id: 'intimidate',
@@ -213,7 +310,8 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
+    type: 'active',
   },
   {
     id: 'hermaphrodite',
@@ -227,7 +325,8 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
+    type: 'passive',
   },
   {
     id: 'carnivore',
@@ -241,21 +340,23 @@ export const abilities: Ability[] = [
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
+    type: 'passive',
   },
   {
-    id: 'submersible',
+    id: 'predator',
     en: {
-      name: 'Submersible',
+      name: 'Predator',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Submersible',
+      name: 'Prédation',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
-    value: 2,
+    value: 1,
+    type: 'passive',
   },
 ];
 

@@ -1,0 +1,32 @@
+<section
+  fxLayout="row"
+  fxLayoutAlign="end start"
+  style="--padding-value: {{
+    15 / (activeAbilityNumber$ | async)
+  }}%; --margin-value: {{ 30 / (activeAbilityNumber$ | async) }}%"
+>
+  <article *ngFor="let ability of activeAbilities$ | async">
+    <div class="relative">
+      <button
+        class="buttons-with-close"
+        (click)="activeAbility(ability.id)"
+        mat-icon-button
+        [ngClass]="{
+          active: canActiveAbility$(ability.id) | async,
+          disabled: !(canActiveAbility$(ability.id) | async)
+        }"
+        [disabled]="!(canActiveAbility$(ability.id) | async)"
+      >
+        <mat-icon [svgIcon]="ability.id + '-ability'"></mat-icon>
+      </button>
+      <button
+        *ngIf="isRallyingActive$ | async"
+        mat-icon-button
+        class="close-button"
+        (click)="stopRallying()"
+      >
+        <mat-icon svgIcon="close"></mat-icon>
+      </button>
+    </div>
+  </article>
+</section>

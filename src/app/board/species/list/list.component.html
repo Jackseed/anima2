@@ -13,7 +13,7 @@
   >
     <!---------------- SPECIES -------------->
     <article
-      *ngFor="let species of data.species; index as i"
+      *ngFor="let species of data.speciesToList; index as i"
       fxFlex="25"
       fxLayout="row"
       fxLayoutAlign="center center"
@@ -102,7 +102,7 @@
           fxFlexFill
           fxLayoutAlign="center start"
         >
-          Assimiler cette espèce ?
+          {{ capitalizeFirstLetter(data.action) }} cette espèce ?
         </h3>
         <button mat-icon-button id="validate-button" (click)="validate()">
           <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>

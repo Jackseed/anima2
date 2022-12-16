@@ -1,12 +1,15 @@
+<!------------ HEADER -------------->
 <header>
   <app-header fxFlexFill></app-header>
 </header>
 
+<!------------ TEXT HEADER -------------->
 <div
   fxLayout="column"
   fxLayoutAlign="center center"
   *ngIf="game$ | async as game"
 >
+  <!------------ GAME START -------------->
   <section *ngIf="game.startState === 'tileChoice'" class="start text-box">
     <h2>Sélectionnez votre case <br />de départ</h2>
   </section>
@@ -29,9 +32,31 @@
       <mat-icon svgIcon="close"></mat-icon>
     </button>
   </section>
+  <!------------ MULTI STEP ACTIONS -------------->
+  <section *ngIf="isActionActive$('migration') | async" class="start text-box">
+    <h2>Choisissez une case <br />vers laquelle migrer</h2>
+  </section>
+  <section
+    *ngIf="isActionActive$('proliferation') | async"
+    class="start text-box"
+  >
+    <h2>Choisissez une case <br />sur laquelle proliférer</h2>
+  </section>
+  <section
+    *ngIf="isActionActive$('assimilation') | async"
+    class="start text-box"
+  >
+    <h2>Choisissez une case <br />à assimiler</h2>
+  </section>
+  <section
+    *ngIf="isActionActive$('assimilation') | async"
+    class="start text-box"
+  >
+    <h2>Choisissez une case <br />à rallier</h2>
+  </section>
 </div>
 
-<pinch-zoom [double-tap]="false">
+<pinch-zoom [double-tap]="false" disableZoomControl="disable">
   <main>
     <!------------ MAP -------------->
     <div class="no-font">
@@ -48,7 +73,10 @@
           swamps: tile.type === 'swamps',
           forests: tile.type === 'forests',
           selected: isActive(tile.id),
-          reachable: tile?.isReachable
+          reachable: tile?.isReachable,
+          attackable: tile?.isAttackable,
+          proliferable: tile?.isProliferable,
+          rallyable: tile?.isRallyable
         }"
         (click)="play(i)"
       >
@@ -92,6 +120,15 @@
     </div>
   </main>
 </pinch-zoom>
+
+<!------------ FOOTER -------------->
+<footer
+  *ngIf="hasActiveAbility$ | async"
+  id="active-bar"
+  style="--width-value: {{ 25 * (activeAbilityNumber$ | async) }}%"
+>
+  <app-active-bar></app-active-bar>
+</footer>
 <footer>
-  <app-footer fxFlexFill></app-footer>
+  <app-footer></app-footer>
 </footer>

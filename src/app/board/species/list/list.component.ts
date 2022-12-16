@@ -6,19 +6,17 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
-import { Species } from '../../../board/species/_state/species.model';
+import {
+  Species,
+  SpeciesListData,
+  TileSpecies,
+} from '../../../board/species/_state/species.model';
+import { AbilityService } from '../../ability.service';
 import { PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
-import { SpeciesService } from '../_state';
 
-export interface dataType {
-  listType: 'active' | 'passive';
-  species: Species[];
-  speciesCount: 'global' | 'tile';
-  tileId?: number;
-}
-
-export interface active extends Species {
+// TODO: refactor this
+export interface active extends TileSpecies {
   type?: string;
   name?: string;
   icon?: string;
@@ -58,12 +56,12 @@ export class ListComponent implements OnInit {
   public active: active = {};
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: dataType,
+    @Inject(MAT_DIALOG_DATA) public data: SpeciesListData,
     public dialogRef: MatDialogRef<ListComponent>,
     private snackbar: MatSnackBar,
     private tileQuery: TileQuery,
     private playerQuery: PlayerQuery,
-    private speciesService: SpeciesService
+    private abilityService: AbilityService
   ) {}
 
   ngOnInit(): void {}
@@ -79,7 +77,7 @@ export class ListComponent implements OnInit {
   public getSpeciesCount(species: Species) {
     if (this.data.speciesCount === 'global') return species.tileIds.length;
 
-    return this.tileQuery.getTileSpeciesCount(species, this.data.tileId);
+    return this.tileQuery.getTileSpeciesCount(species.id, this.data.tileId);
   }
 
   public activate(object: 'ability' | 'species', i: number, species?: Species) {
@@ -91,14 +89,26 @@ export class ListComponent implements OnInit {
     }
   }
 
+  public capitalizeFirstLetter(word: string) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
   public close() {
     this.dialogRef.close();
   }
 
   public validate() {
     this.dialogRef.close();
-    this.speciesService.assimilate(this.active.id, -1, this.data.tileId, 1);
-    this.snackbar.open('Vous avez assimilé !', null, {
+    let successMessage: string;
+    if (this.data.action === 'assimiler') {
+      this.abilityService.assimilate(this.active.id, this.data.tileId);
+      successMessage = 'Vous avez assimilé !';
+    }
+    if (this.data.action === 'intimider') {
+      this.abilityService.intimidate(this.active, this.data.tileId);
+      successMessage = 'Vous avez intimidé !';
+    }
+    this.snackbar.open(successMessage, null, {
       duration: 800,
       panelClass: 'orange-snackbar',
     });

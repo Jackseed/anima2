@@ -1,4 +1,4 @@
-<div fxFlexFill fxLayout="column" fxLayoutAlign="start center">
+<main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
   <section
     class="sidebar"
     fxFlexFill
@@ -6,67 +6,50 @@
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
-    <!------------------- MIGRATION -------------------->
-    <div class="relative" *ngIf="canMigrate$ | async">
-      <button id="migration" mat-icon-button (click)="startMigration()">
-        <mat-icon svgIcon="migrate"></mat-icon>
-      </button>
+    <!------------------- ACTION BUTTON -------------------->
+    <article *ngFor="let action of basicActions">
       <div
-        *ngIf="!(isMigrationActive$ | async)"
-        class="absolute circle"
-        fxLayoutAlign="center center"
+        class="relative"
+        *ngIf="{
+          canActive:
+            (canActivateAction$(action) | async) &&
+            !(isAnotherActionActive$(action) | async),
+          isActive: (isActionActive$(action) | async)
+        } as activeObservables"
       >
-        <div class="figures">{{ migrationCount$ | async }}</div>
+        <button
+          class="buttons-with-close"
+          mat-icon-button
+          (click)="activeAction(action)"
+          [disabled]="!activeObservables.canActive"
+        >
+          <mat-icon
+            [svgIcon]="
+              activeObservables.isActive
+                ? action + '-active'
+                : activeObservables.canActive
+                ? action
+                : action + '-disable'
+            "
+          ></mat-icon>
+        </button>
+        <div
+          *ngIf="activeObservables.canActive && action === 'migration'"
+          class="absolute circle"
+          fxLayoutAlign="center center"
+        >
+          <div class="figures">{{ remainingMigrations$ | async }}</div>
+        </div>
+        <button
+          *ngIf="activeObservables.canActive && activeObservables.isActive"
+          mat-icon-button
+          class="close-button"
+          (click)="stopAction(action)"
+        >
+          <mat-icon svgIcon="close"></mat-icon>
+        </button>
       </div>
-      <button
-        *ngIf="isMigrationActive$ | async"
-        mat-icon-button
-        id="stop-migration"
-        (click)="stopMigration()"
-      >
-        <mat-icon svgIcon="close"></mat-icon>
-      </button>
-    </div>
-    <button *ngIf="!(canMigrate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="migrate-disable"></mat-icon>
-    </button>
-    <!------------------- ASSIMILATION -------------------->
-    <button
-      *ngIf="canAssimilate$ | async"
-      mat-icon-button
-      (click)="openAssimilationMenu()"
-    >
-      <mat-icon svgIcon="assimilate"></mat-icon>
-    </button>
-
-    <button *ngIf="!(canAssimilate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="assimilate-disable"></mat-icon>
-    </button>
-
-    <!------------------- PROLIFERATION -------------------->
-    <button
-      *ngIf="canProliferate$ | async"
-      mat-icon-button
-      (click)="proliferate()"
-    >
-      <mat-icon svgIcon="proliferate"></mat-icon>
-    </button>
-
-    <button *ngIf="!(canProliferate$ | async)" mat-icon-button>
-      <mat-icon svgIcon="proliferate-disable"></mat-icon>
-    </button>
-
-    <!------------------- ADAPTATION -------------------->
-    <button
-      *ngIf="canAdapt$ | async"
-      mat-icon-button
-      (click)="openAdaptationMenu()"
-    >
-      <mat-icon svgIcon="adaptation"></mat-icon>
-    </button>
-    <button *ngIf="!(canAdapt$ | async)" mat-icon-button>
-      <mat-icon svgIcon="adaptation-disable"></mat-icon>
-    </button>
+    </article>
   </section>
   <aside fxFlexFill fxFlex="5" class="orange"></aside>
-</div>
+</main>

@@ -43,22 +43,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     this.store.removeActive(id);
   }
 
-  // ASSIMILATION
-  // Removes one species from a tile and adds one to the active species.
-  public async assimilate(
-    removedSpeciesId: string,
-    removedQuantity: number,
-    removedTileId: number,
-    addingQuantity: number
-  ) {
-    const activeSpeciesId = this.query.getActiveId();
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    // Removes the assimilated species.
-    await this.move(removedSpeciesId, removedQuantity, removedTileId);
-    // Adds quantity to the assimilating species.
-    await this.move(activeSpeciesId, addingQuantity, activeTileId);
-  }
-
   // Adds an ability to a species
   public async addAbilityToSpecies(ability: Ability, species: Species) {
     const gameId = this.gameQuery.getActiveId();
@@ -78,20 +62,21 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     tile: Tile,
     speciesId: string,
     quantity: number,
-    color: string,
     mainAbilityId: AbilityId
   ): TileSpecies[] {
     let updatedSpecies = [];
     const isSpeciesOnTile = this.query.isSpeciesOnTile(speciesId, tile);
+    const species = this.query.getEntity(speciesId);
 
     // If the species isn't on the tile yet, adds it.
     if (!isSpeciesOnTile) {
-      updatedSpecies = tile.species.concat({
-        id: speciesId,
+      const tileSpecies: TileSpecies = {
+        ...species,
+        tileId: Number(tile.id),
         quantity,
-        color,
         mainAbilityId,
-      });
+      };
+      updatedSpecies = tile.species.concat(tileSpecies);
     }
 
     // If species is already there, updates quantity.
@@ -103,7 +88,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       const existingQuantity = updatedSpecies[speciesIndex].quantity;
       const newQuantity = existingQuantity + quantity;
       // If there is no more species on this tile, removes it.
-      if (newQuantity === 0) {
+      if (newQuantity <= 0) {
         updatedSpecies.splice(speciesIndex, 1);
       } else {
         // Otherwise, updates quantity.
@@ -118,7 +103,8 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     speciesId: string,
     quantity: number,
     destinationId: number,
-    previousTileId?: number
+    previousTileId?: number,
+    migrationUsed?: number
   ) {
     const gameId = this.routerQuery.getParams().id;
     const gameDoc = `games/${gameId}`;
@@ -152,13 +138,13 @@ export class SpeciesService extends CollectionService<SpeciesState> {
         species,
         -quantity
       );
-
-      // Finally, updates migration count, if it's a move.
-      batch = this.batchUpdateMigrationCount(
+    }
+    if (migrationUsed) {
+      // Finally, updates remaining migrations, if it's a move.
+      batch = this.batchUpdateRemainingMigrations(
         gameDoc,
         batch,
-        destinationId,
-        quantity
+        migrationUsed
       );
     }
     return batch.commit().catch((err) => console.log('Move failed ', err));
@@ -179,7 +165,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       tile,
       species.id,
       quantity,
-      species.color,
       species.abilities[0].id
     );
     return batch.update(tileDoc.ref, { species: updatedSpecies });
@@ -196,38 +181,29 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
       `${gameDoc}/species/${species.id}`
     );
-    let tileIds = JSON.parse(JSON.stringify(species.tileIds));
+    let tileIds: number[] = JSON.parse(JSON.stringify(species.tileIds));
     // Iterates as much as species to move.
     for (let i = 0; i < Math.abs(quantity); i++) {
       // Adds 1 species to the new tile.
       if (quantity > 0) tileIds.push(destinationTileId);
-      // TODO: refactor this
       // Removes 1 species to previous tile id or if quantity is negative.
       if (quantity < 0 || previousTileId) {
         const tileId = previousTileId ? previousTileId : destinationTileId;
-        const index = tileIds.indexOf(previousTileId);
-        if (index > -1) {
-          tileIds.splice(index, 1);
-        }
+        const index = tileIds.indexOf(tileId);
+        if (index !== -1) tileIds.splice(index, 1);
       }
     }
     return batch.update(speciesDoc.ref, { tileIds });
   }
 
-  private batchUpdateMigrationCount(
+  private batchUpdateRemainingMigrations(
     gameDoc: string,
     batch: firebase.firestore.WriteBatch,
-    destinationTileId: number,
-    quantity: number
+    migrationUsed: number
   ): firebase.firestore.WriteBatch {
     const gameRef = this.db.doc(gameDoc).ref;
-    const UItile = this.tileQuery.ui.getEntity(destinationTileId.toString());
-    const distance = UItile.range;
+    const decrement = firebase.firestore.FieldValue.increment(-migrationUsed);
 
-    const decrement = firebase.firestore.FieldValue.increment(
-      -distance * quantity
-    );
-
-    return batch.update(gameRef, { migrationCount: decrement });
+    return batch.update(gameRef, { remainingMigrations: decrement });
   }
 }

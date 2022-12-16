@@ -10,14 +10,23 @@ import { first, tap } from 'rxjs/operators';
 
 // States
 import { GameQuery, GameService } from '../games/_state';
-import { Species, SpeciesQuery, SpeciesService } from './species/_state';
+import {
+  createAssimilationValues,
+  Species,
+  SpeciesListActions,
+  SpeciesListData,
+  SpeciesQuery,
+  SpeciesService,
+  TileSpecies,
+} from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
+import { ABILITY_CHOICE_AMOUNT, PlayerService } from './players/_state';
+import { AbilityService } from './ability.service';
 
 // Components
 import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimilation-menu.component';
 import { ListComponent } from './species/list/list.component';
 import { AdaptationMenuComponent } from './abilities/adaptation-menu/adaptation-menu.component';
-import { ABILITY_CHOICE_AMOUNT, PlayerService } from './players/_state';
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +42,7 @@ export class PlayService {
     private playerService: PlayerService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
+    private abilityService: AbilityService,
     public dialog: MatDialog
   ) {}
 
@@ -155,18 +165,69 @@ export class PlayService {
         });
   }
 
-  public openAssimilationMenu(): void {
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    const otherSpecies =
-      this.speciesQuery.otherActiveTileSpeciesThanActivePlayerSpecies;
+  public setupAssimilation(attackedTileId?: number) {
+    const activeTile = this.tileQuery.getActive();
+    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeSpeciesWithAssimilationValues =
+      this.abilityService.applyAssimilationAbilitiesToSpecies(
+        createAssimilationValues(),
+        activeSpeciesId
+      );
+    const activeSpeciesRange = activeSpeciesWithAssimilationValues.range;
 
+    // If range is equal to 0, opens assimilation value on the active tile.
+    if (activeSpeciesRange === 0)
+      return this.openAssimilationMenu(activeTile.id);
+    // If a tile is attacked, open assimilation menu on that tile.
+    if (attackedTileId) return this.openAssimilationMenu(attackedTileId);
+
+    // Else marks weaker species tiles attackable.
+    const activeTileSpecies = this.speciesQuery.activeTileSpecies;
+
+    const weakerInRangeSpecies = this.abilityService.getWeakerInRangeSpecies(
+      activeTile,
+      activeTileSpecies,
+      activeSpeciesRange
+    );
+    const attackableTileIds = weakerInRangeSpecies.map(
+      (species) => species.tileId
+    );
+    this.tileService.markAsAttackable(attackableTileIds);
+  }
+
+  public openAssimilationMenu(attackedTileId: number): void {
+    const attackedTile = this.tileQuery.getEntity(attackedTileId.toString());
+    const attackingTileSpecies = this.speciesQuery.activeTileSpecies;
+    const attackableSpecies = this.abilityService.getWeakerInRangeSpecies(
+      attackedTile,
+      attackingTileSpecies,
+      0
+    );
+    this.openActiveSpeciesList(attackableSpecies, attackedTileId, 'assimiler');
+  }
+
+  public openIntimidateMenu() {
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const otherSpecies = this.speciesQuery.otherTileSpecies();
+    const action = 'intimider';
+    this.openActiveSpeciesList(otherSpecies, activeTileId, action);
+  }
+
+  // TODO: merge AssimilationMenuComponent with List Component
+  private openActiveSpeciesList(
+    speciesToList: TileSpecies[],
+    tileId: number,
+    action: SpeciesListActions
+  ) {
+    const speciesListData: SpeciesListData = {
+      listType: 'active',
+      speciesCount: 'tile',
+      speciesToList,
+      tileId,
+      action,
+    };
     this.dialog.open(AssimilationMenuComponent, {
-      data: {
-        listType: 'active',
-        species: otherSpecies,
-        speciesCount: 'tile',
-        tileId: activeTileId,
-      },
+      data: speciesListData,
       autoFocus: false,
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
@@ -184,7 +245,7 @@ export class PlayService {
     this.dialog.open(ListComponent, {
       data: {
         listType: 'passive',
-        species,
+        speciesToList: species,
         speciesCount: tileId ? 'tile' : 'global',
         tileId,
       },
