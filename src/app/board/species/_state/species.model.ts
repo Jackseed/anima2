@@ -159,7 +159,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'hounds',
@@ -175,7 +175,7 @@ export const ABILITIES: Ability[] = [
     },
     requiredValue: 2,
     value: 2,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'range',
@@ -190,7 +190,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'survival',
@@ -205,7 +205,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1000,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'tunnel',
@@ -236,7 +236,7 @@ export const ABILITIES: Ability[] = [
     },
     requiredValue: 4,
     value: 1,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'flying',
@@ -251,7 +251,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'giantism',
@@ -266,7 +266,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'gluttony',
@@ -281,7 +281,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: -1,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'rallying',
@@ -326,7 +326,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'carnivore',
@@ -341,7 +341,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
-    type: 'active',
+    type: 'passive',
   },
   {
     id: 'predator',
@@ -356,7 +356,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
-    type: 'active',
+    type: 'passive',
   },
 ];
 
