@@ -7,6 +7,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 
 // Material
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 // Components
 import { FormComponent } from './form/form.component';
@@ -14,6 +15,6 @@ import { HomepageComponent } from './homepage/homepage.component';
 
 @NgModule({
   declarations: [HomepageComponent, FormComponent],
-  imports: [CommonModule, FlexLayoutModule, MatIconModule],
+  imports: [CommonModule, FlexLayoutModule, MatIconModule, MatButtonModule],
 })
 export class GamesModule {}
