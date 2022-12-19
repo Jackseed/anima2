@@ -41,9 +41,10 @@ export class HomepageComponent implements OnInit {
 
   public openCreationMenu() {
     this.dialog.open(FormComponent, {
-      height: '90%',
+      height: '60%',
       width: '80%',
       panelClass: ['custom-container', 'no-padding-bottom'],
+      backdropClass: 'transparent-backdrop',
       autoFocus: false,
     });
   }

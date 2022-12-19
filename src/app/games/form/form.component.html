@@ -1,3 +1,25 @@
 <button mat-icon-button id="close-button" (click)="close()">
   <mat-icon id="close-icon" svgIcon="close"></mat-icon>
 </button>
+<div fxLayout="column" fxLayoutAlign="center center">
+  <section class="text-box">
+    <h2>Choisissez le nom de votre partie</h2>
+  </section>
+
+  <form #gameForm="ngForm">
+    <input
+      #gameNameInput
+      type="text"
+      name="name"
+      required
+      [(ngModel)]="gameName"
+    />
+  </form>
+
+  <button
+    [disabled]="!gameForm.form.valid"
+    (click)="createGame(); gameForm.reset()"
+  >
+    Submit
+  </button>
+</div>
