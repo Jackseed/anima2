@@ -20,28 +20,29 @@ import { GameService } from '../_state/game.service';
 export class HomepageComponent implements OnInit {
   public menu = [
     {
-      cta: 'Partie rapide',
-      //func: this.playNow(),
+      cta: 'Créer une partie',
+      func: this.startGame,
     },
     {
-      cta: 'Invitez un joueur',
-      //func: this.playNow(),
+      cta: 'Rejoindre une partie',
+      func: this.startGame,
     },
     {
       cta: 'Règles & tuto',
-      //func: this.playNow(),
+      func: this.startGame,
     },
     {
       cta: 'Compte',
-      //func: this.playNow(),
+      func: this.startGame,
     },
     {
       cta: 'Quittez',
-      //func: this.playNow(),
+      func: this.startGame,
     },
   ];
 
   constructor(
+    // Used in html.
     private router: Router,
     private gameService: GameService,
     private matIconRegistry: MatIconRegistry,
@@ -57,13 +58,13 @@ export class HomepageComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  public async startGame() {
+  public async startGame(gameService: GameService, router: Router) {
     resetStores({ exclude: ['game'] });
-    this.gameService
+    gameService
       .createNewGame('')
-      .then((gameId) => {
-        this.router.navigate([`/games/${gameId}`]);
+      .then((gameId: string) => {
+        router.navigate([`/games/${gameId}`]);
       })
-      .catch((error) => console.log('Neutral creation failed: ', error));
+      .catch((error: any) => console.log('Game creation failed: ', error));
   }
 }
