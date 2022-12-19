@@ -1,13 +1,19 @@
+// Angular
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HomepageComponent } from './homepage/homepage.component';
+
 // Flex Layout
 import { FlexLayoutModule } from '@angular/flex-layout';
-// Angular Material
+
+// Material
 import { MatIconModule } from '@angular/material/icon';
 
+// Components
+import { FormComponent } from './form/form.component';
+import { HomepageComponent } from './homepage/homepage.component';
+
 @NgModule({
-  declarations: [HomepageComponent],
+  declarations: [HomepageComponent, FormComponent],
   imports: [CommonModule, FlexLayoutModule, MatIconModule],
 })
 export class GamesModule {}
