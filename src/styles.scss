@@ -13,7 +13,8 @@ h3,
 h4,
 p,
 span,
-textarea {
+textarea,
+input {
   font-family: "Grandstander", "Helvetica Neue", sans-serif;
 }
 
@@ -175,6 +176,7 @@ snack-bar-container > div {
   padding-right: 5%;
 }
 
+// TODO: remove height, width & margins
 .text-box {
   height: 50%;
   width: 80%;

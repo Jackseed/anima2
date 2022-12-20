@@ -1,13 +1,19 @@
 <button mat-icon-button id="close-button" (click)="close()">
   <mat-icon id="close-icon" svgIcon="close"></mat-icon>
 </button>
-<div fxLayout="column" fxLayoutAlign="center center">
+<main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
   <section class="text-box">
     <h2>Choisissez le nom de votre partie</h2>
   </section>
 
-  <form #gameForm="ngForm">
+  <form
+    fxFlex="10"
+    #gameForm="ngForm"
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
     <input
+      fxFlexFill
       #gameNameInput
       type="text"
       name="name"
@@ -17,9 +23,20 @@
   </form>
 
   <button
-    [disabled]="!gameForm.form.valid"
+    *ngIf="!gameForm.form.valid"
+    mat-icon-button
+    id="validate-button"
+    disabled
+  >
+    <mat-icon id="validate-icon" svgIcon="blank"></mat-icon>
+  </button>
+
+  <button
+    *ngIf="gameForm.form.valid"
+    mat-icon-button
+    id="validate-button"
     (click)="createGame(); gameForm.reset()"
   >
-    Submit
+    <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>
   </button>
-</div>
+</main>
