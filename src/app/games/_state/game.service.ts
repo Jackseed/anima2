@@ -113,9 +113,12 @@ export class GameService extends CollectionService<GameState> {
 
     // Creates the game.
     batch.set(gameRef, game);
-    await batch.commit().catch((error) => {
-      console.log('Game creation failed: ', error);
-    });
+    await batch
+      .commit()
+      .then((_) => this.store.setActive(gameId))
+      .catch((error) => {
+        console.log('Game creation failed: ', error);
+      });
     return gameId;
   }
 
