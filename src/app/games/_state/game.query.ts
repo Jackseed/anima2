@@ -25,6 +25,11 @@ export class GameQuery extends QueryEntity<GameState> {
     return game$.pipe(map((game) => (game ? game.playerIds.length : 0)));
   }
 
+  public isGameFull(gameId: string): boolean {
+    const game = this.getEntity(gameId);
+    return game.playerIds.length === 2;
+  }
+
   public get remainingMigrations(): number {
     return +this.getActive().remainingMigrations;
   }

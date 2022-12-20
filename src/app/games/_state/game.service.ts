@@ -141,6 +141,14 @@ export class GameService extends CollectionService<GameState> {
     return randomAbility;
   }
 
+  public async addPlayer(userId: string, gameId: string) {
+    const playerIds = firebase.firestore.FieldValue.arrayUnion(userId);
+    await this.db
+      .doc(`games/${gameId}`)
+      .update({ playerIds })
+      .catch((error: any) => console.log('Adding a player failed: ', error));
+  }
+
   public async switchStartState(startState: startState) {
     const id = this.query.getActiveId();
     await this.collection

@@ -5,13 +5,13 @@ import { Router } from '@angular/router';
 
 // Material
 import { MatIconRegistry } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 
 // Akita
 import { resetStores } from '@datorama/akita';
 
 // States
 import { GameService } from '../_state/game.service';
-import { MatDialog } from '@angular/material/dialog';
 
 // Components
 import { FormComponent } from '../form/form.component';

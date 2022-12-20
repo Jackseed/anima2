@@ -1,3 +1,4 @@
+<h2>Parties en cours</h2>
 <ul *ngFor="let game of games$ | async">
   <button (click)="join(game)">{{ game.name }}</button>
 </ul>

@@ -1,7 +1,7 @@
 // Angular
 import { Injectable } from '@angular/core';
 
-// Angular Material
+// Material
 import { MatDialog } from '@angular/material/dialog';
 
 // Rxjs
@@ -233,6 +233,7 @@ export class PlayService {
       panelClass: 'transparent-menu',
       height: '100%',
       width: '100%',
+      restoreFocus: false,
     });
   }
 
@@ -253,6 +254,7 @@ export class PlayService {
       width: '80%',
       panelClass: ['custom-container', 'no-padding-bottom'],
       autoFocus: false,
+      restoreFocus: false,
     });
   }
 }
