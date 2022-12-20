@@ -149,6 +149,15 @@ export class GameService extends CollectionService<GameState> {
       .catch((error: any) => console.log('Adding a player failed: ', error));
   }
 
+  public setActive(gameId: string): void {
+    this.store.setActive(gameId);
+  }
+
+  public removeActive(): void {
+    const activeGameId = this.query.getActiveId();
+    this.store.removeActive(activeGameId);
+  }
+
   public async switchStartState(startState: startState) {
     const id = this.query.getActiveId();
     await this.collection

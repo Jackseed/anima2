@@ -30,6 +30,13 @@ export class GameQuery extends QueryEntity<GameState> {
     return game.playerIds.length === 2;
   }
 
+  public get isGameFull$(): Observable<boolean> {
+    const game$ = this.selectActive();
+    return game$.pipe(
+      map((game) => (game ? game.playerIds.length === 2 : false))
+    );
+  }
+
   public get remainingMigrations(): number {
     return +this.getActive().remainingMigrations;
   }

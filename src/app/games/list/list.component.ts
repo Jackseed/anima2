@@ -2,6 +2,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+// AngularFire
+import { AngularFireAuth } from '@angular/fire/auth';
+
 // Rxjs
 import { Observable } from 'rxjs';
 
@@ -13,7 +16,6 @@ import { Game, GameQuery, GameService } from '../_state';
 
 // Components
 import { FormComponent } from '../form/form.component';
-import { UserQuery } from 'src/app/auth/_state';
 
 @Component({
   selector: 'app-list',
@@ -27,7 +29,7 @@ export class ListComponent implements OnInit {
     public dialogRef: MatDialogRef<ListComponent>,
     private router: Router,
     private dialog: MatDialog,
-    private userQuery: UserQuery,
+    private afAuth: AngularFireAuth,
     private gameQuery: GameQuery,
     private gameService: GameService
   ) {}
@@ -36,15 +38,20 @@ export class ListComponent implements OnInit {
     this.games$ = this.gameQuery.selectAll();
   }
 
-  // If the game is full, links to the game; otherwise to the waiting room.
-  public join(game: Game) {
-    const userId = this.userQuery.getActiveId();
+  public async join(game: Game) {
+    const userId = (await this.afAuth.currentUser).uid;
     const isUserAGamePlayer = game.playerIds.includes(userId);
-    if (!isUserAGamePlayer) this.gameService.addPlayer(userId, game.id);
-
     const isGameFull = this.gameQuery.isGameFull(game.id);
 
-    isGameFull ? this.navigateToGame(game.id) : this.openGameForm();
+    // Links to the game.
+    if (isUserAGamePlayer && isGameFull) return this.navigateToGame(game.id);
+
+    // Links to the waiting room.
+    if (isUserAGamePlayer) return this.openGameForm();
+
+    // Adds the player to the game then links to it.
+    this.gameService.addPlayer(userId, game.id);
+    this.navigateToGame(game.id);
   }
 
   private navigateToGame(gameId: string) {

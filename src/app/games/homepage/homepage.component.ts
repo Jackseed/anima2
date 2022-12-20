@@ -38,7 +38,9 @@ export class HomepageComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.gameService.removeActive();
+  }
 
   public openGameForm() {
     this.dialog.open(FormComponent, {
