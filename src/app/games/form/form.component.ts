@@ -11,8 +11,7 @@ import { Observable } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 
 // States
-import { GameService } from '../_state';
-import { PlayerQuery } from 'src/app/board/players/_state';
+import { GameQuery, GameService } from '../_state';
 
 @Component({
   selector: 'app-form',
@@ -27,12 +26,12 @@ export class FormComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
-    private gameService: GameService,
-    private playerQuery: PlayerQuery
+    private gameQuery: GameQuery,
+    private gameService: GameService
   ) {}
 
   ngOnInit(): void {
-    this.playerCount$ = this.playerQuery.playerCount$;
+    this.playerCount$ = this.gameQuery.playerCount$;
   }
 
   ngAfterViewInit() {

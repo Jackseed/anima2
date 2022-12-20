@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 // Components
 import { FormComponent } from '../form/form.component';
+import { ListComponent } from '../list/list.component';
 
 @Component({
   selector: 'app-homepage',
@@ -39,8 +40,18 @@ export class HomepageComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  public openCreationMenu() {
+  public openGameForm() {
     this.dialog.open(FormComponent, {
+      height: '60%',
+      width: '80%',
+      panelClass: ['custom-container', 'no-padding-bottom'],
+      backdropClass: 'transparent-backdrop',
+      autoFocus: false,
+    });
+  }
+
+  public openGameList() {
+    this.dialog.open(ListComponent, {
       height: '60%',
       width: '80%',
       panelClass: ['custom-container', 'no-padding-bottom'],

@@ -13,9 +13,10 @@ import { MatButtonModule } from '@angular/material/button';
 // Components
 import { FormComponent } from './form/form.component';
 import { HomepageComponent } from './homepage/homepage.component';
+import { ListComponent } from './list/list.component';
 
 @NgModule({
-  declarations: [HomepageComponent, FormComponent],
+  declarations: [HomepageComponent, FormComponent, ListComponent],
   imports: [
     CommonModule,
     FormsModule,

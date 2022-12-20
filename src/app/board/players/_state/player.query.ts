@@ -23,12 +23,6 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     super(store);
   }
 
-  public get playerCount$(): Observable<number> {
-    const game$ = this.gameQuery.selectActive();
-
-    return game$.pipe(map((game) => (game ? game.playerIds.length : 0)));
-  }
-
   // Checks if a player is active.
   public isActive(playerId: string): boolean {
     const activeGame = this.gameQuery.getActive();

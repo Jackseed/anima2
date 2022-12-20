@@ -19,6 +19,12 @@ export class GameQuery extends QueryEntity<GameState> {
     this.createUIQuery();
   }
 
+  public get playerCount$(): Observable<number> {
+    const game$ = this.selectActive();
+
+    return game$.pipe(map((game) => (game ? game.playerIds.length : 0)));
+  }
+
   public get remainingMigrations(): number {
     return +this.getActive().remainingMigrations;
   }
