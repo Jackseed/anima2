@@ -2,6 +2,7 @@
 import {
   Component,
   ElementRef,
+  Inject,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -15,7 +16,7 @@ import { resetStores } from '@datorama/akita';
 import { Observable, Subscription } from 'rxjs';
 
 // Material
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 // States
 import { GameQuery, GameService } from '../_state';
@@ -33,6 +34,7 @@ export class FormComponent implements OnInit, OnDestroy {
   private gameFullSub: Subscription;
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { gameId: string },
     public dialogRef: MatDialogRef<FormComponent>,
     private gameQuery: GameQuery,
     private gameService: GameService,
@@ -40,6 +42,7 @@ export class FormComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (this.data?.gameId) this.gameId = this.data.gameId;
     this.playerCount$ = this.gameQuery.playerCount$;
     this.gameFullSub = this.gameQuery.isGameFull$.subscribe((isGameFull) => {
       if (isGameFull) this.navigateToGame(this.gameId);

@@ -47,7 +47,7 @@ export class ListComponent implements OnInit {
     if (isUserAGamePlayer && isGameFull) return this.navigateToGame(game.id);
 
     // Links to the waiting room.
-    if (isUserAGamePlayer) return this.openGameForm();
+    if (isUserAGamePlayer) return this.openGameForm(game.id);
 
     // Adds the player to the game then links to it.
     this.gameService.addPlayer(userId, game.id);
@@ -59,9 +59,12 @@ export class ListComponent implements OnInit {
     this.router.navigate(['games', gameId]);
   }
 
-  private openGameForm() {
+  private openGameForm(gameId: string) {
     this.close();
     this.dialog.open(FormComponent, {
+      data: {
+        gameId,
+      },
       height: '60%',
       width: '80%',
       panelClass: ['custom-container', 'no-padding-bottom'],
