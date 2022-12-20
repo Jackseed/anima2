@@ -1,6 +1,5 @@
 // Angular
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
 
 // Akita
 import { resetStores } from '@datorama/akita';
@@ -19,17 +18,17 @@ import { GameService } from '../_state';
 export class FormComponent implements OnInit {
   @ViewChild('gameNameInput') gameNameInput: ElementRef;
   public gameName: string = '';
+  public gameId: string;
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
-    private router: Router,
     private gameService: GameService
   ) {}
 
   ngOnInit(): void {}
 
   ngAfterViewInit() {
-    this.gameNameInput.nativeElement.focus();
+    this.gameNameInput?.nativeElement.focus();
   }
 
   public close() {
@@ -37,12 +36,12 @@ export class FormComponent implements OnInit {
   }
 
   public async createGame() {
+    if (!this.gameName) return;
     resetStores({ exclude: ['game'] });
     this.gameService
       .createNewGame(this.gameName)
       .then((gameId: string) => {
-        this.dialogRef.close();
-        this.router.navigate([`/games/${gameId}`]);
+        this.gameId = gameId;
       })
       .catch((error: any) => console.log('Game creation failed: ', error));
   }

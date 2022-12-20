@@ -59,6 +59,14 @@ export class BoardModule {
   ) {
     // Registrating all board icons
 
+    // HOURGLASS
+    this.matIconRegistry.addSvgIcon(
+      'hourglass',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/hourglass.svg'
+      )
+    );
+
     // VALIDATION BUTTONS
     this.matIconRegistry.addSvgIcon(
       'blank',
