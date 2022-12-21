@@ -53,7 +53,6 @@ export class ListComponent implements OnInit {
 
     // Adds the player to the game then navigates to it.
     this.gameService.addActiveUserAsPlayer(game.id);
-    this.playerService.setActive(userId);
     this.navigateToGame(game.id);
   }
 
