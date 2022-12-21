@@ -12,7 +12,13 @@ import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { Ability, AbilityId, Species, TileSpecies } from './species.model';
+import {
+  Ability,
+  AbilityId,
+  MoveParameters,
+  Species,
+  TileSpecies,
+} from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
 import { Tile, TileQuery } from '../../tiles/_state';
@@ -44,17 +50,16 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   }
 
   // Adds an ability to a species
-  public async addAbilityToSpecies(ability: Ability, species: Species) {
+  public addAbilityToSpeciesByBatch(
+    ability: Ability,
+    species: Species,
+    batch: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch {
     const gameId = this.gameQuery.getActiveId();
     const firestoreAbility = firebase.firestore.FieldValue.arrayUnion(ability);
-    await this.db.firestore
-      .doc(`games/${gameId}/species/${species.id}`)
-      .update({
-        abilities: firestoreAbility,
-      })
-      .catch((error) => {
-        console.log('Adding ability failed: ', error);
-      });
+    const speciesRef = this.db.doc(`games/${gameId}/species/${species.id}`).ref;
+
+    return batch.update(speciesRef, { abilities: firestoreAbility });
   }
 
   // Updates a tile with an updated species object.
@@ -98,55 +103,56 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     return updatedSpecies;
   }
 
+  // TODO: batch ?
   // Moves species (from a tile) to a tile.
-  public async move(
-    speciesId: string,
-    quantity: number,
-    destinationId: number,
-    previousTileId?: number,
-    migrationUsed?: number
-  ) {
+  public move(
+    params: MoveParameters,
+    existingBatch?: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch | Promise<void> {
     const gameId = this.routerQuery.getParams().id;
     const gameDoc = `games/${gameId}`;
-    const species = this.query.getEntity(speciesId);
-    let batch = this.db.firestore.batch();
+    const species = this.query.getEntity(params.speciesId);
+    let batch = existingBatch ? existingBatch : this.db.firestore.batch();
 
     // First, updates tileIds on the species doc.
     batch = this.batchUpdateMovingSpeciesTileIds(
       gameDoc,
       batch,
       species,
-      quantity,
-      destinationId,
-      previousTileId
+      params.quantity,
+      params.destinationId,
+      params.previousTileId
     );
 
     // Then, updates tile docs with new species quantity.
     batch = this.batchUpdateTileWithSpeciesQuantity(
       gameDoc,
       batch,
-      destinationId,
+      params.destinationId,
       species,
-      quantity
+      params.quantity
     );
 
-    if (previousTileId) {
+    if (params.previousTileId) {
       batch = this.batchUpdateTileWithSpeciesQuantity(
         gameDoc,
         batch,
-        previousTileId,
+        params.previousTileId,
         species,
-        -quantity
+        -params.quantity
       );
     }
-    if (migrationUsed) {
+    if (params.migrationUsed) {
       // Finally, updates remaining migrations, if it's a move.
       batch = this.batchUpdateRemainingMigrations(
         gameDoc,
         batch,
-        migrationUsed
+        params.migrationUsed
       );
     }
+
+    if (existingBatch) return batch;
+
     return batch.commit().catch((err) => console.log('Move failed ', err));
   }
 

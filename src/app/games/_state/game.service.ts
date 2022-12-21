@@ -253,20 +253,31 @@ export class GameService extends CollectionService<GameState> {
     });
   }
 
-  public async decrementRemainingActions(resetMigration?: boolean) {
-    const game = this.query.getActive();
-    const gameRef = this.db.collection('games').doc(game.id).ref;
-    const batch = this.db.firestore.batch();
+  public async decrementRemainingActions() {
+    const gameId = this.query.getActiveId();
+    const gameDoc = this.db.collection('games').doc(gameId);
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
-    batch.update(gameRef, { remainingActions: decrement });
-    if (resetMigration)
-      batch.update(gameRef, {
-        remainingMigrations: DEFAULT_REMAINING_MIGRATIONS,
-      });
+    await gameDoc.update({ remainingActions: decrement }).catch((error) => {
+      console.log('Updating remaining actions failed: ', error);
+    });
+  }
+  public decrementRemainingActionsByBatch(
+    batch: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch {
+    const gameId = this.query.getActiveId();
+    const gameRef = this.db.collection('games').doc(gameId).ref;
+    const decrement = firebase.firestore.FieldValue.increment(-1);
 
-    return batch.commit().catch((error) => {
-      console.log('Transaction failed: ', error);
+    return batch.update(gameRef, { remainingActions: decrement });
+  }
+
+  public async updateRemainingMigrations(remainingMigrations: number) {
+    const game = this.query.getActive();
+    const gameDoc = this.db.collection('games').doc(game.id);
+
+    await gameDoc.update({ remainingMigrations }).catch((error) => {
+      console.log('Updating remaining migrations failed: ', error);
     });
   }
 

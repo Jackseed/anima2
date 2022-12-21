@@ -20,7 +20,7 @@ import {
   TileSpecies,
 } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
-import { ABILITY_CHOICE_AMOUNT, PlayerService } from './players/_state';
+import { PlayerService } from './players/_state';
 import { AbilityService } from './ability.service';
 
 // Components
@@ -72,11 +72,6 @@ export class PlayService {
       )
       .subscribe();
   }
-  // GAME STATE - Ability choice
-  public setStartAbilityChoice() {
-    this.gameService.switchStartState('abilityChoice');
-    this.setRandomAbilityChoice();
-  }
 
   // GAME STATE - Tile choice
   public setStartTileChoice() {
@@ -98,7 +93,11 @@ export class PlayService {
 
     this.gameService.switchStartState('tileValidated');
     this.gameService.updateIsStarting(false);
-    this.speciesService.move(activeSpecieId, 4, activeTileId);
+    this.speciesService.move({
+      speciesId: activeSpecieId,
+      quantity: 4,
+      destinationId: activeTileId,
+    });
   }
 
   // GAME START - UTILS - Verifies if it's a starting tile selection.
@@ -129,19 +128,8 @@ export class PlayService {
 
     if (gameStartState === 'launching')
       this.gameService.switchStartState('abilityChoice');
-    await this.setRandomAbilityChoice();
+    await this.playerService.setRandomAbilityChoice();
     this.openAdaptationMenu();
-  }
-
-  // UTILS - Gets random abilities and saves it with the active tile id.
-  public async setRandomAbilityChoice() {
-    this.gameService.updateUiAdaptationMenuOpen(true);
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    const randomAbilities = this.playerService.getAbilityChoices(
-      ABILITY_CHOICE_AMOUNT
-    );
-
-    await this.playerService.saveAbilityChoices(randomAbilities, activeTileId);
   }
 
   public async openAdaptationMenu(): Promise<void> {
