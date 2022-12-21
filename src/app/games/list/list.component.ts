@@ -16,6 +16,7 @@ import { Game, GameQuery, GameService } from '../_state';
 
 // Components
 import { FormComponent } from '../form/form.component';
+import { PlayerService } from 'src/app/board/players/_state';
 
 @Component({
   selector: 'app-list',
@@ -31,7 +32,8 @@ export class ListComponent implements OnInit {
     private dialog: MatDialog,
     private afAuth: AngularFireAuth,
     private gameQuery: GameQuery,
-    private gameService: GameService
+    private gameService: GameService,
+    private playerService: PlayerService
   ) {}
 
   ngOnInit(): void {
@@ -49,8 +51,9 @@ export class ListComponent implements OnInit {
     // Links to the waiting room.
     if (isUserAGamePlayer) return this.openGameForm(game.id);
 
-    // Adds the player to the game then links to it.
-    this.gameService.addPlayer(userId, game.id);
+    // Adds the player to the game then navigates to it.
+    this.gameService.addActiveUserAsPlayer(game.id);
+    this.playerService.setActive(userId);
     this.navigateToGame(game.id);
   }
 

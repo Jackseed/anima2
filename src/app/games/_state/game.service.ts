@@ -186,11 +186,21 @@ export class GameService extends CollectionService<GameState> {
     return randomAbility;
   }
 
-  public async addPlayer(userId: string, gameId: string) {
-    const playerIds = firebase.firestore.FieldValue.arrayUnion(userId);
-    await this.db
-      .doc(`games/${gameId}`)
-      .update({ playerIds })
+  // Creates player, player's species & update game docs.
+  public async addActiveUserAsPlayer(gameId: string) {
+    const playerBatchCreation = await this.playerBatchCreation(gameId);
+    const firestorePlayerIds = firebase.firestore.FieldValue.arrayUnion(
+      playerBatchCreation.playerId
+    );
+
+    // Updates game doc.
+    const gameRef = this.db.collection('games').doc(gameId).ref;
+    const batch = playerBatchCreation.batch.update(gameRef, {
+      playerIds: firestorePlayerIds,
+    });
+
+    await batch
+      .commit()
       .catch((error: any) => console.log('Adding a player failed: ', error));
   }
 
