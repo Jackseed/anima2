@@ -376,8 +376,13 @@ export class AbilityService {
     const activeSpecies = this.speciesQuery.getActive();
     const isGameStarting = this.gameQuery.isStarting;
 
-    // TODO: cut in 2 functions
-    // Resets ability choices & updates game used abilities.
+    // Removes adaptation menu.
+    this.gameService.updateUiAdaptationMenuOpen(false);
+
+    // Updates game abilities used.
+    batch = this.gameService.saveAbilityUsedByBatch(ability, batch);
+
+    // Resets ability choices.
     batch = this.playerService.resetAbilityChoicesByBatch(ability, batch);
 
     // Updates species doc with the new ability.

@@ -13,7 +13,6 @@ import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 // States
 import {
   DEFAULT_ACTION_PER_TURN,
-  DEFAULT_REMAINING_MIGRATIONS,
   createGame,
   startState,
 } from './game.model';
@@ -279,6 +278,18 @@ export class GameService extends CollectionService<GameState> {
     await gameDoc.update({ remainingMigrations }).catch((error) => {
       console.log('Updating remaining migrations failed: ', error);
     });
+  }
+
+  public saveAbilityUsedByBatch(
+    ability: Ability,
+    batch: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch {
+    const gameId = this.query.getActiveId();
+    const gameRef = this.db.doc(`games/${gameId}`).ref;
+    const inGameAbilitiesUpdate =
+      firebase.firestore.FieldValue.arrayUnion(ability);
+
+    return batch.update(gameRef, { inGameAbilities: inGameAbilitiesUpdate });
   }
 
   public countAllScore() {
