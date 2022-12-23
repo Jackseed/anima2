@@ -11,11 +11,10 @@ export interface Player {
   secondaryColor: string;
   abilityChoice: {
     isChoosingAbility: boolean;
-    // TODO: fix any
-    // any is used to fix a type error when saving abilities
-    abilityChoices: Ability[] | any;
+    abilityChoices: Ability[];
     activeTileId: number;
   };
+  isReadyForNextStartState: boolean;
 }
 
 export function createPlayer(
@@ -37,6 +36,7 @@ export function createPlayer(
       abilityChoices: [],
       activeTileId: null,
     },
+    isReadyForNextStartState: true,
     ...params,
   };
 }

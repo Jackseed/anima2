@@ -10,16 +10,14 @@ export interface Game {
   eraCount: number;
   turnCount: number;
   remainingMigrations: number | firebase.firestore.FieldValue;
+  inGameAbilities: Ability[];
   isStarting: boolean;
-  startState: startState;
-  // TODO: fix any
-  // any is used to fix a type error when saving abilities
-  inGameAbilities: Ability[] | any;
+  startState: StartState;
 }
 
 export const DEFAULT_ACTION_PER_TURN = 2;
 export const DEFAULT_REMAINING_MIGRATIONS = 4;
-export type startState =
+export type StartState =
   | 'launching'
   | 'abilityChoice'
   | 'tileChoice'
@@ -36,9 +34,9 @@ export function createGame(params: Partial<Game>): Game {
     eraCount: 1,
     turnCount: 1,
     remainingMigrations: DEFAULT_REMAINING_MIGRATIONS,
+    inGameAbilities: [],
     isStarting: true,
     startState: 'launching',
-    inGameAbilities: [],
     ...params,
   };
 }

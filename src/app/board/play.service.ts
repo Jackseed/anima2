@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 
 // States
-import { GameQuery, GameService } from '../games/_state';
+import { GameQuery, GameService, StartState } from '../games/_state';
 import {
   createAssimilationValues,
   Species,
@@ -20,7 +20,7 @@ import {
   TileSpecies,
 } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
-import { PlayerService } from './players/_state';
+import { PlayerQuery, PlayerService } from './players/_state';
 import { AbilityService } from './ability.service';
 
 // Components
@@ -39,6 +39,7 @@ export class PlayService {
     private gameService: GameService,
     private tileQuery: TileQuery,
     private tileService: TileService,
+    private playerQuery: PlayerQuery,
     private playerService: PlayerService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
@@ -50,7 +51,8 @@ export class PlayService {
   // GAME STATE - Launching
   public getStartGameSub(): Subscription {
     const game$ = this.gameQuery.selectActive();
-    return game$
+
+    const startGameSub = game$
       .pipe(
         tap((game) => {
           // Acts only on starting game.
@@ -58,19 +60,54 @@ export class PlayService {
 
           if (game.startState === 'launching') this.setupAdaptation();
 
-          // Applies tile selection if it's a new game,
-          // if it's the current state (for reloads),
+          // Applies tile selection if it's the current game state (for reloads),
           // if a tile was selected but lost after a reload.
           if (
-            //game.startState === 'launching' ||
             game.startState === 'tileChoice' ||
             (game.startState === 'tileSelected' && !this.tileQuery.hasActive())
-          )
+          ) {
+            console.log('setting tile choice');
             this.setStartTileChoice();
+          }
         }),
         first()
       )
       .subscribe();
+
+    return startGameSub;
+  }
+
+  public get switchToNextStartStateSub(): Subscription {
+    const nextStartStateSub =
+      this.playerQuery.areAllPlayersReadyForNextStartState$
+        .pipe(
+          tap((arePlayerReady) => {
+            if (arePlayerReady) {
+              console.log('switching to next start state');
+              this.switchToNextStartState();
+            }
+          })
+        )
+        .subscribe();
+
+    return nextStartStateSub;
+  }
+
+  private switchToNextStartState() {
+    const playerIds = this.playerQuery.allPlayerIds;
+    const game = this.gameQuery.getActive();
+
+    this.playerService.switchReadyState(playerIds);
+    if (game.startState === 'launching')
+      return this.switchStartState('abilityChoice');
+    if (game.startState === 'abilityChoice')
+      return this.switchStartState('tileChoice');
+  }
+
+  public async switchStartState(startState: StartState) {
+    const playerIds = this.playerQuery.allPlayerIds;
+    this.playerService.switchReadyState(playerIds);
+    this.gameService.switchStartState(startState);
   }
 
   // GAME STATE - Tile choice
@@ -126,14 +163,14 @@ export class PlayService {
   public async setupAdaptation() {
     const gameStartState = this.gameQuery.getActive().startState;
 
-    if (gameStartState === 'launching')
-      this.gameService.switchStartState('abilityChoice');
+    if (gameStartState === 'launching') this.switchStartState('abilityChoice');
     await this.playerService.setRandomAbilityChoice();
     this.openAdaptationMenu();
   }
 
   public async openAdaptationMenu(): Promise<void> {
     const isGameStarting = this.gameQuery.isStarting;
+    const activePlayerId = this.playerQuery.getActiveId();
     const dialogRef = this.dialog.open(AdaptationMenuComponent, {
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
@@ -149,7 +186,7 @@ export class PlayService {
         .afterClosed()
         .pipe(first())
         .subscribe(() => {
-          this.setStartTileChoice();
+          this.playerService.switchReadyState([activePlayerId]);
         });
   }
 

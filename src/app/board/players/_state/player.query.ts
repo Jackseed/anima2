@@ -23,6 +23,23 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     super(store);
   }
 
+  public get allPlayerIds(): string[] {
+    return this.getAll().map((player) => player.id);
+  }
+
+  public get areAllPlayersReadyForNextStartState$(): Observable<boolean> {
+    return this.selectAll().pipe(
+      map((players) =>
+        players.map((player) => player.isReadyForNextStartState)
+      ),
+      map((booleans) =>
+        booleans.reduce(
+          (accumulator, currentValue) => accumulator && currentValue
+        )
+      )
+    );
+  }
+
   // Checks if a player is active.
   public isActive(playerId: string): boolean {
     const activeGame = this.gameQuery.getActive();

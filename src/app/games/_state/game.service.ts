@@ -11,11 +11,7 @@ import firebase from 'firebase/app';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import {
-  DEFAULT_ACTION_PER_TURN,
-  createGame,
-  startState,
-} from './game.model';
+import { DEFAULT_ACTION_PER_TURN, createGame, StartState } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
 import { Regions, Region, TileService } from 'src/app/board/tiles/_state';
@@ -212,14 +208,13 @@ export class GameService extends CollectionService<GameState> {
     this.store.removeActive(activeGameId);
   }
 
-  public async switchStartState(startState: startState) {
-    const id = this.query.getActiveId();
-    await this.collection
-      .doc(id)
-      .update({ startState })
-      .catch((error) => {
-        console.log('Switch start state failed: ', error);
-      });
+  public async switchStartState(startState: StartState) {
+    const gameId = this.query.getActiveId();
+    const gameDoc = this.db.doc(`games/${gameId}`);
+
+    gameDoc.update({ startState }).catch((error) => {
+      console.log('Switch start state failed: ', error);
+    });
   }
 
   public async updateIsStarting(isStarting: boolean) {

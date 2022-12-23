@@ -43,7 +43,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   private turnSub: Subscription;
   private activeSpeciesSub: Subscription;
   private startGameSub: Subscription;
-  private isPlayerChoosingAbility: Subscription;
+  private isPlayerChoosingAbilitySub: Subscription;
+  private switchToNextStartStateSub: Subscription;
 
   constructor(
     private gameQuery: GameQuery,
@@ -73,11 +74,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
 
     // Subscriptions init
-    //this.activePlayerSub = this.getActivePlayerSub();
+    this.switchToNextStartStateSub = this.playService.switchToNextStartStateSub;
     this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.turnSub = this.getTurnSub();
     this.startGameSub = this.playService.getStartGameSub();
-    this.isPlayerChoosingAbility = this.getPlayerChoosingAbilitySub();
+    this.isPlayerChoosingAbilitySub = this.getPlayerChoosingAbilitySub();
   }
 
   public isActionActive$(action: GameAction): Observable<boolean> {
@@ -217,9 +218,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.switchToNextStartStateSub.unsubscribe();
     this.turnSub.unsubscribe();
     this.activeSpeciesSub.unsubscribe();
     this.startGameSub.unsubscribe();
-    this.isPlayerChoosingAbility.unsubscribe();
+    this.isPlayerChoosingAbilitySub.unsubscribe();
   }
 }
