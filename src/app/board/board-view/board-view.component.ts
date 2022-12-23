@@ -13,7 +13,7 @@ import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 import { UserQuery } from 'src/app/auth/_state';
 import { Game, GameQuery, GameService } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
-import { PlayerQuery, PlayerService } from '../players/_state';
+import { PlayerQuery } from '../players/_state';
 import {
   GameAction,
   Species,
@@ -41,7 +41,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   // Subscriptions
   private turnSub: Subscription;
-  private activePlayerSub: Subscription;
   private activeSpeciesSub: Subscription;
   private startGameSub: Subscription;
   private isPlayerChoosingAbility: Subscription;
@@ -51,7 +50,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     private gameService: GameService,
     private userQuery: UserQuery,
     private playerQuery: PlayerQuery,
-    private playerService: PlayerService,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
@@ -75,7 +73,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
 
     // Subscriptions init
-    this.activePlayerSub = this.getActivePlayerSub();
+    //this.activePlayerSub = this.getActivePlayerSub();
     this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.turnSub = this.getTurnSub();
     this.startGameSub = this.playService.getStartGameSub();
@@ -105,15 +103,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       )
       .subscribe();
   }
-  // base akita active player on game obj
-  private getActivePlayerSub(): Subscription {
-    return this.game$
-      .pipe(
-        pluck('activePlayerId'),
-        tap((id) => this.playerService.setActive(id))
-      )
-      .subscribe();
-  }
+
   // set active first species from active player
   private getActiveSpeciesSub(): Subscription {
     return this.playerQuery
@@ -228,7 +218,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.turnSub.unsubscribe();
-    this.activePlayerSub.unsubscribe();
     this.activeSpeciesSub.unsubscribe();
     this.startGameSub.unsubscribe();
     this.isPlayerChoosingAbility.unsubscribe();
