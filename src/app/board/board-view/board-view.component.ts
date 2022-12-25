@@ -144,7 +144,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     if (this.tileQuery.isEmpty(tileId)) return;
 
     // Tile selection
-    if (this.playService.isSelectionValid(tileId))
+    if (
+      this.playService.isSelectionValid(tileId) &&
+      !this.playerQuery.isActivePlayerWaitingForNextStartStage
+    )
       return this.tileService.selectTile(tileId);
 
     // Otherwise, opens species menu.

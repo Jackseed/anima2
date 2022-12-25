@@ -103,7 +103,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     return updatedSpecies;
   }
 
-  // TODO: batch ?
   // Moves species (from a tile) to a tile.
   public move(
     params: MoveParameters,

@@ -20,7 +20,7 @@ import { TileQuery, TileService } from '../tiles/_state';
 export class TextOverlayComponent implements OnInit {
   public startStage$: Observable<StartStage>;
   public hasTileActive$: Observable<boolean>;
-  public isPlayerReady$: Observable<boolean>;
+  public isPlayerWaiting$: Observable<boolean>;
   constructor(
     private gameQuery: GameQuery,
     private tileQuery: TileQuery,
@@ -33,8 +33,8 @@ export class TextOverlayComponent implements OnInit {
   ngOnInit(): void {
     this.startStage$ = this.gameQuery.startStage$;
     this.hasTileActive$ = this.tileQuery.hasActive$;
-    this.isPlayerReady$ =
-      this.playerQuery.isActivePlayerReadyForNextStartStage$;
+    this.isPlayerWaiting$ =
+      this.playerQuery.isActivePlayerWaitingForNextStartStage$;
   }
 
   public validateStartTile() {

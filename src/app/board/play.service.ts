@@ -52,7 +52,7 @@ export class PlayService {
   public reApplyTileChoiceStateSub(): Subscription {
     const gameStartStage$ = this.gameQuery.startStage$;
     const isPlayerReady$ =
-      this.playerQuery.isActivePlayerReadyForNextStartStage$;
+      this.playerQuery.isActivePlayerWaitingForNextStartStage$;
     return combineLatest([gameStartStage$, isPlayerReady$])
       .pipe(
         tap(([startStage, isPlayerReady]) => {
@@ -123,6 +123,7 @@ export class PlayService {
       quantity: 4,
       destinationId: activeTileId,
     });
+    this.tileService.removeActive();
   }
 
   // GAME START - UTILS - Verifies if it's a starting tile selection.

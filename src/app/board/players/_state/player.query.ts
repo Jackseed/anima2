@@ -30,7 +30,7 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
   public get areAllPlayersReadyForNextStartStage$(): Observable<boolean> {
     return this.selectAll().pipe(
       map((players) =>
-        players.map((player) => player.isReadyForNextStartStage)
+        players.map((player) => player.isWaitingForNextStartStage)
       ),
       map((booleans) =>
         booleans.reduce(
@@ -40,9 +40,13 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     );
   }
 
-  public get isActivePlayerReadyForNextStartStage$(): Observable<boolean> {
+  public get isActivePlayerWaitingForNextStartStage(): boolean {
+    return this.getActive().isWaitingForNextStartStage;
+  }
+
+  public get isActivePlayerWaitingForNextStartStage$(): Observable<boolean> {
     return this.selectActive().pipe(
-      map((player) => player.isReadyForNextStartStage)
+      map((player) => player.isWaitingForNextStartStage)
     );
   }
 

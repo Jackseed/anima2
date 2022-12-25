@@ -14,7 +14,7 @@ export interface Player {
     abilityChoices: Ability[];
     activeTileId: number;
   };
-  isReadyForNextStartStage: boolean;
+  isWaitingForNextStartStage: boolean;
 }
 
 export function createPlayer(
@@ -36,7 +36,7 @@ export function createPlayer(
       abilityChoices: [],
       activeTileId: null,
     },
-    isReadyForNextStartStage: true,
+    isWaitingForNextStartStage: true,
     ...params,
   };
 }

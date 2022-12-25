@@ -4,16 +4,16 @@
   *ngIf="{
     startStage: startStage$ | async,
     hasTileActive: hasTileActive$ | async,
-    isPlayerReady: isPlayerReady$ | async
+    isPlayerWaiting: isPlayerWaiting$ | async
   } as observables"
 >
   <!------------ GAME START -------------->
-  <section *ngIf="observables.isPlayerReady" class="start text-box">
+  <section *ngIf="observables.isPlayerWaiting" class="start text-box">
     <h2>En attente de l'adversaire...</h2>
   </section>
   <section
     *ngIf="
-      observables.startStage === 'tileChoice' && !observables.isPlayerReady
+      observables.startStage === 'tileChoice' && !observables.isPlayerWaiting
     "
     class="start text-box"
   >
@@ -23,7 +23,7 @@
     *ngIf="
       observables.hasTileActive &&
       observables.startStage === 'tileChoice' &&
-      !observables.isPlayerReady
+      !observables.isPlayerWaiting
     "
     class="start text-box"
   >
