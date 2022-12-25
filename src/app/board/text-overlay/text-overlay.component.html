@@ -8,6 +8,9 @@
   } as observables"
 >
   <!------------ GAME START -------------->
+  <section *ngIf="observables.isPlayerReady" class="start text-box">
+    <h2>En attente de l'adversaire...</h2>
+  </section>
   <section
     *ngIf="
       observables.startStage === 'tileChoice' && !observables.isPlayerReady
