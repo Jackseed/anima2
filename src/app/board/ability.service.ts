@@ -88,7 +88,7 @@ export class AbilityService {
 
         // Updates remainingActions if that's the last remainingAction.
         if (migrationValues.migrationUsed === remainginMigrations) {
-          this.gameService.decrementRemainingActions();
+          this.gameService.updateRemainingActions();
           this.gameService.updateRemainingMigrations(
             DEFAULT_REMAINING_MIGRATIONS
           );
@@ -198,7 +198,7 @@ export class AbilityService {
       }) as Promise<void>
     )
       .then(() => {
-        this.gameService.decrementRemainingActions();
+        this.gameService.updateRemainingActions();
         this.snackbar.open('Prolifération effectuée !', null, {
           duration: 800,
           panelClass: 'orange-snackbar',
@@ -371,7 +371,7 @@ export class AbilityService {
   }
 
   // ADAPTATION
-  public adapt(ability: Ability) {
+  public async adapt(ability: Ability) {
     let batch = this.db.firestore.batch();
     const activeSpecies = this.speciesQuery.getActive();
     const isGameStarting = this.gameQuery.isStarting;
@@ -406,7 +406,7 @@ export class AbilityService {
       ) as firebase.firestore.WriteBatch;
 
       // Decounts an action.
-      batch = this.gameService.decrementRemainingActionsByBatch(batch);
+      batch = await this.gameService.updateRemainingActions(batch);
     }
 
     batch
@@ -447,7 +447,7 @@ export class AbilityService {
       }) as Promise<void>
     ).then((_) => {
       // TODO: factorize this
-      this.gameService.decrementRemainingActions();
+      this.gameService.updateRemainingActions();
       this.snackbar.open('Cri de ralliement effectué !', null, {
         duration: 800,
         panelClass: 'orange-snackbar',
@@ -520,7 +520,7 @@ export class AbilityService {
         destinationId: randomAdjacentTileId,
         previousTileId: tileId,
       }) as Promise<void>
-    ).then((_) => this.gameService.decrementRemainingActions());
+    ).then((_) => this.gameService.updateRemainingActions());
   }
 
   // UTILS - Checks species quantity on a tile.

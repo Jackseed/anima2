@@ -6,8 +6,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
 // Rxjs
-import { iif, Observable, of, Subscription } from 'rxjs';
-import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { filter, map, pluck, tap } from 'rxjs/operators';
 
 // States
 import { UserQuery } from 'src/app/auth/_state';
@@ -34,7 +34,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public activeAbilityNumber$: Observable<number>;
 
   // Subscriptions
-  private turnSub: Subscription;
   private activeSpeciesSub: Subscription;
   private startGameSub: Subscription;
   private isPlayerChoosingAbilitySub: Subscription;
@@ -70,32 +69,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.switchToNextStartStateSub =
       this.playService.switchToNextStartStageWhenPlayersReadySub;
     this.activeSpeciesSub = this.getActiveSpeciesSub();
-    this.turnSub = this.getTurnSub();
     this.startGameSub = this.playService.reApplyTileChoiceStateSub();
     this.isPlayerChoosingAbilitySub = this.getPlayerChoosingAbilitySub();
   }
 
   // TODO: rework subscriptions
-  // If no more actions for the active player, skips turn
-  private getTurnSub(): Subscription {
-    const game$ = this.gameQuery.selectActive();
-    return game$
-      .pipe(
-        pluck('remainingActions'),
-        mergeMap((remainingActions) =>
-          iif(
-            () => this.playerQuery.getActiveId() === this.playingPlayerId,
-            of(remainingActions),
-            of(true)
-          )
-        ),
-        tap((bool) => {
-          if (!bool) this.gameService.incrementTurnCount();
-        })
-      )
-      .subscribe();
-  }
-
   // set active first species from active player
   private getActiveSpeciesSub(): Subscription {
     return this.playerQuery
@@ -141,7 +119,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       return this.playService.selectStartTile(tileId);
 
     // Dismisses clicks during other player turn.
-    if (!this.playerQuery.isActive(this.playingPlayerId))
+    if (!this.playerQuery.isActivePlayerPlaying(this.playingPlayerId))
       return this.snackbar.open("Ce n'est pas votre tour.", null, {
         duration: 3000,
       });
@@ -187,7 +165,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.switchToNextStartStateSub.unsubscribe();
-    this.turnSub.unsubscribe();
     this.activeSpeciesSub.unsubscribe();
     this.startGameSub.unsubscribe();
     this.isPlayerChoosingAbilitySub.unsubscribe();

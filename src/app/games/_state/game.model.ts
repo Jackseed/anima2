@@ -5,7 +5,7 @@ export interface Game {
   id?: string;
   name?: string;
   playerIds?: string[];
-  activePlayerId?: string;
+  playingPlayerId?: string;
   remainingActions: number;
   eraCount: number;
   turnCount: number;
@@ -28,7 +28,7 @@ export function createGame(params: Partial<Game>): Game {
     id: params.id,
     name: params.name,
     playerIds: params.playerIds,
-    activePlayerId: params.activePlayerId,
+    playingPlayerId: params.playingPlayerId,
     remainingActions: DEFAULT_ACTION_PER_TURN,
     eraCount: 1,
     turnCount: 1,

@@ -154,7 +154,7 @@ export class GameService extends CollectionService<GameState> {
       id: gameId,
       name,
       playerIds: [playerId],
-      activePlayerId: playerId,
+      playingPlayerId: playerId,
       inGameAbilities: usedAbilities,
     });
 
@@ -227,14 +227,41 @@ export class GameService extends CollectionService<GameState> {
       });
   }
 
-  public async incrementTurnCount() {
+  public async updateRemainingActions(
+    existingBatch?: firebase.firestore.WriteBatch
+  ) {
+    let batch = existingBatch ? existingBatch : this.db.firestore.batch();
+    const game = this.query.getActive();
+    const isLastAction = game.remainingActions === 1;
+    const gameRef = this.db.collection('games').doc(game.id).ref;
+    const remainingActions = isLastAction
+      ? DEFAULT_ACTION_PER_TURN
+      : firebase.firestore.FieldValue.increment(-1);
+
+    // If that's the last remaining action, changes turn.
+    if (isLastAction) {
+      batch = await this.incrementTurnCount(batch);
+    }
+
+    batch.update(gameRef, { remainingActions });
+
+    if (existingBatch) return batch;
+
+    batch.commit().catch((error) => {
+      console.log('Updating remaining actions failed: ', error);
+    });
+  }
+
+  public async incrementTurnCount(
+    batch: firebase.firestore.WriteBatch
+  ): Promise<firebase.firestore.WriteBatch> {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
-    const batch = this.db.firestore.batch();
     const increment = firebase.firestore.FieldValue.increment(1);
+    const unplayingPlayerId = this.playerQuery.unplayingPlayerId;
 
     batch.update(gameRef, { turnCount: increment });
-    batch.update(gameRef, { remainingActions: DEFAULT_ACTION_PER_TURN });
+    batch.update(gameRef, { playingPlayerId: unplayingPlayerId });
 
     // Every 3 turns, a new era begins.
     if ((game.turnCount + 1) % 3 === 0) {
@@ -242,28 +269,7 @@ export class GameService extends CollectionService<GameState> {
       this.countAllScore();
     }
 
-    return batch.commit().catch((error) => {
-      console.log('Transaction failed: ', error);
-    });
-  }
-
-  public async decrementRemainingActions() {
-    const gameId = this.query.getActiveId();
-    const gameDoc = this.db.collection('games').doc(gameId);
-    const decrement = firebase.firestore.FieldValue.increment(-1);
-
-    await gameDoc.update({ remainingActions: decrement }).catch((error) => {
-      console.log('Updating remaining actions failed: ', error);
-    });
-  }
-  public decrementRemainingActionsByBatch(
-    batch: firebase.firestore.WriteBatch
-  ): firebase.firestore.WriteBatch {
-    const gameId = this.query.getActiveId();
-    const gameRef = this.db.collection('games').doc(gameId).ref;
-    const decrement = firebase.firestore.FieldValue.increment(-1);
-
-    return batch.update(gameRef, { remainingActions: decrement });
+    return batch;
   }
 
   public async updateRemainingMigrations(remainingMigrations: number) {
