@@ -11,7 +11,7 @@ import { filter, map, mergeMap, pluck, tap } from 'rxjs/operators';
 
 // States
 import { UserQuery } from 'src/app/auth/_state';
-import { Game, GameQuery, GameService } from 'src/app/games/_state';
+import { GameQuery, GameService } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
 import { PlayerQuery } from '../players/_state';
 import {
@@ -35,7 +35,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   // Observables
   public tiles$: Observable<Tile[]>;
   public species$: Observable<Species[]>;
-  public game$: Observable<Game>;
   public hasActiveAbility$: Observable<boolean>;
   public activeAbilityNumber$: Observable<number>;
 
@@ -65,7 +64,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.playingPlayerId = this.userQuery.getActiveId();
 
     // Observables init
-    this.game$ = this.gameQuery.selectActive();
     this.tiles$ = this.tileQuery
       .selectAll()
       .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
@@ -81,14 +79,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.isPlayerChoosingAbilitySub = this.getPlayerChoosingAbilitySub();
   }
 
-  public isActionActive$(action: GameAction): Observable<boolean> {
-    return this.abilityService.isActionOngoing$(action);
-  }
-
   // TODO: rework subscriptions
   // If no more actions for the active player, skips turn
   private getTurnSub(): Subscription {
-    return this.game$
+    const game$ = this.gameQuery.selectActive();
+    return game$
       .pipe(
         pluck('remainingActions'),
         mergeMap((remainingActions) =>
@@ -192,29 +187,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   public isActive(tileId: number) {
     return this.tileQuery.isActive(tileId);
-  }
-
-  public validateStartTile() {
-    this.playService.validateStartTile();
-  }
-
-  public cancelStartTileChoice() {
-    this.playService.setStartTileChoice();
-  }
-
-  // Cancels tile focus when using "esc" on keyboard.
-  @HostListener('document:keydown', ['$event']) onKeydownHandler(
-    event: KeyboardEvent
-  ) {
-    if (event.key === 'Escape') {
-      const game = this.gameQuery.getActive();
-      if (game.startState === 'tileChoice') return;
-      if (game.startState === 'tileSelected')
-        return this.cancelStartTileChoice();
-      this.tileService.removeActive();
-      this.tileService.removeReachable();
-      this.tileService.removeAttackable();
-    }
   }
 
   ngOnDestroy() {

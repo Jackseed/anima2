@@ -27,6 +27,7 @@ import { ListComponent } from './species/list/list.component';
 import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimilation-menu.component';
 import { ScoreComponent } from './score/score.component';
 import { ActiveBarComponent } from './abilities/active-bar/active-bar.component';
+import { TextOverlayComponent } from './text-overlay/text-overlay.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { ActiveBarComponent } from './abilities/active-bar/active-bar.component'
     AssimilationMenuComponent,
     ScoreComponent,
     ActiveBarComponent,
+    TextOverlayComponent,
   ],
   imports: [
     CommonModule,

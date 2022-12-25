@@ -1,0 +1,31 @@
+.start {
+  position: fixed;
+  z-index: 2;
+  height: auto;
+  margin-top: 100%;
+}
+
+.validation-buttons {
+  --s: 4rem + 2vmin;
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
+  .mat-icon {
+    font-size: calc(var(--s));
+    width: calc(var(--s));
+    height: calc(var(--s));
+    line-height: calc(var(--s));
+  }
+}
+
+#validate {
+  position: absolute;
+  top: 75%;
+  left: 60%;
+}
+
+#cancel {
+  position: absolute;
+  top: 75%;
+  left: 15%;
+}
