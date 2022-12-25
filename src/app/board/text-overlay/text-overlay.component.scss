@@ -29,3 +29,19 @@
   top: 75%;
   left: 15%;
 }
+
+.animated {
+  animation: opacityOnAndOff 3s normal forwards step-end;
+}
+
+@keyframes opacityOnAndOff {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
