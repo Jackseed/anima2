@@ -58,7 +58,12 @@ export class GameService extends CollectionService<GameState> {
     );
 
     // Creates 1st player.
-    const playerBatchCreation = await this.playerBatchCreation(gameId, batch);
+    const playerBatchCreation = await this.playerBatchCreation(
+      gameId,
+      '#4cab79',
+      '#378965',
+      batch
+    );
 
     // Creates game object.
     batch = this.gameBatchCreation(
@@ -108,6 +113,8 @@ export class GameService extends CollectionService<GameState> {
   // Creates player & player's species docs.
   private async playerBatchCreation(
     gameId: string,
+    primaryColor: string,
+    secondaryColor: string,
     existingBatch?: firebase.firestore.WriteBatch
   ): Promise<{
     playerId: string;
@@ -118,8 +125,6 @@ export class GameService extends CollectionService<GameState> {
     const playerRef = this.db
       .collection(`games/${gameId}/players`)
       .doc(playerId).ref;
-    const primaryColor = '#35A4B5';
-    const secondaryColor = '#2885A1';
     const speciesId = this.db.createId();
 
     // Creates player doc.
@@ -183,7 +188,11 @@ export class GameService extends CollectionService<GameState> {
 
   // Creates player, player's species & update game docs.
   public async addActiveUserAsPlayer(gameId: string) {
-    const playerBatchCreation = await this.playerBatchCreation(gameId);
+    const playerBatchCreation = await this.playerBatchCreation(
+      gameId,
+      '#d75b62',
+      '#be4545'
+    );
     const firestorePlayerIds = firebase.firestore.FieldValue.arrayUnion(
       playerBatchCreation.playerId
     );
