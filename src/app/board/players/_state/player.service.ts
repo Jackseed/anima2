@@ -39,7 +39,7 @@ export class PlayerService extends CollectionService<PlayerState> {
       const player = this.query.getEntity(playerId);
       const playerRef = this.db.doc(`games/${gameId}/players/${playerId}`).ref;
       batch.update(playerRef, {
-        isReadyForNextStartState: !player.isReadyForNextStartState,
+        isReadyForNextStartStage: !player.isReadyForNextStartStage,
       });
     }
 

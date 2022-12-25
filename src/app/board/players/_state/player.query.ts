@@ -27,16 +27,22 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getAll().map((player) => player.id);
   }
 
-  public get areAllPlayersReadyForNextStartState$(): Observable<boolean> {
+  public get areAllPlayersReadyForNextStartStage$(): Observable<boolean> {
     return this.selectAll().pipe(
       map((players) =>
-        players.map((player) => player.isReadyForNextStartState)
+        players.map((player) => player.isReadyForNextStartStage)
       ),
       map((booleans) =>
         booleans.reduce(
           (accumulator, currentValue) => accumulator && currentValue
         )
       )
+    );
+  }
+
+  public get isActivePlayerReadyForNextStartStage$(): Observable<boolean> {
+    return this.selectActive().pipe(
+      map((player) => player.isReadyForNextStartStage)
     );
   }
 

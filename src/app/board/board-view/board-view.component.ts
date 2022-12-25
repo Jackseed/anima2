@@ -1,5 +1,5 @@
 // Angular
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,12 +14,7 @@ import { UserQuery } from 'src/app/auth/_state';
 import { GameQuery, GameService } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
 import { PlayerQuery } from '../players/_state';
-import {
-  GameAction,
-  Species,
-  SpeciesQuery,
-  SpeciesService,
-} from '../species/_state';
+import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
 
@@ -72,10 +67,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
 
     // Subscriptions init
-    this.switchToNextStartStateSub = this.playService.switchToNextStartStateSub;
+    this.switchToNextStartStateSub =
+      this.playService.switchToNextStartStageWhenPlayersReadySub;
     this.activeSpeciesSub = this.getActiveSpeciesSub();
     this.turnSub = this.getTurnSub();
-    this.startGameSub = this.playService.getStartGameSub();
+    this.startGameSub = this.playService.reApplyTileChoiceStateSub();
     this.isPlayerChoosingAbilitySub = this.getPlayerChoosingAbilitySub();
   }
 
@@ -140,15 +136,15 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     // Dismisses clicks on blank tiles.
     if (this.tileQuery.isBlank(tileId)) return;
 
+    // Game start: selects the starting tile.
+    if (this.playService.isSelectingStartingTile(tileId))
+      return this.playService.selectStartTile(tileId);
+
     // Dismisses clicks during other player turn.
     if (!this.playerQuery.isActive(this.playingPlayerId))
       return this.snackbar.open("Ce n'est pas votre tour.", null, {
         duration: 3000,
       });
-
-    // Game start: selects the starting tile.
-    if (this.playService.isSelectingStartingTile(tileId))
-      return this.playService.selectStartTile(tileId);
 
     // Migration
     if (this.abilityService.isMigrationValid(tileId))

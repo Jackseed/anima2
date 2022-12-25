@@ -1,13 +1,29 @@
 <div
   fxLayout="column"
   fxLayoutAlign="center center"
-  *ngIf="game$ | async as game"
+  *ngIf="{
+    startStage: startStage$ | async,
+    hasTileActive: hasTileActive$ | async,
+    isPlayerReady: isPlayerReady$ | async
+  } as observables"
 >
   <!------------ GAME START -------------->
-  <section *ngIf="game.startState === 'tileChoice'" class="start text-box">
+  <section
+    *ngIf="
+      observables.startStage === 'tileChoice' && !observables.isPlayerReady
+    "
+    class="start text-box"
+  >
     <h2>Sélectionnez votre case <br />de départ</h2>
   </section>
-  <section *ngIf="game.startState === 'tileSelected'" class="start text-box">
+  <section
+    *ngIf="
+      observables.hasTileActive &&
+      observables.startStage === 'tileChoice' &&
+      !observables.isPlayerReady
+    "
+    class="start text-box"
+  >
     <h2>Choisir cette case ?</h2>
     <button
       mat-icon-button
@@ -42,10 +58,7 @@
   >
     <h2>Choisissez une case <br />à assimiler</h2>
   </section>
-  <section
-    *ngIf="isActionActive$('assimilation') | async"
-    class="start text-box"
-  >
+  <section *ngIf="isActionActive$('rallying') | async" class="start text-box">
     <h2>Choisissez une case <br />à rallier</h2>
   </section>
 </div>

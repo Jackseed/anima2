@@ -5,11 +5,11 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 // Rxjs
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 
 // States
-import { GameQuery, GameService, StartState } from '../games/_state';
+import { GameQuery, GameService } from '../games/_state';
 import {
   createAssimilationValues,
   Species,
@@ -47,45 +47,30 @@ export class PlayService {
     public dialog: MatDialog
   ) {}
 
-  // GAME STATE - Organizes the first steps of the game.
-  // GAME STATE - Launching
-  public getStartGameSub(): Subscription {
-    const game$ = this.gameQuery.selectActive();
-
-    const startGameSub = game$
+  // Applies tile selection if it's the current game stage (for reloads),
+  // and the player hasn't select a tile yet.
+  public reApplyTileChoiceStateSub(): Subscription {
+    const gameStartStage$ = this.gameQuery.startStage$;
+    const isPlayerReady$ =
+      this.playerQuery.isActivePlayerReadyForNextStartStage$;
+    return combineLatest([gameStartStage$, isPlayerReady$])
       .pipe(
-        tap((game) => {
-          // Acts only on starting game.
-          if (!game.isStarting) return;
-
-          if (game.startState === 'launching') this.setupAdaptation();
-
-          // Applies tile selection if it's the current game state (for reloads),
-          // if a tile was selected but lost after a reload.
-          if (
-            game.startState === 'tileChoice' ||
-            (game.startState === 'tileSelected' && !this.tileQuery.hasActive())
-          ) {
-            console.log('setting tile choice');
+        tap(([startStage, isPlayerReady]) => {
+          if (startStage === 'tileChoice' && !isPlayerReady)
             this.setStartTileChoice();
-          }
         }),
         first()
       )
       .subscribe();
-
-    return startGameSub;
   }
 
-  public get switchToNextStartStateSub(): Subscription {
+  // When all players are ready, switches to the next start stage.
+  public get switchToNextStartStageWhenPlayersReadySub(): Subscription {
     const nextStartStateSub =
-      this.playerQuery.areAllPlayersReadyForNextStartState$
+      this.playerQuery.areAllPlayersReadyForNextStartStage$
         .pipe(
           tap((arePlayerReady) => {
-            if (arePlayerReady) {
-              console.log('switching to next start state');
-              this.switchToNextStartState();
-            }
+            if (arePlayerReady) this.switchToNextStartStage();
           })
         )
         .subscribe();
@@ -93,26 +78,29 @@ export class PlayService {
     return nextStartStateSub;
   }
 
-  private switchToNextStartState() {
+  private switchToNextStartStage() {
     const playerIds = this.playerQuery.allPlayerIds;
     const game = this.gameQuery.getActive();
 
+    // Switches players as not ready anymore.
     this.playerService.switchReadyState(playerIds);
-    if (game.startState === 'launching')
-      return this.switchStartState('abilityChoice');
-    if (game.startState === 'abilityChoice')
-      return this.switchStartState('tileChoice');
-  }
 
-  public async switchStartState(startState: StartState) {
-    const playerIds = this.playerQuery.allPlayerIds;
-    this.playerService.switchReadyState(playerIds);
-    this.gameService.switchStartState(startState);
+    if (game.startStage === 'launching') {
+      this.gameService.switchStartStage('abilityChoice');
+      return this.setupAdaptation();
+    }
+    if (game.startStage === 'abilityChoice') {
+      this.setStartTileChoice();
+      return this.gameService.switchStartStage('tileChoice');
+    }
+    if (game.startStage === 'tileChoice') {
+      this.gameService.switchStartStage('tileValidated');
+      return this.gameService.updateIsStarting(false);
+    }
   }
 
   // GAME STATE - Tile choice
   public setStartTileChoice() {
-    this.gameService.switchStartState('tileChoice');
     this.tileService.removeActive();
     this.tileService.markAllTilesReachable();
   }
@@ -120,16 +108,16 @@ export class PlayService {
   // GAME STATE - Tile selection
   public selectStartTile(tileId: number) {
     this.tileService.selectTile(tileId);
-    this.gameService.switchStartState('tileSelected');
   }
 
   // GAME STATE - Tile validation
   public validateStartTile() {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const activeSpecieId = this.speciesQuery.getActiveId();
+    const activePlayerId = this.playerQuery.getActiveId();
 
-    this.gameService.switchStartState('tileValidated');
-    this.gameService.updateIsStarting(false);
+    this.playerService.switchReadyState([activePlayerId]);
+
     this.speciesService.move({
       speciesId: activeSpecieId,
       quantity: 4,
@@ -145,7 +133,7 @@ export class PlayService {
     return (
       activeGame.isStarting &&
       selectedTile.isReachable &&
-      activeGame.startState === 'tileChoice'
+      activeGame.startStage === 'tileChoice'
     );
   }
 
@@ -161,9 +149,6 @@ export class PlayService {
   }
 
   public async setupAdaptation() {
-    const gameStartState = this.gameQuery.getActive().startState;
-
-    if (gameStartState === 'launching') this.switchStartState('abilityChoice');
     await this.playerService.setRandomAbilityChoice();
     this.openAdaptationMenu();
   }

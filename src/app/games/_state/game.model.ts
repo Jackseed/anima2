@@ -12,16 +12,15 @@ export interface Game {
   remainingMigrations: number | firebase.firestore.FieldValue;
   inGameAbilities: Ability[];
   isStarting: boolean;
-  startState: StartState;
+  startStage: StartStage;
 }
 
 export const DEFAULT_ACTION_PER_TURN = 2;
 export const DEFAULT_REMAINING_MIGRATIONS = 4;
-export type StartState =
+export type StartStage =
   | 'launching'
   | 'abilityChoice'
   | 'tileChoice'
-  | 'tileSelected'
   | 'tileValidated';
 
 export function createGame(params: Partial<Game>): Game {
@@ -36,7 +35,7 @@ export function createGame(params: Partial<Game>): Game {
     remainingMigrations: DEFAULT_REMAINING_MIGRATIONS,
     inGameAbilities: [],
     isStarting: true,
-    startState: 'launching',
+    startStage: 'launching',
     ...params,
   };
 }
