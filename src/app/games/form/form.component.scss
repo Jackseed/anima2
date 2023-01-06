@@ -1,0 +1,27 @@
+main {
+  background-image: url("../../../assets/background-flame.png");
+  background-position: center;
+  background-size: 25%;
+  background-repeat: no-repeat;
+}
+
+section {
+  height: auto;
+}
+
+input {
+  border-width: 4px 8px 4px 8px;
+  border-color: #2984a0;
+  border-style: solid;
+  border-radius: 20px;
+  padding: 0px 12px 0px 12px;
+}
+
+input:focus {
+  border-color: #f59c27;
+}
+
+#hourglass {
+  width: 50%;
+  height: 20%;
+}

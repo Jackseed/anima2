@@ -23,12 +23,45 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     super(store);
   }
 
-  // Checks if a player is active.
-  public isActive(playerId: string): boolean {
+  public get allPlayerIds(): string[] {
+    return this.getAll().map((player) => player.id);
+  }
+
+  public get areAllPlayersReadyForNextStartStage$(): Observable<boolean> {
+    return this.selectAll().pipe(
+      map((players) =>
+        players.map((player) => player.isWaitingForNextStartStage)
+      ),
+      map((booleans) =>
+        booleans.reduce(
+          (accumulator, currentValue) => accumulator && currentValue
+        )
+      )
+    );
+  }
+
+  public get isActivePlayerWaitingForNextStartStage(): boolean {
+    return this.getActive().isWaitingForNextStartStage;
+  }
+
+  public get isActivePlayerWaitingForNextStartStage$(): Observable<boolean> {
+    return this.selectActive().pipe(
+      map((player) => player.isWaitingForNextStartStage)
+    );
+  }
+
+  // Checks if active player is playing.
+  public isActivePlayerPlaying(playerId: string): boolean {
     const activeGame = this.gameQuery.getActive();
-    const activePlayerId = activeGame.activePlayerId;
+    const activePlayerId = activeGame.playingPlayerId;
 
     return playerId === activePlayerId;
+  }
+
+  public get unplayingPlayerId(): string {
+    const playerIds = this.getAll().map((player) => player.id);
+    const playingPlayerId = this.gameQuery.playingPlayerId;
+    return playerIds.filter((id) => id !== playingPlayerId)[0];
   }
 
   public get areAbilityChoicesSet$(): Observable<boolean> {

@@ -1,13 +1,28 @@
+// Angular
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HomepageComponent } from './homepage/homepage.component';
+import { FormsModule } from '@angular/forms';
+
 // Flex Layout
 import { FlexLayoutModule } from '@angular/flex-layout';
-// Angular Material
+
+// Material
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
+// Components
+import { FormComponent } from './form/form.component';
+import { HomepageComponent } from './homepage/homepage.component';
+import { ListComponent } from './list/list.component';
 
 @NgModule({
-  declarations: [HomepageComponent],
-  imports: [CommonModule, FlexLayoutModule, MatIconModule],
+  declarations: [HomepageComponent, FormComponent, ListComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FlexLayoutModule,
+    MatIconModule,
+    MatButtonModule,
+  ],
 })
 export class GamesModule {}

@@ -22,6 +22,14 @@ export interface SpeciesListData {
   action: SpeciesListActions;
 }
 
+export interface MoveParameters {
+  speciesId: string;
+  quantity: number;
+  destinationId: number;
+  previousTileId?: number;
+  migrationUsed?: number;
+}
+
 export const BASIC_ACTIONS = [
   'migration',
   'assimilation',

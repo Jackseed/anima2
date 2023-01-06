@@ -1,6 +1,12 @@
 // Angular
 import { Injectable } from '@angular/core';
 
+// Firebase
+import firebase from 'firebase/app';
+
+// AngularFire
+import { AngularFirestore } from '@angular/fire/firestore';
+
 // Rxjs
 import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -10,7 +16,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
-import { GameQuery, GameService } from '../games/_state';
+import {
+  DEFAULT_REMAINING_MIGRATIONS,
+  GameQuery,
+  GameService,
+} from '../games/_state';
 import { PlayerService } from './players/_state';
 import {
   ABILITIES,
@@ -37,6 +47,7 @@ import { Tile, TileQuery, TileService } from './tiles/_state';
 })
 export class AbilityService {
   constructor(
+    private db: AngularFirestore,
     private gameQuery: GameQuery,
     private gameService: GameService,
     private playerService: PlayerService,
@@ -58,14 +69,15 @@ export class AbilityService {
     this.tileService.removeActive();
     this.tileService.removeReachable();
 
-    this.speciesService
-      .move(
-        activeSpeciesId,
-        migrationValues.movingQuantity,
+    (
+      this.speciesService.move({
+        speciesId: activeSpeciesId,
+        quantity: migrationValues.movingQuantity,
         destinationId,
         previousTileId,
-        migrationValues.migrationUsed
-      )
+        migrationUsed: migrationValues.migrationUsed,
+      }) as Promise<void>
+    )
       .then(async () => {
         this.tileService.selectTile(destinationId);
         this.snackbar.open('Migration effectuée !', null, {
@@ -76,7 +88,10 @@ export class AbilityService {
 
         // Updates remainingActions if that's the last remainingAction.
         if (migrationValues.migrationUsed === remainginMigrations) {
-          this.gameService.decrementRemainingActions(true);
+          this.gameService.updateRemainingActions();
+          this.gameService.updateRemainingMigrations(
+            DEFAULT_REMAINING_MIGRATIONS
+          );
         }
       })
       .catch((error) => {
@@ -175,14 +190,15 @@ export class AbilityService {
     this.tileService.removeActive();
     this.tileService.removeProliferable();
 
-    this.speciesService
-      .move(
-        activeSpeciesId,
-        proliferationValues.createdQuantity,
-        proliferationTileId
-      )
+    (
+      this.speciesService.move({
+        speciesId: activeSpeciesId,
+        quantity: proliferationValues.createdQuantity,
+        destinationId: proliferationTileId,
+      }) as Promise<void>
+    )
       .then(() => {
-        this.gameService.decrementRemainingActions();
+        this.gameService.updateRemainingActions();
         this.snackbar.open('Prolifération effectuée !', null, {
           duration: 800,
           panelClass: 'orange-snackbar',
@@ -225,17 +241,17 @@ export class AbilityService {
     this.tileService.removeAttackable();
 
     // Removes the assimilated species.
-    await this.speciesService.move(
-      removedSpeciesId,
-      assimilationValues.assimilatedQuantity,
-      removedTileId
-    );
+    await (this.speciesService.move({
+      speciesId: removedSpeciesId,
+      quantity: assimilationValues.assimilatedQuantity,
+      destinationId: removedTileId,
+    }) as Promise<void>);
     // Adds quantity to the assimilating species.
-    await this.speciesService.move(
-      activeSpeciesId,
-      assimilationValues.createdQuantity,
-      activeTileId
-    );
+    await (this.speciesService.move({
+      speciesId: activeSpeciesId,
+      quantity: assimilationValues.createdQuantity,
+      destinationId: activeTileId,
+    }) as Promise<void>);
   }
 
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
@@ -355,33 +371,46 @@ export class AbilityService {
   }
 
   // ADAPTATION
-  public adapt(ability: Ability) {
+  public async adapt(ability: Ability) {
+    let batch = this.db.firestore.batch();
     const activeSpecies = this.speciesQuery.getActive();
     const isGameStarting = this.gameQuery.isStarting;
-    const adaptPromises = [];
 
-    const resetAbilityPromise = this.playerService.resetAbilityChoices();
-    const addAbilityPromise = this.speciesService.addAbilityToSpecies(
+    // Removes adaptation menu.
+    this.gameService.updateUiAdaptationMenuOpen(false);
+
+    // Updates game abilities used.
+    batch = this.gameService.saveAbilityUsedByBatch(ability, batch);
+
+    // Resets ability choices.
+    batch = this.playerService.resetAbilityChoicesByBatch(ability, batch);
+
+    // Updates species doc with the new ability.
+    batch = this.speciesService.addAbilityToSpeciesByBatch(
       ability,
-      activeSpecies
+      activeSpecies,
+      batch
     );
 
-    adaptPromises.push(resetAbilityPromise, addAbilityPromise);
-
-    // If the game is started, count adaptation as the action otherwise do it for free.
+    // If the game is started, count adaptation as an action.
     if (!isGameStarting) {
       const activeTileId = Number(this.tileQuery.getActiveId());
-      const movePromise = isGameStarting
-        ? Promise.resolve()
-        : this.speciesService.move(activeSpecies.id, -4, activeTileId);
+      // Removes the sacrified species.
+      batch = this.speciesService.move(
+        {
+          speciesId: activeSpecies.id,
+          quantity: -4,
+          destinationId: activeTileId,
+        },
+        batch
+      ) as firebase.firestore.WriteBatch;
 
-      const decrementActionPromise =
-        this.gameService.decrementRemainingActions();
-
-      adaptPromises.push(movePromise, decrementActionPromise);
+      // Decounts an action.
+      batch = await this.gameService.updateRemainingActions(batch);
     }
 
-    Promise.all(adaptPromises)
+    batch
+      .commit()
       .then(() => {
         this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
           duration: 800,
@@ -409,16 +438,21 @@ export class AbilityService {
 
     this.tileService.removeRallyable();
 
-    this.speciesService
-      .move(activeSpeciesId, movingQuantity, activeTileId, ralliedTileId)
-      .then((_) => {
-        // TODO: factorize this
-        this.gameService.decrementRemainingActions();
-        this.snackbar.open('Cri de ralliement effectué !', null, {
-          duration: 800,
-          panelClass: 'orange-snackbar',
-        });
+    (
+      this.speciesService.move({
+        speciesId: activeSpeciesId,
+        quantity: movingQuantity,
+        destinationId: activeTileId,
+        previousTileId: ralliedTileId,
+      }) as Promise<void>
+    ).then((_) => {
+      // TODO: factorize this
+      this.gameService.updateRemainingActions();
+      this.snackbar.open('Cri de ralliement effectué !', null, {
+        duration: 800,
+        panelClass: 'orange-snackbar',
       });
+    });
   }
 
   // Marks adjacent active species rallyable.
@@ -479,9 +513,14 @@ export class AbilityService {
         ? intimidatedSpecies.quantity
         : activeTileSpecies.quantity;
 
-    this.speciesService
-      .move(intimidatedSpecies.id, movingQuantity, randomAdjacentTileId, tileId)
-      .then((_) => this.gameService.decrementRemainingActions());
+    (
+      this.speciesService.move({
+        speciesId: intimidatedSpecies.id,
+        quantity: movingQuantity,
+        destinationId: randomAdjacentTileId,
+        previousTileId: tileId,
+      }) as Promise<void>
+    ).then((_) => this.gameService.updateRemainingActions());
   }
 
   // UTILS - Checks species quantity on a tile.

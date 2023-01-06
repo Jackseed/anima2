@@ -13,7 +13,8 @@ h3,
 h4,
 p,
 span,
-textarea {
+textarea,
+input {
   font-family: "Grandstander", "Helvetica Neue", sans-serif;
 }
 
@@ -175,6 +176,7 @@ snack-bar-container > div {
   padding-right: 5%;
 }
 
+// TODO: remove height, width & margins
 .text-box {
   height: 50%;
   width: 80%;
@@ -186,4 +188,16 @@ snack-bar-container > div {
   justify-content: center;
   align-items: center;
   text-align: center;
+}
+
+.margin-top-20 {
+  margin-top: 20%;
+}
+
+.margin-top-25 {
+  margin-top: 25%;
+}
+
+.margin-top-30 {
+  margin-top: 30%;
 }

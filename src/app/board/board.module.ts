@@ -3,6 +3,20 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+
+// Material
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+
+// Flex Layout
+import { FlexLayoutModule } from '@angular/flex-layout';
+
+// Pinch Zoom
+import { PinchZoomModule } from 'ngx-pinch-zoom';
+
 // Components
 import { BoardViewComponent } from './board-view/board-view.component';
 import { FooterComponent } from './footer/footer.component';
@@ -13,16 +27,7 @@ import { ListComponent } from './species/list/list.component';
 import { AssimilationMenuComponent } from './abilities/assimilation-menu/assimilation-menu.component';
 import { ScoreComponent } from './score/score.component';
 import { ActiveBarComponent } from './abilities/active-bar/active-bar.component';
-// Flex Layout
-import { FlexLayoutModule } from '@angular/flex-layout';
-// Material
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
-import { MatDialogModule } from '@angular/material/dialog';
-// Libs
-import { PinchZoomModule } from 'ngx-pinch-zoom';
+import { TextOverlayComponent } from './text-overlay/text-overlay.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +40,7 @@ import { PinchZoomModule } from 'ngx-pinch-zoom';
     AssimilationMenuComponent,
     ScoreComponent,
     ActiveBarComponent,
+    TextOverlayComponent,
   ],
   imports: [
     CommonModule,
@@ -54,6 +60,14 @@ export class BoardModule {
     private domSanitizer: DomSanitizer
   ) {
     // Registrating all board icons
+
+    // HOURGLASS
+    this.matIconRegistry.addSvgIcon(
+      'hourglass',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/hourglass.svg'
+      )
+    );
 
     // VALIDATION BUTTONS
     this.matIconRegistry.addSvgIcon(

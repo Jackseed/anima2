@@ -1,0 +1,62 @@
+<button mat-icon-button id="close-button" (click)="close()">
+  <mat-icon id="close-icon" svgIcon="close"></mat-icon>
+</button>
+<main
+  fxFlexFill
+  fxLayout="column"
+  fxLayoutAlign="start center"
+  *ngIf="!gameId; else waitingRoom"
+  (keydown.enter)="createGame()"
+>
+  <section class="text-box margin-top-30">
+    <h2>Choisissez le nom de votre partie</h2>
+  </section>
+
+  <form
+    fxFlex="10"
+    #gameForm="ngForm"
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    class="margin-top-20"
+  >
+    <input
+      fxFlexFill
+      #gameNameInput
+      type="text"
+      name="name"
+      required
+      [(ngModel)]="gameName"
+    />
+  </form>
+
+  <button
+    *ngIf="!gameForm.form.valid"
+    mat-icon-button
+    id="validate-button"
+    disabled
+  >
+    <mat-icon id="validate-icon" svgIcon="blank"></mat-icon>
+  </button>
+
+  <button
+    *ngIf="gameForm.form.valid"
+    mat-icon-button
+    id="validate-button"
+    (click)="createGame(); gameForm.reset()"
+  >
+    <mat-icon id="validate-icon" svgIcon="validate"></mat-icon>
+  </button>
+</main>
+
+<ng-template #waitingRoom>
+  <main fxLayout="column" fxLayoutAlign="start center">
+    <mat-icon
+      class="margin-top-25"
+      id="hourglass"
+      svgIcon="hourglass"
+    ></mat-icon>
+    <section class="text-box">
+      <h2>En attente d'un adversaire...</h2>
+    </section>
+  </main>
+</ng-template>

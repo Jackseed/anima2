@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 
 // States
 import { GameStore, GameState, GameUIState, GameUI } from './game.store';
+import { StartStage } from '.';
 
 @Injectable({ providedIn: 'root' })
 export class GameQuery extends QueryEntity<GameState> {
@@ -17,6 +18,24 @@ export class GameQuery extends QueryEntity<GameState> {
   constructor(protected store: GameStore) {
     super(store);
     this.createUIQuery();
+  }
+
+  public get playerCount$(): Observable<number> {
+    const game$ = this.selectActive();
+
+    return game$.pipe(map((game) => (game ? game.playerIds.length : 0)));
+  }
+
+  public isGameFull(gameId: string): boolean {
+    const game = this.getEntity(gameId);
+    return game.playerIds.length === 2;
+  }
+
+  public get isGameFull$(): Observable<boolean> {
+    const game$ = this.selectActive();
+    return game$.pipe(
+      map((game) => (game ? game.playerIds.length === 2 : false))
+    );
   }
 
   public get remainingMigrations(): number {
@@ -45,5 +64,13 @@ export class GameQuery extends QueryEntity<GameState> {
 
   public get isStarting(): boolean {
     return this.getActive().isStarting;
+  }
+
+  public get startStage$(): Observable<StartStage> {
+    return this.selectActive().pipe(map((game) => game.startStage));
+  }
+
+  public get playingPlayerId(): string {
+    return this.getActive().playingPlayerId;
   }
 }

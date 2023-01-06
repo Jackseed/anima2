@@ -1,11 +1,11 @@
 // Angular
 import { Injectable } from '@angular/core';
 
-// Angular Material
+// Material
 import { MatDialog } from '@angular/material/dialog';
 
 // Rxjs
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 
 // States
@@ -20,7 +20,7 @@ import {
   TileSpecies,
 } from './species/_state';
 import { TileQuery, TileService } from './tiles/_state';
-import { ABILITY_CHOICE_AMOUNT, PlayerService } from './players/_state';
+import { PlayerQuery, PlayerService } from './players/_state';
 import { AbilityService } from './ability.service';
 
 // Components
@@ -39,6 +39,7 @@ export class PlayService {
     private gameService: GameService,
     private tileQuery: TileQuery,
     private tileService: TileService,
+    private playerQuery: PlayerQuery,
     private playerService: PlayerService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
@@ -46,41 +47,60 @@ export class PlayService {
     public dialog: MatDialog
   ) {}
 
-  // GAME STATE - Organizes the first steps of the game.
-  // GAME STATE - Launching
-  public getStartGameSub(): Subscription {
-    const game$ = this.gameQuery.selectActive();
-    return game$
+  // Applies tile selection if it's the current game stage (for reloads),
+  // and the player hasn't select a tile yet.
+  public reApplyTileChoiceStateSub(): Subscription {
+    const gameStartStage$ = this.gameQuery.startStage$;
+    const isPlayerReady$ =
+      this.playerQuery.isActivePlayerWaitingForNextStartStage$;
+    return combineLatest([gameStartStage$, isPlayerReady$])
       .pipe(
-        tap((game) => {
-          // Acts only on starting game.
-          if (!game.isStarting) return;
-
-          if (game.startState === 'launching') this.setupAdaptation();
-
-          // Applies tile selection if it's a new game,
-          // if it's the current state (for reloads),
-          // if a tile was selected but lost after a reload.
-          if (
-            //game.startState === 'launching' ||
-            game.startState === 'tileChoice' ||
-            (game.startState === 'tileSelected' && !this.tileQuery.hasActive())
-          )
+        tap(([startStage, isPlayerReady]) => {
+          if (startStage === 'tileChoice' && !isPlayerReady)
             this.setStartTileChoice();
         }),
         first()
       )
       .subscribe();
   }
-  // GAME STATE - Ability choice
-  public setStartAbilityChoice() {
-    this.gameService.switchStartState('abilityChoice');
-    this.setRandomAbilityChoice();
+
+  // When all players are ready, switches to the next start stage.
+  public get switchToNextStartStageWhenPlayersReadySub(): Subscription {
+    const nextStartStateSub =
+      this.playerQuery.areAllPlayersReadyForNextStartStage$
+        .pipe(
+          tap((arePlayerReady) => {
+            if (arePlayerReady) this.switchToNextStartStage();
+          })
+        )
+        .subscribe();
+
+    return nextStartStateSub;
+  }
+
+  private switchToNextStartStage() {
+    const playerIds = this.playerQuery.allPlayerIds;
+    const game = this.gameQuery.getActive();
+
+    // Switches players as not ready anymore.
+    this.playerService.switchReadyState(playerIds);
+
+    if (game.startStage === 'launching') {
+      this.gameService.switchStartStage('abilityChoice');
+      return this.setupAdaptation();
+    }
+    if (game.startStage === 'abilityChoice') {
+      this.setStartTileChoice();
+      return this.gameService.switchStartStage('tileChoice');
+    }
+    if (game.startStage === 'tileChoice') {
+      this.gameService.switchStartStage('tileValidated');
+      return this.gameService.updateIsStarting(false);
+    }
   }
 
   // GAME STATE - Tile choice
   public setStartTileChoice() {
-    this.gameService.switchStartState('tileChoice');
     this.tileService.removeActive();
     this.tileService.markAllTilesReachable();
   }
@@ -88,17 +108,22 @@ export class PlayService {
   // GAME STATE - Tile selection
   public selectStartTile(tileId: number) {
     this.tileService.selectTile(tileId);
-    this.gameService.switchStartState('tileSelected');
   }
 
   // GAME STATE - Tile validation
   public validateStartTile() {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const activeSpecieId = this.speciesQuery.getActiveId();
+    const activePlayerId = this.playerQuery.getActiveId();
 
-    this.gameService.switchStartState('tileValidated');
-    this.gameService.updateIsStarting(false);
-    this.speciesService.move(activeSpecieId, 4, activeTileId);
+    this.playerService.switchReadyState([activePlayerId]);
+
+    this.speciesService.move({
+      speciesId: activeSpecieId,
+      quantity: 4,
+      destinationId: activeTileId,
+    });
+    this.tileService.removeActive();
   }
 
   // GAME START - UTILS - Verifies if it's a starting tile selection.
@@ -109,7 +134,7 @@ export class PlayService {
     return (
       activeGame.isStarting &&
       selectedTile.isReachable &&
-      activeGame.startState === 'tileChoice'
+      activeGame.startStage === 'tileChoice'
     );
   }
 
@@ -125,27 +150,13 @@ export class PlayService {
   }
 
   public async setupAdaptation() {
-    const gameStartState = this.gameQuery.getActive().startState;
-
-    if (gameStartState === 'launching')
-      this.gameService.switchStartState('abilityChoice');
-    await this.setRandomAbilityChoice();
+    await this.playerService.setRandomAbilityChoice();
     this.openAdaptationMenu();
-  }
-
-  // UTILS - Gets random abilities and saves it with the active tile id.
-  public async setRandomAbilityChoice() {
-    this.gameService.updateUiAdaptationMenuOpen(true);
-    const activeTileId = Number(this.tileQuery.getActiveId());
-    const randomAbilities = this.playerService.getAbilityChoices(
-      ABILITY_CHOICE_AMOUNT
-    );
-
-    await this.playerService.saveAbilityChoices(randomAbilities, activeTileId);
   }
 
   public async openAdaptationMenu(): Promise<void> {
     const isGameStarting = this.gameQuery.isStarting;
+    const activePlayerId = this.playerQuery.getActiveId();
     const dialogRef = this.dialog.open(AdaptationMenuComponent, {
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
@@ -161,7 +172,7 @@ export class PlayService {
         .afterClosed()
         .pipe(first())
         .subscribe(() => {
-          this.setStartTileChoice();
+          this.playerService.switchReadyState([activePlayerId]);
         });
   }
 
@@ -233,6 +244,7 @@ export class PlayService {
       panelClass: 'transparent-menu',
       height: '100%',
       width: '100%',
+      restoreFocus: false,
     });
   }
 
@@ -253,6 +265,7 @@ export class PlayService {
       width: '80%',
       panelClass: ['custom-container', 'no-padding-bottom'],
       autoFocus: false,
+      restoreFocus: false,
     });
   }
 }

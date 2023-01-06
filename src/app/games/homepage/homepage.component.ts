@@ -3,8 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
-// Angular Material
+// Material
 import { MatIconRegistry } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 
 // Akita
 import { resetStores } from '@datorama/akita';
@@ -12,40 +13,22 @@ import { resetStores } from '@datorama/akita';
 // States
 import { GameService } from '../_state/game.service';
 
+// Components
+import { FormComponent } from '../form/form.component';
+import { ListComponent } from '../list/list.component';
+
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss'],
 })
 export class HomepageComponent implements OnInit {
-  public menu = [
-    {
-      cta: 'Partie rapide',
-      //func: this.playNow(),
-    },
-    {
-      cta: 'Invitez un joueur',
-      //func: this.playNow(),
-    },
-    {
-      cta: 'Règles & tuto',
-      //func: this.playNow(),
-    },
-    {
-      cta: 'Compte',
-      //func: this.playNow(),
-    },
-    {
-      cta: 'Quittez',
-      //func: this.playNow(),
-    },
-  ];
-
   constructor(
     private router: Router,
-    private gameService: GameService,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private dialog: MatDialog,
+    private gameService: GameService
   ) {
     this.matIconRegistry.addSvgIcon(
       'adaptation',
@@ -55,15 +38,37 @@ export class HomepageComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.gameService.removeActive();
+  }
+
+  public openGameForm() {
+    this.dialog.open(FormComponent, {
+      height: '60%',
+      width: '80%',
+      panelClass: ['custom-container', 'no-padding-bottom'],
+      backdropClass: 'transparent-backdrop',
+      autoFocus: false,
+    });
+  }
+
+  public openGameList() {
+    this.dialog.open(ListComponent, {
+      height: '60%',
+      width: '80%',
+      panelClass: ['custom-container', 'no-padding-bottom'],
+      backdropClass: 'transparent-backdrop',
+      autoFocus: false,
+    });
+  }
 
   public async startGame() {
     resetStores({ exclude: ['game'] });
     this.gameService
       .createNewGame('')
-      .then((gameId) => {
+      .then((gameId: string) => {
         this.router.navigate([`/games/${gameId}`]);
       })
-      .catch((error) => console.log('Neutral creation failed: ', error));
+      .catch((error: any) => console.log('Game creation failed: ', error));
   }
 }
