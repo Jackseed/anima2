@@ -24,21 +24,15 @@
       fxLayoutAlign="space-between"
     >
       <div fxFlex="35"></div>
-      <div
-        fxFlex="18"
-        class="background-image"
-        style="--img: url(/assets/menu-buttons/ability-1.png)"
-      ></div>
-      <div
-        fxFlex="18"
-        class="background-image"
-        style="--img: url(/assets/menu-buttons/ability-2.png)"
-      ></div>
-      <div
-        fxFlex="18"
-        class="background-image"
-        style="--img: url(/assets/menu-buttons/ability-3.png)"
-      ></div>
+      <div fxFlex="54" fxLayout="row" fxLayoutAlign="space-between">
+        <div
+          *ngFor="let ability of abilities$ | async"
+          fxFlex="30"
+          class="background-image"
+        >
+          <mat-icon [svgIcon]="ability.id + '-ability'"></mat-icon>
+        </div>
+      </div>
       <div
         fxFlex="7"
         class="orange"

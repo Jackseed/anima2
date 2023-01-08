@@ -19,16 +19,16 @@
 		</i:pgfRef>
 	</foreignObject>
 	<g i:extraneous="self">
-		<g id="hexa">
+<!-- 		<g id="hexa">
 			<g>
 				<g>
 					<polygon fill="#21937D" points="11.071,33.447 64,2.887 116.929,33.447 116.929,94.564 64,125.121 11.071,94.564 					"/>
 					<polygon fill="#3DAF9A" points="116.923,33.441 64.006,2.887 11.077,33.447 11.077,94.564 11.096,94.577 					"/>
 				</g>
 			</g>
-		</g>
+		</g> -->
 		<g id="Calque_2">
-			<text transform="matrix(1 0 0 1 46.7632 101.1411)" fill="#FFFFFF" font-family="'Grandstander-Bold'" font-size="9.8303">Sociale</text>
+<!-- 			<text transform="matrix(1 0 0 1 46.7632 101.1411)" fill="#FFFFFF" font-family="'Grandstander-Bold'" font-size="9.8303">Sociale</text> -->
 			<g>
 				<path fill="#FFFFFF" d="M70.137,77.095c-0.45-0.108-0.86-0.153-1.243-0.163c0.244-0.301,0.525-0.706,0.889-1.263
 					c0.109-0.164,0.205-0.32,0.3-0.477c-1.586,0.924-3.326,1.688-5.25,2.264c-0.69,0.206-1.349,0.376-1.975,0.513
