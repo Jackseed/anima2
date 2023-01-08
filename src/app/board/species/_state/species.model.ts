@@ -162,7 +162,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Génération spontanée',
+      name: 'Sporifère',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -177,7 +177,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Meute',
+      name: 'Sociale',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -193,7 +193,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Portée',
+      name: 'Bombardière',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -223,7 +223,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Tunnel',
+      name: 'Fouisseuse',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -254,7 +254,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Vol',
+      name: 'Ailée',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -269,7 +269,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Gigantisme',
+      name: 'Gigantesque',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -284,7 +284,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Gloutonnerie',
+      name: 'Vorace',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -314,7 +314,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Intimidation',
+      name: 'Stridulante',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -344,7 +344,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Carnassier',
+      name: 'Carnassière',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -359,7 +359,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Prédation',
+      name: 'Venimeuse',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },

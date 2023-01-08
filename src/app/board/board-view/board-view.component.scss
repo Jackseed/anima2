@@ -58,18 +58,18 @@ footer {
 
 .species {
   color: var(--color);
-  z-index: 0;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .species-quantity {
-  z-index: 1;
+  color: white;
+  position: absolute;
   font-size: 0.4rem;
-  text-align: center;
-  vertical-align: middle;
   line-height: 100%;
+  font-family: "Grandstander", "Helvetica Neue", sans-serif;
 }
 
 .tiles {
