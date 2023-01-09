@@ -61,9 +61,7 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
   }
 
   public get activeSpeciesAbilities$(): Observable<Ability[]> {
-    return this.selectActive().pipe(
-      map(species => species.abilities)
-    )
+    return this.selectActive().pipe(map((species) => species.abilities));
   }
 
   public adjacentActiveSpeciesTileIds(

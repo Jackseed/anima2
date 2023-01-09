@@ -23,9 +23,12 @@
         <button
           fxFlexFill
           mat-icon-button
-          (click)="activate('species', i, species)"
+          (click)="activate(species)"
           [disabled]="data.listType === 'passive'"
-          [ngClass]="{ active: species.id === active.id }"
+          [ngClass]="{
+            active:
+              species.id === active.species?.id && active.type === 'species'
+          }"
           style="--primary-color: {{
             getSpeciesColors(species, 'primary')
           }}; --secondary-color: {{ getSpeciesColors(species, 'secondary') }}"
@@ -52,16 +55,24 @@
           mat-icon-button
           fxFlex="33"
           class="abilities"
-          (click)="activate('ability', i)"
+          (click)="activate(species, ability.id)"
           fxLayoutAlign="center center"
         >
           <mat-icon
-            *ngIf="ability !== active"
+            *ngIf="
+              !(
+                active.species.id === species.id &&
+                active.abilityId === ability.id
+              )
+            "
             [svgIcon]="ability.id + '-ability'"
           ></mat-icon>
 
           <mat-icon
-            *ngIf="ability === active"
+            *ngIf="
+              species.id === active.species.id &&
+              ability.id === active.abilityId
+            "
             [svgIcon]="ability.id + '-ability-active'"
           ></mat-icon>
         </button>
@@ -75,7 +86,7 @@
   >
     <!---------------------- DEFINITION - ACTIVE ABILITY ONLY ---------------------->
     <div
-      *ngIf="active.type! === 'ability'; else species"
+      *ngIf="active.type === 'ability'; else species"
       fxLayout="column"
       fxLayoutAlign="center center"
       fxFlexFill
@@ -86,16 +97,19 @@
         fxFlexFill
         fxLayoutAlign="center center"
       >
-        <mat-icon id="title-icon" [svgIcon]="active.icon"></mat-icon>
+        <mat-icon
+          id="title-icon"
+          [svgIcon]="active.abilityId + '-ability'"
+        ></mat-icon>
       </h3>
       <textarea fxFlex readonly wrap="hard" rows="3" cols="25">{{
-        active.definition
+        getAbilityFrDefinition(active.abilityId)
       }}</textarea>
     </div>
     <!---------------------- DEFINITION - ACTIVE SPECIE ONLY ---------------------->
     <ng-template #species>
       <div
-        *ngIf="active.type! === 'species'"
+        *ngIf="active.type === 'species'"
         fxLayout="column"
         fxLayoutAlign="center center"
         fxFlexFill
