@@ -198,12 +198,6 @@ export class BoardModule {
 
     /// SPECIES
     this.matIconRegistry.addSvgIcon(
-      'acceleration',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/acceleration.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
       'gluttony',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/species/gluttony.svg'
@@ -295,18 +289,6 @@ export class BoardModule {
     );
 
     /// ABILITIES
-    this.matIconRegistry.addSvgIcon(
-      'acceleration-ability',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/abilities/acceleration.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'acceleration-ability-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/abilities/acceleration-active.svg'
-      )
-    );
     this.matIconRegistry.addSvgIcon(
       'gluttony-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(

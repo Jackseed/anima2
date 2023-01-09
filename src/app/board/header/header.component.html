@@ -1,10 +1,11 @@
 <div class="sidebar" fxFlexFill fxLayout="row" fxLayoutAlign="start center">
+  <!---------------- SPECIES SECTION -------------->
   <div fxFlex="55" class="container relative">
     <!---------------- ACTIVE SPECIES ICON -------------->
     <button
       *ngIf="activeSpecies$ | async as activeSpecies"
       mat-icon-button
-      class="active absolute"
+      class="species-button absolute"
       (click)="openSpeciesList()"
     >
       <mat-icon svgIcon="species-circle"></mat-icon>
@@ -23,19 +24,21 @@
       fxLayout="row"
       fxLayoutAlign="space-between"
     >
-      <div fxFlex="35"></div>
-      <div fxFlex="54" fxLayout="row" fxLayoutAlign="space-between">
+      <div fxFlex="30"></div>
+      <div fxFlex="62">
         <div
           *ngFor="let ability of abilities$ | async"
-          fxFlex="30"
-          class="background-image"
+          fxFlexFill
+          fxFlex="33"
+          fxLayoutAlign="center center"
+          class="orange-icons"
         >
           <mat-icon [svgIcon]="ability.id + '-ability'"></mat-icon>
         </div>
       </div>
       <div
         fxFlex="7"
-        class="orange"
+        class="background-orange"
         fxLayout="column"
         [fxLayoutAlign]="
           (remainingActions$ | async).length > 1
