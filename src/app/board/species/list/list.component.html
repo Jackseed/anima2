@@ -59,21 +59,16 @@
           fxLayoutAlign="center center"
         >
           <mat-icon
-            *ngIf="
-              !(
+            [ngClass]="{
+              inactive: !(
                 active.species.id === species.id &&
                 active.abilityId === ability.id
-              )
-            "
+              ),
+              active:
+                species.id === active.species.id &&
+                ability.id === active.abilityId
+            }"
             [svgIcon]="ability.id + '-ability'"
-          ></mat-icon>
-
-          <mat-icon
-            *ngIf="
-              species.id === active.species.id &&
-              ability.id === active.abilityId
-            "
-            [svgIcon]="ability.id + '-ability-active'"
           ></mat-icon>
         </button>
       </div>

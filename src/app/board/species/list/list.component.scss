@@ -21,8 +21,12 @@ article:nth-child(1) {
   width: auto;
 }
 
+.inactive {
+  --ability-active-display: none;
+}
+
 .active {
-  filter: drop-shadow(0px 0px 8px var(--secondary-color));
+  --ability-active-display: inherit;
 }
 
 #species-icon {
@@ -83,6 +87,7 @@ aside {
 }
 
 #title-icon {
+  --ability-active-display: none;
   --s: 1rem + 2.5vmin;
   font-size: calc(var(--s));
   width: calc(var(--s));
