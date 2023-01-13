@@ -68,16 +68,10 @@ footer {
 .species-quantity {
   color: white;
   position: absolute;
-  font-size: 0.4rem;
-  line-height: 100%;
-  padding-top: 5%;
+  font-size: 0.25rem;
+  padding-top: 3%;
   font-family: "Grandstander", "Helvetica Neue", sans-serif;
   font-weight: bold;
-}
-
-.tiles {
-  display: flex;
-  flex-direction: column;
 }
 
 .selected {
@@ -161,35 +155,44 @@ footer {
   background: var(--color);
 }
 /* GRID 1 */
+.grid1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid1 .tile-container0 {
+  height: 50%;
+}
+
 .grid1 .species {
   width: 100%;
-  height: 100%;
-}
-.grid1 .tile-container0 {
-  width: 100%;
-  height: 100%;
+  height: 125%;
 }
 
 /* GRID 2 */
-.grid2 {
-  display: grid;
-  grid-gap: 10%;
-  grid-template-columns: repeat(1, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-}
-.grid2 .species {
-  width: 75%;
-  height: 75%;
-}
-
 .grid2 .tile-container0 {
-  justify-content: flex-end;
-  align-items: center;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
 }
 
 .grid2 .tile-container1 {
-  justify-content: flex-start;
-  align-items: center;
+  height: 50%;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.grid2 .species {
+  width: 100%;
+  height: 110%;
+}
+
+.grid2 .tile0 {
+  padding-top: 2.5%;
+}
+.grid2 .tile1 {
+  padding-bottom: 2.5%;
 }
 
 /* GRID 3 */

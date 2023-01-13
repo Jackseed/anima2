@@ -48,13 +48,11 @@
           <!------------ SPECIES -------------->
           <div
             *ngFor="let species of tile.species; let i = index"
-            class="tiles tile-container{{ i }}"
+            class="tile-container{{ i }}"
           >
             <div
               class="species tile{{ i }}"
-              style="--img: url({{ getSpeciesImgUrl(species.id) }}); --color: {{
-                species.color
-              }}"
+              style="--color: {{ species.color }}"
             >
               <mat-icon
                 fxFlexFill
