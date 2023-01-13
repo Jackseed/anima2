@@ -8,24 +8,14 @@
 }
 
 #species-icon {
-  height: 65%;
-  width: 65%;
+  --species-title-display: inherit;
+  height: 55%;
+  width: 55%;
   position: absolute;
-  top: 40%;
+  top: 47.5%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-}
-
-.ability-name {
-  position: absolute;
-  left: 50%;
-  top: 72%;
-  width: 70%;
-  transform: translate(-50%, -50%);
-  line-height: 4vw;
-  font-size: 3.5vw;
-  white-space: break-spaces;
 }
 
 aside {

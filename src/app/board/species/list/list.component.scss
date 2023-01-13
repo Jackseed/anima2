@@ -26,10 +26,11 @@ article:nth-child(1) {
 }
 
 #species-icon {
+  --species-title-display: none;
   height: 75%;
   width: 75%;
   position: absolute;
-  top: 50%;
+  top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
