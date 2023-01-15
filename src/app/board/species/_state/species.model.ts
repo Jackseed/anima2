@@ -124,18 +124,18 @@ export function createAssimilationValues(
 export const ABILITY_IDS = [
   'flying',
   'hounds',
-  'nest',
-  'hermaphrodite',
+  //'nest',
+  //'hermaphrodite',
   'giantism',
   'predator',
   'gluttony',
   'carnivore',
   'range',
-  'survival',
+  //'survival',
   'intimidate',
   'spontaneousGeneration',
   'tunnel',
-  'rallying',
+  //'rallying',
 ] as const;
 export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {
@@ -199,7 +199,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 1,
     type: 'passive',
-  },
+  } /*
   {
     id: 'survival',
     en: {
@@ -214,7 +214,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 1000,
     type: 'passive',
-  },
+  }, */,
   {
     id: 'tunnel',
     en: {
@@ -229,7 +229,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 2,
     type: 'active',
-  },
+  } /*
   {
     id: 'nest',
     en: {
@@ -245,7 +245,7 @@ export const ABILITIES: Ability[] = [
     requiredValue: 4,
     value: 1,
     type: 'passive',
-  },
+  }, */,
   {
     id: 'flying',
     en: {
@@ -290,7 +290,7 @@ export const ABILITIES: Ability[] = [
     },
     value: -1,
     type: 'passive',
-  },
+  } /*
   {
     id: 'rallying',
     en: {
@@ -305,7 +305,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 1,
     type: 'active',
-  },
+  }, */,
   {
     id: 'intimidate',
     en: {
@@ -320,7 +320,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 1,
     type: 'active',
-  },
+  } /*
   {
     id: 'hermaphrodite',
     en: {
@@ -335,7 +335,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 1,
     type: 'passive',
-  },
+  }, */,
   {
     id: 'carnivore',
     en: {

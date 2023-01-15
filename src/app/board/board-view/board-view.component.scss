@@ -233,7 +233,6 @@ footer {
 }
 
 /* GRID 4 */
-
 .grid4 {
   display: flex;
   flex-wrap: wrap;
@@ -289,149 +288,64 @@ footer {
 
 /* GRID 5 */
 .grid5 {
-  display: grid;
-  grid-gap: 5%;
-  grid-template-areas:
-    ". a ."
-    "b c d"
-    ". e .";
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
 }
-
+.grid5 .mat-icon {
+  height: 140% !important;
+  min-height: 140% !important;
+  min-width: 140% !important;
+  width: 140% !important;
+}
 .grid5 .species {
-  width: 85%;
-  height: 85%;
-  background-size: 100%;
+  width: 100%;
+  height: 100%;
 }
 
-.grid5 .tile-container0 {
-  grid-area: a;
-  justify-content: flex-end;
-  align-items: center;
-}
-.grid5 .tile-container1 {
-  grid-area: b;
-  justify-content: center;
-  align-items: flex-end;
-}
 .grid5 .tile-container2 {
-  grid-area: c;
-  justify-content: center;
+  height: 100%;
+  width: 33%;
+  display: flex;
   align-items: center;
 }
-.grid5 .tile-container3 {
-  grid-area: d;
-  justify-content: center;
-  align-items: flex-start;
-}
+.grid5 .tile-container0,
+.grid5 .tile-container1,
+.grid5 .tile-container3,
 .grid5 .tile-container4 {
-  grid-area: e;
-  justify-content: flex-start;
-  align-items: center;
+  height: 50%;
+  width: 33%;
+  display: flex;
 }
-
-/* GRID 6 */
-.grid6 {
-  display: grid;
-  grid-template-areas:
-    "a a a b b b"
-    "c c c d d d"
-    "e e e f f f";
-}
-
-.grid6 .species {
-  width: 65%;
-  height: 66%;
-  background-size: 70%;
-}
-
-.grid6 .tile-container0 {
-  grid-area: a;
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-.grid6 .tile-container1 {
-  grid-area: b;
-  justify-content: flex-end;
+.grid5 .tile-container0,
+.grid5 .tile-container3 {
   align-items: flex-start;
 }
-.grid6 .tile-container2 {
-  grid-area: c;
-  justify-content: center;
-  align-items: flex-start;
-}
-.grid6 .tile-container3 {
-  grid-area: d;
-  justify-content: center;
-  align-items: flex-end;
-}
-.grid6 .tile-container4 {
-  grid-area: e;
-  justify-content: flex-start;
-  align-items: flex-end;
-}
-.grid6 .tile-container5 {
-  grid-area: f;
-  justify-content: flex-start;
-  align-items: flex-start;
+.grid5 .tile0,
+.grid5 .tile3 {
+  padding-top: 20%;
 }
 
-/* GRID 7 */
-.grid7 {
-  display: grid;
-  grid-template-areas:
-    "a a a b b b"
-    "c c d d e e"
-    "f f f g g g";
+.grid5 .tile-container1,
+.grid5 .tile-container4 {
+  align-items: flex-end;
+}
+.grid5 .tile1,
+.grid5 .tile4 {
+  padding-bottom: 20%;
 }
 
-.grid7 .species {
-  width: 65%;
-  height: 66%;
-  background-size: 70%;
+.grid5 .tile0,
+.grid5 .tile1 {
+  padding-left: 20%;
 }
-.grid7 .tile0,
-.grid7 .tile1,
-.grid7 .tile5,
-.grid7 .tile6 {
-  background-size: 66%;
+
+.grid5 .tile3,
+.grid5 .tile4 {
+  padding-right: 20%;
 }
-.grid7 .tile2,
-.grid7 .tile3,
-.grid7 .tile4 {
-  background-size: 100%;
-}
-.grid7 .tile-container0 {
-  grid-area: a;
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-.grid7 .tile-container1 {
-  grid-area: b;
-  justify-content: flex-end;
-  align-items: flex-start;
-}
-.grid7 .tile-container2 {
-  grid-area: c;
-  justify-content: center;
-  align-items: center;
-}
-.grid7 .tile-container3 {
-  grid-area: d;
-  justify-content: center;
-  align-items: center;
-}
-.grid7 .tile-container4 {
-  grid-area: e;
-  justify-content: center;
-  align-items: center;
-}
-.grid7 .tile-container5 {
-  grid-area: f;
-  justify-content: flex-start;
-  align-items: flex-end;
-}
-.grid7 .tile-container6 {
-  grid-area: g;
-  justify-content: flex-start;
-  align-items: flex-start;
+
+.grid5 .species-quantity {
+  font-size: 0.2rem;
+  padding-top: 1.5%;
 }
