@@ -58,12 +58,12 @@ article:nth-child(1) {
   line-height: 16px;
 }
 
-.abilities {
-  background-image: var(--img);
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  min-height: 10px;
+.ability .mat-icon {
+  --s: 3rem;
+  font-size: calc(var(--s));
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
 }
 
 .box {
@@ -71,6 +71,7 @@ article:nth-child(1) {
   border: 3px #f59c27 solid;
   height: 50%;
   width: 100%;
+  padding-left: 5%;
 }
 
 aside {
@@ -88,11 +89,6 @@ aside {
 
 #title-icon {
   --ability-active-display: none;
-  --s: 1rem + 2.5vmin;
-  font-size: calc(var(--s));
-  width: calc(var(--s));
-  height: calc(var(--s));
-  line-height: calc(var(--s));
 }
 
 .margin-top {

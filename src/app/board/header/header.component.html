@@ -28,9 +28,9 @@
       <div fxFlex="62">
         <div
           *ngFor="let ability of abilities$ | async"
+          fxLayoutAlign="center center"
           fxFlexFill
           fxFlex="33"
-          fxLayoutAlign="center center"
           class="orange-icons ability"
         >
           <mat-icon [svgIcon]="ability.id + '-ability'"></mat-icon>

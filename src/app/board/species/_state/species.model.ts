@@ -124,18 +124,18 @@ export function createAssimilationValues(
 export const ABILITY_IDS = [
   'flying',
   'hounds',
-  //'nest',
-  //'hermaphrodite',
+  'nest',
+  'hermaphrodite',
   'giantism',
   'predator',
   'gluttony',
   'carnivore',
   'range',
-  //'survival',
+  'survival',
   'intimidate',
   'spontaneousGeneration',
   'tunnel',
-  //'rallying',
+  'rallying',
 ] as const;
 export type AbilityId = typeof ABILITY_IDS[number];
 export interface Ability {

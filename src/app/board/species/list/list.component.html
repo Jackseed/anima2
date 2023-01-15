@@ -47,16 +47,17 @@
       <div
         class="box orange-icons"
         fxLayout="row"
-        fxLayoutAlign="space-between center"
+        fxLayoutAlign="flex-start space-between"
         fxFlex="60"
       >
         <button
           *ngFor="let ability of species.abilities; let i = index"
-          mat-icon-button
-          fxFlex="33"
-          class="abilities"
-          (click)="activate(species, ability.id)"
           fxLayoutAlign="center center"
+          fxFlex="33"
+          fxFlexFill
+          class="ability"
+          mat-icon-button
+          (click)="activate(species, ability.id)"
         >
           <mat-icon
             [ngClass]="{
@@ -91,6 +92,7 @@
         fxFlex="20"
         fxFlexFill
         fxLayoutAlign="center center"
+        class="ability"
       >
         <mat-icon
           id="title-icon"
