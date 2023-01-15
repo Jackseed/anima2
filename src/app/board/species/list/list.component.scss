@@ -21,15 +21,20 @@ article:nth-child(1) {
   width: auto;
 }
 
+.inactive {
+  --ability-active-display: none;
+}
+
 .active {
-  filter: drop-shadow(0px 0px 8px var(--secondary-color));
+  --ability-active-display: inherit;
 }
 
 #species-icon {
-  height: 75%;
-  width: 75%;
+  --species-title-display: none;
+  height: 70%;
+  width: 70%;
   position: absolute;
-  top: 50%;
+  top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
@@ -39,8 +44,8 @@ article:nth-child(1) {
   width: 45px;
   height: 45px;
   background-color: #f59c27;
-  bottom: 0;
-  right: -20%;
+  bottom: -5%;
+  right: -25%;
   border-radius: 50%;
   border: solid white 3px;
 }
@@ -48,17 +53,17 @@ article:nth-child(1) {
 .figures {
   margin-top: 7px;
   color: white;
-  font-size: calc(2rem + 1vmin);
+  font-size: calc(1.85rem + 1vmin);
   font-weight: 600;
   line-height: 16px;
 }
 
-.abilities {
-  background-image: var(--img);
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  min-height: 10px;
+.ability .mat-icon {
+  --s: 3rem;
+  font-size: calc(var(--s));
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
 }
 
 .box {
@@ -66,6 +71,7 @@ article:nth-child(1) {
   border: 3px #f59c27 solid;
   height: 50%;
   width: 100%;
+  padding-left: 5%;
 }
 
 aside {
@@ -82,11 +88,7 @@ aside {
 }
 
 #title-icon {
-  --s: 1rem + 2.5vmin;
-  font-size: calc(var(--s));
-  width: calc(var(--s));
-  height: calc(var(--s));
-  line-height: calc(var(--s));
+  --ability-active-display: none;
 }
 
 .margin-top {

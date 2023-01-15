@@ -23,12 +23,15 @@
         <button
           fxFlexFill
           mat-icon-button
-          (click)="activate('species', i, species)"
+          (click)="activate(species)"
           [disabled]="data.listType === 'passive'"
-          [ngClass]="{ active: species.id === active.id }"
+          [ngClass]="{
+            active:
+              species.id === active.species?.id && active.type === 'species'
+          }"
           style="--primary-color: {{
-            getSpeciesColors(species, 'primary')
-          }}; --secondary-color: {{ getSpeciesColors(species, 'secondary') }}"
+            getSpeciesColors(species, 'secondary')
+          }}; --secondary-color: {{ getSpeciesColors(species, 'primary') }}"
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
@@ -42,24 +45,32 @@
       </div>
       <!---------------- SPECIES ABILITIES -------------->
       <div
-        class="box"
+        class="box orange-icons"
         fxLayout="row"
-        fxLayoutAlign="space-around center"
+        fxLayoutAlign="flex-start space-between"
         fxFlex="60"
       >
         <button
-          *ngFor="let ability of abilities; let i = index"
+          *ngFor="let ability of species.abilities; let i = index"
+          fxLayoutAlign="center center"
+          fxFlex="33"
+          fxFlexFill
+          class="ability"
           mat-icon-button
-          fxFlex="22"
-          class="abilities"
-          (click)="activate('ability', i)"
+          (click)="activate(species, ability.id)"
         >
-          <div *ngIf="ability !== active">
-            <mat-icon [svgIcon]="ability.icon"></mat-icon>
-          </div>
-          <div *ngIf="ability === active">
-            <mat-icon [svgIcon]="ability.activeIcon"></mat-icon>
-          </div>
+          <mat-icon
+            [ngClass]="{
+              inactive: !(
+                active.species.id === species.id &&
+                active.abilityId === ability.id
+              ),
+              active:
+                species.id === active.species.id &&
+                ability.id === active.abilityId
+            }"
+            [svgIcon]="ability.id + '-ability'"
+          ></mat-icon>
         </button>
       </div>
     </article>
@@ -71,7 +82,7 @@
   >
     <!---------------------- DEFINITION - ACTIVE ABILITY ONLY ---------------------->
     <div
-      *ngIf="active.type! === 'ability'; else species"
+      *ngIf="active.type === 'ability'; else species"
       fxLayout="column"
       fxLayoutAlign="center center"
       fxFlexFill
@@ -81,17 +92,21 @@
         fxFlex="20"
         fxFlexFill
         fxLayoutAlign="center center"
+        class="ability"
       >
-        <mat-icon id="title-icon" [svgIcon]="active.icon"></mat-icon>
+        <mat-icon
+          id="title-icon"
+          [svgIcon]="active.abilityId + '-ability'"
+        ></mat-icon>
       </h3>
       <textarea fxFlex readonly wrap="hard" rows="3" cols="25">{{
-        active.definition
+        getAbilityFrDefinition(active.abilityId)
       }}</textarea>
     </div>
     <!---------------------- DEFINITION - ACTIVE SPECIE ONLY ---------------------->
     <ng-template #species>
       <div
-        *ngIf="active.type! === 'species'"
+        *ngIf="active.type === 'species'"
         fxLayout="column"
         fxLayoutAlign="center center"
         fxFlexFill

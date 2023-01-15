@@ -90,16 +90,11 @@ export class TileService extends CollectionService<TileState> {
         );
 
         // Adds the species to the tile.
-        tiles[tileIndex] = {
-          ...tiles[tileIndex],
-          species: [
-            {
-              ...neutral,
-              quantity: neutralTileSpecies[tileId],
-              mainAbilityId: neutral.abilities[0].id,
-            },
-          ],
-        };
+        tiles[tileIndex].species.push({
+          ...neutral,
+          quantity: neutralTileSpecies[tileId],
+          mainAbilityId: neutral.abilities[0].id,
+        });
       }
     }
 

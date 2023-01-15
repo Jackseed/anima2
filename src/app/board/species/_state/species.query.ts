@@ -60,6 +60,10 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     return tile?.species.filter((species) => species.id !== activeSpeciesId);
   }
 
+  public get activeSpeciesAbilities$(): Observable<Ability[]> {
+    return this.selectActive().pipe(map((species) => species.abilities));
+  }
+
   public adjacentActiveSpeciesTileIds(
     centerTileId: number,
     range: number

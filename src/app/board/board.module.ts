@@ -122,81 +122,6 @@ export class BoardModule {
         '../../../../assets/species-hex.svg'
       )
     );
-    this.matIconRegistry.addSvgIcon(
-      'specie1',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/specie1.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'specie2',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/specie2.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'specie3',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/specie3.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'specie4',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/specie4.svg'
-      )
-    );
-
-    this.matIconRegistry.addSvgIcon(
-      'ability-1',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability1.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-2',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability2.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-3',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability3.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-4',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability4.svg'
-      )
-    );
-
-    this.matIconRegistry.addSvgIcon(
-      'ability-1-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability1-active.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-2-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability2-active.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-3-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability3-active.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
-      'ability-4-active',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/menu-buttons/ability4-active.svg'
-      )
-    );
-
     /// ACTION BUTTONS
     this.matIconRegistry.addSvgIcon(
       'migration',
@@ -272,12 +197,6 @@ export class BoardModule {
     );
 
     /// SPECIES
-    this.matIconRegistry.addSvgIcon(
-      'acceleration',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/species/acceleration.svg'
-      )
-    );
     this.matIconRegistry.addSvgIcon(
       'gluttony',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
@@ -371,15 +290,15 @@ export class BoardModule {
 
     /// ABILITIES
     this.matIconRegistry.addSvgIcon(
-      'acceleration-ability',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/abilities/acceleration.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
       'gluttony-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/abilities/gluttony.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'gluttony-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/gluttony-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -388,10 +307,24 @@ export class BoardModule {
         '../../../assets/abilities/carnivore.svg'
       )
     );
+
+    this.matIconRegistry.addSvgIcon(
+      'carnivore-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/carnivore-active.svg'
+      )
+    );
     this.matIconRegistry.addSvgIcon(
       'flying-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/abilities/flying.svg'
+      )
+    );
+
+    this.matIconRegistry.addSvgIcon(
+      'flying-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/flying-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -401,9 +334,21 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'giantism-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/giantism-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'hermaphrodite-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/abilities/hermaphrodite.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'hermaphrodite-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/hermaphrodite-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -413,9 +358,21 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'hounds-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/hounds-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'intimidate-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/abilities/intimidate.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'intimidate-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/intimidate-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -425,9 +382,21 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'nest-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/nest-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'rallying-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/abilities/rallying.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'rallying-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/rallying-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -437,9 +406,21 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'range-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/range-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'spontaneousGeneration-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/abilities/spontaneousGeneration.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'spontaneousGeneration-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/spontaneousGeneration-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -449,9 +430,21 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'predator-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/predator-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'survival-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/abilities/survival.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'survival-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/survival-active.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -461,9 +454,21 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'symbiosis-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/symbiosis-active.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'tunnel-ability',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/abilities/tunnel.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'tunnel-ability-active',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/abilities/tunnel-active.svg'
       )
     );
   }

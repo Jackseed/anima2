@@ -154,14 +154,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.playService.openSpeciesList(tileId);
   }
 
-  // TODO: remove this
-  public getSpeciesImgUrl(speciesId: string): string {
-    const species = this.speciesQuery.getEntity(speciesId);
-    const url = `/assets/abilities/${species.abilities[0].id}.svg`;
-
-    return url;
-  }
-
   public isActive(tileId: number) {
     return this.tileQuery.isActive(tileId);
   }

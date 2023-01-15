@@ -12,7 +12,7 @@ import { SettingsComponent } from '../settings/settings.component';
 import { ScoreComponent } from '../score/score.component';
 
 // States
-import { Species, SpeciesQuery } from '../species/_state';
+import { Ability, Species, SpeciesQuery } from '../species/_state';
 import { Player, PlayerQuery } from '../players/_state';
 import { PlayService } from '../play.service';
 
@@ -32,8 +32,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private activePlayer$: Observable<Player>;
   public activeSpecies$: Observable<Species>;
-  private colorSub: Subscription;
+  public abilities$: Observable<Ability[]>;
   public remainingActions$: Observable<number[]>;
+
+  private colorSub: Subscription;
 
   constructor(
     public dialog: MatDialog,
@@ -46,11 +48,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.activeSpecies$ = this.speciesQuery.selectActive();
     this.activePlayer$ = this.playerQuery.selectActive();
+    this.abilities$ = this.speciesQuery.activeSpeciesAbilities$;
+
+    this.remainingActions$ = this.gameQuery.remainingActionsArray$;
+
     this.colorSub = this.activePlayer$.subscribe((player) => {
       this.primaryColor = player?.primaryColor;
       this.secondaryColor = player?.secondaryColor;
     });
-    this.remainingActions$ = this.gameQuery.remainingActionsArray$;
   }
 
   public openSpeciesList(): void {

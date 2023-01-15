@@ -4,7 +4,7 @@
   <li>Ère: {{ game.eraCount }}</li>
   <li>Tours: {{ game.turnCount }}</li>
   <h3>Tour en cours</h3>
-  <li>Joueur actif: {{ game.activePlayerId.slice(0, 4) }}</li>
+  <li>Joueur actif: {{ game.playingPlayerId.slice(0, 4) }}</li>
   <li *ngIf="activeSpecies$ | async as activeSpecies">
     Traits espèce active:
     <span *ngFor="let ability of activeSpecies.abilities; let isLast = last"

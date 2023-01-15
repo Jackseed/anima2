@@ -162,7 +162,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Génération spontanée',
+      name: 'Sporifère',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -177,7 +177,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Meute',
+      name: 'Sociale',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -193,13 +193,13 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Portée',
+      name: 'Bombardière',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
     type: 'passive',
-  },
+  } /*
   {
     id: 'survival',
     en: {
@@ -214,7 +214,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 1000,
     type: 'passive',
-  },
+  }, */,
   {
     id: 'tunnel',
     en: {
@@ -223,13 +223,13 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Tunnel',
+      name: 'Fouisseuse',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 2,
     type: 'active',
-  },
+  } /*
   {
     id: 'nest',
     en: {
@@ -245,7 +245,7 @@ export const ABILITIES: Ability[] = [
     requiredValue: 4,
     value: 1,
     type: 'passive',
-  },
+  }, */,
   {
     id: 'flying',
     en: {
@@ -254,7 +254,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Vol',
+      name: 'Ailée',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -269,7 +269,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Gigantisme',
+      name: 'Gigantesque',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -284,13 +284,13 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Gloutonnerie',
+      name: 'Vorace',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: -1,
     type: 'passive',
-  },
+  } /*
   {
     id: 'rallying',
     en: {
@@ -305,7 +305,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 1,
     type: 'active',
-  },
+  }, */,
   {
     id: 'intimidate',
     en: {
@@ -314,13 +314,13 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Intimidation',
+      name: 'Stridulante',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     value: 1,
     type: 'active',
-  },
+  } /*
   {
     id: 'hermaphrodite',
     en: {
@@ -335,7 +335,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 1,
     type: 'passive',
-  },
+  }, */,
   {
     id: 'carnivore',
     en: {
@@ -344,7 +344,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Carnassier',
+      name: 'Carnassière',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -359,7 +359,7 @@ export const ABILITIES: Ability[] = [
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
     fr: {
-      name: 'Prédation',
+      name: 'Venimeuse',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },

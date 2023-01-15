@@ -559,6 +559,11 @@ export class AbilityService {
     return ability.requiredValue;
   }
 
+  public getAbilityFrDefinition(abilityId: AbilityId): string {
+    const ability = this.getAbilityWithId(abilityId);
+    return ability.fr.definition;
+  }
+
   private getAbilityWithId(abilityId: AbilityId): Ability {
     return ABILITIES.filter((ability) => ability.id === abilityId)[0];
   }

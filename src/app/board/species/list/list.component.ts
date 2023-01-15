@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
 import {
+  AbilityId,
   Species,
   SpeciesListData,
   TileSpecies,
@@ -15,12 +16,10 @@ import { AbilityService } from '../../ability.service';
 import { PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
 
-// TODO: refactor this
-export interface active extends TileSpecies {
-  type?: string;
-  name?: string;
-  icon?: string;
-  definition?: string;
+export interface active {
+  species: TileSpecies;
+  abilityId: string;
+  type?: 'ability' | 'species';
 }
 
 @Component({
@@ -29,31 +28,10 @@ export interface active extends TileSpecies {
   styleUrls: ['./list.component.scss'],
 })
 export class ListComponent implements OnInit {
-  public abilities = [
-    {
-      type: 'ability',
-      name: 'Intimidation',
-      icon: 'ability-1',
-      activeIcon: 'ability-1-active',
-      definition:
-        'À la fin une migration, peut déplacer 1 pion adverse se trouvant sur sa case d’1 case.',
-    },
-    {
-      type: 'ability',
-      name: 'Gigantisme',
-      icon: 'ability-4',
-      activeIcon: 'ability-4-active',
-      definition: 'yi',
-    },
-    {
-      type: 'ability',
-      name: 'Vol',
-      icon: 'ability-3',
-      activeIcon: 'ability-3-active',
-      definition: 'yu',
-    },
-  ];
-  public active: active = {};
+  public active: active = {
+    species: {},
+    abilityId: null,
+  };
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: SpeciesListData,
@@ -80,17 +58,20 @@ export class ListComponent implements OnInit {
     return this.tileQuery.getTileSpeciesCount(species.id, this.data.tileId);
   }
 
-  public activate(object: 'ability' | 'species', i: number, species?: Species) {
-    // Activates the selected object and de-activates others.
-    if (object === 'ability') {
-      this.active = this.abilities[i];
-    } else if (object === 'species') {
-      this.active = { ...species, type: 'species' };
-    }
+  public activate(species: TileSpecies, abilityId?: string) {
+    this.active = {
+      species,
+      abilityId: abilityId ? abilityId : null,
+      type: abilityId ? 'ability' : 'species',
+    };
   }
 
   public capitalizeFirstLetter(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
+  public getAbilityFrDefinition(abilityId: AbilityId): string {
+    return this.abilityService.getAbilityFrDefinition(abilityId);
   }
 
   public close() {
@@ -101,11 +82,11 @@ export class ListComponent implements OnInit {
     this.dialogRef.close();
     let successMessage: string;
     if (this.data.action === 'assimiler') {
-      this.abilityService.assimilate(this.active.id, this.data.tileId);
+      this.abilityService.assimilate(this.active.species.id, this.data.tileId);
       successMessage = 'Vous avez assimilé !';
     }
     if (this.data.action === 'intimider') {
-      this.abilityService.intimidate(this.active, this.data.tileId);
+      this.abilityService.intimidate(this.active.species, this.data.tileId);
       successMessage = 'Vous avez intimidé !';
     }
     this.snackbar.open(successMessage, null, {
