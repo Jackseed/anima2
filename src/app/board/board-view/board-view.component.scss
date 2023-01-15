@@ -233,32 +233,57 @@ footer {
 }
 
 /* GRID 4 */
+
 .grid4 {
-  display: grid;
-  grid-gap: 2.5%;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
 }
-
+.grid4 .mat-icon {
+  height: 110% !important;
+  min-height: 110% !important;
+  min-width: 110% !important;
+  width: 110% !important;
+}
 .grid4 .species {
-  width: 75%;
-  height: 75%;
-  background-size: 90%;
+  width: 110%;
+  height: 120%;
 }
 
+.grid4 .tile-container0,
+.grid4 .tile-container3 {
+  height: 33%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.grid4 .tile0,
+.grid4 .tile3 {
+  width: 50% !important;
+}
 .grid4 .tile-container0 {
-  justify-content: flex-end;
-  align-items: flex-end;
+  flex-direction: column;
 }
-.grid4 .tile-container1 {
-  justify-content: flex-end;
-  align-items: flex-start;
-}
-.grid4 .tile-container2 {
-  justify-content: flex-start;
-  align-items: flex-end;
+.grid4 .tile0 {
+  padding-top: 5%;
 }
 .grid4 .tile-container3 {
-  justify-content: flex-start;
+  flex-direction: column-reverse;
+}
+.grid4 .tile3 {
+  padding-bottom: 5%;
+}
+
+.grid4 .tile-container1,
+.grid4 .tile-container2 {
+  height: 33%;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+.grid4 .tile-container1 {
+  align-items: flex-end;
+}
+.grid4 .tile-container2 {
   align-items: flex-start;
 }
 
