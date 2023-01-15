@@ -119,7 +119,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       return this.playService.selectStartTile(tileId);
 
     // Dismisses clicks during other player turn.
-    if (!this.playerQuery.isActivePlayerPlaying(this.playingPlayerId))
+    if (!this.playerQuery.isPlayerPlaying(this.playingPlayerId))
       return this.snackbar.open("Ce n'est pas votre tour.", null, {
         duration: 3000,
       });

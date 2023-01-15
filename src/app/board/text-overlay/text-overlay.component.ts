@@ -21,6 +21,7 @@ export class TextOverlayComponent implements OnInit {
   public startStage$: Observable<StartStage>;
   public hasTileActive$: Observable<boolean>;
   public isPlayerWaiting$: Observable<boolean>;
+  public isActivePlayerPlaying$: Observable<boolean>;
   constructor(
     private gameQuery: GameQuery,
     private tileQuery: TileQuery,
@@ -35,6 +36,7 @@ export class TextOverlayComponent implements OnInit {
     this.hasTileActive$ = this.tileQuery.hasActive$;
     this.isPlayerWaiting$ =
       this.playerQuery.isActivePlayerWaitingForNextStartStage$;
+    this.isActivePlayerPlaying$ = this.playerQuery.isActivePlayerPlaying$;
   }
 
   public validateStartTile() {

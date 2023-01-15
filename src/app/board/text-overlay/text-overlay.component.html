@@ -64,4 +64,8 @@
   <section *ngIf="isActionActive$('rallying') | async" class="start text-box">
     <h2>Choisissez une case <br />à rallier</h2>
   </section>
+  <!------------ OTHER PLAYER PLAYING -------------->
+  <section *ngIf="!(isActivePlayerPlaying$ | async)" class="start text-box">
+    <h2>Au tour <br />du joueur adverse...</h2>
+  </section>
 </div>

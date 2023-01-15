@@ -51,11 +51,18 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
   }
 
   // Checks if active player is playing.
-  public isActivePlayerPlaying(playerId: string): boolean {
-    const activeGame = this.gameQuery.getActive();
-    const activePlayerId = activeGame.playingPlayerId;
+  public get isActivePlayerPlaying$(): Observable<boolean> {
+    const activeGame$ = this.gameQuery.selectActive();
+    const activePlayerId = this.getActiveId();
 
-    return playerId === activePlayerId;
+    return activeGame$.pipe(
+      map((game) => game.playingPlayerId === activePlayerId)
+    );
+  }
+  public isPlayerPlaying(playerId: string): boolean {
+    const playingPlayerId = this.gameQuery.playingPlayerId;
+
+    return playerId === playingPlayerId;
   }
 
   public get unplayingPlayerId(): string {
