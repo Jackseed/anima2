@@ -185,7 +185,7 @@ export class AbilityService {
     const proliferationTileId = tileId
       ? tileId
       : Number(this.tileQuery.getActiveId());
-    const proliferationValues = this.applyProliferationAbilities();
+    const proliferationValues = this.applyProliferationAbilities(true);
 
     this.tileService.removeActive();
     this.tileService.removeProliferable();
@@ -610,7 +610,7 @@ export class AbilityService {
   public canActivateAction$(action: GameAction): Observable<boolean> {
     const activeTileSpecies$ = this.speciesQuery.activeTileSpecies$;
     const activeTile$ = this.tileQuery.selectActive();
-    const proliferationValues = this.applyProliferationAbilities();
+    const proliferationValues = this.applyProliferationAbilities(true);
     const game = this.gameQuery.getActive();
 
     return combineLatest([activeTileSpecies$, activeTile$]).pipe(
@@ -697,12 +697,10 @@ export class AbilityService {
 
   // PROLIFERATE ABILITIES
   private applyProliferationAbilities(
-    defaultValues?: ProliferationValues
+    isOnlyUpdatingValues?: boolean
   ): ProliferationValues {
     const activeSpeciesId = this.speciesQuery.getActiveId();
-    let updatedValues: ProliferationValues = defaultValues
-      ? defaultValues
-      : createProliferationValues();
+    let updatedValues: ProliferationValues = createProliferationValues();
 
     // If hermaphrodite, updates needed individuals.
     if (this.speciesHasAbility(activeSpeciesId, 'hermaphrodite'))
@@ -719,7 +717,8 @@ export class AbilityService {
     if (
       this.speciesHasAbility(activeSpeciesId, 'spontaneousGeneration') &&
       !this.tileQuery.hasProliferableTile() &&
-      this.tileQuery.hasActive()
+      this.tileQuery.hasActive() &&
+      !isOnlyUpdatingValues
     ) {
       const activeTileId = Number(this.tileQuery.getActiveId());
       const range = this.getAbilityValue('spontaneousGeneration');
