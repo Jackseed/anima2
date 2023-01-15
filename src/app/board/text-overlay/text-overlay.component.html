@@ -2,9 +2,11 @@
   fxLayout="column"
   fxLayoutAlign="center center"
   *ngIf="{
+    isGameStarting: isGameStarting$ | async,
     startStage: startStage$ | async,
     hasTileActive: hasTileActive$ | async,
-    isPlayerWaiting: isPlayerWaiting$ | async
+    isPlayerWaiting: isPlayerWaiting$ | async,
+    isActivePlayerPlaying: isActivePlayerPlaying$ | async
   } as observables"
 >
   <!------------ GAME START -------------->
@@ -65,7 +67,10 @@
     <h2>Choisissez une case <br />à rallier</h2>
   </section>
   <!------------ OTHER PLAYER PLAYING -------------->
-  <section *ngIf="!(isActivePlayerPlaying$ | async)" class="start text-box">
+  <section
+    *ngIf="!observables.isActivePlayerPlaying && !observables.isGameStarting"
+    class="start text-box"
+  >
     <h2>Au tour <br />du joueur adverse...</h2>
   </section>
 </div>

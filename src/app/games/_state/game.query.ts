@@ -66,6 +66,10 @@ export class GameQuery extends QueryEntity<GameState> {
     return this.getActive().isStarting;
   }
 
+  public get isStarting$(): Observable<boolean> {
+    return this.selectActive().pipe(map((game) => game.isStarting));
+  }
+
   public get startStage$(): Observable<StartStage> {
     return this.selectActive().pipe(map((game) => game.startStage));
   }
