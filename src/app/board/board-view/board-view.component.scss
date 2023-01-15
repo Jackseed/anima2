@@ -100,9 +100,7 @@ footer {
 .proliferable,
 .rallyable {
   z-index: 2;
-  // box-shadow: inset 0 0 0 2000px rgba(245, 156, 39, 0.2);
   cursor: pointer;
-  // background: linear-gradient(0deg, var(--color), #f59c27) !important;
   background: var(--color) !important;
   background: radial-gradient(
     circle,
@@ -166,12 +164,14 @@ footer {
 }
 .grid1 .tile-container0 {
   height: 50%;
+  display: flex;
+  align-items: center;
 }
 
 /* GRID 2 */
 .grid2 .species {
   width: 100%;
-  height: 110%;
+  height: 105%;
 }
 
 .grid2 .tile-container0 {
