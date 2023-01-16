@@ -30,8 +30,8 @@
               species.id === active.species?.id && active.type === 'species'
           }"
           style="
-          --primary-color: {{ getSpeciesColors(species).primary }};
-          --secondary-color: {{ getSpeciesColors(species).secondary }}"
+          --primary-color: {{ species.colors.primary }};
+          --secondary-color: {{ species.colors.secondary }}"
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon

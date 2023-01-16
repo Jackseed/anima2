@@ -1,6 +1,16 @@
+.full-opacity {
+  background-color: white;
+  opacity: 1;
+}
+
 .opacity {
   background-color: white;
   opacity: 0.8;
+}
+
+.low-opacity {
+  background-color: white;
+  opacity: 0.3;
 }
 .visual-overlay {
   display: flex;
@@ -25,15 +35,20 @@
   max-width: 80%;
 }
 
-#species-icon {
+.species-icon {
   --species-title-display: none;
-  height: 70%;
-  width: 70%;
+  height: 62.5%;
+  width: 62.5%;
   position: absolute;
   top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
+}
+
+#species-title {
+  top: 50%;
+  --species-title-display: inherit;
 }
 
 .validation-buttons {

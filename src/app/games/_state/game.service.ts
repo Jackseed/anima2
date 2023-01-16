@@ -11,19 +11,23 @@ import firebase from 'firebase/app';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { DEFAULT_ACTION_PER_TURN, createGame, StartStage } from './game.model';
+import {
+  DEFAULT_ACTION_PER_TURN,
+  createGame,
+  StartStage,
+  GREEN_PRIMARY_COLOR,
+  GREEN_SECONDARY_COLOR,
+  Colors,
+  RED_PRIMARY_COLOR,
+  RED_SECONDARY_COLOR,
+} from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
 import { Regions, Region, TileService } from 'src/app/board/tiles/_state';
 import { PlayerQuery } from 'src/app/board/players/_state/player.query';
 import {
   createPlayer,
-  GREEN_PRIMARY_COLOR,
-  GREEN_SECONDARY_COLOR,
   Player,
-  PlayerColors,
-  RED_PRIMARY_COLOR,
-  RED_SECONDARY_COLOR,
 } from 'src/app/board/players/_state/player.model';
 import {
   ABILITIES,
@@ -121,7 +125,7 @@ export class GameService extends CollectionService<GameState> {
   // Creates player & player's species docs.
   private async playerBatchCreation(
     gameId: string,
-    colors: PlayerColors,
+    colors: Colors,
     existingBatch?: firebase.firestore.WriteBatch
   ): Promise<{
     playerId: string;
@@ -143,7 +147,7 @@ export class GameService extends CollectionService<GameState> {
       .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
 
-    const species = createSpecies(speciesId, playerId, colors.primary);
+    const species = createSpecies(speciesId, playerId, colors);
     batch.set(speciesRef, species);
 
     return { playerId, batch };

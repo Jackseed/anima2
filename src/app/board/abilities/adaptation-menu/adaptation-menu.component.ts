@@ -8,9 +8,10 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
 // States
-import { PlayerColors, PlayerQuery } from '../../players/_state';
+import { PlayerQuery } from '../../players/_state';
 import { Ability } from '../../species/_state';
 import { AbilityService } from '../../ability.service';
+import { Colors } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-menu',
@@ -31,9 +32,9 @@ export class AdaptationMenuComponent implements OnInit {
     this.abilityChoices$ = this.playerQuery.abilityChoices$;
   }
 
-  public getActivePlayerSpeciesColors(): PlayerColors {
+  public getActivePlayerSpeciesColors(): Colors {
     const playerId = this.playerQuery.getActiveId();
-    return this.playerQuery.getPlayerSpeciesColors(playerId);
+    return this.playerQuery.getPlayerColors(playerId);
   }
 
   public activate(i: number) {

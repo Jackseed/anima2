@@ -11,16 +11,17 @@ import { Observable } from 'rxjs';
 // States
 import { PlayerStore, PlayerState } from './player.store';
 import { GameQuery } from 'src/app/games/_state/game.query';
-import {
-  Ability,
-  PRIMARY_NEUTRAL_COLOR,
-  SECONDARY_NEUTRAL_COLOR,
-} from '../../species/_state/species.model';
-import { PlayerColors } from './player.model';
+import { Ability, Species } from '../../species/_state/species.model';
+import { Colors, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
+import { SpeciesQuery } from '../../species/_state/species.query';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerQuery extends QueryEntity<PlayerState> {
-  constructor(protected store: PlayerStore, private gameQuery: GameQuery) {
+  constructor(
+    protected store: PlayerStore,
+    private gameQuery: GameQuery,
+    private speciesQuery: SpeciesQuery
+  ) {
     super(store);
   }
 
@@ -72,6 +73,18 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return playerIds.filter((id) => id !== playingPlayerId)[0];
   }
 
+  public get opponentId(): string {
+    const playerIds = this.getAll().map((player) => player.id);
+    const activePlayerId = this.getActiveId();
+    return playerIds.filter((id) => id !== activePlayerId)[0];
+  }
+
+  public get opponentMainSpecies(): Species {
+    return this.speciesQuery
+      .getAll()
+      .filter((species) => species.playerId === this.opponentId)[0];
+  }
+
   public get areAbilityChoicesSet$(): Observable<boolean> {
     return this.abilityChoices$.pipe(map((abilities) => abilities.length > 0));
   }
@@ -90,13 +103,9 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getActive().abilityChoice.activeTileId;
   }
 
-  // Gets species' player colors
-  public getPlayerSpeciesColors(playerId: string): PlayerColors {
-    if (playerId === 'neutral')
-      return {
-        primary: PRIMARY_NEUTRAL_COLOR,
-        secondary: SECONDARY_NEUTRAL_COLOR,
-      };
+  // Gets player's colors
+  public getPlayerColors(playerId: string): Colors {
+    if (playerId === 'neutral') return NEUTRAL_COLORS;
 
     const player = this.getEntity(playerId);
     return player.colors;

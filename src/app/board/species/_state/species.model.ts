@@ -1,3 +1,4 @@
+import { Colors, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
 import { generateRandomRegionTileIds } from '../../tiles/_state';
 
 export interface Species {
@@ -5,7 +6,7 @@ export interface Species {
   tileIds?: number[];
   playerId?: string;
   abilities?: Ability[];
-  color?: string;
+  colors?: Colors;
 }
 
 export interface TileSpecies extends Species {
@@ -368,46 +369,42 @@ export const ABILITIES: Ability[] = [
   },
 ];
 
-const neutralColor = 'grey';
-export const PRIMARY_NEUTRAL_COLOR = '#bfbfbf';
-export const SECONDARY_NEUTRAL_COLOR = '#9b9b9b';
-
 export const neutrals: Species[] = [
   {
     id: 'rockies',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(7, 'rockies'),
   },
   {
     id: 'mountains',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(4, 'mountains'),
   },
   {
     id: 'islands',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(3, 'islands'),
   },
   {
     id: 'plains',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(9, 'plains'),
   },
   {
     id: 'swamps',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(6, 'swamps'),
   },
 
   {
     id: 'forests',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(5, 'forests'),
   },
 ];
@@ -415,13 +412,13 @@ export const neutrals: Species[] = [
 export function createSpecies(
   id: string,
   playerId: string,
-  color: string,
+  colors: Colors,
   params?: Partial<Species>
 ): Species {
   return {
     id,
     playerId,
-    color,
+    colors,
     tileIds: [],
     abilities: [],
     ...params,

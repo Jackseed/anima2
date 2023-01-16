@@ -8,11 +8,10 @@ import firebase from 'firebase/app';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { Game, GameQuery, GameService } from 'src/app/games/_state';
+import { ABILITY_CHOICE_AMOUNT, Game, GameQuery, GameService } from 'src/app/games/_state';
 import { Ability } from '../../species/_state';
 import { PlayerQuery } from './player.query';
 import { PlayerStore, PlayerState } from './player.store';
-import { ABILITY_CHOICE_AMOUNT } from './player.model';
 import { TileQuery } from '../../tiles/_state';
 
 @Injectable({ providedIn: 'root' })

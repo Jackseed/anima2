@@ -5,10 +5,10 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
 // States
-import { GameQuery, StartStage } from 'src/app/games/_state';
+import { Colors, GameQuery, StartStage } from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
-import { PlayerColors, PlayerQuery } from '../players/_state';
+import { PlayerQuery } from '../players/_state';
 import { GameAction, Species, SpeciesQuery } from '../species/_state';
 import { TileQuery, TileService } from '../tiles/_state';
 
@@ -56,9 +56,18 @@ export class TextOverlayComponent implements OnInit {
     return this.abilityService.isActionOngoing$(action);
   }
 
-  public getActiveSpeciesColors(): PlayerColors {
-    const activeSpecies = this.speciesQuery.getActive();
-    return this.playerQuery.getPlayerSpeciesColors(activeSpecies.playerId);
+  public getActivePlayerColors(): Colors {
+    const activePlayerId = this.playerQuery.getActiveId();
+    return this.playerQuery.getPlayerColors(activePlayerId);
+  }
+
+  public getOpponentColors(): Colors {
+    const opponentId = this.playerQuery.opponentId;
+    return this.playerQuery.getPlayerColors(opponentId);
+  }
+
+  public getOpponentSpecies(): Species {
+    return this.playerQuery.opponentMainSpecies;
   }
 
   // Cancels tile focus when using "esc" on keyboard.

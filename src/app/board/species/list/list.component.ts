@@ -13,7 +13,6 @@ import {
   TileSpecies,
 } from '../../../board/species/_state/species.model';
 import { AbilityService } from '../../ability.service';
-import { PlayerColors, PlayerQuery } from '../../players/_state';
 import { TileQuery } from '../../tiles/_state';
 
 export interface active {
@@ -38,15 +37,10 @@ export class ListComponent implements OnInit {
     public dialogRef: MatDialogRef<ListComponent>,
     private snackbar: MatSnackBar,
     private tileQuery: TileQuery,
-    private playerQuery: PlayerQuery,
     private abilityService: AbilityService
   ) {}
 
   ngOnInit(): void {}
-
-  public getSpeciesColors(species: Species): PlayerColors {
-    return this.playerQuery.getPlayerSpeciesColors(species.playerId);
-  }
 
   // Either returns the global species quantity or the tile species quantity
   public getSpeciesCount(species: Species) {
