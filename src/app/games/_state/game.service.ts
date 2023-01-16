@@ -18,7 +18,12 @@ import { Regions, Region, TileService } from 'src/app/board/tiles/_state';
 import { PlayerQuery } from 'src/app/board/players/_state/player.query';
 import {
   createPlayer,
+  GREEN_PRIMARY_COLOR,
+  GREEN_SECONDARY_COLOR,
   Player,
+  PlayerColors,
+  RED_PRIMARY_COLOR,
+  RED_SECONDARY_COLOR,
 } from 'src/app/board/players/_state/player.model';
 import {
   ABILITIES,
@@ -58,10 +63,13 @@ export class GameService extends CollectionService<GameState> {
     );
 
     // Creates 1st player.
+    const colors = {
+      primary: GREEN_PRIMARY_COLOR,
+      secondary: GREEN_SECONDARY_COLOR,
+    };
     const playerBatchCreation = await this.playerBatchCreation(
       gameId,
-      '#4cab79',
-      '#378965',
+      colors,
       batch
     );
 
@@ -113,8 +121,7 @@ export class GameService extends CollectionService<GameState> {
   // Creates player & player's species docs.
   private async playerBatchCreation(
     gameId: string,
-    primaryColor: string,
-    secondaryColor: string,
+    colors: PlayerColors,
     existingBatch?: firebase.firestore.WriteBatch
   ): Promise<{
     playerId: string;
@@ -128,12 +135,7 @@ export class GameService extends CollectionService<GameState> {
     const speciesId = this.db.createId();
 
     // Creates player doc.
-    const player = createPlayer(
-      playerId,
-      [speciesId],
-      primaryColor,
-      secondaryColor
-    );
+    const player = createPlayer(playerId, [speciesId], colors);
     batch.set(playerRef, player);
 
     // Creates player's species doc.
@@ -141,7 +143,7 @@ export class GameService extends CollectionService<GameState> {
       .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
 
-    const species = createSpecies(speciesId, playerId, primaryColor);
+    const species = createSpecies(speciesId, playerId, colors.primary);
     batch.set(speciesRef, species);
 
     return { playerId, batch };
@@ -187,12 +189,14 @@ export class GameService extends CollectionService<GameState> {
   }
 
   // Creates player, player's species & update game docs.
+
   public async addActiveUserAsPlayer(gameId: string) {
-    const playerBatchCreation = await this.playerBatchCreation(
-      gameId,
-      '#d75b62',
-      '#be4545'
-    );
+    // Creates 2nd player.
+    const colors = {
+      primary: RED_PRIMARY_COLOR,
+      secondary: RED_SECONDARY_COLOR,
+    };
+    const playerBatchCreation = await this.playerBatchCreation(gameId, colors);
     const firestorePlayerIds = firebase.firestore.FieldValue.arrayUnion(
       playerBatchCreation.playerId
     );

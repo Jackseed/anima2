@@ -16,6 +16,7 @@ import {
   PRIMARY_NEUTRAL_COLOR,
   SECONDARY_NEUTRAL_COLOR,
 } from '../../species/_state/species.model';
+import { PlayerColors } from './player.model';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerQuery extends QueryEntity<PlayerState> {
@@ -90,21 +91,14 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
   }
 
   // Gets species' player colors
-  public getPlayerSpeciesColors(
-    playerId: string,
-    color: 'primary' | 'secondary'
-  ): string {
-    if (playerId === 'neutral') return this.getNeutralSpeciesColors(color);
+  public getPlayerSpeciesColors(playerId: string): PlayerColors {
+    if (playerId === 'neutral')
+      return {
+        primary: PRIMARY_NEUTRAL_COLOR,
+        secondary: SECONDARY_NEUTRAL_COLOR,
+      };
 
     const player = this.getEntity(playerId);
-
-    if (color === 'primary') return player?.primaryColor;
-
-    if (color === 'secondary') return player?.secondaryColor;
-  }
-
-  private getNeutralSpeciesColors(color: 'primary' | 'secondary'): string {
-    if (color === 'primary') return PRIMARY_NEUTRAL_COLOR;
-    if (color === 'secondary') return SECONDARY_NEUTRAL_COLOR;
+    return player.colors;
   }
 }

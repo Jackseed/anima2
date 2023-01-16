@@ -1,14 +1,17 @@
 import { Ability } from '../../species/_state';
 
 export const ABILITY_CHOICE_AMOUNT = 2;
+export const GREEN_PRIMARY_COLOR = '#4cab79';
+export const GREEN_SECONDARY_COLOR = '#378965';
+export const RED_PRIMARY_COLOR = '#d75b62';
+export const RED_SECONDARY_COLOR = '#be4545';
 
 export interface Player {
   id: string;
   speciesIds: string[];
   score: number;
   tileIds?: number[];
-  primaryColor: string;
-  secondaryColor: string;
+  colors: PlayerColors;
   abilityChoice: {
     isChoosingAbility: boolean;
     abilityChoices: Ability[];
@@ -17,11 +20,15 @@ export interface Player {
   isWaitingForNextStartStage: boolean;
 }
 
+export interface PlayerColors {
+  primary: string;
+  secondary: string;
+}
+
 export function createPlayer(
   id: string,
   speciesIds: string[],
-  primaryColor: string,
-  secondaryColor: string,
+  colors: PlayerColors,
   params?: Partial<Player>
 ): Player {
   return {
@@ -29,8 +36,7 @@ export function createPlayer(
     speciesIds: speciesIds,
     score: 0,
     tileIds: [],
-    primaryColor,
-    secondaryColor,
+    colors,
     abilityChoice: {
       isChoosingAbility: false,
       abilityChoices: [],
