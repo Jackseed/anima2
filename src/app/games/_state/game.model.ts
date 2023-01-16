@@ -3,6 +3,7 @@ import { Ability } from 'src/app/board/species/_state';
 
 // GAME CONSTANTS
 export const ABILITY_CHOICE_AMOUNT = 2;
+export const MAX_SPECIES_ABILITIES = 3
 export const DEFAULT_ACTION_PER_TURN = 2;
 export const DEFAULT_REMAINING_MIGRATIONS = 4;
 export type StartStage =

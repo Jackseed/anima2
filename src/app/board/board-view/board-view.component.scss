@@ -84,7 +84,7 @@ footer {
     opacity: 0.7;
   }
 }
-// Adds a smaller tile so the older tile acts as a border.
+// Adds a smaller tile so the bigger one acts as a border.
 .selected:before {
   content: "";
   width: calc(var(--s) - var(--border));

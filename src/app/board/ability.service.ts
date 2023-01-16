@@ -61,17 +61,16 @@ export class AbilityService {
 
   // MIGRATION
   public async migrateTo(destinationId: number) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeSpecies = this.speciesQuery.getActive();
     const previousTileId = Number(this.tileQuery.getActiveId());
     const migrationValues = this.getMigrationValues(destinationId);
     const remainginMigrations = this.remainingMigrations;
 
     this.tileService.removeActive();
     this.tileService.removeReachable();
-
     (
       this.speciesService.move({
-        speciesId: activeSpeciesId,
+        movingSpecies: activeSpecies,
         quantity: migrationValues.movingQuantity,
         destinationId,
         previousTileId,
@@ -181,7 +180,7 @@ export class AbilityService {
   // PROLIFERATION
   // Proliferates on active tile or specific tileId if set.
   public async proliferate(tileId?: number) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeSpecies = this.speciesQuery.getActive();
     const proliferationTileId = tileId
       ? tileId
       : Number(this.tileQuery.getActiveId());
@@ -192,7 +191,7 @@ export class AbilityService {
 
     (
       this.speciesService.move({
-        speciesId: activeSpeciesId,
+        movingSpecies: activeSpecies,
         quantity: proliferationValues.createdQuantity,
         destinationId: proliferationTileId,
       }) as Promise<void>
@@ -230,28 +229,32 @@ export class AbilityService {
 
   // ASSIMILATION
   // Removes one species from a tile and adds one to the active species.
+  // TODO: refactor to binds the 2 operations + then
   public async assimilate(removedSpeciesId: string, removedTileId: number) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const removedSpecies = this.speciesQuery.getEntity(removedSpeciesId);
+    const activeSpecies = this.speciesQuery.getActive();
     const activeTileId = Number(this.tileQuery.getActiveId());
     const assimilationValues = this.applyAssimilationAbilitiesToSpecies(
       createAssimilationValues(),
-      activeSpeciesId
+      activeSpecies.id
     );
 
     this.tileService.removeAttackable();
 
     // Removes the assimilated species.
     await (this.speciesService.move({
-      speciesId: removedSpeciesId,
+      movingSpecies: removedSpecies,
       quantity: assimilationValues.assimilatedQuantity,
       destinationId: removedTileId,
+      attackingSpecies: activeSpecies,
     }) as Promise<void>);
     // Adds quantity to the assimilating species.
     await (this.speciesService.move({
-      speciesId: activeSpeciesId,
+      movingSpecies: activeSpecies,
       quantity: assimilationValues.createdQuantity,
       destinationId: activeTileId,
     }) as Promise<void>);
+    this.gameService.updateRemainingActions();
   }
 
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
@@ -326,11 +329,17 @@ export class AbilityService {
           defendingTileSpecies
         )
     );
+    let otherWeakerSpeciesWithTileId = otherWeakerSpecies.map((species) => {
+      return { ...species, tileId: Number(originTile.id) };
+    });
 
     if (range === 0) return otherWeakerSpecies;
 
     const adjacentReacheableTileIds =
-      this.tileService.getAdjacentTileIdsWithinRange(originTile.id, range);
+      this.tileService.getAdjacentTileIdsWithinRange(
+        Number(originTile.id),
+        range
+      );
 
     // Gets other species in the given range.
     adjacentReacheableTileIds.forEach((tileId) => {
@@ -349,13 +358,13 @@ export class AbilityService {
       });
 
       // Pushes results and filters the attacking species.
-      otherWeakerSpecies.push(
+      otherWeakerSpeciesWithTileId.push(
         ...weakerSpeciesWithTileId.filter(
           (species) => species.id !== attackingSpecies.id
         )
       );
     });
-    return otherWeakerSpecies;
+    return otherWeakerSpeciesWithTileId;
   }
 
   private isAttackingSpeciesStrongerThan(
@@ -398,7 +407,7 @@ export class AbilityService {
       // Removes the sacrified species.
       batch = this.speciesService.move(
         {
-          speciesId: activeSpecies.id,
+          movingSpecies: activeSpecies,
           quantity: -4,
           destinationId: activeTileId,
         },
@@ -430,9 +439,9 @@ export class AbilityService {
   // Moves rallied species to the active tile species.
   public rallying(ralliedTileId: number) {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeSpecies = this.speciesQuery.getActive();
     const movingQuantity = this.tileQuery.getTileSpeciesCount(
-      activeSpeciesId,
+      activeSpecies.id,
       ralliedTileId
     );
 
@@ -440,7 +449,7 @@ export class AbilityService {
 
     (
       this.speciesService.move({
-        speciesId: activeSpeciesId,
+        movingSpecies: activeSpecies,
         quantity: movingQuantity,
         destinationId: activeTileId,
         previousTileId: ralliedTileId,
@@ -515,7 +524,7 @@ export class AbilityService {
 
     (
       this.speciesService.move({
-        speciesId: intimidatedSpecies.id,
+        movingSpecies: intimidatedSpecies,
         quantity: movingQuantity,
         destinationId: randomAdjacentTileId,
         previousTileId: tileId,
@@ -541,12 +550,12 @@ export class AbilityService {
   // GETTERS
   public speciesHasAbility(speciesId: string, abilityId: AbilityId): boolean {
     const speciesAbilityIds = this.getSpeciesAbilityIds(speciesId);
-    return speciesAbilityIds.includes(abilityId);
+    return speciesAbilityIds?.includes(abilityId);
   }
 
   private getSpeciesAbilityIds(speciesId: string) {
     const species = this.speciesQuery.getEntity(speciesId);
-    return species.abilities.map((ability) => ability.id);
+    return species?.abilities.map((ability) => ability.id);
   }
 
   public getAbilityValue(abilityId: AbilityId): number {

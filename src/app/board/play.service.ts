@@ -113,13 +113,13 @@ export class PlayService {
   // GAME STATE - Tile validation
   public validateStartTile() {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const activeSpecieId = this.speciesQuery.getActiveId();
+    const activeSpecies = this.speciesQuery.getActive();
     const activePlayerId = this.playerQuery.getActiveId();
 
     this.playerService.switchReadyState([activePlayerId]);
 
     this.speciesService.move({
-      speciesId: activeSpecieId,
+      movingSpecies: activeSpecies,
       quantity: 4,
       destinationId: activeTileId,
     });
@@ -207,6 +207,7 @@ export class PlayService {
   }
 
   public openAssimilationMenu(attackedTileId: number): void {
+    this.tileService.removeAttackable();
     const attackedTile = this.tileQuery.getEntity(attackedTileId.toString());
     const attackingTileSpecies = this.speciesQuery.activeTileSpecies;
     const attackableSpecies = this.abilityService.getWeakerInRangeSpecies(

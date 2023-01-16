@@ -24,11 +24,12 @@ export interface SpeciesListData {
 }
 
 export interface MoveParameters {
-  speciesId: string;
+  movingSpecies: Species;
   quantity: number;
   destinationId: number;
   previousTileId?: number;
   migrationUsed?: number;
+  attackingSpecies?: Species;
 }
 
 export const BASIC_ACTIONS = [
