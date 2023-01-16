@@ -8,8 +8,8 @@ import { Observable } from 'rxjs';
 import { GameQuery, StartStage } from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
-import { PlayerQuery } from '../players/_state';
-import { GameAction } from '../species/_state';
+import { PlayerColors, PlayerQuery } from '../players/_state';
+import { GameAction, Species, SpeciesQuery } from '../species/_state';
 import { TileQuery, TileService } from '../tiles/_state';
 
 @Component({
@@ -23,10 +23,12 @@ export class TextOverlayComponent implements OnInit {
   public hasTileActive$: Observable<boolean>;
   public isPlayerWaiting$: Observable<boolean>;
   public isActivePlayerPlaying$: Observable<boolean>;
+  public activeSpecies$: Observable<Species>;
   constructor(
     private gameQuery: GameQuery,
     private tileQuery: TileQuery,
     private tileService: TileService,
+    private speciesQuery: SpeciesQuery,
     private playerQuery: PlayerQuery,
     private playService: PlayService,
     private abilityService: AbilityService
@@ -39,6 +41,7 @@ export class TextOverlayComponent implements OnInit {
     this.isPlayerWaiting$ =
       this.playerQuery.isActivePlayerWaitingForNextStartStage$;
     this.isActivePlayerPlaying$ = this.playerQuery.isActivePlayerPlaying$;
+    this.activeSpecies$ = this.speciesQuery.selectActive();
   }
 
   public validateStartTile() {
@@ -51,6 +54,11 @@ export class TextOverlayComponent implements OnInit {
 
   public isActionActive$(action: GameAction): Observable<boolean> {
     return this.abilityService.isActionOngoing$(action);
+  }
+
+  public getActiveSpeciesColors(): PlayerColors {
+    const activeSpecies = this.speciesQuery.getActive();
+    return this.playerQuery.getPlayerSpeciesColors(activeSpecies.playerId);
   }
 
   // Cancels tile focus when using "esc" on keyboard.

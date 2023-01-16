@@ -1,8 +1,39 @@
-.start {
+.opacity {
+  background-color: white;
+  opacity: 0.8;
+}
+aside {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  z-index: 3;
+}
+
+.banner {
+  height: fit-content;
+}
+
+.top {
   position: fixed;
   z-index: 2;
   height: auto;
   margin-top: 100%;
+}
+
+.species {
+  max-height: 50%;
+  max-width: 80%;
+}
+
+#species-icon {
+  --species-title-display: none;
+  height: 70%;
+  width: 70%;
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
 }
 
 .validation-buttons {
@@ -37,6 +68,9 @@
 @keyframes opacityOnAndOff {
   0% {
     opacity: 0;
+  }
+  1% {
+    opacity: 1;
   }
   50% {
     opacity: 1;
