@@ -1,4 +1,4 @@
-import { Colors, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
+import { Colors, DEFAULT_ASSIMILATED_QUANTITY, DEFAULT_ASSIMILATION_CREATED_QUANTITY, DEFAULT_ASSIMILATION_RANGE, DEFAULT_MOVING_QUANTITY, DEFAULT_PROLIFERATION_CREATED_QUANTITY, DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
 import { generateRandomRegionTileIds } from '../../tiles/_state';
 
 export interface Species {
@@ -61,7 +61,7 @@ export interface MigrationValues {
   migrationUsed?: number;
 }
 
-export const DEFAULT_MOVING_QUANTITY = 1;
+
 
 export function createMigrationValues(
   values?: Partial<MigrationValues>
@@ -82,8 +82,6 @@ export interface ProliferationValues {
   createdQuantity: number;
 }
 
-export const DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS = 2;
-export const DEFAULT_PROLIFERATION_CREATED_QUANTITY = 2;
 
 export function createProliferationValues(
   values?: Partial<ProliferationValues>
@@ -104,10 +102,6 @@ export interface AssimilationValues {
   createdQuantity?: number;
   range?: number;
 }
-
-export const DEFAULT_ASSIMILATED_QUANTITY = -2;
-export const DEFAULT_ASSIMILATION_CREATED_QUANTITY = 1;
-export const DEFAULT_ASSIMILATION_RANGE = 0;
 
 export function createAssimilationValues(
   values?: Partial<AssimilationValues>

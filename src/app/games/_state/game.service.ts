@@ -257,6 +257,7 @@ export class GameService extends CollectionService<GameState> {
 
     // If that's the last remaining action, changes turn.
     if (isLastAction) {
+      this.tileService.removeActive();
       batch = await this.incrementTurnCount(batch);
     }
 

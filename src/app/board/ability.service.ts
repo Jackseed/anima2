@@ -17,9 +17,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
 import {
+  ADAPATION_SPECIES_NEEDED,
   DEFAULT_REMAINING_MIGRATIONS,
   GameQuery,
   GameService,
+  MAX_SPECIES_ABILITIES,
 } from '../games/_state';
 import { PlayerService } from './players/_state';
 import {
@@ -171,7 +173,7 @@ export class AbilityService {
     const game = this.gameQuery.getActive();
 
     return (
-      this.remainingMigrations < 4 &&
+      this.remainingMigrations < DEFAULT_REMAINING_MIGRATIONS &&
       this.remainingMigrations > 0 &&
       game.remainingActions === 1
     );
@@ -408,7 +410,7 @@ export class AbilityService {
       batch = this.speciesService.move(
         {
           movingSpecies: activeSpecies,
-          quantity: -4,
+          quantity: -ADAPATION_SPECIES_NEEDED,
           destinationId: activeTileId,
         },
         batch
@@ -620,7 +622,6 @@ export class AbilityService {
     const activeTileSpecies$ = this.speciesQuery.activeTileSpecies$;
     const activeTile$ = this.tileQuery.selectActive();
     const proliferationValues = this.applyProliferationAbilities(true);
-    const game = this.gameQuery.getActive();
 
     return combineLatest([activeTileSpecies$, activeTile$]).pipe(
       map(([activeTileSpecies, tile]) => {
@@ -653,13 +654,18 @@ export class AbilityService {
             proliferationValues.neededIndividuals
           );
 
-        // Checks if there are at least 4 species individuals in the active tile.
-        if (action === 'adaptation')
+        // Checks if there are more than the needed individuals on the tile
+        // & that the species has less abilities than the max.
+        if (action === 'adaptation') {
+          const activeSpecies = this.speciesQuery.getActive();
+          if (activeSpecies.abilities.length === MAX_SPECIES_ABILITIES)
+            return false;
           return this.isSpeciesQuantityGreatherThan(
             activeTileSpecies.id,
             Number(tile.id),
-            4
+            ADAPATION_SPECIES_NEEDED
           );
+        }
       })
     );
   }

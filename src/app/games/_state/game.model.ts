@@ -2,15 +2,24 @@ import firebase from 'firebase/app';
 import { Ability } from 'src/app/board/species/_state';
 
 // GAME CONSTANTS
+export const DEFAULT_MOVING_QUANTITY = 1;
 export const ABILITY_CHOICE_AMOUNT = 2;
-export const MAX_SPECIES_ABILITIES = 3
+export const MAX_SPECIES_ABILITIES = 3;
 export const DEFAULT_ACTION_PER_TURN = 2;
-export const DEFAULT_REMAINING_MIGRATIONS = 4;
 export type StartStage =
   | 'launching'
   | 'abilityChoice'
   | 'tileChoice'
   | 'tileValidated';
+
+// ACTIONS
+export const DEFAULT_REMAINING_MIGRATIONS = 4;
+export const ADAPATION_SPECIES_NEEDED = 5;
+export const DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS = 2;
+export const DEFAULT_PROLIFERATION_CREATED_QUANTITY = 2;
+export const DEFAULT_ASSIMILATED_QUANTITY = -2;
+export const DEFAULT_ASSIMILATION_CREATED_QUANTITY = 1;
+export const DEFAULT_ASSIMILATION_RANGE = 0;
 
 // COLORS
 export const GREEN_PRIMARY_COLOR = '#4cab79';
