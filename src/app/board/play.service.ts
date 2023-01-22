@@ -82,7 +82,7 @@ export class PlayService {
     return nextStartStateSub;
   }
 
-  private switchToNextStartStage() {
+  private async switchToNextStartStage() {
     const playerIds = this.playerQuery.allPlayerIds;
     const game = this.gameQuery.getActive();
 
@@ -98,14 +98,16 @@ export class PlayService {
       return this.gameService.switchStartStage('tileChoice');
     }
     if (game.startStage === 'tileChoice') {
-      this.playTileChoices();
+      await this.playTileChoices();
       this.gameService.switchStartStage('tileValidated');
       return this.gameService.updateIsStarting(false);
     }
   }
 
   public async playTileChoices() {
+    const activePlayerId = this.playerQuery.getActiveId();
     const game = this.gameQuery.getActive();
+
     for (const tileChoice of game.tileChoices) {
       const species = this.speciesQuery.getEntity(tileChoice.speciesId);
       await this.speciesService.move({
@@ -114,6 +116,13 @@ export class PlayService {
         destinationId: tileChoice.tileId,
       });
     }
+
+    // Removes 1 action for the first player.
+    if (
+      this.playerQuery.isPlayerPlaying(activePlayerId) &&
+      game.tileChoices.length > 0
+    )
+      this.gameService.updateRemainingActions();
 
     this.gameService.updateTileChoice();
   }
