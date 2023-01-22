@@ -43,7 +43,7 @@ article:nth-child(1) {
 .circle {
   width: 45px;
   height: 45px;
-  background-color: #f59c27;
+  background-color: var(--anima-color);
   bottom: -5%;
   right: -25%;
   border-radius: 50%;
@@ -68,7 +68,7 @@ article:nth-child(1) {
 
 .box {
   background-color: #f2f2f2;
-  border: 3px #f59c27 solid;
+  border: 3px var(--anima-color) solid;
   height: 50%;
   width: 100%;
   padding-left: 5%;
@@ -76,7 +76,7 @@ article:nth-child(1) {
 
 aside {
   margin-top: 4%;
-  border-top: 4px #f59c27 solid;
+  border-top: 4px var(--anima-color) solid;
   background-image: url("../../../../assets/background-flame.png");
   background-position: center;
   background-size: 25%;

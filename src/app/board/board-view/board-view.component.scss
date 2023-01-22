@@ -75,7 +75,7 @@ footer {
 }
 
 .selected {
-  background: #f59c27 !important;
+  background: var(--anima-color) !important;
   animation: blinker 1.5s ease-in infinite;
 }
 
@@ -117,9 +117,10 @@ footer {
 }
 
 .no-font > div:hover {
-  background: #f58787;
+  background: var(--anima-color);
   cursor: pointer;
 }
+
 .blank {
   background: #ffffff;
 }

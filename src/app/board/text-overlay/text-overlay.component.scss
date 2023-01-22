@@ -77,7 +77,7 @@
 }
 
 .animated {
-  animation: opacityOnAndOff 3s normal forwards step-end;
+  animation: opacityOnAndOff 0.5s normal forwards step-end;
 }
 
 @keyframes opacityOnAndOff {
