@@ -91,7 +91,12 @@ footer {
   height: calc(var(--s) * 1.1547 - var(--border));
   margin: var(--m);
   clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-  background: var(--color);
+  background: radial-gradient(
+    circle,
+    var(--color) 0%,
+    var(--color) 30%,
+    var(--anima-color) 100%
+  ) !important;
   position: absolute;
 }
 
@@ -106,7 +111,7 @@ footer {
     circle,
     var(--color) 0%,
     var(--color) 30%,
-    rgba(247, 180, 73, 1) 100%
+    var(--anima-color) 100%
   ) !important;
 }
 .reachable:hover,
