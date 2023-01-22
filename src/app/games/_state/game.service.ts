@@ -20,6 +20,7 @@ import {
   Colors,
   RED_PRIMARY_COLOR,
   RED_SECONDARY_COLOR,
+  TileChoice,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -193,7 +194,6 @@ export class GameService extends CollectionService<GameState> {
   }
 
   // Creates player, player's species & update game docs.
-
   public async addActiveUserAsPlayer(gameId: string) {
     // Creates 2nd player.
     const colors = {
@@ -225,11 +225,24 @@ export class GameService extends CollectionService<GameState> {
     this.store.removeActive(activeGameId);
   }
 
+  // Adds a new tile choice or clear the tile choices.
+  public updateTileChoice(tileChoice?: TileChoice) {
+    const gameId = this.query.getActiveId();
+    const gameDoc = this.db.doc(`games/${gameId}`);
+    const tileChoices = tileChoice
+      ? firebase.firestore.FieldValue.arrayUnion(tileChoice)
+      : [];
+
+    gameDoc.update({ tileChoices }).catch((error) => {
+      console.log('Updating tile choice failed: ', error);
+    });
+  }
+
   public async switchStartStage(startStage: StartStage) {
     const gameId = this.query.getActiveId();
     const gameDoc = this.db.doc(`games/${gameId}`);
 
-    gameDoc.update({ startStage }).catch((error) => {
+    await gameDoc.update({ startStage }).catch((error) => {
       console.log('Switch start state failed: ', error);
     });
   }

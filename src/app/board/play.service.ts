@@ -9,7 +9,11 @@ import { combineLatest, Subscription } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 
 // States
-import { GameQuery, GameService } from '../games/_state';
+import {
+  DEFAULT_SPECIES_AMOUNT,
+  GameQuery,
+  GameService,
+} from '../games/_state';
 import {
   createAssimilationValues,
   Species,
@@ -94,9 +98,24 @@ export class PlayService {
       return this.gameService.switchStartStage('tileChoice');
     }
     if (game.startStage === 'tileChoice') {
+      this.playTileChoices();
       this.gameService.switchStartStage('tileValidated');
       return this.gameService.updateIsStarting(false);
     }
+  }
+
+  public async playTileChoices() {
+    const game = this.gameQuery.getActive();
+    for (const tileChoice of game.tileChoices) {
+      const species = this.speciesQuery.getEntity(tileChoice.speciesId);
+      await this.speciesService.move({
+        movingSpecies: species,
+        quantity: DEFAULT_SPECIES_AMOUNT,
+        destinationId: tileChoice.tileId,
+      });
+    }
+
+    this.gameService.updateTileChoice();
   }
 
   // GAME STATE - Tile choice
@@ -113,16 +132,16 @@ export class PlayService {
   // GAME STATE - Tile validation
   public validateStartTile() {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const activeSpecies = this.speciesQuery.getActive();
+    const activeSpeciesId = this.speciesQuery.getActiveId();
     const activePlayerId = this.playerQuery.getActiveId();
 
     this.playerService.switchReadyState([activePlayerId]);
 
-    this.speciesService.move({
-      movingSpecies: activeSpecies,
-      quantity: 4,
-      destinationId: activeTileId,
+    this.gameService.updateTileChoice({
+      speciesId: activeSpeciesId,
+      tileId: activeTileId,
     });
+
     this.tileService.removeActive();
   }
 

@@ -3,6 +3,7 @@ import { Ability } from 'src/app/board/species/_state';
 
 // GAME CONSTANTS
 export const DEFAULT_MOVING_QUANTITY = 1;
+export const DEFAULT_SPECIES_AMOUNT = 4;
 export const ABILITY_CHOICE_AMOUNT = 2;
 export const MAX_SPECIES_ABILITIES = 3;
 export const DEFAULT_ACTION_PER_TURN = 2;
@@ -45,6 +46,12 @@ export interface Game {
   inGameAbilities: Ability[];
   isStarting: boolean;
   startStage: StartStage;
+  tileChoices: TileChoice[];
+}
+
+export interface TileChoice {
+  speciesId: string;
+  tileId: number;
 }
 
 export interface Colors {
@@ -65,6 +72,7 @@ export function createGame(params: Partial<Game>): Game {
     inGameAbilities: [],
     isStarting: true,
     startStage: 'launching',
+    tileChoices: [],
     ...params,
   };
 }
