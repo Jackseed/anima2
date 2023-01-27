@@ -142,13 +142,13 @@ export class PlayService {
   // GAME STATE - Tile validation
   public validateStartTile() {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
     const activePlayerId = this.playerQuery.getActiveId();
 
     this.playerQuery.switchReadyState([activePlayerId]);
 
     this.gameService.updateTileChoice({
-      speciesId: activeSpeciesId,
+      speciesId: newSpeciesId,
       tileId: activeTileId,
     });
 
