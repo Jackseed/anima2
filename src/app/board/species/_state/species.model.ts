@@ -376,7 +376,7 @@ export const neutrals: Species[] = [
     playerId: 'neutral',
     colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(4, 'mountains'),
-  },
+  },/*
   {
     id: 'islands',
     playerId: 'neutral',
@@ -401,7 +401,7 @@ export const neutrals: Species[] = [
     playerId: 'neutral',
     colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(5, 'forests'),
-  },
+  }, */
 ];
 
 export function createSpecies(

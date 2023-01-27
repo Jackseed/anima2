@@ -31,24 +31,6 @@ export class PlayerService extends CollectionService<PlayerState> {
     this.store.setActive(id);
   }
 
-  public switchReadyState(playerIds: string[]) {
-    const batch = this.db.firestore.batch();
-    const gameId = this.gameQuery.getActiveId();
-    for (const playerId of playerIds) {
-      const player = this.query.getEntity(playerId);
-      const playerRef = this.db.doc(`games/${gameId}/players/${playerId}`).ref;
-      batch.update(playerRef, {
-        isWaitingForNextStartStage: !player.isWaitingForNextStartStage,
-      });
-    }
-
-    batch
-      .commit()
-      .catch((error) =>
-        console.log('Switching players ready state failed: ', error)
-      );
-  }
-
   // UTILS - Gets random abilities and saves it with the active tile id.
   public async setRandomAbilityChoice() {
     this.gameService.updateUiAdaptationMenuOpen(true);

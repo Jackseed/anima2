@@ -1,6 +1,9 @@
 // Angular
 import { Injectable } from '@angular/core';
 
+// AngularFire
+import { AngularFirestore } from '@angular/fire/firestore';
+
 // Akita
 import { QueryEntity } from '@datorama/akita';
 
@@ -19,6 +22,7 @@ import { SpeciesQuery } from '../../species/_state/species.query';
 export class PlayerQuery extends QueryEntity<PlayerState> {
   constructor(
     protected store: PlayerStore,
+    private db: AngularFirestore,
     private gameQuery: GameQuery,
     private speciesQuery: SpeciesQuery
   ) {
@@ -61,10 +65,11 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
       map((game) => game.playingPlayerId === activePlayerId)
     );
   }
-  public isPlayerPlaying(playerId: string): boolean {
+  public isPlayerPlaying(playerId?: string): boolean {
+    const checkedPlayerId = playerId ? playerId : this.getActiveId();
     const playingPlayerId = this.gameQuery.playingPlayerId;
 
-    return playerId === playingPlayerId;
+    return checkedPlayerId === playingPlayerId;
   }
 
   public get unplayingPlayerId(): string {
@@ -109,5 +114,24 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
 
     const player = this.getEntity(playerId);
     return player.colors;
+  }
+
+  // TODO: Should be in player service but here to avoid circular dependency...
+  public switchReadyState(playerIds: string[]) {
+    const batch = this.db.firestore.batch();
+    const gameId = this.gameQuery.getActiveId();
+    for (const playerId of playerIds) {
+      const player = this.getEntity(playerId);
+      const playerRef = this.db.doc(`games/${gameId}/players/${playerId}`).ref;
+      batch.update(playerRef, {
+        isWaitingForNextStartStage: !player.isWaitingForNextStartStage,
+      });
+    }
+
+    batch
+      .commit()
+      .catch((error) =>
+        console.log('Switching players ready state failed: ', error)
+      );
   }
 }

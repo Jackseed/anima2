@@ -154,6 +154,31 @@ export class GameService extends CollectionService<GameState> {
     return { playerId, batch };
   }
 
+  public createNewSpeciesByBatch(
+    playerId: string,
+    batch: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch {
+    const gameId = this.query.getActiveId();
+    const speciesId = this.db.createId();
+    const player = this.playerQuery.getEntity(playerId);
+
+    // Creates species doc.
+    const speciesRef = this.db
+      .collection(`games/${gameId}/species`)
+      .doc(speciesId).ref;
+    const species = createSpecies(speciesId, player.id, player.colors);
+    batch.set(speciesRef, species);
+
+    // Updates player doc.
+    const playerRef = this.db
+      .collection(`games/${gameId}/players`)
+      .doc(player.id).ref;
+    const newSpeciesId = firebase.firestore.FieldValue.arrayUnion(speciesId);
+    batch.update(playerRef, { speciesIds: newSpeciesId });
+
+    return batch;
+  }
+
   private gameBatchCreation(
     gameId: string,
     name: string,
@@ -294,6 +319,13 @@ export class GameService extends CollectionService<GameState> {
     batch.update(gameRef, { turnCount: increment });
     batch.update(gameRef, { playingPlayerId: unplayingPlayerId });
 
+    if (game.turnCount === 1) {
+      const playerIds = this.playerQuery.allPlayerIds;
+      await this.playNewSpecies();
+      this.switchStartStage('launching');
+      this.playerQuery.switchReadyState(playerIds);
+    }
+
     // Every 3 turns, a new era begins.
     if ((game.turnCount + 1) % 3 === 0) {
       batch.update(gameRef, { eraCount: increment });
@@ -301,6 +333,18 @@ export class GameService extends CollectionService<GameState> {
     }
 
     return batch;
+  }
+
+  public async playNewSpecies() {
+    const playerIds = this.playerQuery.allPlayerIds;
+    let batch = this.db.firestore.batch();
+    for (const playerId of playerIds) {
+      batch = this.createNewSpeciesByBatch(playerId, batch);
+    }
+
+    await batch.commit().catch((error) => {
+      console.log('Creating new species failed: ', error);
+    });
   }
 
   public async updateRemainingMigrations(remainingMigrations: number) {
