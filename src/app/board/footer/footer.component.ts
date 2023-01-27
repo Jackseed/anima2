@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PlayService } from '../play.service';
 import { TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
-import { BasicAction, BASIC_ACTIONS } from '../species/_state';
+import { BasicAction, BASIC_ACTIONS, SpeciesQuery } from '../species/_state';
 
 @Component({
   selector: 'app-footer',
@@ -24,6 +24,7 @@ export class FooterComponent implements OnInit {
 
   constructor(
     private tileService: TileService,
+    private speciesQuery: SpeciesQuery,
     private playService: PlayService,
     private abilityService: AbilityService,
     public dialog: MatDialog
@@ -49,7 +50,9 @@ export class FooterComponent implements OnInit {
     if (action === 'assimilation') this.playService.setupAssimilation();
     if (action === 'migration') this.abilityService.startMigration();
     if (action === 'proliferation') this.abilityService.setupProliferation();
-    if (action === 'adaptation') await this.playService.setupAdaptation();
+    const activeSpeciesId = this.speciesQuery.getActiveId();
+    if (action === 'adaptation')
+      await this.playService.setupAdaptation(activeSpeciesId);
   }
 
   public async stopAction(action: BasicAction) {

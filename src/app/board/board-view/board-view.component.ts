@@ -99,8 +99,9 @@ export class BoardViewComponent implements OnInit, OnDestroy {
           // but closed on UI (means user reloaded).
           if (isChoosingAbility && !isAdaptationMenuOpen) {
             const activeTileId = this.playerQuery.abilityChoiceActiveTileId;
+            const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
             if (activeTileId) this.tileService.setActive(activeTileId);
-            this.playService.openAdaptationMenu();
+            this.playService.openAdaptationMenu(newSpeciesId);
             this.gameService.updateUiAdaptationMenuOpen(true);
           }
         })

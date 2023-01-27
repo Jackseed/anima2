@@ -29,6 +29,11 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     super(store);
   }
 
+  public get activePlayerLastSpeciesId(): string {
+    const activePlayer = this.getActive();
+    return activePlayer.speciesIds[activePlayer.speciesIds.length - 1];
+  }
+
   public get allPlayerIds(): string[] {
     return this.getAll().map((player) => player.id);
   }

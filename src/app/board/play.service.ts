@@ -59,9 +59,9 @@ export class PlayService {
     this.playerQuery.switchReadyState(playerIds);
 
     if (game.startStage === 'launching') {
-      console.log('applying ability choice');
+      const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
       this.gameService.switchStartStage('abilityChoice');
-      return this.setupAdaptation();
+      return this.setupAdaptation(newSpeciesId);
     }
     if (game.startStage === 'abilityChoice') {
       this.setStartTileChoice();
@@ -178,15 +178,16 @@ export class PlayService {
     );
   }
 
-  public async setupAdaptation() {
+  public async setupAdaptation(adaptatingSpeciesId: string) {
     await this.playerService.setRandomAbilityChoice();
-    this.openAdaptationMenu();
+    this.openAdaptationMenu(adaptatingSpeciesId);
   }
 
-  public async openAdaptationMenu(): Promise<void> {
+  public async openAdaptationMenu(adaptatingSpeciesId: string): Promise<void> {
     const isGameStarting = this.gameQuery.isStarting;
     const activePlayerId = this.playerQuery.getActiveId();
     const dialogRef = this.dialog.open(AdaptationMenuComponent, {
+      data: adaptatingSpeciesId,
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
       disableClose: true,

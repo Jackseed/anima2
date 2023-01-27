@@ -382,9 +382,9 @@ export class AbilityService {
   }
 
   // ADAPTATION
-  public async adapt(ability: Ability) {
+  public async adapt(ability: Ability, speciesId: string) {
     let batch = this.db.firestore.batch();
-    const activeSpecies = this.speciesQuery.getActive();
+    const adaptingSpecies = this.speciesQuery.getEntity(speciesId);
     const isGameStarting = this.gameQuery.isStarting;
 
     // Removes adaptation menu.
@@ -399,17 +399,17 @@ export class AbilityService {
     // Updates species doc with the new ability.
     batch = this.speciesService.addAbilityToSpeciesByBatch(
       ability,
-      activeSpecies,
+      adaptingSpecies,
       batch
     );
 
-    // If the game is started, count adaptation as an action.
+    // If the game isn't started, count adaptation as an action.
     if (!isGameStarting) {
       const activeTileId = Number(this.tileQuery.getActiveId());
       // Removes the sacrified species.
       batch = this.speciesService.move(
         {
-          movingSpecies: activeSpecies,
+          movingSpecies: adaptingSpecies,
           quantity: -ADAPATION_SPECIES_NEEDED,
           destinationId: activeTileId,
         },

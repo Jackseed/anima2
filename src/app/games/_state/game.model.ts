@@ -40,6 +40,7 @@ export interface Game {
   name?: string;
   playerIds?: string[];
   playingPlayerId?: string;
+  playingSpeciesId?: string;
   remainingActions: number;
   eraCount: number;
   turnCount: number;
