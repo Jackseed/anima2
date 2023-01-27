@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 // Rxjs
 import { combineLatest, Subscription } from 'rxjs';
-import { first, tap } from 'rxjs/operators';
+import { first, map, pluck, tap } from 'rxjs/operators';
 
 // Material
 import { MatDialog } from '@angular/material/dialog';
@@ -51,6 +51,41 @@ export class PlayService {
     public dialog: MatDialog
   ) {}
 
+  public get setActivePlayingSpeciesSub(): Subscription {
+    return this.gameQuery
+      .selectActive()
+      .pipe(
+        pluck('playingSpeciesId'),
+        tap((playingSpeciesId) =>
+          this.speciesService.setActive(playingSpeciesId)
+        )
+      )
+      .subscribe();
+  }
+
+  // Checks whether active player is choosing an ability
+  // If so, loads the adaptation menu (in case of reloading)
+  public get getPlayerChoosingAbilitySub(): Subscription {
+    return this.playerQuery
+      .selectActive()
+      .pipe(
+        map((player) => player.abilityChoice.isChoosingAbility),
+        tap((isChoosingAbility) => {
+          const isAdaptationMenuOpen = this.gameQuery.isAdaptationMenuOpen;
+          // Opens adaptation menu if it's saved as open on Firebase
+          // but closed on UI (means user reloaded).
+          if (isChoosingAbility && !isAdaptationMenuOpen) {
+            const activeTileId = this.playerQuery.abilityChoiceActiveTileId;
+            const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
+            if (activeTileId) this.tileService.setActive(activeTileId);
+            this.openAdaptationMenu(newSpeciesId);
+            this.gameService.updateUiAdaptationMenuOpen(true);
+          }
+        })
+      )
+      .subscribe();
+  }
+
   private async switchToNextStartStage() {
     const playerIds = this.playerQuery.allPlayerIds;
     const game = this.gameQuery.getActive();
@@ -90,7 +125,7 @@ export class PlayService {
 
   // Applies tile selection if it's the current game stage (for reloads),
   // and the player hasn't select a tile yet.
-  public reApplyTileChoiceStateSub(): Subscription {
+  public get reApplyTileChoiceStateSub(): Subscription {
     const gameStartStage$ = this.gameQuery.startStage$;
     const isPlayerReady$ =
       this.playerQuery.isActivePlayerWaitingForNextStartStage$;

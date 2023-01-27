@@ -67,6 +67,7 @@ export function createGame(params: Partial<Game>): Game {
     name: params.name,
     playerIds: params.playerIds,
     playingPlayerId: params.playingPlayerId,
+    playingSpeciesId: params.playingSpeciesId,
     remainingActions: DEFAULT_ACTION_PER_TURN,
     eraCount: 1,
     turnCount: 1,
