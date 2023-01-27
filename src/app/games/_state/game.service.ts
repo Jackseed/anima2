@@ -58,7 +58,7 @@ export class GameService extends CollectionService<GameState> {
     let batch = this.db.firestore.batch();
 
     // Creates neutrals.
-    const neutralBatchCreation = this.neutralsBatchCreation(gameId, batch);
+    const neutralBatchCreation = this.createNeutralsByBatch(gameId, batch);
 
     // Creates tiles.
     batch = this.tileService.batchSetTiles(
@@ -72,14 +72,14 @@ export class GameService extends CollectionService<GameState> {
       primary: GREEN_PRIMARY_COLOR,
       secondary: GREEN_SECONDARY_COLOR,
     };
-    const playerBatchCreation = await this.playerBatchCreation(
+    const playerBatchCreation = await this.createPlayerByBatch(
       gameId,
       colors,
       batch
     );
 
     // Creates game object.
-    batch = this.gameBatchCreation(
+    batch = this.createGameByBatch(
       gameId,
       name,
       playerBatchCreation.playerId,
@@ -97,7 +97,7 @@ export class GameService extends CollectionService<GameState> {
   }
 
   // Adds random ability to neutrals, creates them and saves their abilities.
-  private neutralsBatchCreation(
+  private createNeutralsByBatch(
     gameId: string,
     batch: firebase.firestore.WriteBatch
   ): {
@@ -124,7 +124,7 @@ export class GameService extends CollectionService<GameState> {
   }
 
   // Creates player & player's species docs.
-  private async playerBatchCreation(
+  private async createPlayerByBatch(
     gameId: string,
     colors: Colors,
     existingBatch?: firebase.firestore.WriteBatch
@@ -179,7 +179,7 @@ export class GameService extends CollectionService<GameState> {
     return batch;
   }
 
-  private gameBatchCreation(
+  private createGameByBatch(
     gameId: string,
     name: string,
     playerId: string,
@@ -225,7 +225,7 @@ export class GameService extends CollectionService<GameState> {
       primary: RED_PRIMARY_COLOR,
       secondary: RED_SECONDARY_COLOR,
     };
-    const playerBatchCreation = await this.playerBatchCreation(gameId, colors);
+    const playerBatchCreation = await this.createPlayerByBatch(gameId, colors);
     const firestorePlayerIds = firebase.firestore.FieldValue.arrayUnion(
       playerBatchCreation.playerId
     );
@@ -322,6 +322,7 @@ export class GameService extends CollectionService<GameState> {
     if (game.turnCount === 1) {
       const playerIds = this.playerQuery.allPlayerIds;
       await this.playNewSpecies();
+      this.updateIsStarting(true);
       this.switchStartStage('launching');
       this.playerQuery.switchReadyState(playerIds);
     }

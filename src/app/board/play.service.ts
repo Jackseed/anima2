@@ -1,7 +1,6 @@
 // Angular
 import { Injectable } from '@angular/core';
 
-
 // Rxjs
 import { combineLatest, Subscription } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
