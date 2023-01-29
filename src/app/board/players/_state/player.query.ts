@@ -17,6 +17,7 @@ import { GameQuery } from 'src/app/games/_state/game.query';
 import { Ability, Species } from '../../species/_state/species.model';
 import { Colors, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
 import { SpeciesQuery } from '../../species/_state/species.query';
+import { Player } from './player.model';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerQuery extends QueryEntity<PlayerState> {
@@ -27,11 +28,6 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     private speciesQuery: SpeciesQuery
   ) {
     super(store);
-  }
-
-  public get activePlayerFirstSpeciesId(): string {
-    const activePlayer = this.getActive();
-    return activePlayer.speciesIds[0];
   }
 
   public get activePlayerLastSpeciesId(): string {
@@ -99,6 +95,10 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     const playerIds = this.getAll().map((player) => player.id);
     const playingPlayerId = this.gameQuery.playingPlayerId;
     return playerIds.filter((id) => id !== playingPlayerId)[0];
+  }
+
+  public get unplayingPlayer(): Player {
+    return this.getEntity(this.unplayingPlayerId);
   }
 
   public get opponentId(): string {

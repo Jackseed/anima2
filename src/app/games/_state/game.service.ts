@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 
 // AngularFire
 import { AngularFireAuth } from '@angular/fire/auth';
+import { DocumentReference } from '@angular/fire/firestore';
 
 // Firebase
 import firebase from 'firebase/app';
@@ -307,10 +308,7 @@ export class GameService extends CollectionService<GameState> {
       this.tileService.removeActive();
 
       if (this.playerQuery.isLastActivePlayerSpeciesActive) {
-        // Updates playing player.
-        const unplayingPlayerId = this.playerQuery.unplayingPlayerId;
-        batch.update(gameRef, { playingPlayerId: unplayingPlayerId });
-
+        batch = this.switchPlayingPlayerAndSpeciesUsingBatch(gameRef, batch);
         if (this.playerQuery.isLastPlayerPlaying)
           batch = await this.incrementTurnCount(batch);
       }
@@ -329,17 +327,26 @@ export class GameService extends CollectionService<GameState> {
     });
   }
 
-  public async incrementTurnCount(
+  private switchPlayingPlayerAndSpeciesUsingBatch(
+    gameRef: DocumentReference,
+    batch: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch {
+    const unplayingPlayer = this.playerQuery.unplayingPlayer;
+
+    batch.update(gameRef, { playingPlayerId: unplayingPlayer.id });
+    batch.update(gameRef, { playingSpeciesId: unplayingPlayer.speciesIds[0] });
+
+    return batch;
+  }
+
+  private async incrementTurnCount(
     batch: firebase.firestore.WriteBatch
   ): Promise<firebase.firestore.WriteBatch> {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const increment = firebase.firestore.FieldValue.increment(1);
-    const activePlayerFirstSpeciesId =
-      this.playerQuery.activePlayerFirstSpeciesId;
 
     batch.update(gameRef, { turnCount: increment });
-    batch.update(gameRef, { playingSpeciesId: activePlayerFirstSpeciesId });
 
     if (game.turnCount === 1) {
       const playerIds = this.playerQuery.allPlayerIds;
