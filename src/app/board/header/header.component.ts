@@ -52,9 +52,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.remainingActions$ = this.gameQuery.remainingActionsArray$;
 
-    this.colorSub = this.activePlayer$.subscribe((player) => {
-      this.primaryColor = player?.colors.primary;
-      this.secondaryColor = player?.colors.secondary;
+    this.colorSub = this.activeSpecies$.subscribe((activeSpecies) => {
+      this.primaryColor = activeSpecies?.colors.primary;
+      this.secondaryColor = activeSpecies?.colors.secondary;
     });
   }
 
