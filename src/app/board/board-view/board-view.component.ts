@@ -7,14 +7,13 @@ import { MatDialog } from '@angular/material/dialog';
 
 // Rxjs
 import { Observable, Subscription } from 'rxjs';
-import { filter, map, pluck, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 // States
 import { UserQuery } from 'src/app/auth/_state';
-import { GameQuery, GameService } from 'src/app/games/_state';
 import { PlayService } from '../play.service';
 import { PlayerQuery } from '../players/_state';
-import { Species, SpeciesQuery, SpeciesService } from '../species/_state';
+import { Species, SpeciesQuery } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
 
@@ -40,14 +39,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   private switchToNextStartStateSub: Subscription;
 
   constructor(
-    private gameQuery: GameQuery,
-    private gameService: GameService,
     private userQuery: UserQuery,
     private playerQuery: PlayerQuery,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
-    private speciesService: SpeciesService,
     private playService: PlayService,
     private abilityService: AbilityService,
     private snackbar: MatSnackBar,
@@ -68,44 +64,10 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     // Subscriptions init
     this.switchToNextStartStateSub =
       this.playService.switchToNextStartStageWhenPlayersReadySub;
-    this.activeSpeciesSub = this.getActiveSpeciesSub();
-    this.startGameSub = this.playService.reApplyTileChoiceStateSub();
-    this.isPlayerChoosingAbilitySub = this.getPlayerChoosingAbilitySub();
-  }
-
-  // TODO: rework subscriptions
-  // set active first species from active player
-  private getActiveSpeciesSub(): Subscription {
-    return this.playerQuery
-      .selectActive()
-      .pipe(
-        filter((player) => !!player),
-        pluck('speciesIds'),
-        tap((ids) => this.speciesService.setActive(ids[0]))
-      )
-      .subscribe();
-  }
-
-  // Checks whether active player is choosing an ability
-  // If so, loads the adaptation menu (in case of reloading)
-  private getPlayerChoosingAbilitySub(): Subscription {
-    return this.playerQuery
-      .selectActive()
-      .pipe(
-        map((player) => player.abilityChoice.isChoosingAbility),
-        tap((isChoosingAbility) => {
-          const isAdaptationMenuOpen = this.gameQuery.isAdaptationMenuOpen;
-          // Opens adaptation menu if it's saved as open on Firebase
-          // but closed on UI (means user reloaded).
-          if (isChoosingAbility && !isAdaptationMenuOpen) {
-            const activeTileId = this.playerQuery.abilityChoiceActiveTileId;
-            if (activeTileId) this.tileService.setActive(activeTileId);
-            this.playService.openAdaptationMenu();
-            this.gameService.updateUiAdaptationMenuOpen(true);
-          }
-        })
-      )
-      .subscribe();
+    this.activeSpeciesSub = this.playService.setActiveSpeciesSub;
+    this.startGameSub = this.playService.reApplyTileChoiceStateSub;
+    this.isPlayerChoosingAbilitySub =
+      this.playService.getPlayerChoosingAbilitySub;
   }
 
   // PLAY - Master function
@@ -119,7 +81,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       return this.playService.selectStartTile(tileId);
 
     // Dismisses clicks during other player turn.
-    if (!this.playerQuery.isActivePlayerPlaying(this.playingPlayerId))
+    if (!this.playerQuery.isPlayerPlaying(this.playingPlayerId))
       return this.snackbar.open("Ce n'est pas votre tour.", null, {
         duration: 3000,
       });

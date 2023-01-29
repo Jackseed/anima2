@@ -8,11 +8,10 @@ import firebase from 'firebase/app';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { Game, GameQuery, GameService } from 'src/app/games/_state';
+import { ABILITY_CHOICE_AMOUNT, Game, GameQuery, GameService } from 'src/app/games/_state';
 import { Ability } from '../../species/_state';
 import { PlayerQuery } from './player.query';
 import { PlayerStore, PlayerState } from './player.store';
-import { ABILITY_CHOICE_AMOUNT } from './player.model';
 import { TileQuery } from '../../tiles/_state';
 
 @Injectable({ providedIn: 'root' })
@@ -30,24 +29,6 @@ export class PlayerService extends CollectionService<PlayerState> {
 
   public setActive(id: string) {
     this.store.setActive(id);
-  }
-
-  public switchReadyState(playerIds: string[]) {
-    const batch = this.db.firestore.batch();
-    const gameId = this.gameQuery.getActiveId();
-    for (const playerId of playerIds) {
-      const player = this.query.getEntity(playerId);
-      const playerRef = this.db.doc(`games/${gameId}/players/${playerId}`).ref;
-      batch.update(playerRef, {
-        isWaitingForNextStartStage: !player.isWaitingForNextStartStage,
-      });
-    }
-
-    batch
-      .commit()
-      .catch((error) =>
-        console.log('Switching players ready state failed: ', error)
-      );
   }
 
   // UTILS - Gets random abilities and saves it with the active tile id.

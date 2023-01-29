@@ -4,13 +4,6 @@
   display: flex;
 }
 
-.background-image {
-  background-image: var(--img);
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-
 .mat-icon-button {
   width: calc(var(--s));
   height: calc(var(--s));

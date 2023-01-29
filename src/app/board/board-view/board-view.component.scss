@@ -75,7 +75,7 @@ footer {
 }
 
 .selected {
-  background: #f59c27 !important;
+  background: var(--anima-color) !important;
   animation: blinker 1.5s ease-in infinite;
 }
 
@@ -84,14 +84,19 @@ footer {
     opacity: 0.7;
   }
 }
-// Adds a smaller tile so the older tile acts as a border.
+// Adds a smaller tile so the bigger one acts as a border.
 .selected:before {
   content: "";
   width: calc(var(--s) - var(--border));
   height: calc(var(--s) * 1.1547 - var(--border));
   margin: var(--m);
   clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-  background: var(--color);
+  background: radial-gradient(
+    circle,
+    var(--color) 0%,
+    var(--color) 30%,
+    var(--anima-color) 100%
+  ) !important;
   position: absolute;
 }
 
@@ -106,7 +111,7 @@ footer {
     circle,
     var(--color) 0%,
     var(--color) 30%,
-    rgba(247, 180, 73, 1) 100%
+    var(--anima-color) 100%
   ) !important;
 }
 .reachable:hover,
@@ -117,9 +122,10 @@ footer {
 }
 
 .no-font > div:hover {
-  background: #f58787;
+  background: var(--anima-color);
   cursor: pointer;
 }
+
 .blank {
   background: #ffffff;
 }
@@ -128,27 +134,27 @@ footer {
   cursor: auto !important;
 }
 .islands {
-  --color: #e5e4f1;
+  --color: #dddeee;
   background: var(--color);
 }
 .rockies {
-  --color: #ebeac0;
+  --color: #fee0b8;
   background: var(--color);
 }
 .mountains {
-  --color: #fce2b9;
+  --color: #fcdcd8;
   background: var(--color);
 }
 .forests {
-  --color: #d4e8d7;
+  --color: #b5e4f3;
   background: var(--color);
 }
 .swamps {
-  --color: #c5e4f2;
+  --color: #dae8b6;
   background: var(--color);
 }
 .plains {
-  --color: #f9ec9a;
+  --color: #fdeda9;
   background: var(--color);
 }
 

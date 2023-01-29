@@ -71,21 +71,27 @@ export class BoardModule {
 
     // VALIDATION BUTTONS
     this.matIconRegistry.addSvgIcon(
-      'blank',
+      'validate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/blank-button.svg'
+        '../../../assets/menu-buttons/validate-button-2.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'validate',
+      'validate-disable',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/validate-button.svg'
+        '../../../assets/menu-buttons/validate-disable-button.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
       'close',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/menu-buttons/close-button.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'close-blur',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/close-blur-button.svg'
       )
     );
 
@@ -103,9 +109,15 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
+      'action',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/action.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
       'menu-button',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/close-button.svg'
+        '../../../assets/menu-buttons/menu-button.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(

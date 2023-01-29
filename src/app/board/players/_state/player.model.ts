@@ -1,14 +1,12 @@
+import { Colors } from 'src/app/games/_state';
 import { Ability } from '../../species/_state';
-
-export const ABILITY_CHOICE_AMOUNT = 2;
 
 export interface Player {
   id: string;
   speciesIds: string[];
   score: number;
   tileIds?: number[];
-  primaryColor: string;
-  secondaryColor: string;
+  colors: Colors;
   abilityChoice: {
     isChoosingAbility: boolean;
     abilityChoices: Ability[];
@@ -20,8 +18,7 @@ export interface Player {
 export function createPlayer(
   id: string,
   speciesIds: string[],
-  primaryColor: string,
-  secondaryColor: string,
+  colors: Colors,
   params?: Partial<Player>
 ): Player {
   return {
@@ -29,8 +26,7 @@ export function createPlayer(
     speciesIds: speciesIds,
     score: 0,
     tileIds: [],
-    primaryColor,
-    secondaryColor,
+    colors,
     abilityChoice: {
       isChoosingAbility: false,
       abilityChoices: [],

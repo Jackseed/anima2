@@ -1,3 +1,4 @@
+import { Colors, DEFAULT_ASSIMILATED_QUANTITY, DEFAULT_ASSIMILATION_CREATED_QUANTITY, DEFAULT_ASSIMILATION_RANGE, DEFAULT_MOVING_QUANTITY, DEFAULT_PROLIFERATION_CREATED_QUANTITY, DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
 import { generateRandomRegionTileIds } from '../../tiles/_state';
 
 export interface Species {
@@ -5,7 +6,7 @@ export interface Species {
   tileIds?: number[];
   playerId?: string;
   abilities?: Ability[];
-  color?: string;
+  colors?: Colors;
 }
 
 export interface TileSpecies extends Species {
@@ -23,11 +24,12 @@ export interface SpeciesListData {
 }
 
 export interface MoveParameters {
-  speciesId: string;
+  movingSpecies: Species;
   quantity: number;
   destinationId: number;
   previousTileId?: number;
   migrationUsed?: number;
+  attackingSpecies?: Species;
 }
 
 export const BASIC_ACTIONS = [
@@ -59,7 +61,7 @@ export interface MigrationValues {
   migrationUsed?: number;
 }
 
-export const DEFAULT_MOVING_QUANTITY = 1;
+
 
 export function createMigrationValues(
   values?: Partial<MigrationValues>
@@ -80,8 +82,6 @@ export interface ProliferationValues {
   createdQuantity: number;
 }
 
-export const DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS = 2;
-export const DEFAULT_PROLIFERATION_CREATED_QUANTITY = 2;
 
 export function createProliferationValues(
   values?: Partial<ProliferationValues>
@@ -102,10 +102,6 @@ export interface AssimilationValues {
   createdQuantity?: number;
   range?: number;
 }
-
-export const DEFAULT_ASSIMILATED_QUANTITY = -2;
-export const DEFAULT_ASSIMILATION_CREATED_QUANTITY = 1;
-export const DEFAULT_ASSIMILATION_RANGE = 0;
 
 export function createAssimilationValues(
   values?: Partial<AssimilationValues>
@@ -368,60 +364,56 @@ export const ABILITIES: Ability[] = [
   },
 ];
 
-const neutralColor = 'grey';
-export const PRIMARY_NEUTRAL_COLOR = '#bfbfbf';
-export const SECONDARY_NEUTRAL_COLOR = '#9b9b9b';
-
 export const neutrals: Species[] = [
   {
     id: 'rockies',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(7, 'rockies'),
   },
   {
     id: 'mountains',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(4, 'mountains'),
-  },
+  },/*
   {
     id: 'islands',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(3, 'islands'),
   },
   {
     id: 'plains',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(9, 'plains'),
   },
   {
     id: 'swamps',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(6, 'swamps'),
   },
 
   {
     id: 'forests',
     playerId: 'neutral',
-    color: neutralColor,
+    colors: NEUTRAL_COLORS,
     tileIds: generateRandomRegionTileIds(5, 'forests'),
-  },
+  }, */
 ];
 
 export function createSpecies(
   id: string,
   playerId: string,
-  color: string,
+  colors: Colors,
   params?: Partial<Species>
 ): Species {
   return {
     id,
     playerId,
-    color,
+    colors,
     tileIds: [],
     abilities: [],
     ...params,

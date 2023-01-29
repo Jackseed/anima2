@@ -51,9 +51,9 @@
           fxFlexFill
           *ngFor="let remainingActions of remainingActions$ | async"
           fxFlex="50"
-          class="background-image"
-          style="--img: url(/assets/menu-buttons/action.png)"
-        ></div>
+        >
+          <mat-icon svgIcon="action"></mat-icon>
+        </div>
       </div>
     </div>
   </div>

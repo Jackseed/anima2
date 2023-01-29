@@ -1,6 +1,9 @@
 // Angular
 import { Injectable } from '@angular/core';
 
+// AngularFire
+import { AngularFirestore } from '@angular/fire/firestore';
+
 // Akita
 import { QueryEntity } from '@datorama/akita';
 
@@ -11,16 +14,38 @@ import { Observable } from 'rxjs';
 // States
 import { PlayerStore, PlayerState } from './player.store';
 import { GameQuery } from 'src/app/games/_state/game.query';
-import {
-  Ability,
-  PRIMARY_NEUTRAL_COLOR,
-  SECONDARY_NEUTRAL_COLOR,
-} from '../../species/_state/species.model';
+import { Ability, Species } from '../../species/_state/species.model';
+import { Colors, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
+import { SpeciesQuery } from '../../species/_state/species.query';
+import { Player } from './player.model';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerQuery extends QueryEntity<PlayerState> {
-  constructor(protected store: PlayerStore, private gameQuery: GameQuery) {
+  constructor(
+    protected store: PlayerStore,
+    private db: AngularFirestore,
+    private gameQuery: GameQuery,
+    private speciesQuery: SpeciesQuery
+  ) {
     super(store);
+  }
+
+  public get activePlayerLastSpeciesId(): string {
+    const activePlayer = this.getActive();
+    return activePlayer.speciesIds[activePlayer.speciesIds.length - 1];
+  }
+
+  public get isLastActivePlayerSpeciesActive(): boolean {
+    const activeSpeciesId = this.speciesQuery.getActiveId();
+    return activeSpeciesId === this.activePlayerLastSpeciesId;
+  }
+
+  public get isLastPlayerPlaying(): boolean {
+    const activeGame = this.gameQuery.getActive();
+    return (
+      activeGame.playingPlayerId ===
+      activeGame.playerIds[activeGame.playerIds.length - 1]
+    );
   }
 
   public get allPlayerIds(): string[] {
@@ -51,17 +76,41 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
   }
 
   // Checks if active player is playing.
-  public isActivePlayerPlaying(playerId: string): boolean {
-    const activeGame = this.gameQuery.getActive();
-    const activePlayerId = activeGame.playingPlayerId;
+  public get isActivePlayerPlaying$(): Observable<boolean> {
+    const activeGame$ = this.gameQuery.selectActive();
+    const activePlayerId = this.getActiveId();
 
-    return playerId === activePlayerId;
+    return activeGame$.pipe(
+      map((game) => game.playingPlayerId === activePlayerId)
+    );
+  }
+  public isPlayerPlaying(playerId?: string): boolean {
+    const checkedPlayerId = playerId ? playerId : this.getActiveId();
+    const playingPlayerId = this.gameQuery.playingPlayerId;
+
+    return checkedPlayerId === playingPlayerId;
   }
 
   public get unplayingPlayerId(): string {
     const playerIds = this.getAll().map((player) => player.id);
     const playingPlayerId = this.gameQuery.playingPlayerId;
     return playerIds.filter((id) => id !== playingPlayerId)[0];
+  }
+
+  public get unplayingPlayer(): Player {
+    return this.getEntity(this.unplayingPlayerId);
+  }
+
+  public get opponentId(): string {
+    const playerIds = this.getAll().map((player) => player.id);
+    const activePlayerId = this.getActiveId();
+    return playerIds.filter((id) => id !== activePlayerId)[0];
+  }
+
+  public get opponentMainSpecies(): Species {
+    return this.speciesQuery
+      .getAll()
+      .filter((species) => species.playerId === this.opponentId)[0];
   }
 
   public get areAbilityChoicesSet$(): Observable<boolean> {
@@ -82,22 +131,30 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getActive().abilityChoice.activeTileId;
   }
 
-  // Gets species' player colors
-  public getPlayerSpeciesColors(
-    playerId: string,
-    color: 'primary' | 'secondary'
-  ): string {
-    if (playerId === 'neutral') return this.getNeutralSpeciesColors(color);
+  // Gets player's colors
+  public getPlayerColors(playerId: string): Colors {
+    if (playerId === 'neutral') return NEUTRAL_COLORS;
 
     const player = this.getEntity(playerId);
-
-    if (color === 'primary') return player?.primaryColor;
-
-    if (color === 'secondary') return player?.secondaryColor;
+    return player.colors;
   }
 
-  private getNeutralSpeciesColors(color: 'primary' | 'secondary'): string {
-    if (color === 'primary') return PRIMARY_NEUTRAL_COLOR;
-    if (color === 'secondary') return SECONDARY_NEUTRAL_COLOR;
+  // TODO: Should be in player service but here to avoid circular dependency...
+  public switchReadyState(playerIds: string[]) {
+    const batch = this.db.firestore.batch();
+    const gameId = this.gameQuery.getActiveId();
+    for (const playerId of playerIds) {
+      const player = this.getEntity(playerId);
+      const playerRef = this.db.doc(`games/${gameId}/players/${playerId}`).ref;
+      batch.update(playerRef, {
+        isWaitingForNextStartStage: !player.isWaitingForNextStartStage,
+      });
+    }
+
+    batch
+      .commit()
+      .catch((error) =>
+        console.log('Switching players ready state failed: ', error)
+      );
   }
 }

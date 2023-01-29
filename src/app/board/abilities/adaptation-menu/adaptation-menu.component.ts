@@ -1,8 +1,8 @@
 // Angular
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 
 // Material
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 // Rxjs
 import { Observable } from 'rxjs';
@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { PlayerQuery } from '../../players/_state';
 import { Ability } from '../../species/_state';
 import { AbilityService } from '../../ability.service';
+import { Colors } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-menu',
@@ -22,6 +23,7 @@ export class AdaptationMenuComponent implements OnInit {
   public activeAbility: Ability = undefined;
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: string,
     public dialogRef: MatDialogRef<AdaptationMenuComponent>,
     private playerQuery: PlayerQuery,
     private abilityService: AbilityService
@@ -31,9 +33,9 @@ export class AdaptationMenuComponent implements OnInit {
     this.abilityChoices$ = this.playerQuery.abilityChoices$;
   }
 
-  public getPlayerSpeciesColors(color: 'primary' | 'secondary'): string {
+  public getActivePlayerSpeciesColors(): Colors {
     const playerId = this.playerQuery.getActiveId();
-    return this.playerQuery.getPlayerSpeciesColors(playerId, color);
+    return this.playerQuery.getPlayerColors(playerId);
   }
 
   public activate(i: number) {
@@ -42,7 +44,7 @@ export class AdaptationMenuComponent implements OnInit {
   }
 
   public validate() {
-    this.abilityService.adapt(this.activeAbility);
+    this.abilityService.adapt(this.activeAbility, this.data);
     this.dialogRef.close();
   }
 }

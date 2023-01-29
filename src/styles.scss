@@ -1,4 +1,4 @@
-$anima-color: #f59c27;
+@import "/src/app/global-variables";
 
 html,
 body {
@@ -19,7 +19,7 @@ input {
 }
 
 h1 {
-  color: $anima-color;
+  color: var(--anima-color);
   font-size: calc(2rem + 6vmin);
   margin: 0;
 }
@@ -30,7 +30,7 @@ h2 {
 }
 
 h3 {
-  color: $anima-color;
+  color: var(--anima-color);
   margin: 0;
   font-size: calc(0.8rem + 1.5vmin);
   font-weight: 700;
@@ -44,7 +44,7 @@ h4 {
 
 p,
 textarea {
-  color: $anima-color;
+  color: var(--anima-color);
   font-size: calc(1rem + 1vmin);
   font-weight: 600;
   line-height: 16px;
@@ -70,15 +70,15 @@ textarea {
 }
 
 .orange {
-  background-color: $anima-color;
+  background-color: var(--anima-color);
 }
 
 .orange-icons {
-  color: #f59c27;
+  color: var(--anima-color);
 }
 
 .custom-container .mat-dialog-container {
-  border: 4px $anima-color solid;
+  border: 4px var(--anima-color) solid;
   border-radius: 0px;
 }
 
@@ -147,7 +147,7 @@ textarea {
 }
 
 .orange-snackbar {
-  background: $anima-color;
+  background: var(--anima-color);
   text-align: center;
   color: white;
   font-weight: 600;

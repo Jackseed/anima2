@@ -1,31 +1,30 @@
-<div
+<main
   fxLayout="column"
   fxLayoutAlign="center center"
   *ngIf="{
+    isGameStarting: isGameStarting$ | async,
     startStage: startStage$ | async,
     hasTileActive: hasTileActive$ | async,
-    isPlayerWaiting: isPlayerWaiting$ | async
+    isPlayerWaiting: isPlayerWaiting$ | async,
+    isActivePlayerPlaying: isActivePlayerPlaying$ | async
   } as observables"
 >
   <!------------ GAME START -------------->
-  <section *ngIf="observables.isPlayerWaiting" class="start text-box animated">
-    <h2>En attente de l'adversaire...</h2>
-  </section>
-  <section
+  <article
     *ngIf="
       observables.startStage === 'tileChoice' && !observables.isPlayerWaiting
     "
-    class="start text-box"
+    class="top banner text-box"
   >
     <h2>Sélectionnez votre case <br />de départ</h2>
-  </section>
-  <section
+  </article>
+  <article
     *ngIf="
       observables.hasTileActive &&
       observables.startStage === 'tileChoice' &&
       !observables.isPlayerWaiting
     "
-    class="start text-box"
+    class="top banner text-box"
   >
     <h2>Choisir cette case ?</h2>
     <button
@@ -42,26 +41,188 @@
       id="cancel"
       (click)="cancelStartTileChoice()"
     >
-      <mat-icon svgIcon="close"></mat-icon>
+      <mat-icon svgIcon="close-blur"></mat-icon>
     </button>
-  </section>
+  </article>
   <!------------ MULTI STEP ACTIONS -------------->
-  <section *ngIf="isActionActive$('migration') | async" class="start text-box">
+  <article
+    *ngIf="isActionActive$('migration') | async"
+    class="top banner text-box"
+  >
     <h2>Choisissez une case <br />vers laquelle migrer</h2>
-  </section>
-  <section
+  </article>
+  <article
     *ngIf="isActionActive$('proliferation') | async"
-    class="start text-box"
+    class="top banner text-box"
   >
     <h2>Choisissez une case <br />sur laquelle proliférer</h2>
-  </section>
-  <section
+  </article>
+  <article
     *ngIf="isActionActive$('assimilation') | async"
-    class="start text-box"
+    class="top banner text-box"
   >
     <h2>Choisissez une case <br />à assimiler</h2>
-  </section>
-  <section *ngIf="isActionActive$('rallying') | async" class="start text-box">
+  </article>
+  <article
+    *ngIf="isActionActive$('rallying') | async"
+    class="top banner text-box"
+  >
     <h2>Choisissez une case <br />à rallier</h2>
+  </article>
+  <!------------ OTHER PLAYER PLAYING -------------->
+  <article
+    *ngIf="!observables.isActivePlayerPlaying && !observables.isGameStarting"
+    class="top banner text-box"
+  >
+    <h2>Au tour <br />du joueur adverse...</h2>
+  </article>
+</main>
+
+<!------------ VISUAL OVERLAYS -------------->
+<!------------ GAME START: WAITING OPPONENT ABILITY CHOICE -------------->
+<article
+  fxFlexFill
+  *ngIf="
+    (isGameStarting$ | async) &&
+    (startStage$ | async) === 'abilityChoice' &&
+    (isPlayerWaiting$ | async)
+  "
+  class="visual-overlay"
+>
+  <section fxFlexFill class="opacity"></section>
+  <main
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    class="absolute"
+  >
+    <section fxFlex="10"></section>
+    <section
+      fxFlex="30"
+      class="species relative"
+      style="
+      --primary-color: {{ getActivePlayerColors().primary }};
+      --secondary-color: {{ getActivePlayerColors().secondary }}"
+    >
+      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+      <mat-icon
+        class="species-icon"
+        id="species-title"
+        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
+      ></mat-icon>
+    </section>
+    <section fxFlex="5"></section>
+    <section fxFlex="17.5">
+      <mat-icon fxFlexFill svgIcon="hourglass"></mat-icon>
+    </section>
+    <section class="banner text-box">
+      <h2>En attente de l'adversaire...</h2>
+    </section>
+  </main>
+</article>
+
+<!------------ GAME START: ABILITY CHOICES MADE -------------->
+<article
+  fxFlexFill
+  *ngIf="(isGameStarting$ | async) && (startStage$ | async) === 'tileChoice'"
+  class="animated visual-overlay"
+>
+  <section fxFlexFill class="full-opacity"></section>
+  <main
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    class="absolute"
+  >
+    <section fxFlex="10"></section>
+    <section
+      fxFlex="30"
+      class="species relative"
+      style="
+      --primary-color: {{ getActivePlayerColors().primary }};
+      --secondary-color: {{ getActivePlayerColors().secondary }}"
+    >
+      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+      <mat-icon
+        class="species-icon"
+        id="species-title"
+        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
+      ></mat-icon>
+    </section>
+    <section class="banner text-box">
+      <h2>C'est parti !</h2>
+    </section>
+    <section
+      fxFlex="30"
+      class="species relative"
+      style="
+        --primary-color: {{ getOpponentColors().primary }};
+        --secondary-color: {{ getOpponentColors().secondary }}"
+    >
+      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+      <mat-icon
+        class="species-icon"
+        id="species-title"
+        [svgIcon]="getOpponentSpecies().abilities[0].id"
+      ></mat-icon>
+    </section>
+  </main>
+</article>
+
+<!------------ GAME START: WAITING OPPONENT TILE CHOICE -------------->
+<article
+  fxFlexFill
+  *ngIf="
+    (isGameStarting$ | async) &&
+    (startStage$ | async) === 'tileChoice' &&
+    (isPlayerWaiting$ | async)
+  "
+  class="visual-overlay"
+>
+  <section fxFlexFill class="low-opacity"></section>
+  <main
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    class="absolute"
+  >
+    <section fxFlex="39"></section>
+    <section fxFlex="17.5">
+      <mat-icon fxFlexFill svgIcon="hourglass"></mat-icon>
+    </section>
+    <section class="banner text-box">
+      <h2>En attente de l'adversaire...</h2>
+    </section>
+  </main>
+</article>
+
+<!------------ UP TO YOU ! -------------->
+<article
+  fxFlexFill
+  *ngIf="!(isGameStarting$ | async) && isActivePlayerPlaying$ | async"
+  class="animated visual-overlay"
+>
+  <section fxFlexFill class="opacity"></section>
+  <section
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    class="absolute"
+  >
+    <section
+      class="species relative"
+      style="
+      --primary-color: {{ getActivePlayerColors().primary }};
+      --secondary-color: {{ getActivePlayerColors().secondary }}"
+    >
+      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+      <mat-icon
+        class="species-icon"
+        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
+      ></mat-icon>
+    </section>
+    <section class="banner text-box">
+      <h2>C'est à vous !</h2>
+    </section>
   </section>
-</div>
+</article>

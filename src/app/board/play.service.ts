@@ -1,15 +1,19 @@
 // Angular
 import { Injectable } from '@angular/core';
 
+// Rxjs
+import { combineLatest, Subscription } from 'rxjs';
+import { first, map, pluck, tap } from 'rxjs/operators';
+
 // Material
 import { MatDialog } from '@angular/material/dialog';
 
-// Rxjs
-import { combineLatest, Subscription } from 'rxjs';
-import { first, tap } from 'rxjs/operators';
-
 // States
-import { GameQuery, GameService } from '../games/_state';
+import {
+  DEFAULT_SPECIES_AMOUNT,
+  GameQuery,
+  GameService,
+} from '../games/_state';
 import {
   createAssimilationValues,
   Species,
@@ -47,21 +51,64 @@ export class PlayService {
     public dialog: MatDialog
   ) {}
 
-  // Applies tile selection if it's the current game stage (for reloads),
-  // and the player hasn't select a tile yet.
-  public reApplyTileChoiceStateSub(): Subscription {
-    const gameStartStage$ = this.gameQuery.startStage$;
-    const isPlayerReady$ =
-      this.playerQuery.isActivePlayerWaitingForNextStartStage$;
-    return combineLatest([gameStartStage$, isPlayerReady$])
+  public get setActiveSpeciesSub(): Subscription {
+    return this.gameQuery
+      .selectActive()
       .pipe(
-        tap(([startStage, isPlayerReady]) => {
-          if (startStage === 'tileChoice' && !isPlayerReady)
-            this.setStartTileChoice();
-        }),
-        first()
+        tap((game) => {
+          const activeSpeciesId = game.isStarting
+            ? this.playerQuery.activePlayerLastSpeciesId
+            : game.playingSpeciesId;
+          this.speciesService.setActive(activeSpeciesId);
+        })
       )
       .subscribe();
+  }
+
+  // Checks whether active player is choosing an ability
+  // If so, loads the adaptation menu (in case of reloading)
+  public get getPlayerChoosingAbilitySub(): Subscription {
+    return this.playerQuery
+      .selectActive()
+      .pipe(
+        map((player) => player.abilityChoice.isChoosingAbility),
+        tap((isChoosingAbility) => {
+          const isAdaptationMenuOpen = this.gameQuery.isAdaptationMenuOpen;
+          // Opens adaptation menu if it's saved as open on Firebase
+          // but closed on UI (means user reloaded).
+          if (isChoosingAbility && !isAdaptationMenuOpen) {
+            const activeTileId = this.playerQuery.abilityChoiceActiveTileId;
+            const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
+            if (activeTileId) this.tileService.setActive(activeTileId);
+            this.openAdaptationMenu(newSpeciesId);
+            this.gameService.updateUiAdaptationMenuOpen(true);
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  private async switchToNextStartStage() {
+    const playerIds = this.playerQuery.allPlayerIds;
+    const game = this.gameQuery.getActive();
+
+    // Switches players as not ready anymore.
+    this.playerQuery.switchReadyState(playerIds);
+
+    if (game.startStage === 'launching') {
+      const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
+      this.gameService.switchStartStage('abilityChoice');
+      return this.setupAdaptation(newSpeciesId);
+    }
+    if (game.startStage === 'abilityChoice') {
+      this.setStartTileChoice();
+      return this.gameService.switchStartStage('tileChoice');
+    }
+    if (game.startStage === 'tileChoice') {
+      await this.playTileChoices();
+      this.gameService.switchStartStage('tileValidated');
+      return this.gameService.updateIsStarting(false);
+    }
   }
 
   // When all players are ready, switches to the next start stage.
@@ -78,25 +125,44 @@ export class PlayService {
     return nextStartStateSub;
   }
 
-  private switchToNextStartStage() {
-    const playerIds = this.playerQuery.allPlayerIds;
+  // Applies tile selection if it's the current game stage (for reloads),
+  // and the player hasn't select a tile yet.
+  public get reApplyTileChoiceStateSub(): Subscription {
+    const gameStartStage$ = this.gameQuery.startStage$;
+    const isPlayerReady$ =
+      this.playerQuery.isActivePlayerWaitingForNextStartStage$;
+    return combineLatest([gameStartStage$, isPlayerReady$])
+      .pipe(
+        tap(([startStage, isPlayerReady]) => {
+          if (startStage === 'tileChoice' && !isPlayerReady)
+            this.setStartTileChoice();
+        }),
+        first()
+      )
+      .subscribe();
+  }
+
+  public async playTileChoices() {
+    const activePlayerId = this.playerQuery.getActiveId();
     const game = this.gameQuery.getActive();
 
-    // Switches players as not ready anymore.
-    this.playerService.switchReadyState(playerIds);
+    for (const tileChoice of game.tileChoices) {
+      const species = this.speciesQuery.getEntity(tileChoice.speciesId);
+      await this.speciesService.move({
+        movingSpecies: species,
+        quantity: DEFAULT_SPECIES_AMOUNT,
+        destinationId: tileChoice.tileId,
+      });
+    }
 
-    if (game.startStage === 'launching') {
-      this.gameService.switchStartStage('abilityChoice');
-      return this.setupAdaptation();
-    }
-    if (game.startStage === 'abilityChoice') {
-      this.setStartTileChoice();
-      return this.gameService.switchStartStage('tileChoice');
-    }
-    if (game.startStage === 'tileChoice') {
-      this.gameService.switchStartStage('tileValidated');
-      return this.gameService.updateIsStarting(false);
-    }
+    // Removes 1 action for the first player.
+    if (
+      this.playerQuery.isPlayerPlaying(activePlayerId) &&
+      game.tileChoices.length > 0
+    )
+      this.gameService.updateRemainingActions();
+
+    this.gameService.updateTileChoice();
   }
 
   // GAME STATE - Tile choice
@@ -113,16 +179,16 @@ export class PlayService {
   // GAME STATE - Tile validation
   public validateStartTile() {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const activeSpecieId = this.speciesQuery.getActiveId();
+    const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
     const activePlayerId = this.playerQuery.getActiveId();
 
-    this.playerService.switchReadyState([activePlayerId]);
+    this.playerQuery.switchReadyState([activePlayerId]);
 
-    this.speciesService.move({
-      speciesId: activeSpecieId,
-      quantity: 4,
-      destinationId: activeTileId,
+    this.gameService.updateTileChoice({
+      speciesId: newSpeciesId,
+      tileId: activeTileId,
     });
+
     this.tileService.removeActive();
   }
 
@@ -149,15 +215,16 @@ export class PlayService {
     );
   }
 
-  public async setupAdaptation() {
+  public async setupAdaptation(adaptatingSpeciesId: string) {
     await this.playerService.setRandomAbilityChoice();
-    this.openAdaptationMenu();
+    this.openAdaptationMenu(adaptatingSpeciesId);
   }
 
-  public async openAdaptationMenu(): Promise<void> {
+  public async openAdaptationMenu(adaptatingSpeciesId: string): Promise<void> {
     const isGameStarting = this.gameQuery.isStarting;
     const activePlayerId = this.playerQuery.getActiveId();
     const dialogRef = this.dialog.open(AdaptationMenuComponent, {
+      data: adaptatingSpeciesId,
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
       disableClose: true,
@@ -172,7 +239,7 @@ export class PlayService {
         .afterClosed()
         .pipe(first())
         .subscribe(() => {
-          this.playerService.switchReadyState([activePlayerId]);
+          this.playerQuery.switchReadyState([activePlayerId]);
         });
   }
 
@@ -207,6 +274,7 @@ export class PlayService {
   }
 
   public openAssimilationMenu(attackedTileId: number): void {
+    this.tileService.removeAttackable();
     const attackedTile = this.tileQuery.getEntity(attackedTileId.toString());
     const attackingTileSpecies = this.speciesQuery.activeTileSpecies;
     const attackableSpecies = this.abilityService.getWeakerInRangeSpecies(

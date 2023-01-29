@@ -16,9 +16,9 @@
         mat-icon-button
         (click)="activate(i)"
         [ngClass]="{ glow: ability === activeAbility }"
-        style="--primary-color: {{
-          getPlayerSpeciesColors('primary')
-        }}; --secondary-color: {{ getPlayerSpeciesColors('secondary') }}"
+        style="
+        --primary-color: {{ getActivePlayerSpeciesColors().primary }};
+        --secondary-color: {{ getActivePlayerSpeciesColors().secondary }}"
       >
         <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
         <mat-icon id="species-icon" [svgIcon]="ability.id"></mat-icon>
@@ -31,7 +31,7 @@
       activeAbility ? activeAbility.fr.definition : ""
     }}</textarea>
     <button *ngIf="!!!activeAbility" mat-icon-button id="validate-button">
-      <mat-icon id="validate-icon" svgIcon="blank"></mat-icon>
+      <mat-icon id="validate-icon" svgIcon="validate-disable"></mat-icon>
     </button>
     <button
       *ngIf="!!activeAbility"

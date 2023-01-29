@@ -19,7 +19,7 @@ article {
 
 .active {
   --ability-active-display: none;
-  color: #f59c27;
+  color: var(--anima-color);
 }
 
 .disabled {

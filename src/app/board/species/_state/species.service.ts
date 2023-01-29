@@ -2,7 +2,10 @@
 import { Injectable } from '@angular/core';
 
 // Angularfire
-import { AngularFirestoreDocument } from '@angular/fire/firestore';
+import {
+  AngularFirestoreDocument,
+  DocumentReference,
+} from '@angular/fire/firestore';
 
 // Firebase
 import firebase from 'firebase/app';
@@ -22,7 +25,7 @@ import {
 import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
 import { Tile, TileQuery } from '../../tiles/_state';
-import { GameQuery } from 'src/app/games/_state';
+import { GameQuery, MAX_SPECIES_ABILITIES } from 'src/app/games/_state';
 
 // Material
 import { MatDialog } from '@angular/material/dialog';
@@ -55,6 +58,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     species: Species,
     batch: firebase.firestore.WriteBatch
   ): firebase.firestore.WriteBatch {
+    if (species.abilities.length === MAX_SPECIES_ABILITIES) return batch;
     const gameId = this.gameQuery.getActiveId();
     const firestoreAbility = firebase.firestore.FieldValue.arrayUnion(ability);
     const speciesRef = this.db.doc(`games/${gameId}/species/${species.id}`).ref;
@@ -105,48 +109,40 @@ export class SpeciesService extends CollectionService<SpeciesState> {
 
   // Moves species (from a tile) to a tile.
   public move(
-    params: MoveParameters,
+    moveParams: MoveParameters,
     existingBatch?: firebase.firestore.WriteBatch
   ): firebase.firestore.WriteBatch | Promise<void> {
     const gameId = this.routerQuery.getParams().id;
     const gameDoc = `games/${gameId}`;
-    const species = this.query.getEntity(params.speciesId);
     let batch = existingBatch ? existingBatch : this.db.firestore.batch();
 
     // First, updates tileIds on the species doc.
-    batch = this.batchUpdateMovingSpeciesTileIds(
-      gameDoc,
-      batch,
-      species,
-      params.quantity,
-      params.destinationId,
-      params.previousTileId
-    );
+    batch = this.batchUpdateMovingSpeciesTileIds(gameDoc, batch, moveParams);
 
     // Then, updates tile docs with new species quantity.
     batch = this.batchUpdateTileWithSpeciesQuantity(
       gameDoc,
       batch,
-      params.destinationId,
-      species,
-      params.quantity
+      moveParams.destinationId,
+      moveParams.movingSpecies,
+      moveParams.quantity
     );
 
-    if (params.previousTileId) {
+    if (moveParams.previousTileId) {
       batch = this.batchUpdateTileWithSpeciesQuantity(
         gameDoc,
         batch,
-        params.previousTileId,
-        species,
-        -params.quantity
+        moveParams.previousTileId,
+        moveParams.movingSpecies,
+        -moveParams.quantity
       );
     }
-    if (params.migrationUsed) {
+    if (moveParams.migrationUsed) {
       // Finally, updates remaining migrations, if it's a move.
       batch = this.batchUpdateRemainingMigrations(
         gameDoc,
         batch,
-        params.migrationUsed
+        moveParams.migrationUsed
       );
     }
 
@@ -178,27 +174,58 @@ export class SpeciesService extends CollectionService<SpeciesState> {
   private batchUpdateMovingSpeciesTileIds(
     gameDoc: string,
     batch: firebase.firestore.WriteBatch,
-    species: Species,
-    quantity: number,
-    destinationTileId: number,
-    previousTileId?: number
+    moveParams: MoveParameters
   ): firebase.firestore.WriteBatch {
-    const speciesDoc: AngularFirestoreDocument<Species> = this.db.doc<Species>(
-      `${gameDoc}/species/${species.id}`
+    const speciesRef: DocumentReference<Species> = this.db.doc<Species>(
+      `${gameDoc}/species/${moveParams.movingSpecies.id}`
+    ).ref;
+    let tileIds: number[] = JSON.parse(
+      JSON.stringify(moveParams.movingSpecies.tileIds)
     );
-    let tileIds: number[] = JSON.parse(JSON.stringify(species.tileIds));
     // Iterates as much as species to move.
-    for (let i = 0; i < Math.abs(quantity); i++) {
+    for (let i = 0; i < Math.abs(moveParams.quantity); i++) {
       // Adds 1 species to the new tile.
-      if (quantity > 0) tileIds.push(destinationTileId);
+      if (moveParams.quantity > 0) tileIds.push(moveParams.destinationId);
       // Removes 1 species to previous tile id or if quantity is negative.
-      if (quantity < 0 || previousTileId) {
-        const tileId = previousTileId ? previousTileId : destinationTileId;
+      if (moveParams.quantity < 0 || moveParams.previousTileId) {
+        const tileId = moveParams.previousTileId
+          ? moveParams.previousTileId
+          : moveParams.destinationId;
         const index = tileIds.indexOf(tileId);
-        if (index !== -1) tileIds.splice(index, 1);
+        index !== -1 ? tileIds.splice(index, 1) : (tileIds = []);
       }
     }
-    return batch.update(speciesDoc.ref, { tileIds });
+    // Deletes species & adds its abilities if no more individuals.
+    if (tileIds.length === 0)
+      return (batch = this.batchDeleteSpecies(gameDoc, batch, moveParams));
+
+    return batch.update(speciesRef, { tileIds });
+  }
+
+  private batchDeleteSpecies(
+    gameDoc: string,
+    batch: firebase.firestore.WriteBatch,
+    moveParams: MoveParameters
+  ): firebase.firestore.WriteBatch {
+    const deletedSpecies = moveParams.movingSpecies;
+    const deletedSpeciesRef: DocumentReference<Species> = this.db.doc<Species>(
+      `${gameDoc}/species/${deletedSpecies.id}`
+    ).ref;
+
+    batch.delete(deletedSpeciesRef);
+
+    // Adds deleted species' abilities to the attacking one.
+    if (moveParams.attackingSpecies) {
+      for (const ability of deletedSpecies.abilities) {
+        batch = this.addAbilityToSpeciesByBatch(
+          ability,
+          moveParams.attackingSpecies,
+          batch
+        );
+      }
+    }
+
+    return batch;
   }
 
   private batchUpdateRemainingMigrations(

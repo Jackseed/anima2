@@ -17,9 +17,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
 import {
+  ADAPATION_SPECIES_NEEDED,
   DEFAULT_REMAINING_MIGRATIONS,
   GameQuery,
   GameService,
+  MAX_SPECIES_ABILITIES,
 } from '../games/_state';
 import { PlayerService } from './players/_state';
 import {
@@ -61,17 +63,16 @@ export class AbilityService {
 
   // MIGRATION
   public async migrateTo(destinationId: number) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeSpecies = this.speciesQuery.getActive();
     const previousTileId = Number(this.tileQuery.getActiveId());
     const migrationValues = this.getMigrationValues(destinationId);
     const remainginMigrations = this.remainingMigrations;
 
     this.tileService.removeActive();
     this.tileService.removeReachable();
-
     (
       this.speciesService.move({
-        speciesId: activeSpeciesId,
+        movingSpecies: activeSpecies,
         quantity: migrationValues.movingQuantity,
         destinationId,
         previousTileId,
@@ -172,7 +173,7 @@ export class AbilityService {
     const game = this.gameQuery.getActive();
 
     return (
-      this.remainingMigrations < 4 &&
+      this.remainingMigrations < DEFAULT_REMAINING_MIGRATIONS &&
       this.remainingMigrations > 0 &&
       game.remainingActions === 1
     );
@@ -181,18 +182,18 @@ export class AbilityService {
   // PROLIFERATION
   // Proliferates on active tile or specific tileId if set.
   public async proliferate(tileId?: number) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeSpecies = this.speciesQuery.getActive();
     const proliferationTileId = tileId
       ? tileId
       : Number(this.tileQuery.getActiveId());
-    const proliferationValues = this.applyProliferationAbilities();
+    const proliferationValues = this.applyProliferationAbilities(true);
 
     this.tileService.removeActive();
     this.tileService.removeProliferable();
 
     (
       this.speciesService.move({
-        speciesId: activeSpeciesId,
+        movingSpecies: activeSpecies,
         quantity: proliferationValues.createdQuantity,
         destinationId: proliferationTileId,
       }) as Promise<void>
@@ -230,28 +231,32 @@ export class AbilityService {
 
   // ASSIMILATION
   // Removes one species from a tile and adds one to the active species.
+  // TODO: refactor to binds the 2 operations + then
   public async assimilate(removedSpeciesId: string, removedTileId: number) {
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const removedSpecies = this.speciesQuery.getEntity(removedSpeciesId);
+    const activeSpecies = this.speciesQuery.getActive();
     const activeTileId = Number(this.tileQuery.getActiveId());
     const assimilationValues = this.applyAssimilationAbilitiesToSpecies(
       createAssimilationValues(),
-      activeSpeciesId
+      activeSpecies.id
     );
 
     this.tileService.removeAttackable();
 
     // Removes the assimilated species.
     await (this.speciesService.move({
-      speciesId: removedSpeciesId,
+      movingSpecies: removedSpecies,
       quantity: assimilationValues.assimilatedQuantity,
       destinationId: removedTileId,
+      attackingSpecies: activeSpecies,
     }) as Promise<void>);
     // Adds quantity to the assimilating species.
     await (this.speciesService.move({
-      speciesId: activeSpeciesId,
+      movingSpecies: activeSpecies,
       quantity: assimilationValues.createdQuantity,
       destinationId: activeTileId,
     }) as Promise<void>);
+    this.gameService.updateRemainingActions();
   }
 
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
@@ -326,11 +331,17 @@ export class AbilityService {
           defendingTileSpecies
         )
     );
+    let otherWeakerSpeciesWithTileId = otherWeakerSpecies.map((species) => {
+      return { ...species, tileId: Number(originTile.id) };
+    });
 
     if (range === 0) return otherWeakerSpecies;
 
     const adjacentReacheableTileIds =
-      this.tileService.getAdjacentTileIdsWithinRange(originTile.id, range);
+      this.tileService.getAdjacentTileIdsWithinRange(
+        Number(originTile.id),
+        range
+      );
 
     // Gets other species in the given range.
     adjacentReacheableTileIds.forEach((tileId) => {
@@ -349,13 +360,13 @@ export class AbilityService {
       });
 
       // Pushes results and filters the attacking species.
-      otherWeakerSpecies.push(
+      otherWeakerSpeciesWithTileId.push(
         ...weakerSpeciesWithTileId.filter(
           (species) => species.id !== attackingSpecies.id
         )
       );
     });
-    return otherWeakerSpecies;
+    return otherWeakerSpeciesWithTileId;
   }
 
   private isAttackingSpeciesStrongerThan(
@@ -371,9 +382,9 @@ export class AbilityService {
   }
 
   // ADAPTATION
-  public async adapt(ability: Ability) {
+  public async adapt(ability: Ability, speciesId: string) {
     let batch = this.db.firestore.batch();
-    const activeSpecies = this.speciesQuery.getActive();
+    const adaptingSpecies = this.speciesQuery.getEntity(speciesId);
     const isGameStarting = this.gameQuery.isStarting;
 
     // Removes adaptation menu.
@@ -388,18 +399,18 @@ export class AbilityService {
     // Updates species doc with the new ability.
     batch = this.speciesService.addAbilityToSpeciesByBatch(
       ability,
-      activeSpecies,
+      adaptingSpecies,
       batch
     );
 
-    // If the game is started, count adaptation as an action.
+    // If the game isn't started, count adaptation as an action.
     if (!isGameStarting) {
       const activeTileId = Number(this.tileQuery.getActiveId());
       // Removes the sacrified species.
       batch = this.speciesService.move(
         {
-          speciesId: activeSpecies.id,
-          quantity: -4,
+          movingSpecies: adaptingSpecies,
+          quantity: -ADAPATION_SPECIES_NEEDED,
           destinationId: activeTileId,
         },
         batch
@@ -430,9 +441,9 @@ export class AbilityService {
   // Moves rallied species to the active tile species.
   public rallying(ralliedTileId: number) {
     const activeTileId = Number(this.tileQuery.getActiveId());
-    const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeSpecies = this.speciesQuery.getActive();
     const movingQuantity = this.tileQuery.getTileSpeciesCount(
-      activeSpeciesId,
+      activeSpecies.id,
       ralliedTileId
     );
 
@@ -440,7 +451,7 @@ export class AbilityService {
 
     (
       this.speciesService.move({
-        speciesId: activeSpeciesId,
+        movingSpecies: activeSpecies,
         quantity: movingQuantity,
         destinationId: activeTileId,
         previousTileId: ralliedTileId,
@@ -515,7 +526,7 @@ export class AbilityService {
 
     (
       this.speciesService.move({
-        speciesId: intimidatedSpecies.id,
+        movingSpecies: intimidatedSpecies,
         quantity: movingQuantity,
         destinationId: randomAdjacentTileId,
         previousTileId: tileId,
@@ -541,12 +552,12 @@ export class AbilityService {
   // GETTERS
   public speciesHasAbility(speciesId: string, abilityId: AbilityId): boolean {
     const speciesAbilityIds = this.getSpeciesAbilityIds(speciesId);
-    return speciesAbilityIds.includes(abilityId);
+    return speciesAbilityIds?.includes(abilityId);
   }
 
   private getSpeciesAbilityIds(speciesId: string) {
     const species = this.speciesQuery.getEntity(speciesId);
-    return species.abilities.map((ability) => ability.id);
+    return species?.abilities.map((ability) => ability.id);
   }
 
   public getAbilityValue(abilityId: AbilityId): number {
@@ -610,8 +621,7 @@ export class AbilityService {
   public canActivateAction$(action: GameAction): Observable<boolean> {
     const activeTileSpecies$ = this.speciesQuery.activeTileSpecies$;
     const activeTile$ = this.tileQuery.selectActive();
-    const proliferationValues = this.applyProliferationAbilities();
-    const game = this.gameQuery.getActive();
+    const proliferationValues = this.applyProliferationAbilities(true);
 
     return combineLatest([activeTileSpecies$, activeTile$]).pipe(
       map(([activeTileSpecies, tile]) => {
@@ -644,13 +654,18 @@ export class AbilityService {
             proliferationValues.neededIndividuals
           );
 
-        // Checks if there are at least 4 species individuals in the active tile.
-        if (action === 'adaptation')
+        // Checks if there are more than the needed individuals on the tile
+        // & that the species has less abilities than the max.
+        if (action === 'adaptation') {
+          const activeSpecies = this.speciesQuery.getActive();
+          if (activeSpecies.abilities.length === MAX_SPECIES_ABILITIES)
+            return false;
           return this.isSpeciesQuantityGreatherThan(
             activeTileSpecies.id,
             Number(tile.id),
-            4
+            ADAPATION_SPECIES_NEEDED
           );
+        }
       })
     );
   }
@@ -697,12 +712,10 @@ export class AbilityService {
 
   // PROLIFERATE ABILITIES
   private applyProliferationAbilities(
-    defaultValues?: ProliferationValues
+    isOnlyUpdatingValues?: boolean
   ): ProliferationValues {
     const activeSpeciesId = this.speciesQuery.getActiveId();
-    let updatedValues: ProliferationValues = defaultValues
-      ? defaultValues
-      : createProliferationValues();
+    let updatedValues: ProliferationValues = createProliferationValues();
 
     // If hermaphrodite, updates needed individuals.
     if (this.speciesHasAbility(activeSpeciesId, 'hermaphrodite'))
@@ -719,7 +732,8 @@ export class AbilityService {
     if (
       this.speciesHasAbility(activeSpeciesId, 'spontaneousGeneration') &&
       !this.tileQuery.hasProliferableTile() &&
-      this.tileQuery.hasActive()
+      this.tileQuery.hasActive() &&
+      !isOnlyUpdatingValues
     ) {
       const activeTileId = Number(this.tileQuery.getActiveId());
       const range = this.getAbilityValue('spontaneousGeneration');

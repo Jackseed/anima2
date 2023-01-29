@@ -48,6 +48,11 @@ export class GameQuery extends QueryEntity<GameState> {
     );
   }
 
+  public get isLastAction(): boolean {
+    const game = this.getActive();
+    return game.remainingActions === 1;
+  }
+
   public get inGameAbilities() {
     return this.getActive().inGameAbilities;
   }
@@ -64,6 +69,10 @@ export class GameQuery extends QueryEntity<GameState> {
 
   public get isStarting(): boolean {
     return this.getActive().isStarting;
+  }
+
+  public get isStarting$(): Observable<boolean> {
+    return this.selectActive().pipe(map((game) => game.isStarting));
   }
 
   public get startStage$(): Observable<StartStage> {
