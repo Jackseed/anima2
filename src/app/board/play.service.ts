@@ -51,14 +51,16 @@ export class PlayService {
     public dialog: MatDialog
   ) {}
 
-  public get setActivePlayingSpeciesSub(): Subscription {
+  public get setActiveSpeciesSub(): Subscription {
     return this.gameQuery
       .selectActive()
       .pipe(
-        pluck('playingSpeciesId'),
-        tap((playingSpeciesId) =>
-          this.speciesService.setActive(playingSpeciesId)
-        )
+        tap((game) => {
+          const activeSpeciesId = game.isStarting
+            ? this.playerQuery.activePlayerLastSpeciesId
+            : game.playingSpeciesId;
+          this.speciesService.setActive(activeSpeciesId);
+        })
       )
       .subscribe();
   }

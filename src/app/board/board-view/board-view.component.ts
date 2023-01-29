@@ -64,7 +64,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     // Subscriptions init
     this.switchToNextStartStateSub =
       this.playService.switchToNextStartStageWhenPlayersReadySub;
-    this.activeSpeciesSub = this.playService.setActivePlayingSpeciesSub;
+    this.activeSpeciesSub = this.playService.setActiveSpeciesSub;
     this.startGameSub = this.playService.reApplyTileChoiceStateSub;
     this.isPlayerChoosingAbilitySub =
       this.playService.getPlayerChoosingAbilitySub;

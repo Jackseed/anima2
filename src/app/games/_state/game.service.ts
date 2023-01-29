@@ -294,30 +294,33 @@ export class GameService extends CollectionService<GameState> {
   ) {
     let batch = existingBatch ? existingBatch : this.db.firestore.batch();
     const game = this.query.getActive();
-    const isLastAction = game.remainingActions === 1;
+    const isLastAction = this.query.isLastAction;
     const gameRef = this.db.collection('games').doc(game.id).ref;
+
+    // Updates game remaining actions.
     const remainingActions = isLastAction
       ? DEFAULT_ACTION_PER_TURN
       : firebase.firestore.FieldValue.increment(-1);
+    batch.update(gameRef, { remainingActions });
 
-    // If that's the last remaining action
     if (isLastAction) {
       this.tileService.removeActive();
-      // Checks if it was active player's last species and changes turn.
+
       if (this.playerQuery.isLastActivePlayerSpeciesActive) {
-        console.log('here');
-        batch = await this.incrementTurnCount(batch);
+        // Updates playing player.
+        const unplayingPlayerId = this.playerQuery.unplayingPlayerId;
+        batch.update(gameRef, { playingPlayerId: unplayingPlayerId });
+
+        if (this.playerQuery.isLastPlayerPlaying)
+          batch = await this.incrementTurnCount(batch);
       }
       // Otherwise activates the next species.
       else {
-        console.log('there');
         batch.update(gameRef, {
           playingSpeciesId: this.playerQuery.activePlayerLastSpeciesId,
         });
       }
     }
-
-    batch.update(gameRef, { remainingActions });
 
     if (existingBatch) return batch;
 
@@ -332,12 +335,10 @@ export class GameService extends CollectionService<GameState> {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const increment = firebase.firestore.FieldValue.increment(1);
-    const unplayingPlayerId = this.playerQuery.unplayingPlayerId;
     const activePlayerFirstSpeciesId =
       this.playerQuery.activePlayerFirstSpeciesId;
 
     batch.update(gameRef, { turnCount: increment });
-    batch.update(gameRef, { playingPlayerId: unplayingPlayerId });
     batch.update(gameRef, { playingSpeciesId: activePlayerFirstSpeciesId });
 
     if (game.turnCount === 1) {

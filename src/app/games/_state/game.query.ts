@@ -48,6 +48,11 @@ export class GameQuery extends QueryEntity<GameState> {
     );
   }
 
+  public get isLastAction(): boolean {
+    const game = this.getActive();
+    return game.remainingActions === 1;
+  }
+
   public get inGameAbilities() {
     return this.getActive().inGameAbilities;
   }
