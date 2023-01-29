@@ -13,6 +13,8 @@ export type StartStage =
   | 'abilityChoice'
   | 'tileChoice'
   | 'tileValidated';
+export const NEUTRALS_MIN_QUANTITY = 3;
+export const NEUTRALS_MAX_QUANTITY = 5;
 
 // ACTIONS
 export const DEFAULT_REMAINING_MIGRATIONS = 4;

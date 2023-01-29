@@ -1,8 +1,11 @@
 // Angular
 import { Injectable } from '@angular/core';
 
-// Akita
+// Akita ng Fire
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
+
+// Akita
+import { EntityUIStore } from '@datorama/akita';
 
 // Firebase
 import firebase from 'firebase/app';
@@ -20,11 +23,15 @@ import {
   swampsIds,
   Tile,
   RegionType,
+  nonBlankTileIds,
 } from './tile.model';
 import { TileQuery } from './tile.query';
 import { TileStore, TileState } from './tile.store';
-import { Species } from '../../species/_state';
-import { EntityUIStore } from '@datorama/akita';
+import {
+  NEUTRALS_MAX_QUANTITY,
+  NEUTRALS_MIN_QUANTITY,
+} from 'src/app/games/_state/game.model';
+import { Species } from '../../species/_state/species.model';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/tiles' })
@@ -48,12 +55,11 @@ export class TileService extends CollectionService<TileState> {
     return tileSpecies;
   }
 
-  // Sets game tiles, including neutrals.
+  // Sets game tiles.
   public batchSetTiles(
     gameId: string,
-    batch: firebase.firestore.WriteBatch,
-    neutrals: Species[]
-  ): firebase.firestore.WriteBatch {
+    batch: firebase.firestore.WriteBatch
+  ): { batch: firebase.firestore.WriteBatch; tiles: Tile[] } {
     const tiles: Tile[] = [];
     const collection = this.db.firestore.collection(`games/${gameId}/tiles`);
     if (!gameId) return;
@@ -70,11 +76,33 @@ export class TileService extends CollectionService<TileState> {
           if (plainsIds.includes(tileId)) type = 'plains';
           if (swampsIds.includes(tileId)) type = 'swamps';
           if (forestIds.includes(tileId)) type = 'forests';
+
           const tile = createTile(tileId, j, i, type);
+
           tiles.push(tile);
         }
       }
     }
+
+    // Saves tiles to Akita.
+    this.store.set(tiles);
+
+    // Saves tiles to Firestore.
+    for (const tile of tiles) {
+      const ref = collection.doc(tile.id.toString());
+      batch.set(ref, tile);
+    }
+    return { batch, tiles };
+  }
+
+  public addNeutralsOnTheirTiles(
+    gameId: string,
+    batch: firebase.firestore.WriteBatch,
+    neutrals: Species[],
+    tiles: Tile[]
+  ): firebase.firestore.WriteBatch {
+    const collection = this.db.firestore.collection(`games/${gameId}/tiles`);
+    const updatedTiles: Tile[] = [];
 
     // Updates tiles with neutral species.
     for (const neutral of neutrals) {
@@ -88,22 +116,80 @@ export class TileService extends CollectionService<TileState> {
         const tileIndex = tiles.findIndex(
           (tile) => tile.id === parseInt(tileId)
         );
-
         // Adds the species to the tile.
-        tiles[tileIndex].species.push({
-          ...neutral,
-          quantity: neutralTileSpecies[tileId],
-          mainAbilityId: neutral.abilities[0].id,
-        });
+        const updatedTile = {
+          ...tiles[tileIndex],
+          species: [
+            {
+              ...neutral,
+              quantity: neutralTileSpecies[tileId],
+              mainAbilityId: neutral.abilities[0].id,
+            },
+          ],
+        };
+
+        updatedTiles.push(updatedTile);
       }
     }
 
-    // Saves tiles to Firestore.
-    for (const tile of tiles) {
+    // Updates tiles on Firestore.
+    for (const tile of updatedTiles) {
       const ref = collection.doc(tile.id.toString());
-      batch.set(ref, tile);
+      batch.update(ref, tile);
     }
+
     return batch;
+  }
+
+  public generateNeutralTileIds(): number[] {
+    const tileIds: number[] = [];
+    // Neutrals have a random quantity between min & max (inclusive of both).
+    const neutralQuantity = this.randomIntegerBetweenMinAndMaxInclusively(
+      NEUTRALS_MIN_QUANTITY,
+      NEUTRALS_MAX_QUANTITY
+    );
+
+    // The first tileId is randomized among all the tileIds.
+    const originTileId = this.randomItemInsideArray(nonBlankTileIds);
+
+    tileIds.push(originTileId);
+
+    // Generates a random tileId for each individual.
+    for (let i = 0; i < neutralQuantity; i++) {
+      // The more individuals, smaller the range.
+      const tileIdRangeFromOrigin =
+        neutralQuantity === NEUTRALS_MIN_QUANTITY
+          ? NEUTRALS_MAX_QUANTITY
+          : NEUTRALS_MIN_QUANTITY;
+
+      // Randomizes a tile id within the random range
+      const potentialWithinnRangeTileIds = this.getAdjacentTileIdsWithinRange(
+        originTileId,
+        tileIdRangeFromOrigin
+      );
+      potentialWithinnRangeTileIds.push(originTileId);
+
+      const neutralTileId = this.randomItemInsideArray(
+        potentialWithinnRangeTileIds
+      );
+      tileIds.push(neutralTileId);
+    }
+
+    return tileIds;
+  }
+
+  private randomItemInsideArray(array: any[]) {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    const item = array[randomIndex];
+
+    return item;
+  }
+
+  private randomIntegerBetweenMinAndMaxInclusively(
+    min: number,
+    max: number
+  ): number {
+    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
   public selectTile(tileId: number) {

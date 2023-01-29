@@ -1,7 +1,7 @@
 import { TileSpecies } from '../../species/_state';
 
 export interface Tile {
-  // TODO: transform it as a number everywhere
+  // TODO: transform id as a number everywhere
   id: number;
   x?: number;
   y?: number;
@@ -110,6 +110,12 @@ export const islandBridgeIds: number[] = islandBridgeCoordinates.map(
   (coordinates) => coordinates[0] + coordinates[1] * cols
 );
 
+export const nonBlankTileIds: number[] = rockiesIds.concat(
+  mountainsIds.concat(
+    islandIds.concat(plainsIds.concat(swampsIds.concat(forestIds)))
+  )
+);
+
 export interface Region {
   name: RegionType;
   tileIds: number[];
@@ -124,22 +130,6 @@ export const Regions: Region[] = [
   { name: 'swamps', tileIds: swampsIds, score: 6 },
   { name: 'forests', tileIds: forestIds, score: 8 },
 ];
-
-export function generateRandomRegionTileIds(
-  quantity: number,
-  regionName: RegionType
-): number[] {
-  let tileIds = [];
-  for (let i = 0; i < quantity; i++) {
-    const regionTileIds = Regions.filter(
-      (region) => region.name === regionName
-    )[0].tileIds;
-    const randomTileId =
-      regionTileIds[Math.floor(Math.random() * regionTileIds.length)];
-    tileIds.push(randomTileId);
-  }
-  return tileIds;
-}
 
 export function createTile(
   id: number,

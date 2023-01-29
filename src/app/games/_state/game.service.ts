@@ -25,7 +25,7 @@ import {
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
-import { Regions, Region, TileService } from 'src/app/board/tiles/_state';
+import { Regions, Region, TileService, Tile } from 'src/app/board/tiles/_state';
 import { PlayerQuery } from 'src/app/board/players/_state/player.query';
 import {
   createPlayer,
@@ -58,15 +58,9 @@ export class GameService extends CollectionService<GameState> {
     const gameId = this.db.createId();
     let batch = this.db.firestore.batch();
 
-    // Creates neutrals.
-    const neutralBatchCreation = this.createNeutralsUsingBatch(gameId, batch);
-
     // Creates tiles.
-    batch = this.tileService.batchSetTiles(
-      gameId,
-      neutralBatchCreation.batch,
-      neutralBatchCreation.allNeutrals
-    );
+    const tileBatchCreation = this.tileService.batchSetTiles(gameId, batch);
+    batch = tileBatchCreation.batch;
 
     // Creates 1st player.
     const colors = {
@@ -85,21 +79,47 @@ export class GameService extends CollectionService<GameState> {
       name,
       playerBatchCreation.playerId,
       playerBatchCreation.speciesId,
-      neutralBatchCreation.usedAbilities,
       playerBatchCreation.batch
     );
 
     await batch
       .commit()
-      .then((_) => this.store.setActive(gameId))
+      .then((_) => {
+        this.store.setActive(gameId);
+        this.createNeutrals(gameId, tileBatchCreation.tiles);
+      })
       .catch((error) => {
         console.log('Game creation failed: ', error);
       });
     return gameId;
   }
 
+  // TODO: no need to update batch after each func?
+  private createNeutrals(gameId: string, tiles: Tile[]) {
+    let batch = this.db.firestore.batch();
+    const gameRef = this.db.collection('games').doc(gameId).ref;
+    const neutralBatchCreation = this.createNeutralSpeciesUsingBatch(
+      gameId,
+      batch
+    );
+    batch = this.tileService.addNeutralsOnTheirTiles(
+      gameId,
+      neutralBatchCreation.batch,
+      neutralBatchCreation.allNeutrals,
+      tiles
+    );
+
+    batch.update(gameRef, {
+      inGameAbilities: neutralBatchCreation.usedAbilities,
+    });
+
+    batch.commit().catch((error) => {
+      console.log('Neutrals creation failed: ', error);
+    });
+  }
+
   // Adds random ability to neutrals, creates them and saves their abilities.
-  private createNeutralsUsingBatch(
+  private createNeutralSpeciesUsingBatch(
     gameId: string,
     batch: firebase.firestore.WriteBatch
   ): {
@@ -114,8 +134,10 @@ export class GameService extends CollectionService<GameState> {
         .collection(`games/${gameId}/species`)
         .doc(species.id).ref;
       const ability = this.getRandomAbility(usedAbilities);
+      const tileIds = this.tileService.generateNeutralTileIds();
       const neutralSpecies: Species = {
         ...species,
+        tileIds,
         abilities: [ability],
       };
       allNeutrals.push(neutralSpecies);
@@ -187,7 +209,6 @@ export class GameService extends CollectionService<GameState> {
     name: string,
     playingPlayerId: string,
     playingSpeciesId: string,
-    usedAbilities: Ability[],
     batch: firebase.firestore.WriteBatch
   ): firebase.firestore.WriteBatch {
     const gameRef = this.db.collection('games').doc(gameId).ref;
@@ -197,7 +218,6 @@ export class GameService extends CollectionService<GameState> {
       playerIds: [playingPlayerId],
       playingPlayerId,
       playingSpeciesId,
-      inGameAbilities: usedAbilities,
     });
 
     batch.set(gameRef, game);
