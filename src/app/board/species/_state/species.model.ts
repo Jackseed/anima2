@@ -1,5 +1,13 @@
-import { Colors, DEFAULT_ASSIMILATED_QUANTITY, DEFAULT_ASSIMILATION_CREATED_QUANTITY, DEFAULT_ASSIMILATION_RANGE, DEFAULT_MOVING_QUANTITY, DEFAULT_PROLIFERATION_CREATED_QUANTITY, DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
-import { generateRandomRegionTileIds } from '../../tiles/_state';
+import {
+  Colors,
+  DEFAULT_ASSIMILATED_QUANTITY,
+  DEFAULT_ASSIMILATION_CREATED_QUANTITY,
+  DEFAULT_ASSIMILATION_RANGE,
+  DEFAULT_MOVING_QUANTITY,
+  DEFAULT_PROLIFERATION_CREATED_QUANTITY,
+  DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
+  NEUTRAL_COLORS,
+} from 'src/app/games/_state/game.model';
 
 export interface Species {
   id?: string;
@@ -61,8 +69,6 @@ export interface MigrationValues {
   migrationUsed?: number;
 }
 
-
-
 export function createMigrationValues(
   values?: Partial<MigrationValues>
 ): MigrationValues {
@@ -81,7 +87,6 @@ export interface ProliferationValues {
   neededIndividuals: number;
   createdQuantity: number;
 }
-
 
 export function createProliferationValues(
   values?: Partial<ProliferationValues>
@@ -366,42 +371,20 @@ export const ABILITIES: Ability[] = [
 
 export const neutrals: Species[] = [
   {
-    id: 'rockies',
+    id: 'neutral1',
     playerId: 'neutral',
     colors: NEUTRAL_COLORS,
-    tileIds: generateRandomRegionTileIds(7, 'rockies'),
   },
   {
-    id: 'mountains',
+    id: 'neutral2',
     playerId: 'neutral',
     colors: NEUTRAL_COLORS,
-    tileIds: generateRandomRegionTileIds(4, 'mountains'),
-  },/*
-  {
-    id: 'islands',
-    playerId: 'neutral',
-    colors: NEUTRAL_COLORS,
-    tileIds: generateRandomRegionTileIds(3, 'islands'),
   },
   {
-    id: 'plains',
+    id: 'neutral3',
     playerId: 'neutral',
     colors: NEUTRAL_COLORS,
-    tileIds: generateRandomRegionTileIds(9, 'plains'),
   },
-  {
-    id: 'swamps',
-    playerId: 'neutral',
-    colors: NEUTRAL_COLORS,
-    tileIds: generateRandomRegionTileIds(6, 'swamps'),
-  },
-
-  {
-    id: 'forests',
-    playerId: 'neutral',
-    colors: NEUTRAL_COLORS,
-    tileIds: generateRandomRegionTileIds(5, 'forests'),
-  }, */
 ];
 
 export function createSpecies(
