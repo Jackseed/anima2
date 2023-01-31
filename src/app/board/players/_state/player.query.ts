@@ -101,16 +101,19 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getEntity(this.unplayingPlayerId);
   }
 
-  public get opponentId(): string {
-    const playerIds = this.getAll().map((player) => player.id);
-    const activePlayerId = this.getActiveId();
-    return playerIds.filter((id) => id !== activePlayerId)[0];
+  public getPlayerOpponentId(playerId: string): string {
+    const playerIds = this.allPlayerIds;
+    return playerIds.filter((id) => id !== playerId)[0];
   }
 
   public get opponentMainSpecies(): Species {
+    const activePlayerId = this.getActiveId();
     return this.speciesQuery
       .getAll()
-      .filter((species) => species.playerId === this.opponentId)[0];
+      .filter(
+        (species) =>
+          species.playerId === this.getPlayerOpponentId(activePlayerId)
+      )[0];
   }
 
   public get areAbilityChoicesSet$(): Observable<boolean> {

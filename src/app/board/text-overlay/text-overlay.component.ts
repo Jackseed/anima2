@@ -62,7 +62,8 @@ export class TextOverlayComponent implements OnInit {
   }
 
   public getOpponentColors(): Colors {
-    const opponentId = this.playerQuery.opponentId;
+    const activePlayerId = this.playerQuery.getActiveId();
+    const opponentId = this.playerQuery.getPlayerOpponentId(activePlayerId);
     return this.playerQuery.getPlayerColors(opponentId);
   }
 

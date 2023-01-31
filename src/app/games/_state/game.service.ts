@@ -22,6 +22,8 @@ import {
   RED_PRIMARY_COLOR,
   RED_SECONDARY_COLOR,
   TileChoice,
+  WINNING_POINTS,
+  LAST_ERA,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -378,8 +380,9 @@ export class GameService extends CollectionService<GameState> {
 
     // Every 3 turns, a new era begins.
     if ((game.turnCount + 1) % 3 === 0) {
+      this.countScores();
+
       batch.update(gameRef, { eraCount: increment });
-      this.countAllScore();
     }
 
     return batch;
@@ -418,19 +421,19 @@ export class GameService extends CollectionService<GameState> {
     return batch.update(gameRef, { inGameAbilities: inGameAbilitiesUpdate });
   }
 
-  public countAllScore() {
+  public countScores() {
     const players = this.playerQuery.getAll();
     const regionScores = {};
     const playerScores = {};
     const regions = Regions;
-    const gameId = this.query.getActiveId();
-    const batch = this.db.firestore.batch();
+    const game = this.query.getActive();
+    let batch = this.db.firestore.batch();
 
     regions.forEach((region) => {
       regionScores[region.name] = this.countScore(region);
       players.forEach((player, index: number) => {
         // Initializes score.
-        if (!playerScores[player.id]) playerScores[player.id] = 0;
+        if (!playerScores[player.id]) playerScores[player.id] = player.score;
         // Adds region score if it's controled by player.
         playerScores[player.id] += regionScores[region.name][index]
           ? region.score
@@ -439,18 +442,33 @@ export class GameService extends CollectionService<GameState> {
     });
 
     players.forEach((player) => {
-      const playerRef = this.db
-        .collection(`games/${gameId}/players`)
-        .doc(player.id).ref;
+      if (playerScores[player.id]) {
+        const playerRef = this.db
+          .collection(`games/${game.id}/players`)
+          .doc(player.id).ref;
 
-      if (playerScores[player.id])
         batch.update(playerRef, {
-          score: player.score + playerScores[player.id],
+          score: playerScores[player.id],
         });
+
+        if (playerScores[player.id] >= WINNING_POINTS) {
+          batch = this.updatePlayerVictory(player.id, batch);
+        }
+      }
     });
 
+    // TODO: what if equality?
+    if (game.eraCount === LAST_ERA) {
+      const playerIds = this.playerQuery.allPlayerIds;
+      const winnerId =
+        playerScores[playerIds[0]] >= playerScores[playerIds[1]]
+          ? playerScores[playerIds[0]]
+          : playerScores[playerIds[1]];
+      batch = this.updatePlayerVictory(winnerId, batch);
+    }
+
     batch.commit().catch((error) => {
-      console.log('Transaction failed: ', error);
+      console.log('Updating score failed: ', error);
     });
   }
 
@@ -483,6 +501,21 @@ export class GameService extends CollectionService<GameState> {
       });
     });
     return isPlayerControling;
+  }
+
+  public updatePlayerVictory(
+    playerId: string,
+    batch: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch {
+    const gameId = this.query.getActiveId();
+    const gameRef = this.db.collection('games').doc(gameId).ref;
+
+    batch.update(gameRef, {
+      isFinished: true,
+      winnerId: playerId,
+    });
+
+    return batch;
   }
 
   public updateUiAdaptationMenuOpen(bool: boolean) {

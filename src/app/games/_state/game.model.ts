@@ -15,6 +15,8 @@ export type StartStage =
   | 'tileValidated';
 export const NEUTRALS_MIN_QUANTITY = 3;
 export const NEUTRALS_MAX_QUANTITY = 5;
+export const WINNING_POINTS = 30;
+export const LAST_ERA = 5;
 
 // ACTIONS
 export const DEFAULT_REMAINING_MIGRATIONS = 4;
@@ -51,6 +53,8 @@ export interface Game {
   isStarting: boolean;
   startStage: StartStage;
   tileChoices: TileChoice[];
+  isFinished: boolean;
+  winnerId?: string;
 }
 
 export interface TileChoice {
@@ -78,6 +82,7 @@ export function createGame(params: Partial<Game>): Game {
     isStarting: true,
     startStage: 'launching',
     tileChoices: [],
+    isFinished: false,
     ...params,
   };
 }

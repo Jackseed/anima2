@@ -73,7 +73,7 @@ export class BoardModule {
     this.matIconRegistry.addSvgIcon(
       'validate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/validate-button-2.svg'
+        '../../../assets/menu-buttons/validate-button.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(

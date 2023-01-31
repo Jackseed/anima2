@@ -16,6 +16,7 @@ import { PlayerQuery } from '../players/_state';
 import { Species, SpeciesQuery } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
+import { GameQuery } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-board-view',
@@ -40,10 +41,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   constructor(
     private userQuery: UserQuery,
-    private playerQuery: PlayerQuery,
+    private gameQuery: GameQuery,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
+    private playerQuery: PlayerQuery,
     private playService: PlayService,
     private abilityService: AbilityService,
     private snackbar: MatSnackBar,
@@ -73,6 +75,9 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   // PLAY - Master function
   // Chooses click action when clicking on a tile.
   public async play(tileId: number) {
+    // Dismisses clicks on finished games.
+    if (this.gameQuery.getActive().isFinished) return;
+
     // Dismisses clicks on blank tiles.
     if (this.tileQuery.isBlank(tileId)) return;
 
