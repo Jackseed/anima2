@@ -82,4 +82,8 @@ export class GameQuery extends QueryEntity<GameState> {
   public get playingPlayerId(): string {
     return this.getActive().playingPlayerId;
   }
+
+  public get isGameFinished$(): Observable<boolean> {
+    return this.selectActive().pipe(map((game) => game.isFinished));
+  }
 }

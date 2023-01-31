@@ -8,6 +8,11 @@
   opacity: 0.8;
 }
 
+.medium-opacity {
+  background-color: white;
+  opacity: 0.5;
+}
+
 .low-opacity {
   background-color: white;
   opacity: 0.3;
@@ -93,5 +98,46 @@
   100% {
     opacity: 0;
     pointer-events: none;
+  }
+}
+
+h1 {
+  text-shadow: 0 0 0.05em #f59c27;
+  font-size: calc(3.5rem + 1.5vmin);
+  font-weight: 900;
+  margin-top: 70px;
+}
+
+h2 {
+  color: #21937d;
+  font-size: calc(3rem + 1.5vmin);
+  font-weight: 900;
+  margin: 30px;
+}
+
+.star {
+  --s: 2rem + 1vmin;
+  font-size: calc(var(--s));
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
+}
+
+.score {
+  margin-top: -50px;
+}
+
+.anima {
+  --s: 20rem + 5vmin;
+  font-size: calc(var(--s));
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
+  span {
+    color: white;
+    margin-top: 35px;
+    font-size: calc(2rem + 1vmin);
+    line-height: calc(2rem + 1vmin);
+    font-weight: bold;
   }
 }

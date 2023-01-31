@@ -127,6 +127,21 @@ export class BoardModule {
       )
     );
 
+    // VICTORY
+    this.matIconRegistry.addSvgIcon(
+      'star',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/star.svg'
+      )
+    );
+
+    this.matIconRegistry.addSvgIcon(
+      'anima-blur',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/anima-blur.svg'
+      )
+    );
+
     // SPECIES LIST
     this.matIconRegistry.addSvgIcon(
       'hex',

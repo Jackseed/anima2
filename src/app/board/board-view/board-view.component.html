@@ -1,5 +1,5 @@
 <!------------ HEADER -------------->
-<header>
+<header *ngIf="!(isGameFinished$ | async)">
   <app-header fxFlexFill></app-header>
 </header>
 
@@ -71,12 +71,12 @@
 
 <!------------ FOOTER -------------->
 <footer
-  *ngIf="hasActiveAbility$ | async"
+  *ngIf="(hasActiveAbility$ | async) && !(isGameFinished$ | async)"
   id="active-bar"
   style="--width-value: {{ 25 * (activeAbilityNumber$ | async) }}%"
 >
   <app-active-bar></app-active-bar>
 </footer>
-<footer>
+<footer *ngIf="!(isGameFinished$ | async)">
   <app-footer></app-footer>
 </footer>
