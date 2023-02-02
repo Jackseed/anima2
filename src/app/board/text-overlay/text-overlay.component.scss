@@ -107,11 +107,13 @@ h1 {
   font-weight: 900;
 }
 
-h2 {
-  color: #21937d;
+.player-name {
   font-size: calc(3rem + 1.5vmin);
   font-weight: 900;
-  margin: 0 30px;
+}
+
+.green {
+  color: #21937d;
 }
 
 .star {
@@ -145,7 +147,11 @@ h2 {
   justify-content: center;
 }
 
-.margin {
+.margin-aside {
+  margin: 0 7.5%;
+}
+
+.small-margin-aside {
   margin: 0 2.5%;
 }
 

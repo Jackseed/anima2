@@ -247,7 +247,7 @@
       fxLayoutAlign="center center"
     >
       <mat-icon svgIcon="star" class="star"></mat-icon>
-      <h2>Nurgle</h2>
+      <h2 class="player-name green margin-aside">Nurgle</h2>
       <mat-icon svgIcon="star" class="star"></mat-icon>
     </article>
     <article fxFlexFill fxFlex="20" fxLayoutAlign="center end">
@@ -261,7 +261,7 @@
     <article fxFlexFill fxFlex="20" fxLayout="row" class="playerSpecies">
       <div
         *ngFor="let species of winningPlayerSpecies$ | async"
-        class="species relative margin"
+        class="species relative small-margin-aside"
         id="winnerSpecies"
         style="
         --primary-color: {{ species.colors.primary }};
@@ -275,12 +275,25 @@
         ></mat-icon>
       </div>
     </article>
-    <article fxFlexFill fxFlex="13" fxLayoutAlign="center end" id="loser">
-      <h2 class="loser red">Jelly0</h2>
+    <article fxFlexFill fxFlex="10" fxLayoutAlign="center end" id="loser">
+      <h2 class="player-name loser red">Jelly0</h2>
       <h3 class="loser" id="line">-</h3>
-      <h2 class="loser red">32</h2>
+      <h2 class="player-name loser red">32</h2>
     </article>
-    <article fxFlexFill fxFlex="16"></article>
+    <aside fxFlexFill fxFlex="4"></aside>
+    <article
+      fxFlexFill
+      fxFlex="16"
+      fxLayout="row"
+      fxLayoutAlign="space-around center"
+    >
+      <button class="nav-button">
+        <h2>Voir la carte</h2>
+      </button>
+      <button class="nav-button">
+        <h2>Quitter</h2>
+      </button>
+    </article>
     <aside fxFlexFill fxFlex="1" class="orange"></aside>
   </main>
 </article>
