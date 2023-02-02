@@ -258,7 +258,7 @@
         ><span class="absolute">56</span></mat-icon
       >
     </article>
-    <article fxFlexFill fxFlex="29" fxLayout="row" class="playerSpecies">
+    <article fxFlexFill fxFlex="20" fxLayout="row" class="playerSpecies">
       <div
         *ngFor="let species of winningPlayerSpecies$ | async"
         class="species relative margin"
@@ -275,7 +275,12 @@
         ></mat-icon>
       </div>
     </article>
-    <article fxFlexFill fxFlex="20"></article>
+    <article fxFlexFill fxFlex="13" fxLayoutAlign="center end" id="loser">
+      <h2 class="loser red">Jelly0</h2>
+      <h3 class="loser" id="line">-</h3>
+      <h2 class="loser red">32</h2>
+    </article>
+    <article fxFlexFill fxFlex="16"></article>
     <aside fxFlexFill fxFlex="1" class="orange"></aside>
   </main>
 </article>

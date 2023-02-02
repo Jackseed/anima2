@@ -150,5 +150,18 @@ h2 {
 }
 
 #winnerSpecies {
-  max-height: 65%;
+  max-height: 90%;
+}
+
+.loser {
+  margin: 0;
+}
+
+#line {
+  font-size: calc(2.5rem + 1vmin);
+  margin: 0 2% 1% 2%;
+}
+
+.red {
+  color: #d75b62;
 }
