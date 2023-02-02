@@ -230,25 +230,35 @@
 <!------------ VICTORY -------------->
 <article fxFlexFill *ngIf="isGameFinished$ | async" class="visual-overlay">
   <section fxFlexFill class="medium-opacity"></section>
-  <section
+  <main
     fxFlexFill
     fxLayout="column"
     fxLayoutAlign="start center"
     class="absolute"
   >
-    <h1>VICTOIRE</h1>
-    <div fxLayout="row" fxLayoutAlign="center center">
+    <article fxFlexFill fxFlex="10"></article>
+    <article fxFlexFill fxFlex="10" class="center">
+      <h1>VICTOIRE</h1>
+    </article>
+    <article
+      fxFlexFill
+      fxFlex="10"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+    >
       <mat-icon svgIcon="star" class="star"></mat-icon>
       <h2>Nurgle</h2>
       <mat-icon svgIcon="star" class="star"></mat-icon>
-    </div>
-    <div class="score">
+    </article>
+    <article fxFlexFill fxFlex="35" fxLayoutAlign="center center">
       <mat-icon
         svgIcon="anima-blur"
         class="anima relative"
         fxLayoutAlign="center center"
         ><span class="absolute">56</span></mat-icon
       >
-    </div>
-  </section>
+    </article>
+    <article fxFlexFill fxFlex="35"></article>
+    <aside fxFlexFill fxFlex="1" class="orange"></aside>
+  </main>
 </article>

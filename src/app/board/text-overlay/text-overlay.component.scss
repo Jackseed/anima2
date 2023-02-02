@@ -105,14 +105,13 @@ h1 {
   text-shadow: 0 0 0.05em #f59c27;
   font-size: calc(3.5rem + 1.5vmin);
   font-weight: 900;
-  margin-top: 70px;
 }
 
 h2 {
   color: #21937d;
   font-size: calc(3rem + 1.5vmin);
   font-weight: 900;
-  margin: 30px;
+  margin: 0 30px;
 }
 
 .star {
@@ -123,12 +122,8 @@ h2 {
   line-height: calc(var(--s));
 }
 
-.score {
-  margin-top: -50px;
-}
-
 .anima {
-  --s: 20rem + 5vmin;
+  --s: 7rem + 3vmin;
   font-size: calc(var(--s));
   width: calc(var(--s));
   height: calc(var(--s));
@@ -140,4 +135,8 @@ h2 {
     line-height: calc(2rem + 1vmin);
     font-weight: bold;
   }
+}
+
+.center {
+  text-align: center;
 }
