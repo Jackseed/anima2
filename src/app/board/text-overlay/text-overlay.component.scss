@@ -102,7 +102,7 @@
 }
 
 h1 {
-  text-shadow: 0 0 0.05em #f59c27;
+  text-shadow: 0 0 0.1em #f59c27;
   font-size: calc(3.5rem + 1.5vmin);
   font-weight: 900;
 }
@@ -131,12 +131,24 @@ h2 {
   span {
     color: white;
     margin-top: 35px;
-    font-size: calc(2rem + 1vmin);
-    line-height: calc(2rem + 1vmin);
+    font-size: calc(2.5rem + 1vmin);
+    line-height: calc(2.5rem + 1vmin);
     font-weight: bold;
   }
 }
 
 .center {
   text-align: center;
+}
+
+.playerSpecies {
+  justify-content: center;
+}
+
+.margin {
+  margin: 0 2.5%;
+}
+
+#winnerSpecies {
+  max-height: 65%;
 }

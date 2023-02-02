@@ -250,7 +250,7 @@
       <h2>Nurgle</h2>
       <mat-icon svgIcon="star" class="star"></mat-icon>
     </article>
-    <article fxFlexFill fxFlex="35" fxLayoutAlign="center center">
+    <article fxFlexFill fxFlex="20" fxLayoutAlign="center end">
       <mat-icon
         svgIcon="anima-blur"
         class="anima relative"
@@ -258,7 +258,24 @@
         ><span class="absolute">56</span></mat-icon
       >
     </article>
-    <article fxFlexFill fxFlex="35"></article>
+    <article fxFlexFill fxFlex="29" fxLayout="row" class="playerSpecies">
+      <div
+        *ngFor="let species of winningPlayerSpecies$ | async"
+        class="species relative margin"
+        id="winnerSpecies"
+        style="
+        --primary-color: {{ species.colors.primary }};
+        --secondary-color: {{ species.colors.secondary }}"
+      >
+        <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+        <mat-icon
+          class="species-icon"
+          id="species-title"
+          [svgIcon]="species.abilities[0].id"
+        ></mat-icon>
+      </div>
+    </article>
+    <article fxFlexFill fxFlex="20"></article>
     <aside fxFlexFill fxFlex="1" class="orange"></aside>
   </main>
 </article>

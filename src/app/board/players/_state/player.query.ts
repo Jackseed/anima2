@@ -116,6 +116,16 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
       )[0];
   }
 
+  public get winningPlayerSpecies$(): Observable<Species[]> {
+    return this.gameQuery.winnerId$.pipe(
+      map((winnerId) => this.getEntity(winnerId)),
+      map((player) => player.speciesIds),
+      map((speciesIds) =>
+        speciesIds.map((speciesId) => this.speciesQuery.getEntity(speciesId))
+      )
+    );
+  }
+
   public get areAbilityChoicesSet$(): Observable<boolean> {
     return this.abilityChoices$.pipe(map((abilities) => abilities.length > 0));
   }

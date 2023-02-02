@@ -25,6 +25,7 @@ export class TextOverlayComponent implements OnInit {
   public isActivePlayerPlaying$: Observable<boolean>;
   public activeSpecies$: Observable<Species>;
   public isGameFinished$: Observable<boolean>;
+  public winningPlayerSpecies$: Observable<Species[]>;
 
   constructor(
     private gameQuery: GameQuery,
@@ -45,6 +46,7 @@ export class TextOverlayComponent implements OnInit {
     this.isActivePlayerPlaying$ = this.playerQuery.isActivePlayerPlaying$;
     this.activeSpecies$ = this.speciesQuery.selectActive();
     this.isGameFinished$ = this.gameQuery.isGameFinished$;
+    this.winningPlayerSpecies$ = this.playerQuery.winningPlayerSpecies$;
   }
 
   public validateStartTile() {
