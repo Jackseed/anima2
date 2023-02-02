@@ -61,12 +61,13 @@
   width: calc(var(--s));
   height: calc(var(--s));
   line-height: calc(var(--s));
-  .mat-icon {
-    font-size: calc(var(--s));
-    width: calc(var(--s));
-    height: calc(var(--s));
-    line-height: calc(var(--s));
-  }
+}
+
+.mat-icon {
+  font-size: calc(var(--s));
+  width: calc(var(--s));
+  height: calc(var(--s));
+  line-height: calc(var(--s));
 }
 
 #validate {
@@ -118,18 +119,10 @@ h1 {
 
 .star {
   --s: 2rem + 1vmin;
-  font-size: calc(var(--s));
-  width: calc(var(--s));
-  height: calc(var(--s));
-  line-height: calc(var(--s));
 }
 
 .anima {
   --s: 7rem + 3vmin;
-  font-size: calc(var(--s));
-  width: calc(var(--s));
-  height: calc(var(--s));
-  line-height: calc(var(--s));
   span {
     color: white;
     margin-top: 35px;
@@ -170,4 +163,16 @@ h1 {
 
 .red {
   color: #d75b62;
+}
+
+.grey {
+  background-color: rgba(242, 242, 242, 0.6);
+}
+
+.click-through {
+  pointer-events: none;
+}
+
+.baby {
+  --s: 80%;
 }

@@ -131,14 +131,19 @@ export class BoardModule {
     this.matIconRegistry.addSvgIcon(
       'star',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/star.svg'
+        '../../../../assets/others/star.svg'
       )
     );
-
     this.matIconRegistry.addSvgIcon(
       'anima-blur',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/anima-blur.svg'
+        '../../../../assets/others/anima-blur.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'baby',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/others/baby.svg'
       )
     );
 

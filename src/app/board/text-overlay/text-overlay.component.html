@@ -229,8 +229,9 @@
 
 <!------------ VICTORY -------------->
 <article fxFlexFill *ngIf="isGameFinished$ | async" class="visual-overlay">
-  <section fxFlexFill class="medium-opacity"></section>
+  <section *ngIf="scoreToggle" fxFlexFill class="medium-opacity"></section>
   <main
+    *ngIf="scoreToggle; else map"
     fxFlexFill
     fxLayout="column"
     fxLayoutAlign="start center"
@@ -281,19 +282,48 @@
       <h2 class="player-name loser red">32</h2>
     </article>
     <aside fxFlexFill fxFlex="4"></aside>
-    <article
+    <footer
       fxFlexFill
       fxFlex="16"
       fxLayout="row"
       fxLayoutAlign="space-around center"
     >
-      <button class="nav-button">
+      <button class="nav-button" (click)="toggleScoreToggle()">
         <h2>Voir la carte</h2>
       </button>
-      <button class="nav-button">
+      <button class="nav-button" (click)="leave()">
         <h2>Quitter</h2>
       </button>
-    </article>
+    </footer>
     <aside fxFlexFill fxFlex="1" class="orange"></aside>
   </main>
+  <ng-template #map>
+    <main fxFlexFill fxLayout="column" fxLayoutAlign="space-around center">
+      <header
+        class="grey"
+        fxFlexFill
+        fxFlex="16"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+      >
+        <mat-icon class="baby" svgIcon="baby"></mat-icon>
+      </header>
+      <aside class="click-through" fxFlexFill fxFlex="67"></aside>
+      <footer
+        fxFlexFill
+        fxFlex="16"
+        fxLayout="row"
+        fxLayoutAlign="space-around center"
+        class="grey"
+      >
+        <button class="nav-button" (click)="toggleScoreToggle()">
+          <h2>Voir les scores</h2>
+        </button>
+        <button class="nav-button" (click)="leave()">
+          <h2>Quitter</h2>
+        </button>
+      </footer>
+      <aside fxFlexFill fxFlex="1" class="orange"></aside>
+    </main>
+  </ng-template>
 </article>

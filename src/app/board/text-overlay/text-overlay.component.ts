@@ -1,5 +1,6 @@
 // Angular
 import { Component, HostListener, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 // Rxjs
 import { Observable } from 'rxjs';
@@ -26,8 +27,10 @@ export class TextOverlayComponent implements OnInit {
   public activeSpecies$: Observable<Species>;
   public isGameFinished$: Observable<boolean>;
   public winningPlayerSpecies$: Observable<Species[]>;
+  public scoreToggle: boolean = false;
 
   constructor(
+    private router: Router,
     private gameQuery: GameQuery,
     private tileQuery: TileQuery,
     private tileService: TileService,
@@ -74,6 +77,14 @@ export class TextOverlayComponent implements OnInit {
 
   public getOpponentSpecies(): Species {
     return this.playerQuery.opponentMainSpecies;
+  }
+
+  public toggleScoreToggle() {
+    this.scoreToggle = !this.scoreToggle;
+  }
+
+  public leave() {
+    this.router.navigate(['/home']);
   }
 
   // Cancels tile focus when using "esc" on keyboard.
