@@ -27,7 +27,7 @@ export class TextOverlayComponent implements OnInit {
   public activeSpecies$: Observable<Species>;
   public isGameFinished$: Observable<boolean>;
   public winningPlayerSpecies$: Observable<Species[]>;
-  public scoreToggle: boolean = false;
+  public scoreToggle: boolean = true;
 
   constructor(
     private router: Router,

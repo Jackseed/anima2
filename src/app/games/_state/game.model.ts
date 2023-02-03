@@ -32,8 +32,8 @@ export const GREEN_PRIMARY_COLOR = '#4cab79';
 export const GREEN_SECONDARY_COLOR = '#378965';
 export const RED_PRIMARY_COLOR = '#d75b62';
 export const RED_SECONDARY_COLOR = '#be4545';
-export const NEUTRAL_PRIMARY_COLOR = '#bfbfbf';
-export const NEUTRAL_SECONDARY_COLOR = '#9b9b9b';
+export const NEUTRAL_PRIMARY_COLOR = '#8A8C93';
+export const NEUTRAL_SECONDARY_COLOR = '#6A6E78';
 export const NEUTRAL_COLORS: Colors = {
   primary: NEUTRAL_PRIMARY_COLOR,
   secondary: NEUTRAL_SECONDARY_COLOR,

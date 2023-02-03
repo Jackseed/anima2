@@ -152,7 +152,7 @@ h1 {
   max-height: 90%;
 }
 
-.loser {
+.no-margin {
   margin: 0;
 }
 
@@ -175,4 +175,32 @@ h1 {
 
 .baby {
   --s: 80%;
+}
+
+.orange-border {
+  height: 55% !important;
+  border: 0.4rem solid var(--anima-color);
+  background-color: white;
+  padding-top: 3%;
+}
+
+.score {
+  font-size: calc(2.5rem + 1.5vmin);
+  font-weight: 700;
+}
+
+#score-line {
+  font-size: calc(1.5rem + 1vmin);
+  margin: 0 2% -2% 2%;
+}
+
+.anima-empty {
+  --s: 6rem + 3vmin;
+  margin-top: 2%;
+  span {
+    margin-top: 35px;
+    font-size: calc(2rem + 1vmin);
+    line-height: calc(2rem + 1vmin);
+    font-weight: bold;
+  }
 }

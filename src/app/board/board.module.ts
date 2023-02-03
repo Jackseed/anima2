@@ -129,15 +129,21 @@ export class BoardModule {
 
     // VICTORY
     this.matIconRegistry.addSvgIcon(
-      'star',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../../assets/others/star.svg'
-      )
-    );
-    this.matIconRegistry.addSvgIcon(
       'anima-blur',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../../assets/others/anima-blur.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'anima-empty',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/others/anima-empty.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'star',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/others/star.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
