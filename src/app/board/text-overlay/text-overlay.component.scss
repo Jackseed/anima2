@@ -82,26 +82,6 @@
   left: 15%;
 }
 
-.animated {
-  animation: opacityOnAndOff 0.5s normal forwards step-end;
-}
-
-@keyframes opacityOnAndOff {
-  0% {
-    opacity: 0;
-  }
-  1% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
 h1 {
   text-shadow: 0 0 0.1em #f59c27;
   font-size: calc(3.5rem + 1.5vmin);
@@ -202,5 +182,35 @@ h1 {
     font-size: calc(2rem + 1vmin);
     line-height: calc(2rem + 1vmin);
     font-weight: bold;
+  }
+}
+
+// @keyframes duration | easing-function | delay | direction | fill-mode | name
+.quickly-slide-in-out {
+  animation: var(--animation-duration) linear forwards slideIn,
+    var(--animation-duration) linear var(--animation-delay) reverse forwards
+      slideIn;
+}
+
+.slide-in-out {
+  animation: var(--animation-duration) ease-in forwards slideIn,
+    var(--animation-duration) ease-out var(--animation-delay) reverse forwards
+      slideIn;
+}
+
+.delayed-slide-in {
+  opacity: 0;
+  animation: var(--animation-duration) ease-in var(--animation-delay) forwards
+    slideIn;
+}
+
+// ANIMATIONS
+@keyframes slideIn {
+  from {
+    pointer-events: none;
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

@@ -125,7 +125,8 @@
 <article
   fxFlexFill
   *ngIf="(isGameStarting$ | async) && (startStage$ | async) === 'tileChoice'"
-  class="animated visual-overlay"
+  class="quickly-slide-in-out visual-overlay"
+  style="--animation-duration: 0.25s; --animation-delay: 0.5s"
 >
   <section fxFlexFill class="full-opacity"></section>
   <main
@@ -200,7 +201,8 @@
 <article
   fxFlexFill
   *ngIf="!(isGameStarting$ | async) && isActivePlayerPlaying$ | async"
-  class="animated visual-overlay"
+  class="quickly-slide-in-out visual-overlay"
+  style="--animation-duration: 0s; --animation-delay: 0s"
 >
   <section fxFlexFill class="opacity"></section>
   <section
@@ -227,8 +229,81 @@
   </section>
 </article>
 
-<!------------ VICTORY -------------->
-<!-- <article fxFlexFill *ngIf="isGameFinished$ | async" class="visual-overlay">
+<!------------ VICTORY 1/2 -------------->
+<article
+  fxFlexFill
+  *ngIf="isGameFinished$ | async"
+  class="visual-overlay slide-in-out"
+  style="--animation-duration: 1s; --animation-delay: 3s"
+>
+  <section fxFlexFill class="medium-opacity"></section>
+  <main
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    class="absolute"
+  >
+    <article
+      fxFlexFill
+      fxFlex="40"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+    >
+      <h2 class="player-name green margin-aside">Nurgle</h2>
+    </article>
+    <article
+      fxFlexFill
+      fxFlex="19"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+    >
+      <mat-icon
+        svgIcon="anima-empty"
+        fxFlexAlign="start"
+        class="anima-empty relative"
+        fxLayoutAlign="center center"
+      >
+        <span class="absolute green">+0</span>
+      </mat-icon>
+      <section
+        class="orange-border"
+        fxFlexFill
+        fxFlex="45"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+      >
+        <h2 class="score no-margin green">56</h2>
+        <h3 class="no-margin" id="score-line">-</h3>
+        <h2 class="score no-margin red">32</h2>
+      </section>
+      <mat-icon
+        svgIcon="anima-empty"
+        fxFlexAlign="start"
+        class="anima-empty relative"
+        fxLayoutAlign="center center"
+      >
+        <span class="absolute red">+0</span>
+      </mat-icon>
+    </article>
+    <article
+      fxFlexFill
+      fxFlex="40"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+    >
+      <h2 class="player-name red margin-aside">Jelly0</h2>
+    </article>
+    <aside fxFlexFill fxFlex="1" class="orange"></aside>
+  </main>
+</article>
+
+<!------------ VICTORY 2/2-------------->
+<article
+  fxFlexFill
+  *ngIf="isGameFinished$ | async"
+  class="visual-overlay delayed-slide-in"
+  style="--animation-duration: 1s; --animation-delay: 3.5s"
+>
   <section *ngIf="scoreToggle" fxFlexFill class="medium-opacity"></section>
   <main
     *ngIf="scoreToggle; else map"
@@ -326,67 +401,4 @@
       <aside fxFlexFill fxFlex="1" class="orange"></aside>
     </main>
   </ng-template>
-</article> -->
-
-<!------------ VICTORY -------------->
-<article fxFlexFill *ngIf="isGameFinished$ | async" class="visual-overlay">
-  <section fxFlexFill class="medium-opacity"></section>
-  <main
-    fxFlexFill
-    fxLayout="column"
-    fxLayoutAlign="start center"
-    class="absolute"
-  >
-    <article
-      fxFlexFill
-      fxFlex="40"
-      fxLayout="row"
-      fxLayoutAlign="center center"
-    >
-      <h2 class="player-name green margin-aside">Nurgle</h2>
-    </article>
-    <article
-      fxFlexFill
-      fxFlex="19"
-      fxLayout="row"
-      fxLayoutAlign="center center"
-    >
-      <mat-icon
-        svgIcon="anima-empty"
-        fxFlexAlign="start"
-        class="anima-empty relative"
-        fxLayoutAlign="center center"
-      >
-        <span class="absolute green">+0</span>
-      </mat-icon>
-      <section
-        class="orange-border"
-        fxFlexFill
-        fxFlex="45"
-        fxLayout="row"
-        fxLayoutAlign="center center"
-      >
-        <h2 class="score no-margin green">56</h2>
-        <h3 class="no-margin" id="score-line">-</h3>
-        <h2 class="score no-margin red">32</h2>
-      </section>
-      <mat-icon
-        svgIcon="anima-empty"
-        fxFlexAlign="start"
-        class="anima-empty relative"
-        fxLayoutAlign="center center"
-      >
-        <span class="absolute red">+0</span>
-      </mat-icon>
-    </article>
-    <article
-      fxFlexFill
-      fxFlex="40"
-      fxLayout="row"
-      fxLayoutAlign="center center"
-    >
-      <h2 class="player-name red margin-aside">Jelly0</h2>
-    </article>
-    <aside fxFlexFill fxFlex="1" class="orange"></aside>
-  </main>
 </article>
