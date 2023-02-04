@@ -82,7 +82,7 @@
   left: 15%;
 }
 
-h1 {
+.victory {
   text-shadow: 0 0 0.1em #f59c27;
   font-size: calc(3.5rem + 1.5vmin);
   font-weight: 900;
@@ -103,13 +103,6 @@ h1 {
 
 .anima {
   --s: 7rem + 3vmin;
-  span {
-    color: white;
-    margin-top: 35px;
-    font-size: calc(2.5rem + 1vmin);
-    line-height: calc(2.5rem + 1vmin);
-    font-weight: bold;
-  }
 }
 
 .center {
@@ -186,22 +179,45 @@ h1 {
 }
 
 // @keyframes duration | easing-function | delay | direction | fill-mode | name
-.quickly-slide-in-out {
-  animation: var(--animation-duration) linear forwards slideIn,
-    var(--animation-duration) linear var(--animation-delay) reverse forwards
-      slideIn;
-}
-
 .slide-in-out {
-  animation: var(--animation-duration) ease-in forwards slideIn,
+  animation: var(--animation-duration) linear forwards slideIn,
     var(--animation-duration) ease-out var(--animation-delay) reverse forwards
       slideIn;
 }
 
-.delayed-slide-in {
+.slide-in {
   opacity: 0;
   animation: var(--animation-duration) ease-in var(--animation-delay) forwards
     slideIn;
+}
+
+.rotate {
+  animation: 4s linear infinite spin;
+}
+
+.cling {
+  animation: 2s linear infinite alternate neon;
+}
+
+.victory-score {
+  animation: counter 5s forwards ease-in-out;
+  counter-reset: score var(--score);
+  padding: 2rem;
+  color: white;
+  margin-top: 35px;
+  font-size: calc(2.5rem + 1vmin);
+  line-height: calc(2.5rem + 1vmin);
+  font-weight: bold;
+}
+
+@property --score {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+.victory-score::after {
+  content: counter(score);
 }
 
 // ANIMATIONS
@@ -212,5 +228,29 @@ h1 {
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes neon {
+  from {
+    text-shadow: 0 0 0.1em #f59c27;
+  }
+  to {
+    text-shadow: 0 0 0.7em #f59c27;
+  }
+}
+
+@keyframes counter {
+  from {
+    --score: 0;
+  }
+  to {
+    --score: var(--score-value);
   }
 }

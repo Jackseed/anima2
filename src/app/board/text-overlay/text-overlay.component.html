@@ -125,7 +125,7 @@
 <article
   fxFlexFill
   *ngIf="(isGameStarting$ | async) && (startStage$ | async) === 'tileChoice'"
-  class="quickly-slide-in-out visual-overlay"
+  class="slide-in-out visual-overlay"
   style="--animation-duration: 0.25s; --animation-delay: 0.5s"
 >
   <section fxFlexFill class="full-opacity"></section>
@@ -201,7 +201,7 @@
 <article
   fxFlexFill
   *ngIf="!(isGameStarting$ | async) && isActivePlayerPlaying$ | async"
-  class="quickly-slide-in-out visual-overlay"
+  class="slide-in-out visual-overlay"
   style="--animation-duration: 0s; --animation-delay: 0s"
 >
   <section fxFlexFill class="opacity"></section>
@@ -234,7 +234,7 @@
   fxFlexFill
   *ngIf="isGameFinished$ | async"
   class="visual-overlay slide-in-out"
-  style="--animation-duration: 1s; --animation-delay: 3s"
+  style="--animation-duration: 0s; --animation-delay: 0s"
 >
   <section fxFlexFill class="medium-opacity"></section>
   <main
@@ -301,8 +301,8 @@
 <article
   fxFlexFill
   *ngIf="isGameFinished$ | async"
-  class="visual-overlay delayed-slide-in"
-  style="--animation-duration: 1s; --animation-delay: 3.5s"
+  class="visual-overlay slide-in"
+  style="--animation-duration: 0s; --animation-delay: 0s"
 >
   <section *ngIf="scoreToggle" fxFlexFill class="medium-opacity"></section>
   <main
@@ -313,7 +313,7 @@
     class="absolute"
   >
     <article fxFlexFill fxFlex="10"></article>
-    <article fxFlexFill fxFlex="10" class="center">
+    <article fxFlexFill fxFlex="10" class="center victory cling">
       <h1>VICTOIRE</h1>
     </article>
     <article
@@ -322,17 +322,17 @@
       fxLayout="row"
       fxLayoutAlign="center center"
     >
-      <mat-icon svgIcon="star" class="star"></mat-icon>
+      <mat-icon svgIcon="star" class="star rotate"></mat-icon>
       <h2 class="player-name green margin-aside">Nurgle</h2>
-      <mat-icon svgIcon="star" class="star"></mat-icon>
+      <mat-icon svgIcon="star" class="star rotate"></mat-icon>
     </article>
     <article fxFlexFill fxFlex="20" fxLayoutAlign="center end">
       <mat-icon
         svgIcon="anima-blur"
         class="anima relative"
         fxLayoutAlign="center center"
-        ><span class="absolute">56</span></mat-icon
-      >
+        ><span class="absolute victory-score" style="--score-value: 56"></span
+      ></mat-icon>
     </article>
     <article fxFlexFill fxFlex="20" fxLayout="row" class="playerSpecies">
       <div
