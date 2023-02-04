@@ -199,15 +199,10 @@
   animation: 2s linear infinite alternate neon;
 }
 
-.victory-score {
-  animation: counter 5s forwards ease-in-out;
+.increase {
+  animation: var(--animation-duration) ease-in-out var(--animation-delay) both
+    counter;
   counter-reset: score var(--score);
-  padding: 2rem;
-  color: white;
-  margin-top: 35px;
-  font-size: calc(2.5rem + 1vmin);
-  line-height: calc(2.5rem + 1vmin);
-  font-weight: bold;
 }
 
 @property --score {
@@ -216,7 +211,20 @@
   inherits: false;
 }
 
-.victory-score::after {
+.pop-in {
+  animation: var(--animation-duration) ease-in var(--animation-delay) both pop;
+}
+
+.victory-score {
+  padding: 2rem;
+  color: white;
+  margin-top: 35px;
+  font-size: calc(2.5rem + 1vmin);
+  line-height: calc(2.5rem + 1vmin);
+  font-weight: bold;
+}
+
+.increase::after {
   content: counter(score);
 }
 
@@ -248,9 +256,24 @@
 
 @keyframes counter {
   from {
-    --score: 0;
+    --score: var(--counter-from);
   }
   to {
-    --score: var(--score-value);
+    --score: var(--counter-to);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.2, 0.2);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1.2, 1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1, 1);
   }
 }

@@ -234,7 +234,7 @@
   fxFlexFill
   *ngIf="isGameFinished$ | async"
   class="visual-overlay slide-in-out"
-  style="--animation-duration: 0s; --animation-delay: 0s"
+  style="--animation-duration: 0s; --animation-delay: 10000s"
 >
   <section fxFlexFill class="medium-opacity"></section>
   <main
@@ -263,7 +263,11 @@
         class="anima-empty relative"
         fxLayoutAlign="center center"
       >
-        <span class="absolute green">+0</span>
+        <span
+          class="absolute green pop-in"
+          style="--animation-duration: 1s; --animation-delay: 1s"
+          >+8</span
+        >
       </mat-icon>
       <section
         class="orange-border"
@@ -272,9 +276,25 @@
         fxLayout="row"
         fxLayoutAlign="center center"
       >
-        <h2 class="score no-margin green">56</h2>
+        <h2
+          class="score increase no-margin green"
+          style="
+            --counter-from: 48;
+            --counter-to: 56;
+            --animation-delay: 2s;
+            --animation-duration: 3s;
+          "
+        ></h2>
         <h3 class="no-margin" id="score-line">-</h3>
-        <h2 class="score no-margin red">32</h2>
+        <h2
+          class="score increase no-margin red"
+          style="
+            --counter-from: 32;
+            --counter-to: 53;
+            --animation-delay: 6s;
+            --animation-duration: 3s;
+          "
+        ></h2>
       </section>
       <mat-icon
         svgIcon="anima-empty"
@@ -282,7 +302,11 @@
         class="anima-empty relative"
         fxLayoutAlign="center center"
       >
-        <span class="absolute red">+0</span>
+        <span
+          class="pop-in absolute red"
+          style="--animation-duration: 1s; --animation-delay: 5s"
+          >+21</span
+        >
       </mat-icon>
     </article>
     <article
@@ -298,7 +322,7 @@
 </article>
 
 <!------------ VICTORY 2/2-------------->
-<article
+<!-- <article
   fxFlexFill
   *ngIf="isGameFinished$ | async"
   class="visual-overlay slide-in"
@@ -402,3 +426,4 @@
     </main>
   </ng-template>
 </article>
+ -->
