@@ -155,6 +155,7 @@
   border: 0.4rem solid var(--anima-color);
   background-color: white;
   padding-top: 3%;
+  z-index: 2;
 }
 
 .score {
@@ -213,6 +214,11 @@
 
 .pop-in {
   animation: var(--animation-duration) linear var(--animation-delay) both pop;
+}
+
+.pop-out {
+  animation: var(--animation-duration) linear var(--animation-delay) forwards
+    pop-out;
 }
 
 .victory-score {
@@ -283,5 +289,20 @@
   100% {
     opacity: 1;
     transform: scale(1, 1);
+  }
+}
+
+@keyframes pop-out {
+  0% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(0.9, 0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(100, 100) translateY(20%);
   }
 }

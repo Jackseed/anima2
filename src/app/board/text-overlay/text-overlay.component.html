@@ -229,6 +229,17 @@
   </section>
 </article>
 
+<!------------ SCORE COUNT -------------->
+<!-- <article
+  fxFlexFill
+  *ngIf="isGameFinished$ | async"
+  class="visual-overlay"
+  fxLayout="column"
+  fxLayoutAlign="start center"
+>
+  <header fxFlexFill fxFlex="16"></header>
+  <footer fxFlexAlign="end" fxFlexFill fxFlex="16"></footer>
+</article> -->
 <!------------ VICTORY 1/2 -------------->
 <article
   fxFlexFill
@@ -270,7 +281,8 @@
         >
       </mat-icon>
       <section
-        class="orange-border"
+        class="orange-border pop-out"
+        style="--animation-duration: 1s; --animation-delay: 6s"
         fxFlexFill
         fxFlex="45"
         fxLayout="row"
