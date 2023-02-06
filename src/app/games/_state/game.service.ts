@@ -32,6 +32,7 @@ import { PlayerQuery } from 'src/app/board/players/_state/player.query';
 import {
   createPlayer,
   Player,
+  RegionScores,
 } from 'src/app/board/players/_state/player.model';
 import {
   ABILITIES,
@@ -421,39 +422,34 @@ export class GameService extends CollectionService<GameState> {
     return batch.update(gameRef, { inGameAbilities: inGameAbilitiesUpdate });
   }
 
-  public countScores() {
+  public async countScores() {
     const players = this.playerQuery.getAll();
-    const regionScores = {};
     const playerScores = {};
-    const regions = Regions;
     const game = this.query.getActive();
     let batch = this.db.firestore.batch();
 
-    regions.forEach((region) => {
-      regionScores[region.name] = this.countScore(region);
-      players.forEach((player, index: number) => {
-        // Initializes score.
-        if (!playerScores[player.id]) playerScores[player.id] = player.score;
-        // Adds region score if it's controled by player.
-        playerScores[player.id] += regionScores[region.name][index]
-          ? region.score
-          : 0;
-      });
-    });
-
     players.forEach((player) => {
-      if (playerScores[player.id]) {
-        const playerRef = this.db
-          .collection(`games/${game.id}/players`)
-          .doc(player.id).ref;
+      const playerRef = this.db
+        .collection(`games/${game.id}/players`)
+        .doc(player.id).ref;
+      let playerRegionScores: RegionScores = {};
+      playerScores[player.id] = player.score;
 
-        batch.update(playerRef, {
-          score: playerScores[player.id],
-        });
-
-        if (playerScores[player.id] >= WINNING_POINTS) {
-          batch = this.updatePlayerVictory(player.id, batch);
+      Regions.forEach((region) => {
+        if (this.isPlayerControllingRegion(player, region)) {
+          playerRegionScores[region.name] = region.score;
+          playerScores[player.id] = playerScores[player.id] + region.score;
         }
+      });
+      console.log(playerRegionScores);
+      batch.update(playerRef, {
+        score: playerScores[player.id],
+        regionScores: playerRegionScores,
+      });
+
+      // TODO: what if both players win
+      if (playerScores[player.id] >= WINNING_POINTS) {
+        batch = this.updatePlayerVictory(player.id, batch);
       }
     });
 
@@ -467,40 +463,25 @@ export class GameService extends CollectionService<GameState> {
       batch = this.updatePlayerVictory(winnerId, batch);
     }
 
-    batch.commit().catch((error) => {
+    try {
+      return await batch.commit();
+    } catch (error) {
       console.log('Updating score failed: ', error);
-    });
+    }
   }
+  public isPlayerControllingRegion(player: Player, region: Region): boolean {
+    const playerSpeciesTileIds =
+      this.playerQuery.getPlayerSpeciesTileIds(player);
+    let isPlayerControllingRegion: boolean = true;
 
-  public countScore(region: Region) {
-    const players: Player[] = this.playerQuery.getAll();
-    const playerTiles = {};
-    // Iterates on player species to add their tileIds to playerTiles.
-    players.forEach((player) =>
-      player.speciesIds.forEach((speciesId) => {
-        const species = this.speciesQuery.getEntity(speciesId);
-        playerTiles.hasOwnProperty(player.id)
-          ? (playerTiles[player.id] = [
-              ...playerTiles[player.id],
-              ...species.tileIds,
-            ])
-          : (playerTiles[player.id] = species.tileIds);
-      })
-    );
-
-    // Creates a boolean to know if the player control the region.
-    const isPlayerControling = new Array(players.length).fill(true);
-
-    // Iterates on region tiles to check if players control it.
     region.tileIds.forEach((tileId) => {
-      players.forEach((player, index: number) => {
-        if (isPlayerControling[index])
-          playerTiles[player.id].includes(tileId)
-            ? (isPlayerControling[index] = true)
-            : (isPlayerControling[index] = false);
-      });
+      if (isPlayerControllingRegion)
+        playerSpeciesTileIds.includes(tileId)
+          ? (isPlayerControllingRegion = true)
+          : (isPlayerControllingRegion = false);
     });
-    return isPlayerControling;
+
+    return isPlayerControllingRegion;
   }
 
   public updatePlayerVictory(

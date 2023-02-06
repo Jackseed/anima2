@@ -126,6 +126,15 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     );
   }
 
+  public getPlayerSpeciesTileIds(player: Player): number[] {
+    const playerSpeciesTileIds: number[] = [];
+    player.speciesIds.forEach((speciesId) => {
+      const species = this.speciesQuery.getEntity(speciesId);
+      playerSpeciesTileIds.push(...species.tileIds);
+    });
+    return playerSpeciesTileIds;
+  }
+
   public get areAbilityChoicesSet$(): Observable<boolean> {
     return this.abilityChoices$.pipe(map((abilities) => abilities.length > 0));
   }
