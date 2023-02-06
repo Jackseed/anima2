@@ -125,7 +125,7 @@
 <article
   fxFlexFill
   *ngIf="(isGameStarting$ | async) && (startStage$ | async) === 'tileChoice'"
-  class="slide-in-out visual-overlay"
+  class="fade-in-out visual-overlay"
   style="--animation-duration: 0.25s; --animation-delay: 0.5s"
 >
   <section fxFlexFill class="full-opacity"></section>
@@ -201,7 +201,7 @@
 <article
   fxFlexFill
   *ngIf="!(isGameStarting$ | async) && isActivePlayerPlaying$ | async"
-  class="slide-in-out visual-overlay"
+  class="fade-in-out visual-overlay"
   style="--animation-duration: 0s; --animation-delay: 0s"
 >
   <section fxFlexFill class="opacity"></section>
@@ -241,12 +241,7 @@
   <footer fxFlexAlign="end" fxFlexFill fxFlex="16"></footer>
 </article> -->
 <!------------ VICTORY 1/2 -------------->
-<article
-  fxFlexFill
-  *ngIf="isGameFinished$ | async"
-  class="visual-overlay slide-in-out"
-  style="--animation-duration: 0s; --animation-delay: 10000s"
->
+<article fxFlexFill *ngIf="isGameFinished$ | async" class="visual-overlay">
   <section fxFlexFill class="medium-opacity"></section>
   <main
     fxFlexFill
@@ -276,13 +271,19 @@
       >
         <span
           class="absolute green pop-in"
-          style="--animation-duration: 1s; --animation-delay: 1s"
+          style="--animation-duration: {{
+            animationVariables.player1Score.duration
+          }}s; --animation-delay: {{ animationVariables.player1Score.delay }}s"
           >+8</span
         >
       </mat-icon>
       <section
         class="orange-border pop-out"
-        style="--animation-duration: 1s; --animation-delay: 6s"
+        style=" --animation-duration: {{
+          animationVariables.firstScreenTransition.duration
+        }}s; --animation-delay: {{
+          animationVariables.firstScreenTransition.delay
+        }}s"
         fxFlexFill
         fxFlex="45"
         fxLayout="row"
@@ -293,8 +294,11 @@
           style="
             --counter-from: 48;
             --counter-to: 56;
-            --animation-delay: 1.3s;
-            --animation-duration: 2s;
+            --animation-duration: {{
+            animationVariables.player1TotalScore.duration
+          }}s; --animation-delay: {{
+            animationVariables.player1TotalScore.delay
+          }}s
           "
         ></h2>
         <h3 class="no-margin" id="score-line">-</h3>
@@ -303,8 +307,11 @@
           style="
             --counter-from: 32;
             --counter-to: 53;
-            --animation-delay: 3.8s;
-            --animation-duration: 2s;
+            --animation-duration: {{
+            animationVariables.player2TotalScore.duration
+          }}s; --animation-delay: {{
+            animationVariables.player2TotalScore.delay
+          }}s
           "
         ></h2>
       </section>
@@ -316,7 +323,9 @@
       >
         <span
           class="pop-in absolute red"
-          style="--animation-duration: 1s; --animation-delay: 3.5s"
+          style="--animation-duration: {{
+            animationVariables.player2Score.duration
+          }}s; --animation-delay: {{ animationVariables.player2Score.delay }}s"
           >+21</span
         >
       </mat-icon>
@@ -334,13 +343,8 @@
 </article>
 
 <!------------ VICTORY 2/2-------------->
-<!-- <article
-  fxFlexFill
-  *ngIf="isGameFinished$ | async"
-  class="visual-overlay slide-in"
-  style="--animation-duration: 0s; --animation-delay: 0s"
->
-  <section *ngIf="scoreToggle" fxFlexFill class="medium-opacity"></section>
+<!-- <article fxFlexFill *ngIf="isGameFinished$ | async" class="visual-overlay">
+  <section *ngIf="scoreToggle" fxFlexFill class="full-opacity"></section>
   <main
     *ngIf="scoreToggle; else map"
     fxFlexFill
@@ -349,7 +353,17 @@
     class="absolute"
   >
     <article fxFlexFill fxFlex="10"></article>
-    <article fxFlexFill fxFlex="10" class="center victory cling">
+    <article
+      fxFlexFill
+      fxFlex="10"
+      class="center victory"
+      [ngClass]="{
+        'cling-slide-down': !animationVariables.isAnimationDone
+      }"
+      style="
+      --animation-duration: {{ animationVariables.victoryTitle.duration }}s;
+      --animation-delay: {{ animationVariables.victoryTitle.delay }}s"
+    >
       <h1>VICTOIRE</h1>
     </article>
     <article
@@ -357,20 +371,63 @@
       fxFlex="10"
       fxLayout="row"
       fxLayoutAlign="center center"
+      [ngClass]="{
+        'name-slide-down': !animationVariables.isAnimationDone
+      }"
+      style="
+      --animation-duration: {{ animationVariables.winnerTitle.duration }}s;
+      --animation-delay: {{ animationVariables.winnerTitle.delay }}s"
     >
-      <mat-icon svgIcon="star" class="star rotate"></mat-icon>
+      <mat-icon
+        svgIcon="star"
+        class="star rotate"
+        style="--animation-delay: {{
+          animationVariables.isAnimationDone
+            ? 0
+            : animationVariables.winnerStars.delay
+        }}s"
+      ></mat-icon>
       <h2 class="player-name green margin-aside">Nurgle</h2>
-      <mat-icon svgIcon="star" class="star rotate"></mat-icon>
+      <mat-icon
+        svgIcon="star"
+        class="star rotate"
+        style="--animation-delay: {{
+          animationVariables.isAnimationDone
+            ? 0
+            : animationVariables.winnerStars.delay
+        }}s"
+      ></mat-icon>
     </article>
-    <article fxFlexFill fxFlex="20" fxLayoutAlign="center end">
+    <article
+      fxFlexFill
+      fxFlex="20"
+      fxLayoutAlign="center end"
+      [ngClass]="{
+        'fade-in': !animationVariables.isAnimationDone
+      }"
+      style="
+      --animation-duration: {{ animationVariables.victoryDetails.duration }}s;
+      --animation-delay: {{ animationVariables.victoryDetails.delay }}s"
+    >
       <mat-icon
         svgIcon="anima-blur"
         class="anima relative"
         fxLayoutAlign="center center"
-        ><span class="absolute victory-score" style="--score-value: 56"></span
-      ></mat-icon>
+        ><span class="absolute victory-score">56</span></mat-icon
+      >
     </article>
-    <article fxFlexFill fxFlex="20" fxLayout="row" class="playerSpecies">
+    <article
+      class="playerSpecies"
+      [ngClass]="{
+        'fade-in': !animationVariables.isAnimationDone
+      }"
+      fxFlexFill
+      fxFlex="20"
+      fxLayout="row"
+      style="
+      --animation-duration: {{ animationVariables.victoryDetails.duration }}s;
+      --animation-delay: {{ animationVariables.victoryDetails.delay }}s"
+    >
       <div
         *ngFor="let species of winningPlayerSpecies$ | async"
         class="species relative small-margin-aside"
@@ -387,7 +444,18 @@
         ></mat-icon>
       </div>
     </article>
-    <article fxFlexFill fxFlex="10" fxLayoutAlign="center end" id="no-margin">
+    <article
+      fxFlexFill
+      fxFlex="10"
+      fxLayoutAlign="center end"
+      [ngClass]="{
+        'fade-in': !animationVariables.isAnimationDone
+      }"
+      id="no-margin"
+      style="
+      --animation-duration: {{ animationVariables.victoryDetails.duration }}s;
+      --animation-delay: {{ animationVariables.victoryDetails.delay }}s"
+    >
       <h2 class="player-name no-margin red">Jelly0</h2>
       <h3 class="no-margin" id="line">-</h3>
       <h2 class="player-name no-margin red">32</h2>
@@ -398,6 +466,12 @@
       fxFlex="16"
       fxLayout="row"
       fxLayoutAlign="space-around center"
+      [ngClass]="{
+        'fade-in': !animationVariables.isAnimationDone
+      }"
+      style="
+      --animation-duration: {{ animationVariables.victoryDetails.duration }}s;
+      --animation-delay: {{ animationVariables.victoryDetails.delay }}s"
     >
       <button class="nav-button" (click)="toggleScoreToggle()">
         <h2>Voir la carte</h2>
@@ -437,5 +511,4 @@
       <aside fxFlexFill fxFlex="1" class="orange"></aside>
     </main>
   </ng-template>
-</article>
- -->
+</article> -->

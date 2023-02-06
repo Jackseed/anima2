@@ -180,30 +180,30 @@
 }
 
 // @keyframes duration | easing-function | delay | direction | fill-mode | name
-.slide-in-out {
-  animation: var(--animation-duration) linear forwards slideIn,
+.fade-in-out {
+  animation: var(--animation-duration) linear forwards fade-in,
     var(--animation-duration) ease-out var(--animation-delay) reverse forwards
-      slideIn;
+      fade-in;
 }
 
-.slide-in {
-  opacity: 0;
-  animation: var(--animation-duration) ease-in var(--animation-delay) forwards
-    slideIn;
+.fade-in {
+  animation: var(--animation-duration) ease-in var(--animation-delay) both
+    fade-in;
+}
+
+.name-slide-down {
+  animation: var(--animation-duration) var(--animation-delay) both
+    name-slide-down;
+}
+
+.cling-slide-down {
+  animation: var(--animation-duration) ease-in var(--animation-delay) both
+      victory-slide-down,
+    2s linear infinite alternate neon;
 }
 
 .rotate {
-  animation: 4s linear infinite spin;
-}
-
-.cling {
-  animation: 2s linear infinite alternate neon;
-}
-
-.increase {
-  animation: var(--animation-duration) ease-in-out var(--animation-delay) both
-    counter;
-  counter-reset: score var(--score);
+  animation: 2s linear infinite var(--animation-delay) spin;
 }
 
 @property --score {
@@ -212,8 +212,14 @@
   inherits: false;
 }
 
+.increase {
+  animation: var(--animation-duration) ease-in-out var(--animation-delay) both
+    counter;
+  counter-reset: score var(--score);
+}
+
 .pop-in {
-  animation: var(--animation-duration) linear var(--animation-delay) both pop;
+  animation: var(--animation-duration) linear var(--animation-delay) both pop-in;
 }
 
 .pop-out {
@@ -235,13 +241,38 @@
 }
 
 // ANIMATIONS
-@keyframes slideIn {
+@keyframes fade-in {
   from {
     pointer-events: none;
     opacity: 0;
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes victory-slide-down {
+  0% {
+    transform: translateY(-200%);
+  }
+  40% {
+    transform: translateY(10%);
+  }
+  60% {
+    transform: translateY(3%);
+  }
+  70% {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes name-slide-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-40%);
+  }
+  70% {
+    transform: translateY(0%);
   }
 }
 
@@ -269,7 +300,7 @@
   }
 }
 
-@keyframes pop {
+@keyframes pop-in {
   0% {
     opacity: 0;
     transform: scale(0.2, 0.2);
