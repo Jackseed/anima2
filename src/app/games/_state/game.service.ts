@@ -441,7 +441,6 @@ export class GameService extends CollectionService<GameState> {
           playerScores[player.id] = playerScores[player.id] + region.score;
         }
       });
-      console.log(playerRegionScores);
       batch.update(playerRef, {
         score: playerScores[player.id],
         regionScores: playerRegionScores,

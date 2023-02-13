@@ -271,7 +271,11 @@
     >
       <article
         *ngFor="let score of fakePlayerArray; let i = index"
-        class="region-score-slide-up"
+        class="absolute"
+        [ngClass]="{
+          'bigger-up': i === 0,
+          'bigger-down': i === 1
+        }"
         style="
           --animation-duration: {{
           regionScoresAnimationVariables[region.name + i].duration
@@ -279,17 +283,12 @@
           --animation-delay: {{
           regionScoresAnimationVariables[region.name + i].delay
         }}s;
-          --fade-out-delay: {{
-          regionScoresAnimationVariables[region.name + i].delay +
-            regionScoresAnimationVariables[region.name + i].duration
-        }}s;
         "
       >
         <h2 id="region-score">+{{ playersB[i].regionScores[region.name] }}</h2>
       </article>
     </section>
   </aside>
-  <!-- {{ playersB[i].regionScores[region.name] }} -->
   <footer
     fxFlex="16"
     fxFlexFill
