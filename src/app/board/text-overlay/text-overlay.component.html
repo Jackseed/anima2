@@ -254,14 +254,42 @@
         <span
           class="absolute green pop-in"
           style="--animation-duration: {{
-            animationVariables.player1Score.duration
-          }}s; --animation-delay: {{ animationVariables.player1Score.delay }}s"
+            victoryAnimationVariables.player1Score.duration
+          }}s; --animation-delay: {{
+            victoryAnimationVariables.player1Score.delay
+          }}s"
           >+8</span
         >
       </mat-icon>
     </article>
   </header>
-  <aside fxFlex="63" fxFlexFill></aside>
+  <aside class="relative" fxFlex="63" fxFlexFill *ngIf="players as playersB">
+    <section
+      class="region absolute"
+      id="{{ region.name }}"
+      *ngFor="let region of regions"
+    >
+      <article
+        *ngFor="let score of fakePlayerArray; let i = index"
+        class="region-score-slide-up"
+        style="
+          --animation-duration: {{
+          regionScoresAnimationVariables[region.name + i].duration
+        }}s;
+          --animation-delay: {{
+          regionScoresAnimationVariables[region.name + i].delay
+        }}s;
+          --fade-out-delay: {{
+          regionScoresAnimationVariables[region.name + i].delay +
+            regionScoresAnimationVariables[region.name + i].duration
+        }}s;
+        "
+      >
+        <h2 id="region-score">+{{ playersB[i].regionScores[region.name] }}</h2>
+      </article>
+    </section>
+  </aside>
+  <!-- {{ playersB[i].regionScores[region.name] }} -->
   <footer
     fxFlex="16"
     fxFlexFill
@@ -278,8 +306,10 @@
         <span
           class="pop-in absolute red"
           style="--animation-duration: {{
-            animationVariables.player2Score.duration
-          }}s; --animation-delay: {{ animationVariables.player2Score.delay }}s"
+            victoryAnimationVariables.player2Score.duration
+          }}s; --animation-delay: {{
+            victoryAnimationVariables.player2Score.delay
+          }}s"
           >+21</span
         >
       </mat-icon>
@@ -320,17 +350,17 @@
         <span
           class="absolute green pop-in"
           style="--animation-duration: {{
-            animationVariables.player1Score.duration
-          }}s; --animation-delay: {{ animationVariables.player1Score.delay }}s"
+            victoryAnimationVariables.player1Score.duration
+          }}s; --animation-delay: {{ victoryAnimationVariables.player1Score.delay }}s"
           >+8</span
         >
       </mat-icon>
       <section
         class="orange-border pop-out"
         style=" --animation-duration: {{
-          animationVariables.firstScreenTransition.duration
+          victoryAnimationVariables.firstScreenTransition.duration
         }}s; --animation-delay: {{
-          animationVariables.firstScreenTransition.delay
+          victoryAnimationVariables.firstScreenTransition.delay
         }}s"
         fxFlexFill
         fxFlex="45"
@@ -343,9 +373,9 @@
             --counter-from: 48;
             --counter-to: 56;
             --animation-duration: {{
-            animationVariables.player1TotalScore.duration
+            victoryAnimationVariables.player1TotalScore.duration
           }}s; --animation-delay: {{
-            animationVariables.player1TotalScore.delay
+            victoryAnimationVariables.player1TotalScore.delay
           }}s
           "
         ></h2>
@@ -356,9 +386,9 @@
             --counter-from: 32;
             --counter-to: 53;
             --animation-duration: {{
-            animationVariables.player2TotalScore.duration
+            victoryAnimationVariables.player2TotalScore.duration
           }}s; --animation-delay: {{
-            animationVariables.player2TotalScore.delay
+            victoryAnimationVariables.player2TotalScore.delay
           }}s
           "
         ></h2>
@@ -372,8 +402,8 @@
         <span
           class="pop-in absolute red"
           style="--animation-duration: {{
-            animationVariables.player2Score.duration
-          }}s; --animation-delay: {{ animationVariables.player2Score.delay }}s"
+            victoryAnimationVariables.player2Score.duration
+          }}s; --animation-delay: {{ victoryAnimationVariables.player2Score.delay }}s"
           >+21</span
         >
       </mat-icon>
@@ -406,11 +436,11 @@
       fxFlex="10"
       class="center victory"
       [ngClass]="{
-        'cling-slide-down': !animationVariables.isAnimationDone
+        'cling-slide-down': !victoryAnimationVariables.isAnimationDone
       }"
       style="
-      --animation-duration: {{ animationVariables.victoryTitle.duration }}s;
-      --animation-delay: {{ animationVariables.victoryTitle.delay }}s"
+      --animation-duration: {{ victoryAnimationVariables.victoryTitle.duration }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryTitle.delay }}s"
     >
       <h1>VICTOIRE</h1>
     </article>
@@ -420,19 +450,19 @@
       fxLayout="row"
       fxLayoutAlign="center center"
       [ngClass]="{
-        'name-slide-down': !animationVariables.isAnimationDone
+        'name-slide-down': !victoryAnimationVariables.isAnimationDone
       }"
       style="
-      --animation-duration: {{ animationVariables.winnerTitle.duration }}s;
-      --animation-delay: {{ animationVariables.winnerTitle.delay }}s"
+      --animation-duration: {{ victoryAnimationVariables.winnerTitle.duration }}s;
+      --animation-delay: {{ victoryAnimationVariables.winnerTitle.delay }}s"
     >
       <mat-icon
         svgIcon="star"
         class="star rotate"
         style="--animation-delay: {{
-          animationVariables.isAnimationDone
+          victoryAnimationVariables.isAnimationDone
             ? 0
-            : animationVariables.winnerStars.delay
+            : victoryAnimationVariables.winnerStars.delay
         }}s"
       ></mat-icon>
       <h2 class="player-name green margin-aside">Nurgle</h2>
@@ -440,9 +470,9 @@
         svgIcon="star"
         class="star rotate"
         style="--animation-delay: {{
-          animationVariables.isAnimationDone
+          victoryAnimationVariables.isAnimationDone
             ? 0
-            : animationVariables.winnerStars.delay
+            : victoryAnimationVariables.winnerStars.delay
         }}s"
       ></mat-icon>
     </article>
@@ -451,11 +481,11 @@
       fxFlex="20"
       fxLayoutAlign="center end"
       [ngClass]="{
-        'fade-in': !animationVariables.isAnimationDone
+        'fade-in': !victoryAnimationVariables.isAnimationDone
       }"
       style="
-      --animation-duration: {{ animationVariables.victoryDetails.duration }}s;
-      --animation-delay: {{ animationVariables.victoryDetails.delay }}s"
+      --animation-duration: {{ victoryAnimationVariables.victoryDetails.duration }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
     >
       <mat-icon
         svgIcon="anima-blur"
@@ -467,14 +497,14 @@
     <article
       class="playerSpecies"
       [ngClass]="{
-        'fade-in': !animationVariables.isAnimationDone
+        'fade-in': !victoryAnimationVariables.isAnimationDone
       }"
       fxFlexFill
       fxFlex="20"
       fxLayout="row"
       style="
-      --animation-duration: {{ animationVariables.victoryDetails.duration }}s;
-      --animation-delay: {{ animationVariables.victoryDetails.delay }}s"
+      --animation-duration: {{ victoryAnimationVariables.victoryDetails.duration }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
     >
       <div
         *ngFor="let species of winningPlayerSpecies$ | async"
@@ -497,12 +527,12 @@
       fxFlex="10"
       fxLayoutAlign="center end"
       [ngClass]="{
-        'fade-in': !animationVariables.isAnimationDone
+        'fade-in': !victoryAnimationVariables.isAnimationDone
       }"
       id="no-margin"
       style="
-      --animation-duration: {{ animationVariables.victoryDetails.duration }}s;
-      --animation-delay: {{ animationVariables.victoryDetails.delay }}s"
+      --animation-duration: {{ victoryAnimationVariables.victoryDetails.duration }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
     >
       <h2 class="player-name no-margin red">Jelly0</h2>
       <h3 class="no-margin" id="line">-</h3>
@@ -515,11 +545,11 @@
       fxLayout="row"
       fxLayoutAlign="space-around center"
       [ngClass]="{
-        'fade-in': !animationVariables.isAnimationDone
+        'fade-in': !victoryAnimationVariables.isAnimationDone
       }"
       style="
-      --animation-duration: {{ animationVariables.victoryDetails.duration }}s;
-      --animation-delay: {{ animationVariables.victoryDetails.delay }}s"
+      --animation-duration: {{ victoryAnimationVariables.victoryDetails.duration }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
     >
       <button class="nav-button" (click)="toggleScoreToggle()">
         <h2>Voir la carte</h2>

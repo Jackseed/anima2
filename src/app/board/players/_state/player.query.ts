@@ -153,12 +153,9 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getActive().abilityChoice.activeTileId;
   }
 
-  // Gets player's colors
   public getPlayerColors(playerId: string): Colors {
     if (playerId === 'neutral') return NEUTRAL_COLORS;
-
-    const player = this.getEntity(playerId);
-    return player.colors;
+    return this.getEntity(playerId).colors;
   }
 
   // TODO: Should be in player service but here to avoid circular dependency...

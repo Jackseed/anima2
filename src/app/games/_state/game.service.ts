@@ -478,7 +478,7 @@ export class GameService extends CollectionService<GameState> {
       if (isPlayerControllingRegion)
         playerSpeciesTileIds.includes(tileId)
           ? (isPlayerControllingRegion = true)
-          : (isPlayerControllingRegion = false);
+          : (isPlayerControllingRegion = true);
     });
 
     return isPlayerControllingRegion;

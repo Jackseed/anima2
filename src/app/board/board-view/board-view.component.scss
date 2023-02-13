@@ -134,27 +134,27 @@ footer {
   cursor: auto !important;
 }
 .islands {
-  --color: #dddeee;
+  --color: var(--islands-color);
   background: var(--color);
 }
 .rockies {
-  --color: #fee0b8;
+  --color: var(--rockies-color);
   background: var(--color);
 }
 .mountains {
-  --color: #fcdcd8;
+  --color: var(--mountains-color);
   background: var(--color);
 }
 .forests {
-  --color: #b5e4f3;
+  --color: var(--forests-color);
   background: var(--color);
 }
 .swamps {
-  --color: #dae8b6;
+  --color: var(--swamps-color);
   background: var(--color);
 }
 .plains {
-  --color: #fdeda9;
+  --color: var(--plains-color);
   background: var(--color);
 }
 
