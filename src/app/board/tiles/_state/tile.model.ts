@@ -14,11 +14,11 @@ export interface Tile {
 }
 export const regionIds = [
   'rockies',
-  'mountains',
-  'islands',
+  'forests',
   'plains',
   'swamps',
-  'forests',
+  'mountains',
+  'islands',
   'blank',
 ] as const;
 export type RegionType = typeof regionIds[number];

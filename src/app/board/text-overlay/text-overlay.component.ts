@@ -14,13 +14,17 @@ import {
 } from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
-import { Player, PlayerQuery } from '../players/_state';
+import { PlayerQuery } from '../players/_state';
 import { GameAction, Species, SpeciesQuery } from '../species/_state';
 import { Regions, TileQuery, TileService } from '../tiles/_state';
 
 export type animation = {
   duration?: number;
   delay?: number;
+  fadeInDelay?: number;
+  fadeOutDelay?: number;
+  from?: number;
+  to?: number;
 };
 
 @Component({
@@ -43,14 +47,20 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public scoreToggle: boolean = true;
   public regionScoresAnimationVariables: {
     isAnimationDone?: boolean;
+    subTotalDuration?: number;
+    regionDuration?: number;
     rockies0?: animation;
     rockies1?: animation;
-    swamps0?: animation;
-    swamps1?: animation;
-    plains0?: animation;
-    plains1?: animation;
+    subTotalRockies0?: animation;
+    subTotalRockies1?: animation;
     forests0?: animation;
     forests1?: animation;
+    subTotalForests0?: animation;
+    subTotalForests1?: animation;
+    plains0?: animation;
+    plains1?: animation;
+    swamps0?: animation;
+    swamps1?: animation;
     mountains0?: animation;
     mountains1?: animation;
     islands0?: animation;
@@ -110,10 +120,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       }
     );
     this.countScores();
-  }
-
-  public get players(): Player[] {
-    return this.playerQuery.getAll();
   }
 
   private async countScores() {
@@ -256,110 +262,38 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
     this.regionScoresAnimationVariables = {
       isAnimationDone: false,
-      rockies0: {
-        duration: 1,
-        delay: 0,
-      },
+      subTotalDuration: 1,
+      regionDuration: 1,
     };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      rockies1: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.rockies0.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      forests0: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.rockies1.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      forests1: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.forests0.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      plains0: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.forests1.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      plains1: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.plains0.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      swamps0: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.plains1.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      swamps1: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.swamps0.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      mountains0: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.swamps1.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      mountains1: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.mountains0.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      islands0: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.mountains1.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
-    this.regionScoresAnimationVariables = {
-      ...this.regionScoresAnimationVariables,
-      islands1: {
-        duration: this.regionScoresAnimationVariables.rockies0.duration,
-        delay:
-          this.regionScoresAnimationVariables.islands0.delay +
-          this.regionScoresAnimationVariables.rockies0.duration,
-      },
-    };
+
+    let delayCount = 0;
+    for (let i = 0; i < 2; i++) {
+      const player = this.playerQuery.getAll()[i];
+      let tempo = {
+        from: 0,
+        to: 0,
+      };
+      for (let region of Regions) {
+        if (region.name !== 'blank') {
+          tempo.from = tempo.to;
+          tempo.to = tempo.to + player.regionScores[region.name];
+          this.regionScoresAnimationVariables = {
+            ...this.regionScoresAnimationVariables,
+            [`${region.name + i}`]: {
+              delay: delayCount,
+              from: tempo.from,
+              to: tempo.to,
+            },
+          };
+          delayCount +=
+            this.regionScoresAnimationVariables.regionDuration + 0.5;
+        }
+      }
+    }
+    console.log(
+      this.regionScoresAnimationVariables,
+      this.victoryAnimationVariables
+    );
   }
 
   ngOnDestroy() {

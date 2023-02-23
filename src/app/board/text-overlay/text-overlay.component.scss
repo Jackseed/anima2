@@ -274,12 +274,20 @@
   inherits: false;
 }
 
+.increase-fade-in {
+  animation: 0.001s linear var(--animation-delay) both fade-in,
+    var(--animation-duration) ease-in-out var(--animation-delay) both counter,
+    0.001s reverse var(--fade-out-delay) forwards fade-in;
+  counter-reset: score var(--score);
+}
+
 .increase {
   animation: var(--animation-duration) ease-in-out var(--animation-delay) both
     counter;
   counter-reset: score var(--score);
 }
-.increase::after {
+.increase::after,
+.increase-fade-in::after {
   content: counter(score);
 }
 

@@ -252,19 +252,34 @@
         fxLayoutAlign="center center"
       >
         <span
-          class="absolute green pop-in"
-          style="--animation-duration: {{
-            victoryAnimationVariables.player1Score.duration
-          }}s; --animation-delay: {{
-            victoryAnimationVariables.player1Score.delay
-          }}s"
-          >+8</span
-        >
+          *ngFor="let region of regions"
+          class="absolute green increase-fade-in"
+          style="
+            --counter-from: {{
+            regionScoresAnimationVariables[region.name + 0].from
+          }};
+            --counter-to: {{
+            regionScoresAnimationVariables[region.name + 0].to
+          }};
+            --animation-duration: {{
+            regionScoresAnimationVariables.subTotalDuration
+          }}s;
+            --animation-delay: {{
+            regionScoresAnimationVariables[region.name + 0].delay
+          }}s;
+            --fade-out-delay: {{
+            regionScoresAnimationVariables.subTotalDuration +
+              regionScoresAnimationVariables[region.name + 0].delay +
+              0.002
+          }}s;
+          "
+        ></span>
       </mat-icon>
     </article>
   </header>
-  <aside class="relative" fxFlex="63" fxFlexFill *ngIf="players as playersB">
-    <section
+
+  <aside class="relative" fxFlex="63" fxFlexFill>
+    <!--  <section
       class="region absolute"
       id="{{ region.name }}"
       *ngFor="let region of regions"
@@ -278,16 +293,16 @@
         }"
         style="
           --animation-duration: {{
-          regionScoresAnimationVariables[region.name + i].duration
+          regionScoresAnimationVariables.regionDuration
         }}s;
           --animation-delay: {{
           regionScoresAnimationVariables[region.name + i].delay
         }}s;
         "
       >
-        <h2 id="region-score">+{{ playersB[i].regionScores[region.name] }}</h2>
+        <h2 id="region-score">+{{ players[i].regionScores[region.name] }}</h2>
       </article>
-    </section>
+    </section> -->
   </aside>
   <footer
     fxFlex="16"
