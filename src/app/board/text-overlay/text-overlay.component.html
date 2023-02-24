@@ -256,20 +256,28 @@
           class="absolute green increase-fade-in"
           style="
             --counter-from: {{
-            regionScoresAnimationVariables[region.name + 0].from
+            regionScoresAnimationVariables.playerVariables[
+              'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
+            ][region.name].from
           }};
             --counter-to: {{
-            regionScoresAnimationVariables[region.name + 0].to
+            regionScoresAnimationVariables.playerVariables[
+              'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
+            ][region.name].to
           }};
             --animation-duration: {{
             regionScoresAnimationVariables.subTotalDuration
           }}s;
             --animation-delay: {{
-            regionScoresAnimationVariables[region.name + 0].delay
+            regionScoresAnimationVariables.playerVariables[
+              'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
+            ][region.name].delay
           }}s;
             --fade-out-delay: {{
             regionScoresAnimationVariables.subTotalDuration +
-              regionScoresAnimationVariables[region.name + 0].delay +
+              regionScoresAnimationVariables.playerVariables[
+                'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
+              ][region.name].delay +
               0.002
           }}s;
           "
@@ -279,7 +287,9 @@
   </header>
 
   <aside class="relative" fxFlex="63" fxFlexFill>
-    <!--  <section
+    <!--
+
+      <section
       class="region absolute"
       id="{{ region.name }}"
       *ngFor="let region of regions"

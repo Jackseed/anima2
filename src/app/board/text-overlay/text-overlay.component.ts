@@ -27,6 +27,19 @@ export type animation = {
   to?: number;
 };
 
+export type regionsAnimation = {
+  rockies?: animation;
+  forests?: animation;
+  plains?: animation;
+  swamps?: animation;
+  mountains?: animation;
+  islands?: animation;
+};
+
+interface PlayerRegionScoresAnimationVariables {
+  [playerId: string]: regionsAnimation;
+}
+
 @Component({
   selector: 'app-text-overlay',
   templateUrl: './text-overlay.component.html',
@@ -49,23 +62,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     isAnimationDone?: boolean;
     subTotalDuration?: number;
     regionDuration?: number;
-    rockies0?: animation;
-    rockies1?: animation;
-    subTotalRockies0?: animation;
-    subTotalRockies1?: animation;
-    forests0?: animation;
-    forests1?: animation;
-    subTotalForests0?: animation;
-    subTotalForests1?: animation;
-    plains0?: animation;
-    plains1?: animation;
-    swamps0?: animation;
-    swamps1?: animation;
-    mountains0?: animation;
-    mountains1?: animation;
-    islands0?: animation;
-    islands1?: animation;
-  } = {};
+    playerVariables?: PlayerRegionScoresAnimationVariables[];
+  };
   public victoryAnimationVariables: {
     isAnimationDone?: boolean;
     player1Score?: animation;
@@ -264,11 +262,12 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       isAnimationDone: false,
       subTotalDuration: 1,
       regionDuration: 1,
+      playerVariables: [],
     };
 
     let delayCount = 0;
-    for (let i = 0; i < 2; i++) {
-      const player = this.playerQuery.getAll()[i];
+    const players = this.playerQuery.getAll();
+    for (const player of players) {
       let tempo = {
         from: 0,
         to: 0,
@@ -277,13 +276,14 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
         if (region.name !== 'blank') {
           tempo.from = tempo.to;
           tempo.to = tempo.to + player.regionScores[region.name];
-          this.regionScoresAnimationVariables = {
-            ...this.regionScoresAnimationVariables,
-            [`${region.name + i}`]: {
-              delay: delayCount,
-              from: tempo.from,
-              to: tempo.to,
-            },
+          if (!this.regionScoresAnimationVariables.playerVariables[player.id])
+            this.regionScoresAnimationVariables.playerVariables[player.id] = {};
+          this.regionScoresAnimationVariables.playerVariables[player.id][
+            `${region.name}`
+          ] = {
+            delay: delayCount,
+            from: tempo.from,
+            to: tempo.to,
           };
           delayCount +=
             this.regionScoresAnimationVariables.regionDuration + 0.5;
