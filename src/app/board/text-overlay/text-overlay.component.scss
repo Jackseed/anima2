@@ -294,7 +294,7 @@
 }
 
 .increase-fade-in {
-  animation: 0.001s linear var(--animation-delay) both fade-in,
+  animation: 0.001s linear var(--animation-delay) var(--fade-in-fill-mode) fade-in,
     var(--animation-duration) ease-in-out var(--animation-delay) both counter,
     0.001s reverse var(--fade-out-delay) forwards fade-in;
   counter-reset: score var(--score);

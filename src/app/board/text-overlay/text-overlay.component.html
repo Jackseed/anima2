@@ -256,10 +256,11 @@
         fxLayoutAlign="center center"
       >
         <span
-          *ngFor="let region of regions"
+          *ngFor="let region of regions; first as isFirst; last as isLast"
           class="absolute region-score increase-fade-in"
           style="
             --color: {{ player.colors.primary }};
+            --fade-in-fill-mode: {{ isFirst ? 'forwards' : 'both' }};
             --counter-from: {{
             regionScoresAnimationVariables.playerVariables[player.id][
               region.name
@@ -279,11 +280,13 @@
             ].delay
           }}s;
             --fade-out-delay: {{
-            regionScoresAnimationVariables.subTotalDuration +
-              regionScoresAnimationVariables.playerVariables[player.id][
-                region.name
-              ].delay +
-              0.5
+            isLast
+              ? 1000000000
+              : regionScoresAnimationVariables.subTotalDuration +
+                regionScoresAnimationVariables.playerVariables[player.id][
+                  region.name
+                ].delay +
+                0.5
           }}s;
           "
         ></span>
@@ -307,10 +310,10 @@
             class="absolute"
             [ngClass]="{ 'bigger-up': i === 0, 'bigger-down': i === 1 }"
             style="
-          --animation-duration: {{
+            --animation-duration: {{
               regionScoresAnimationVariables.regionDuration
             }}s;
-          --animation-delay: {{
+            --animation-delay: {{
               regionScoresAnimationVariables.playerVariables[player.id][
                 region.name
               ].delay
