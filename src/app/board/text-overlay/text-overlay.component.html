@@ -237,12 +237,16 @@
   fxLayout="column"
   fxLayoutAlign="start center"
 >
-  <aside fxFlex="2" fxFlexFill></aside>
-  <header
+  <section
     fxFlex="16"
     fxFlexFill
     fxLayout="column"
     fxLayoutAlign="center center"
+    *ngFor="let player of players; let i = index"
+    [ngClass]="{
+      'top-position': i === 0,
+      'bottom-position': i === 1
+    }"
   >
     <article>
       <mat-icon
@@ -253,132 +257,89 @@
       >
         <span
           *ngFor="let region of regions"
-          class="absolute green increase-fade-in"
+          class="absolute region-score increase-fade-in"
           style="
+            --color: {{ player.colors.primary }};
             --counter-from: {{
-            regionScoresAnimationVariables.playerVariables[
-              'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
-            ][region.name].from
+            regionScoresAnimationVariables.playerVariables[player.id][
+              region.name
+            ].from
           }};
             --counter-to: {{
-            regionScoresAnimationVariables.playerVariables[
-              'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
-            ][region.name].to
+            regionScoresAnimationVariables.playerVariables[player.id][
+              region.name
+            ].to
           }};
             --animation-duration: {{
             regionScoresAnimationVariables.subTotalDuration
           }}s;
             --animation-delay: {{
-            regionScoresAnimationVariables.playerVariables[
-              'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
-            ][region.name].delay
+            regionScoresAnimationVariables.playerVariables[player.id][
+              region.name
+            ].delay
           }}s;
             --fade-out-delay: {{
             regionScoresAnimationVariables.subTotalDuration +
-              regionScoresAnimationVariables.playerVariables[
-                'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
-              ][region.name].delay +
+              regionScoresAnimationVariables.playerVariables[player.id][
+                region.name
+              ].delay +
               0.5
           }}s;
           "
         ></span>
       </mat-icon>
     </article>
-  </header>
+  </section>
 
-  <aside class="relative" fxFlex="63" fxFlexFill>
-    <section
-      class="region absolute"
-      id="{{ region.name }}"
-      *ngFor="let region of regions"
-    >
-      <article
-        class="absolute bigger-up"
-        style="
-          --animation-duration: {{
-          regionScoresAnimationVariables.regionDuration
-        }}s;
-          --animation-delay: {{
-          regionScoresAnimationVariables.playerVariables[
-            'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
-          ][region.name].delay
-        }}s;
-        "
+  <main class="middle-position" fxFlex="63" fxFlexFill>
+    <section class="relative" fxFlexFill>
+      <section
+        class="region absolute"
+        id="{{ region.name }}"
+        *ngFor="let region of regions"
       >
-        <h2 id="region-score">+{{ players[0].regionScores[region.name] }}</h2>
-      </article>
-    </section>
-    <section
-      class="region absolute"
-      id="{{ region.name }}"
-      *ngFor="let region of regions"
-    >
-      <article
-        class="absolute bigger-down"
-        style="
-        --animation-duration: {{
-          regionScoresAnimationVariables.regionDuration
-        }}s;
-        --animation-delay: {{
-          regionScoresAnimationVariables.playerVariables[
-            'VW8mFTXRKTRfO0qm3kp7BVf0dNh1'
-          ][region.name].delay
-        }}s;
-      "
-      >
-        <h2 id="region-score">+{{ players[1].regionScores[region.name] }}</h2>
-      </article>
-    </section>
-  </aside>
-  <footer
-    fxFlex="16"
-    fxFlexFill
-    fxLayout="column"
-    fxLayoutAlign="center center"
-  >
-    <article>
-      <mat-icon
-        svgIcon="anima-empty"
-        fxFlexAlign="start"
-        class="anima-empty relative"
-        fxLayoutAlign="center center"
-      >
-        <span
-          *ngFor="let region of regions"
-          class="absolute green increase-fade-in"
+        <article
+          class="absolute bigger-up"
           style="
-          --counter-from: {{
-            regionScoresAnimationVariables.playerVariables[
-              'VW8mFTXRKTRfO0qm3kp7BVf0dNh1'
-            ][region.name].from
-          }};
-          --counter-to: {{
-            regionScoresAnimationVariables.playerVariables[
-              'VW8mFTXRKTRfO0qm3kp7BVf0dNh1'
-            ][region.name].to
-          }};
           --animation-duration: {{
-            regionScoresAnimationVariables.subTotalDuration
+            regionScoresAnimationVariables.regionDuration
           }}s;
           --animation-delay: {{
+            regionScoresAnimationVariables.playerVariables[
+              'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
+            ][region.name].delay
+          }}s;
+        "
+        >
+          <h2 id="region-score">+{{ players[0].regionScores[region.name] }}</h2>
+        </article>
+      </section>
+
+      <section
+        class="region absolute"
+        id="{{ region.name }}"
+        *ngFor="let region of regions"
+      >
+        <article
+          class="absolute bigger-down"
+          style="
+        --animation-duration: {{
+            regionScoresAnimationVariables.regionDuration
+          }}s;
+        --animation-delay: {{
             regionScoresAnimationVariables.playerVariables[
               'VW8mFTXRKTRfO0qm3kp7BVf0dNh1'
             ][region.name].delay
           }}s;
-          --fade-out-delay: {{
-            regionScoresAnimationVariables.subTotalDuration +
-              regionScoresAnimationVariables.playerVariables[
-                'VW8mFTXRKTRfO0qm3kp7BVf0dNh1'
-              ][region.name].delay +
-              0.5
-          }}s;
-        "
-        ></span>
-      </mat-icon>
-    </article>
-  </footer>
+      "
+        >
+          <h2 id="region-score">+{{ players[1].regionScores[region.name] }}</h2>
+        </article>
+      </section>
+    </section>
+  </main>
   <aside fxFlex="2" fxFlexFill></aside>
-  <aside fxFlexFill fxFlex="1" class="orange"></aside>
+  <aside fxFlexFill fxFlex="1" class="orange footer-position"></aside>
 </article>
 <!------------ VICTORY 1/2 -------------->
 <!-- <article fxFlexFill *ngIf="isGameFinished$ | async" class="visual-overlay">

@@ -158,6 +158,25 @@
   z-index: 2;
 }
 
+.region-score {
+  color: var(--color);
+}
+.top-position {
+  position: absolute;
+  top: 2%;
+}
+.middle-position {
+  position: absolute;
+  top: 18%;
+}
+.bottom-position {
+  position: absolute;
+  top: 83%;
+}
+.footer-position {
+  position: absolute;
+  top: 99%;
+}
 .score {
   font-size: calc(2.5rem + 1.5vmin);
   font-weight: 700;
