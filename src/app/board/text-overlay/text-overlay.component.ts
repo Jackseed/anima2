@@ -14,7 +14,7 @@ import {
 } from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
-import { PlayerQuery } from '../players/_state';
+import { Player, PlayerQuery } from '../players/_state';
 import { GameAction, Species, SpeciesQuery } from '../species/_state';
 import { Regions, TileQuery, TileService } from '../tiles/_state';
 
@@ -78,6 +78,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     victoryDetails?: animation;
   } = {};
   private animationSub: Subscription;
+  public players: Player[];
 
   constructor(
     private router: Router,
@@ -118,6 +119,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       }
     );
     this.countScores();
+    this.players = this.playerQuery.getAll();
   }
 
   private async countScores() {
@@ -290,10 +292,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
         }
       }
     }
-    console.log(
-      this.regionScoresAnimationVariables,
-      this.victoryAnimationVariables
-    );
   }
 
   ngOnDestroy() {
