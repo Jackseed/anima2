@@ -292,50 +292,35 @@
   </section>
 
   <main class="middle-position" fxFlex="63" fxFlexFill>
-    <section class="relative" fxFlexFill>
-      <section
-        class="region absolute"
-        id="{{ region.name }}"
-        *ngFor="let region of regions"
-      >
-        <article
-          class="absolute bigger-up"
-          style="
+    <section
+      class="absolute"
+      fxFlexFill
+      *ngFor="let player of players; let i = index"
+    >
+      <div class="relative" fxFlexFill>
+        <section
+          class="region absolute"
+          id="{{ region.name }}"
+          *ngFor="let region of regions"
+        >
+          <article
+            class="absolute"
+            [ngClass]="{ 'bigger-up': i === 0, 'bigger-down': i === 1 }"
+            style="
           --animation-duration: {{
-            regionScoresAnimationVariables.regionDuration
-          }}s;
+              regionScoresAnimationVariables.regionDuration
+            }}s;
           --animation-delay: {{
-            regionScoresAnimationVariables.playerVariables[
-              'Qfle6AdrJZNkluwXzLiR7YgeUBH2'
-            ][region.name].delay
-          }}s;
+              regionScoresAnimationVariables.playerVariables[player.id][
+                region.name
+              ].delay
+            }}s;
         "
-        >
-          <h2 id="region-score">+{{ players[0].regionScores[region.name] }}</h2>
-        </article>
-      </section>
-
-      <section
-        class="region absolute"
-        id="{{ region.name }}"
-        *ngFor="let region of regions"
-      >
-        <article
-          class="absolute bigger-down"
-          style="
-        --animation-duration: {{
-            regionScoresAnimationVariables.regionDuration
-          }}s;
-        --animation-delay: {{
-            regionScoresAnimationVariables.playerVariables[
-              'VW8mFTXRKTRfO0qm3kp7BVf0dNh1'
-            ][region.name].delay
-          }}s;
-      "
-        >
-          <h2 id="region-score">+{{ players[1].regionScores[region.name] }}</h2>
-        </article>
-      </section>
+          >
+            <h2 id="region-score">+{{ player.regionScores[region.name] }}</h2>
+          </article>
+        </section>
+      </div>
     </section>
   </main>
   <aside fxFlex="2" fxFlexFill></aside>
