@@ -41,7 +41,6 @@ import {
   neutrals,
   Species,
 } from 'src/app/board/species/_state/species.model';
-import { SpeciesQuery } from 'src/app/board/species/_state/species.query';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games' })
@@ -51,8 +50,7 @@ export class GameService extends CollectionService<GameState> {
     private query: GameQuery,
     private afAuth: AngularFireAuth,
     private tileService: TileService,
-    private playerQuery: PlayerQuery,
-    private speciesQuery: SpeciesQuery
+    private playerQuery: PlayerQuery
   ) {
     super(store);
   }
@@ -444,6 +442,8 @@ export class GameService extends CollectionService<GameState> {
       batch.update(playerRef, {
         score: playerScores[player.id],
         regionScores: playerRegionScores,
+        isAnimationPlaying: true,
+        animationState: 'regionScore',
       });
 
       // TODO: what if both players win
@@ -462,12 +462,11 @@ export class GameService extends CollectionService<GameState> {
       batch = this.updatePlayerVictory(winnerId, batch);
     }
 
-    try {
-      return await batch.commit();
-    } catch (error) {
-      console.log('Updating score failed: ', error);
-    }
+    return await batch
+      .commit()
+      .catch((error) => console.log('Updating score failed: ', error));
   }
+
   public isPlayerControllingRegion(player: Player, region: Region): boolean {
     const playerSpeciesTileIds =
       this.playerQuery.getPlayerSpeciesTileIds(player);

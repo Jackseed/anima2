@@ -14,6 +14,8 @@ export interface Player {
     activeTileId: number;
   };
   isWaitingForNextStartStage: boolean;
+  isAnimationPlaying: boolean;
+  animationState?: 'regionScore' | 'eraScore' | 'victory';
 }
 
 export interface RegionScores {
@@ -51,6 +53,7 @@ export function createPlayer(
       activeTileId: null,
     },
     isWaitingForNextStartStage: true,
+    isAnimationPlaying: false,
     ...params,
   };
 }

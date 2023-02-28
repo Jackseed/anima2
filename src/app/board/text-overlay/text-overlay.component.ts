@@ -79,6 +79,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   } = {};
   private animationSub: Subscription;
   public players: Player[];
+  public activePlayer$: Observable<Player>;
 
   constructor(
     private router: Router,
@@ -120,6 +121,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     );
     this.countScores();
     this.players = this.playerQuery.getAll();
+    this.activePlayer$ = this.playerQuery.selectActive();
   }
 
   private async countScores() {
