@@ -40,6 +40,15 @@ interface PlayerRegionScoresAnimationVariables {
   [playerId: string]: regionsAnimation;
 }
 
+export type eraAnimation = {
+  eraScore: animation;
+  playerTotal: animation;
+};
+
+interface PlayerEraScoresAnimationVariables {
+  [playerId: string]: eraAnimation;
+}
+
 @Component({
   selector: 'app-text-overlay',
   templateUrl: './text-overlay.component.html',
@@ -47,8 +56,6 @@ interface PlayerRegionScoresAnimationVariables {
 })
 export class TextOverlayComponent implements OnInit, OnDestroy {
   public regions = Regions;
-  // Static array with players' length to avoid calling multiple times the value.
-  public fakePlayerArray = ['player1', 'player2'];
   public isGameStarting$: Observable<boolean>;
   public startStage$: Observable<StartStage>;
   public hasTileActive$: Observable<boolean>;
@@ -59,19 +66,18 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public winningPlayerSpecies$: Observable<Species[]>;
   public scoreToggle: boolean = true;
   public regionScoresAnimationVariables: {
-    isAnimationDone?: boolean;
     subTotalDuration?: number;
     regionDuration?: number;
     totalDuration?: number;
     playerVariables?: PlayerRegionScoresAnimationVariables[];
   };
+  public eraScoresAnimationVariables: {
+    firstScreenTransition?: animation;
+    totalDuration?: number;
+    playerVariables: PlayerEraScoresAnimationVariables[];
+  };
   public victoryAnimationVariables: {
     isAnimationDone?: boolean;
-    player1Score?: animation;
-    player1TotalScore?: animation;
-    player2Score?: animation;
-    player2TotalScore?: animation;
-    firstScreenTransition?: animation;
     scoresContainer?: animation;
     victoryTitle?: animation;
     winnerTitle?: animation;
@@ -125,7 +131,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.countScores();
     this.players = this.playerQuery.getAll();
     this.activePlayer$ = this.playerQuery.selectActive();
-    
+
     // Switches from an animation to another once it's done
     this.animationSwitchSub = this.activePlayer$.subscribe((player: Player) => {
       if (player.isAnimationPlaying) {
@@ -135,6 +141,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
               this.playerService.updateActivePlayerAnimationState('eraScore'),
             this.regionScoresAnimationVariables.totalDuration * 1000
           );
+        }
+        if (player.animationState === 'eraScore') {
         }
       }
     });
@@ -198,52 +206,28 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   }
 
   public initAnimationVariables() {
-    this.victoryAnimationVariables = {
-      isAnimationDone: false,
-      // 1st victory screen.
-      player1Score: {
-        duration: 1,
-        delay: 1,
-      },
-    };
+    // Region score variables.
+    const regionAnimationDuration = 0;
+    const subTotalDelay = regionAnimationDuration / 2;
+    this.setRegionScoresAnimationVariables(
+      regionAnimationDuration,
+      subTotalDelay
+    );
+
+    // Era score variables.
+    const eraDuration = 1;
+    const playerTotalDuration = 2;
+    const fistDelay = 1;
+    const endingAnimationDuration = 1;
+    this.setEraScoresAniamtionVariables(
+      eraDuration,
+      playerTotalDuration,
+      fistDelay,
+      endingAnimationDuration
+    );
 
     this.victoryAnimationVariables = {
-      ...this.victoryAnimationVariables,
-      player1TotalScore: {
-        duration: 2,
-        delay:
-          this.victoryAnimationVariables.player1Score.delay +
-          this.victoryAnimationVariables.player1Score.duration * 0.3,
-      },
-    };
-    this.victoryAnimationVariables = {
-      ...this.victoryAnimationVariables,
-      player2Score: {
-        duration: this.victoryAnimationVariables.player1Score.duration,
-        delay:
-          this.victoryAnimationVariables.player1TotalScore.delay +
-          this.victoryAnimationVariables.player1TotalScore.duration +
-          0.2,
-      },
-    };
-    this.victoryAnimationVariables = {
-      ...this.victoryAnimationVariables,
-      player2TotalScore: {
-        duration: 2,
-        delay:
-          this.victoryAnimationVariables.player2Score.delay +
-          this.victoryAnimationVariables.player2Score.duration * 0.3,
-      },
-    };
-    this.victoryAnimationVariables = {
-      ...this.victoryAnimationVariables,
-      firstScreenTransition: {
-        duration: 1,
-        delay:
-          this.victoryAnimationVariables.player2TotalScore.delay +
-          this.victoryAnimationVariables.player2TotalScore.duration +
-          0.2,
-      },
+      isAnimationDone: false,
     };
     // 2nd victory screen.
     this.victoryAnimationVariables = {
@@ -277,11 +261,50 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
         delay: this.victoryAnimationVariables.winnerTitle.delay + 1,
       },
     };
+  }
 
-    const animationDuration = 0.7;
-    const subTotalDelay = animationDuration / 2;
+  private setEraScoresAniamtionVariables(
+    eraDuration: number,
+    playerTotalDuration: number,
+    fistDelay: number,
+    endingAnimationDuration: number
+  ) {
+    const players = this.playerQuery.getAll();
+    this.eraScoresAnimationVariables = {
+      playerVariables: [],
+      totalDuration: 100000,
+    };
+    let delayCount = fistDelay;
+
+    for (const player of players) {
+      // Initializes the variable.
+      if (!this.eraScoresAnimationVariables.playerVariables[player.id])
+        this.eraScoresAnimationVariables.playerVariables[player.id] = {};
+      const playerTotalDelay = delayCount + eraDuration * 0.3;
+      this.eraScoresAnimationVariables.playerVariables[player.id] = {
+        eraScore: {
+          duration: eraDuration,
+          delay: delayCount,
+        },
+        playerTotal: {
+          duration: playerTotalDuration,
+          delay: playerTotalDelay,
+        },
+      };
+      delayCount = playerTotalDelay + playerTotalDuration + 0.2;
+    }
+
+    this.eraScoresAnimationVariables.firstScreenTransition = {
+      duration: endingAnimationDuration,
+      delay: delayCount,
+    };
+  }
+
+  private setRegionScoresAnimationVariables(
+    animationDuration: number,
+    subTotalDelay: number
+  ) {
     this.regionScoresAnimationVariables = {
-      isAnimationDone: false,
       subTotalDuration: animationDuration,
       regionDuration: animationDuration,
       playerVariables: [],
@@ -291,14 +314,14 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     let delayCount = 0;
     const players = this.playerQuery.getAll();
     for (const player of players) {
-      let tempo = {
+      let regionScore = {
         from: 0,
         to: 0,
       };
       for (let region of Regions) {
         if (region.name !== 'blank') {
-          tempo.from = tempo.to;
-          tempo.to = tempo.to + player.regionScores[region.name];
+          regionScore.from = regionScore.to;
+          regionScore.to = regionScore.to + player.regionScores[region.name];
           // Initializes the variable.
           if (!this.regionScoresAnimationVariables.playerVariables[player.id])
             this.regionScoresAnimationVariables.playerVariables[player.id] = {};
@@ -307,8 +330,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
             `${region.name}`
           ] = {
             delay: delayCount,
-            from: tempo.from,
-            to: tempo.to,
+            from: regionScore.from,
+            to: regionScore.to,
           };
           delayCount +=
             this.regionScoresAnimationVariables.regionDuration + subTotalDelay;
@@ -321,5 +344,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.animationSub.unsubscribe();
+    this.animationSwitchSub.unsubscribe();
   }
 }

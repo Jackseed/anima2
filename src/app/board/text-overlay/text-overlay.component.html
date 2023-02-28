@@ -344,6 +344,7 @@
 >
   <section fxFlexFill class="medium-opacity"></section>
   <main
+    *ngIf="players"
     fxFlexFill
     fxLayout="column"
     fxLayoutAlign="start center"
@@ -372,9 +373,11 @@
         <span
           class="absolute green pop-in"
           style="--animation-duration: {{
-            victoryAnimationVariables.player1Score.duration
+            eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
+              .duration
           }}s; --animation-delay: {{
-            victoryAnimationVariables.player1Score.delay
+            eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
+              .delay
           }}s"
           >+8</span
         >
@@ -382,9 +385,9 @@
       <section
         class="orange-border pop-out"
         style=" --animation-duration: {{
-          victoryAnimationVariables.firstScreenTransition.duration
+          eraScoresAnimationVariables.firstScreenTransition.duration
         }}s; --animation-delay: {{
-          victoryAnimationVariables.firstScreenTransition.delay
+          eraScoresAnimationVariables.firstScreenTransition.delay
         }}s"
         fxFlexFill
         fxFlex="45"
@@ -397,9 +400,11 @@
             --counter-from: 48;
             --counter-to: 56;
             --animation-duration: {{
-            victoryAnimationVariables.player1TotalScore.duration
+            eraScoresAnimationVariables.playerVariables[players[0].id]
+              .playerTotal.duration
           }}s; --animation-delay: {{
-            victoryAnimationVariables.player1TotalScore.delay
+            eraScoresAnimationVariables.playerVariables[players[0].id]
+              .playerTotal.delay
           }}s
           "
         ></h2>
@@ -410,9 +415,11 @@
             --counter-from: 32;
             --counter-to: 53;
             --animation-duration: {{
-            victoryAnimationVariables.player2TotalScore.duration
+            eraScoresAnimationVariables.playerVariables[players[1].id]
+              .playerTotal.duration
           }}s; --animation-delay: {{
-            victoryAnimationVariables.player2TotalScore.delay
+            eraScoresAnimationVariables.playerVariables[players[1].id]
+              .playerTotal.delay
           }}s
           "
         ></h2>
@@ -426,9 +433,11 @@
         <span
           class="pop-in absolute red"
           style="--animation-duration: {{
-            victoryAnimationVariables.player2Score.duration
+            eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
+              .duration
           }}s; --animation-delay: {{
-            victoryAnimationVariables.player2Score.delay
+            eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
+              .delay
           }}s"
           >+21</span
         >
