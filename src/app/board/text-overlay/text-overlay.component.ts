@@ -143,6 +143,11 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
           );
         }
         if (player.animationState === 'eraScore') {
+          setTimeout(
+            () =>
+              this.playerService.updateActivePlayerAnimationState('victory'),
+            this.eraScoresAnimationVariables.totalDuration * 1000
+          );
         }
       }
     });
@@ -206,15 +211,15 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   }
 
   public initAnimationVariables() {
-    // Region score variables.
-    const regionAnimationDuration = 0;
+    // Region score variables
+    const regionAnimationDuration = 0.7;
     const subTotalDelay = regionAnimationDuration / 2;
     this.setRegionScoresAnimationVariables(
       regionAnimationDuration,
       subTotalDelay
     );
 
-    // Era score variables.
+    // Era score variables
     const eraDuration = 1;
     const playerTotalDuration = 2;
     const fistDelay = 0.3;
@@ -226,10 +231,11 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       endingAnimationDuration
     );
 
+    // Victory variables
     this.victoryAnimationVariables = {
       isAnimationDone: false,
     };
-    // 2nd victory screen.
+
     this.victoryAnimationVariables = {
       ...this.victoryAnimationVariables,
       victoryTitle: {
@@ -300,6 +306,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       duration: endingAnimationDuration,
       delay: delayCount,
     };
+    this.eraScoresAnimationVariables.totalDuration =
+      delayCount + endingAnimationDuration;
   }
 
   private setRegionScoresAnimationVariables(
@@ -337,11 +345,11 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
           };
           delayCount +=
             this.regionScoresAnimationVariables.regionDuration + subTotalDelay;
-          this.regionScoresAnimationVariables.totalDuration =
-            delayCount + this.regionScoresAnimationVariables.regionDuration;
         }
       }
     }
+    this.regionScoresAnimationVariables.totalDuration =
+      delayCount + this.regionScoresAnimationVariables.regionDuration;
   }
 
   ngOnDestroy() {
