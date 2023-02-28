@@ -14,7 +14,7 @@ import {
 } from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
-import { Player, PlayerQuery } from '../players/_state';
+import { Player, PlayerQuery, PlayerService } from '../players/_state';
 import { GameAction, Species, SpeciesQuery } from '../species/_state';
 import { Regions, TileQuery, TileService } from '../tiles/_state';
 
@@ -62,6 +62,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     isAnimationDone?: boolean;
     subTotalDuration?: number;
     regionDuration?: number;
+    totalDuration?: number;
     playerVariables?: PlayerRegionScoresAnimationVariables[];
   };
   public victoryAnimationVariables: {
@@ -78,6 +79,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     victoryDetails?: animation;
   } = {};
   private animationSub: Subscription;
+  private animationSwitchSub: Subscription;
   public players: Player[];
   public activePlayer$: Observable<Player>;
 
@@ -89,6 +91,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
     private playerQuery: PlayerQuery,
+    private playerService: PlayerService,
     private playService: PlayService,
     private abilityService: AbilityService
   ) {
@@ -122,6 +125,19 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.countScores();
     this.players = this.playerQuery.getAll();
     this.activePlayer$ = this.playerQuery.selectActive();
+    
+    // Switches from an animation to another once it's done
+    this.animationSwitchSub = this.activePlayer$.subscribe((player: Player) => {
+      if (player.isAnimationPlaying) {
+        if (player.animationState === 'regionScore') {
+          setTimeout(
+            () =>
+              this.playerService.updateActivePlayerAnimationState('eraScore'),
+            this.regionScoresAnimationVariables.totalDuration * 1000
+          );
+        }
+      }
+    });
   }
 
   private async countScores() {
@@ -262,11 +278,14 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       },
     };
 
+    const animationDuration = 0.7;
+    const subTotalDelay = animationDuration / 2;
     this.regionScoresAnimationVariables = {
       isAnimationDone: false,
-      subTotalDuration: 1,
-      regionDuration: 1,
+      subTotalDuration: animationDuration,
+      regionDuration: animationDuration,
       playerVariables: [],
+      totalDuration: 100000,
     };
 
     let delayCount = 0;
@@ -280,8 +299,10 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
         if (region.name !== 'blank') {
           tempo.from = tempo.to;
           tempo.to = tempo.to + player.regionScores[region.name];
+          // Initializes the variable.
           if (!this.regionScoresAnimationVariables.playerVariables[player.id])
             this.regionScoresAnimationVariables.playerVariables[player.id] = {};
+          // Adds a small delay between the region score poping in and its count into subtotal.
           this.regionScoresAnimationVariables.playerVariables[player.id][
             `${region.name}`
           ] = {
@@ -290,7 +311,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
             to: tempo.to,
           };
           delayCount +=
-            this.regionScoresAnimationVariables.regionDuration + 0.5;
+            this.regionScoresAnimationVariables.regionDuration + subTotalDelay;
+          this.regionScoresAnimationVariables.totalDuration =
+            delayCount + this.regionScoresAnimationVariables.regionDuration;
         }
       }
     }

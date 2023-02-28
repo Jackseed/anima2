@@ -15,8 +15,10 @@ export interface Player {
   };
   isWaitingForNextStartStage: boolean;
   isAnimationPlaying: boolean;
-  animationState?: 'regionScore' | 'eraScore' | 'victory';
+  animationState?: AnimationState;
 }
+
+export type AnimationState = 'regionScore' | 'eraScore' | 'victory';
 
 export interface RegionScores {
   rockies?: number;
