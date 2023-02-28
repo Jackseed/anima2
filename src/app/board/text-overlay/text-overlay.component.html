@@ -379,7 +379,7 @@
             eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
               .delay
           }}s"
-          >+8</span
+          >+{{ players[0].regionScores.totalEra }}</span
         >
       </mat-icon>
       <section
@@ -397,8 +397,14 @@
         <h2
           class="score increase no-margin green"
           style="
-            --counter-from: 48;
-            --counter-to: 56;
+            --counter-from: {{
+            eraScoresAnimationVariables.playerVariables[players[0].id]
+              .playerTotal.from
+          }};
+            --counter-to: {{
+            eraScoresAnimationVariables.playerVariables[players[0].id]
+              .playerTotal.to
+          }};
             --animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[0].id]
               .playerTotal.duration
@@ -412,8 +418,14 @@
         <h2
           class="score increase no-margin red"
           style="
-            --counter-from: 32;
-            --counter-to: 53;
+            --counter-from: {{
+            eraScoresAnimationVariables.playerVariables[players[1].id]
+              .playerTotal.from
+          }};
+            --counter-to: {{
+            eraScoresAnimationVariables.playerVariables[players[1].id]
+              .playerTotal.to
+          }};
             --animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[1].id]
               .playerTotal.duration
@@ -439,7 +451,7 @@
             eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
               .delay
           }}s"
-          >+21</span
+          >+{{ players[1].regionScores.totalEra }}</span
         >
       </mat-icon>
     </article>

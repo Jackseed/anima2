@@ -27,6 +27,7 @@ export interface RegionScores {
   plains?: number;
   swamps?: number;
   forests?: number;
+  totalEra?: number;
 }
 
 export function createPlayer(

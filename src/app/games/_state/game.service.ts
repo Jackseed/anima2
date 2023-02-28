@@ -431,14 +431,17 @@ export class GameService extends CollectionService<GameState> {
         .collection(`games/${game.id}/players`)
         .doc(player.id).ref;
       let playerRegionScores: RegionScores = {};
-      playerScores[player.id] = player.score;
+      let eraScore = 0;
 
       Regions.forEach((region) => {
         if (this.isPlayerControllingRegion(player, region)) {
           playerRegionScores[region.name] = region.score;
-          playerScores[player.id] = playerScores[player.id] + region.score;
+          eraScore += region.score;
         }
       });
+      playerRegionScores.totalEra = eraScore;
+      playerScores[player.id] = player.score + eraScore;
+
       batch.update(playerRef, {
         score: playerScores[player.id],
         regionScores: playerRegionScores,

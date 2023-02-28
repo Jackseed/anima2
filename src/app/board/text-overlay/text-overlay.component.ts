@@ -217,7 +217,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     // Era score variables.
     const eraDuration = 1;
     const playerTotalDuration = 2;
-    const fistDelay = 1;
+    const fistDelay = 0.3;
     const endingAnimationDuration = 1;
     this.setEraScoresAniamtionVariables(
       eraDuration,
@@ -289,6 +289,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
         playerTotal: {
           duration: playerTotalDuration,
           delay: playerTotalDelay,
+          from: player.score - player.regionScores.totalEra,
+          to: player.score,
         },
       };
       delayCount = playerTotalDelay + playerTotalDuration + 0.2;
