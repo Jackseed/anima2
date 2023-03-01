@@ -284,8 +284,11 @@
     2s linear infinite alternate neon;
 }
 
-.rotate {
-  animation: 2s linear infinite var(--animation-delay) spin;
+.rotate-left {
+  animation: 2s linear infinite var(--animation-delay) spin-left;
+}
+.rotate-right {
+  animation: 2s linear infinite var(--animation-delay) spin-right;
 }
 
 @property --score {
@@ -391,7 +394,12 @@
   }
 }
 
-@keyframes spin {
+@keyframes spin-left {
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes spin-right {
   100% {
     transform: rotate(360deg);
   }
