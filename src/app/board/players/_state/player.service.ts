@@ -122,4 +122,13 @@ export class PlayerService extends CollectionService<PlayerState> {
     ).ref;
     activePlayerRef.update({ animationState });
   }
+
+  public updateisAnimationPlaying(isAnimationPlaying: boolean) {
+    const gameId = this.gameQuery.getActiveId();
+    const activePlayer = this.query.getActive();
+    const activePlayerRef = this.db.doc(
+      `games/${gameId}/players/${activePlayer.id}`
+    ).ref;
+    activePlayerRef.update({ isAnimationPlaying });
+  }
 }

@@ -340,9 +340,18 @@
     (activePlayer$ | async).isAnimationPlaying &&
     (activePlayer$ | async).animationState === 'eraScore'
   "
-  class="visual-overlay"
+  class="visual-overlay fade-in"
+  style="--animation-duration: 1s; --animation-delay: 0s"
 >
-  <section fxFlexFill class="medium-opacity"></section>
+  <section
+    fxFlexFill
+    class="medium-opacity blank-out"
+    style=" --animation-duration: {{
+      eraScoresAnimationVariables.firstScreenTransition.duration
+    }}s; --animation-delay: {{
+      eraScoresAnimationVariables.firstScreenTransition.delay
+    }}s"
+  ></section>
   <main
     *ngIf="players"
     fxFlexFill
@@ -383,12 +392,7 @@
         >
       </mat-icon>
       <section
-        class="orange-border pop-out"
-        style=" --animation-duration: {{
-          eraScoresAnimationVariables.firstScreenTransition.duration
-        }}s; --animation-delay: {{
-          eraScoresAnimationVariables.firstScreenTransition.delay
-        }}s"
+        class="orange-border"
         fxFlexFill
         fxFlex="45"
         fxLayout="row"
@@ -470,10 +474,7 @@
 <!------------ VICTORY -------------->
 <article
   fxFlexFill
-  *ngIf="
-    (activePlayer$ | async).isAnimationPlaying &&
-    (activePlayer$ | async).animationState === 'victory'
-  "
+  *ngIf="(activePlayer$ | async).animationState === 'victory'"
   class="visual-overlay"
 >
   <section *ngIf="scoreToggle" fxFlexFill class="full-opacity"></section>
@@ -490,7 +491,7 @@
       fxFlex="10"
       class="center victory"
       [ngClass]="{
-        'cling-slide-down': !victoryAnimationVariables.isAnimationDone
+        'cling-slide-down': (activePlayer$ | async).isAnimationPlaying
       }"
       style="
       --animation-duration: {{
@@ -506,7 +507,7 @@
       fxLayout="row"
       fxLayoutAlign="center center"
       [ngClass]="{
-        'name-slide-down': !victoryAnimationVariables.isAnimationDone
+        'name-slide-down': (activePlayer$ | async).isAnimationPlaying
       }"
       style="
       --animation-duration: {{
@@ -518,7 +519,7 @@
         svgIcon="star"
         class="star rotate"
         style="--animation-delay: {{
-          victoryAnimationVariables.isAnimationDone
+          !(activePlayer$ | async).isAnimationPlaying
             ? 0
             : victoryAnimationVariables.winnerStars.delay
         }}s"
@@ -528,7 +529,7 @@
         svgIcon="star"
         class="star rotate"
         style="--animation-delay: {{
-          victoryAnimationVariables.isAnimationDone
+          !(activePlayer$ | async).isAnimationPlaying
             ? 0
             : victoryAnimationVariables.winnerStars.delay
         }}s"
@@ -539,7 +540,7 @@
       fxFlex="20"
       fxLayoutAlign="center end"
       [ngClass]="{
-        'fade-in': !victoryAnimationVariables.isAnimationDone
+        'fade-in': (activePlayer$ | async).isAnimationPlaying
       }"
       style="
       --animation-duration: {{
@@ -555,9 +556,9 @@
       >
     </article>
     <article
-      class="playerSpecies"
+      class="player-species"
       [ngClass]="{
-        'fade-in': !victoryAnimationVariables.isAnimationDone
+        'fade-in': (activePlayer$ | async).isAnimationPlaying
       }"
       fxFlexFill
       fxFlex="20"
@@ -589,7 +590,7 @@
       fxFlex="10"
       fxLayoutAlign="center end"
       [ngClass]="{
-        'fade-in': !victoryAnimationVariables.isAnimationDone
+        'fade-in': (activePlayer$ | async).isAnimationPlaying
       }"
       id="no-margin"
       style="
@@ -609,7 +610,7 @@
       fxLayout="row"
       fxLayoutAlign="space-around center"
       [ngClass]="{
-        'fade-in': !victoryAnimationVariables.isAnimationDone
+        'fade-in': (activePlayer$ | async).isAnimationPlaying
       }"
       style="
       --animation-duration: {{

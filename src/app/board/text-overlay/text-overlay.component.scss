@@ -109,7 +109,8 @@
   text-align: center;
 }
 
-.playerSpecies {
+.player-species {
+  padding-top: 5%;
   justify-content: center;
 }
 
@@ -294,7 +295,8 @@
 }
 
 .increase-fade-in {
-  animation: 0.001s linear var(--animation-delay) var(--fade-in-fill-mode) fade-in,
+  animation: 0.001s linear var(--animation-delay) var(--fade-in-fill-mode)
+      fade-in,
     var(--animation-duration) ease-in-out var(--animation-delay) both counter,
     0.001s reverse var(--fade-out-delay) forwards fade-in;
   counter-reset: score var(--score);
@@ -314,9 +316,9 @@
   animation: var(--animation-duration) linear var(--animation-delay) both pop-in;
 }
 
-.pop-out {
+.blank-out {
   animation: var(--animation-duration) linear var(--animation-delay) forwards
-    pop-out;
+    blank-out;
 }
 
 // ANIMATIONS
@@ -436,17 +438,11 @@
   }
 }
 
-@keyframes pop-out {
+@keyframes blank-out {
   0% {
-    opacity: 1;
-    transform: scale(1, 1);
-  }
-  30% {
-    opacity: 1;
-    transform: scale(0.9, 0.9);
+    opacity: 0.5;
   }
   100% {
     opacity: 1;
-    transform: scale(100, 100) translateY(20%);
   }
 }

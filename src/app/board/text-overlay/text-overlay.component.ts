@@ -62,7 +62,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public isPlayerWaiting$: Observable<boolean>;
   public isActivePlayerPlaying$: Observable<boolean>;
   public activeSpecies$: Observable<Species>;
-  public isGameFinished$: Observable<boolean>;
   public winningPlayerSpecies$: Observable<Species[]>;
   public scoreToggle: boolean = true;
   public regionScoresAnimationVariables: {
@@ -84,7 +83,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     winnerStars?: animation;
     victoryDetails?: animation;
   } = {};
-  private animationSub: Subscription;
   private animationSwitchSub: Subscription;
   public players: Player[];
   public activePlayer$: Observable<Player>;
@@ -112,28 +110,18 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       this.playerQuery.isActivePlayerWaitingForNextStartStage$;
     this.isActivePlayerPlaying$ = this.playerQuery.isActivePlayerPlaying$;
     this.activeSpecies$ = this.speciesQuery.selectActive();
-    this.isGameFinished$ = this.gameQuery.isGameFinished$;
     this.winningPlayerSpecies$ = this.playerQuery.winningPlayerSpecies$;
 
-    // Avoids repeating the animation once is done.
-    this.animationSub = this.isGameFinished$.subscribe(
-      (isGameFinished: boolean) => {
-        if (isGameFinished)
-          setTimeout(
-            () => this.toggleAnimationDone(),
-            (this.victoryAnimationVariables.victoryDetails.delay +
-              this.victoryAnimationVariables.victoryDetails.duration +
-              2) *
-              1000
-          );
-      }
-    );
     this.countScores();
     this.players = this.playerQuery.getAll();
     this.activePlayer$ = this.playerQuery.selectActive();
 
-    // Switches from an animation to another once it's done
-    this.animationSwitchSub = this.activePlayer$.subscribe((player: Player) => {
+    this.animationSwitchSub = this.animSwitchSub;
+  }
+
+  private get animSwitchSub(): Subscription {
+    const game = this.gameQuery.getActive();
+    return this.activePlayer$.subscribe((player: Player) => {
       if (player.isAnimationPlaying) {
         if (player.animationState === 'regionScore') {
           setTimeout(
@@ -147,6 +135,15 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
             () =>
               this.playerService.updateActivePlayerAnimationState('victory'),
             this.eraScoresAnimationVariables.totalDuration * 1000
+          );
+        }
+        if (player.animationState === 'victory') {
+          setTimeout(
+            () => this.playerService.updateisAnimationPlaying(false),
+            (this.victoryAnimationVariables.victoryDetails.delay +
+              this.victoryAnimationVariables.victoryDetails.duration +
+              2) *
+              1000
           );
         }
       }
@@ -353,7 +350,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.animationSub.unsubscribe();
     this.animationSwitchSub.unsubscribe();
   }
 }
