@@ -280,16 +280,16 @@ export class GameService extends CollectionService<GameState> {
   }
 
   // Adds a new tile choice or clear the tile choices.
-  public updateTileChoice(tileChoice?: TileChoice) {
+  public async updateTileChoice(tileChoice?: TileChoice) {
     const gameId = this.query.getActiveId();
     const gameDoc = this.db.doc(`games/${gameId}`);
     const tileChoices = tileChoice
       ? firebase.firestore.FieldValue.arrayUnion(tileChoice)
       : [];
 
-    gameDoc.update({ tileChoices }).catch((error) => {
-      console.log('Updating tile choice failed: ', error);
-    });
+    return await gameDoc
+      .update({ tileChoices })
+      .catch((error) => console.log('Updating tile choice failed: ', error));
   }
 
   public async switchStartStage(startStage: StartStage) {
@@ -479,7 +479,7 @@ export class GameService extends CollectionService<GameState> {
       if (isPlayerControllingRegion)
         playerSpeciesTileIds.includes(tileId)
           ? (isPlayerControllingRegion = true)
-          : (isPlayerControllingRegion = true);
+          : (isPlayerControllingRegion = false);
     });
 
     return isPlayerControllingRegion;

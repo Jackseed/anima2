@@ -112,7 +112,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.activeSpecies$ = this.speciesQuery.selectActive();
     this.winningPlayerSpecies$ = this.playerQuery.winningPlayerSpecies$;
 
-    this.countScores();
     this.players = this.playerQuery.getAll();
     this.activePlayer$ = this.playerQuery.selectActive();
 
@@ -148,10 +147,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
         }
       }
     });
-  }
-
-  private async countScores() {
-    await this.gameService.countScores();
   }
 
   public validateStartTile() {

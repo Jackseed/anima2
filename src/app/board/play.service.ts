@@ -105,7 +105,12 @@ export class PlayService {
       return this.gameService.switchStartStage('tileChoice');
     }
     if (game.startStage === 'tileChoice') {
-      await this.playTileChoices();
+      // Activates it only once to avoid moving several time the same species.
+      if (
+        this.playerQuery.isPlayerPlaying() &&
+        game.tileChoices.length === game.playerIds.length
+      )
+        await this.playTileChoices();
       this.gameService.switchStartStage('tileValidated');
       return this.gameService.updateIsStarting(false);
     }
@@ -177,17 +182,17 @@ export class PlayService {
   }
 
   // GAME STATE - Tile validation
-  public validateStartTile() {
+  public async validateStartTile() {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
     const activePlayerId = this.playerQuery.getActiveId();
 
-    this.playerQuery.switchReadyState([activePlayerId]);
-
-    this.gameService.updateTileChoice({
+    await this.gameService.updateTileChoice({
       speciesId: newSpeciesId,
       tileId: activeTileId,
     });
+
+    this.playerQuery.switchReadyState([activePlayerId]);
 
     this.tileService.removeActive();
   }
