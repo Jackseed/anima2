@@ -241,37 +241,51 @@
     (activePlayer$ | async).isAnimationPlaying &&
     (activePlayer$ | async).animationState === 'endEraTitle'
   "
-  fxLayout="column"
-  fxLayoutAlign="center center"
   class="visual-overlay"
   fxFlexFill
 >
-  <article class="banner text-box">
-    <h2>Fin de l'ère !</h2>
-  </article>
+  <section class="medium-opacity" fxFlexFill></section>
+  <main
+    class="absolute"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
+    <article class="banner text-box">
+      <h2 class="box-titles">Fin de l'ère !</h2>
+    </article>
+  </main>
+  <aside fxFlexFill class="orange footer-position"></aside>
 </main>
 <main
   *ngIf="
     (activePlayer$ | async).isAnimationPlaying &&
     (activePlayer$ | async).animationState === 'playerNamesTitle'
   "
-  fxLayout="column"
-  fxLayoutAlign="start center"
   class="visual-overlay"
   fxFlexFill
 >
-  <article>
-    <h2 class="player-name green">Nurgle</h2>
-  </article>
-  <article class="banner text-box">
-    <h2>
-      Décompte<br />
-      des points!
-    </h2>
-  </article>
-  <article>
-    <h2 class="player-name red">Jelly0</h2>
-  </article>
+  <section class="medium-opacity" fxFlexFill></section>
+  <main
+    class="absolute"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
+    <article>
+      <h2 class="player-name green">Nurgle</h2>
+    </article>
+    <article class="banner text-box">
+      <h2 class="box-titles">
+        Décompte<br />
+        des points!
+      </h2>
+    </article>
+    <article>
+      <h2 class="player-name red">Jelly0</h2>
+    </article>
+  </main>
+  <aside fxFlexFill class="orange footer-position"></aside>
 </main>
 <main
   *ngIf="

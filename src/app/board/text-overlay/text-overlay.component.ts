@@ -234,7 +234,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     // Region score variables
     const regionAnimationDuration = 0.7;
     const subTotalDelay = regionAnimationDuration / 2;
-    const firstTitlesDuration = 1;
+    const firstTitlesDuration = 1.3;
     this.setRegionScoresAnimationVariables(
       firstTitlesDuration,
       regionAnimationDuration,
@@ -354,7 +354,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
     let delayCount =
       this.regionScoresAnimationVariables.playerNamesTitle.duration +
-      this.regionScoresAnimationVariables.playerNamesTitle.delay;
+      this.regionScoresAnimationVariables.playerNamesTitle.delay -
+      0.5;
     const players = this.playerQuery.getAll();
     for (const player of players) {
       let regionScore = {

@@ -28,6 +28,11 @@
   height: fit-content;
 }
 
+.box-titles {
+  line-height: 45px;
+  font-size: calc(2rem + 1.5vmin);
+}
+
 .top {
   position: fixed;
   z-index: 2;
