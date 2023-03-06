@@ -80,6 +80,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public isGameFinished$: Observable<boolean>;
   public startStage$: Observable<StartStage>;
   public isAnimationPlaying$: Observable<boolean>;
+  public players$: Observable<Player[]>;
   public isPlayerWaiting$: Observable<boolean>;
   public isActivePlayerPlaying$: Observable<boolean>;
   public activePlayer$: Observable<Player>;
@@ -109,6 +110,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.isGameStarting$ = this.gameQuery.isStarting$;
     this.isGameFinished$ = this.gameQuery.isGameFinished$;
     this.startStage$ = this.gameQuery.startStage$;
+    this.players$ = this.playerQuery.selectAll();
     this.hasTileActive$ = this.tileQuery.hasActive$;
     this.isPlayerWaiting$ =
       this.playerQuery.isActivePlayerWaitingForNextStartStage$;
@@ -328,8 +330,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
         playerTotal: {
           duration: playerTotalDuration,
           delay: playerTotalDelay,
-          from: player.score - player.regionScores.totalEra,
-          to: player.score,
         },
       };
       delayCount = playerTotalDelay + playerTotalDuration + 0.2;

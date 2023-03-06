@@ -133,7 +133,7 @@
   fxFlexFill
   *ngIf="(isGameStarting$ | async) && (startStage$ | async) === 'tileChoice'"
   class="fade-in-out visual-overlay"
-  style="--animation-duration: 0.25s; --animation-delay: 0.5s"
+  style="--animation-duration: 1.25s; --animation-delay: 0.5s"
 >
   <section fxFlexFill class="full-opacity"></section>
   <main
@@ -285,7 +285,7 @@
     <article class="banner text-box">
       <h2 class="box-titles">
         Décompte<br />
-        des points!
+        des points !
       </h2>
     </article>
     <article>
@@ -417,7 +417,7 @@
     }}s"
   ></section>
   <main
-    *ngIf="players"
+    *ngIf="players$ | async as players"
     fxFlexFill
     fxLayout="column"
     fxLayoutAlign="start center"
@@ -466,13 +466,9 @@
           class="score increase no-margin green"
           style="
             --counter-from: {{
-            eraScoresAnimationVariables.playerVariables[players[0].id]
-              .playerTotal.from
+            players[0].score - players[0].regionScores.totalEra
           }};
-            --counter-to: {{
-            eraScoresAnimationVariables.playerVariables[players[0].id]
-              .playerTotal.to
-          }};
+            --counter-to: {{ players[0].score }};
             --animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[0].id]
               .playerTotal.duration
@@ -487,13 +483,9 @@
           class="score increase no-margin red"
           style="
             --counter-from: {{
-            eraScoresAnimationVariables.playerVariables[players[1].id]
-              .playerTotal.from
+            players[1].score - players[1].regionScores.totalEra
           }};
-            --counter-to: {{
-            eraScoresAnimationVariables.playerVariables[players[1].id]
-              .playerTotal.to
-          }};
+            --counter-to: {{ players[1].score }};
             --animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[1].id]
               .playerTotal.duration
@@ -678,7 +670,12 @@
         Jelly0
       </h2>
       <h3 class="no-margin" id="line">-</h3>
-      <h2 class="player-name no-margin red">{{ loser.score }}</h2>
+      <h2
+        class="player-name no-margin"
+        [ngStyle]="{ color: loser.colors.primary }"
+      >
+        {{ loser.score }}
+      </h2>
     </article>
     <aside fxFlexFill fxFlex="4"></aside>
     <footer
