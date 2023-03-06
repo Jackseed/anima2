@@ -86,6 +86,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public hasTileActive$: Observable<boolean>;
   public activeSpecies$: Observable<Species>;
   public winningPlayerSpecies$: Observable<Species[]>;
+  public winner$: Observable<Player>;
+  public loser$: Observable<Player>;
   // Subscriptions
   private animationSwitchSub: Subscription;
 
@@ -114,6 +116,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.activeSpecies$ = this.speciesQuery.selectActive();
     this.winningPlayerSpecies$ = this.playerQuery.winningPlayerSpecies$;
     this.isAnimationPlaying$ = this.playerQuery.isAnimationPlaying$;
+    this.winner$ = this.playerQuery.winner$;
+    this.loser$ = this.playerQuery.loser$;
 
     this.players = this.playerQuery.getAll();
     this.activePlayer$ = this.playerQuery.selectActive();
