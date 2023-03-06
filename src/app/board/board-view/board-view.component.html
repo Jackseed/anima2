@@ -5,9 +5,12 @@
 
 <!------------ TEXT HEADER -------------->
 <app-text-overlay></app-text-overlay>
-
 <!------------ MAP -------------->
-<pinch-zoom [double-tap]="false" disableZoomControl="disable">
+<pinch-zoom
+  [double-tap]="false"
+  disableZoomControl="disable"
+  #myPinchZoom="pinchZoom"
+>
   <main>
     <div class="no-font">
       <!------------ TILE -------------->
