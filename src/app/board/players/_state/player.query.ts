@@ -158,6 +158,10 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getEntity(playerId).colors;
   }
 
+  public get isAnimationPlaying$(): Observable<boolean> {
+    return this.selectActive().pipe(map((player) => player.isAnimationPlaying));
+  }
+
   // TODO: Should be in player service but here to avoid circular dependency...
   public switchReadyState(playerIds: string[]) {
     const batch = this.db.firestore.batch();

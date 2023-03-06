@@ -6,7 +6,8 @@
     startStage: startStage$ | async,
     hasTileActive: hasTileActive$ | async,
     isPlayerWaiting: isPlayerWaiting$ | async,
-    isActivePlayerPlaying: isActivePlayerPlaying$ | async
+    isActivePlayerPlaying: isActivePlayerPlaying$ | async,
+    isAnimationPlaying: (activePlayer$ | async).isAnimationPlaying
   } as observables"
 >
   <!------------ GAME START -------------->
@@ -71,7 +72,11 @@
   </article>
   <!------------ OTHER PLAYER PLAYING -------------->
   <article
-    *ngIf="!observables.isActivePlayerPlaying && !observables.isGameStarting"
+    *ngIf="
+      !observables.isActivePlayerPlaying &&
+      !observables.isGameStarting &&
+      !observables.isAnimationPlaying
+    "
     class="top banner text-box"
   >
     <h2>Au tour <br />du joueur adverse...</h2>

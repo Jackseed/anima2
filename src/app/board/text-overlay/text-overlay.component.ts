@@ -6,12 +6,7 @@ import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 // States
-import {
-  Colors,
-  GameQuery,
-  GameService,
-  StartStage,
-} from 'src/app/games/_state';
+import { Colors, GameQuery, StartStage } from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
@@ -90,7 +85,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private gameQuery: GameQuery,
-    private gameService: GameService,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
@@ -132,7 +126,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
         if (player.animationState === 'eraScore') {
           setTimeout(
             () =>
-              this.playerService.updateActivePlayerAnimationState('victory'),
+              game.isFinished
+                ? this.playerService.updateActivePlayerAnimationState('victory')
+                : this.playerService.updateisAnimationPlaying(false),
             this.eraScoresAnimationVariables.totalDuration * 1000
           );
         }

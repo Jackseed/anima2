@@ -32,7 +32,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public species$: Observable<Species[]>;
   public hasActiveAbility$: Observable<boolean>;
   public activeAbilityNumber$: Observable<number>;
-  public isGameFinished$: Observable<boolean>;
+  public isAnimationPlaying$: Observable<boolean>;
 
   // Subscriptions
   private activeSpeciesSub: Subscription;
@@ -63,7 +63,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.hasActiveAbility$ = this.speciesQuery.hasActiveSpeciesActiveAbility$;
     this.activeAbilityNumber$ =
       this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
-    this.isGameFinished$ = this.gameQuery.isGameFinished$;
+    this.isAnimationPlaying$ = this.playerQuery.isAnimationPlaying$;
 
     // Subscriptions init
     this.switchToNextStartStateSub =
