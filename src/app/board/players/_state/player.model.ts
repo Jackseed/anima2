@@ -18,7 +18,12 @@ export interface Player {
   animationState?: AnimationState;
 }
 
-export type AnimationState = 'regionScore' | 'eraScore' | 'victory';
+export type AnimationState =
+  | 'endEraTitle'
+  | 'playerNamesTitle'
+  | 'regionScore'
+  | 'eraScore'
+  | 'victory';
 
 export interface RegionScores {
   rockies?: number;

@@ -6,7 +6,12 @@ import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 // States
-import { Colors, GameQuery, StartStage } from 'src/app/games/_state';
+import {
+  Colors,
+  GameQuery,
+  GameService,
+  StartStage,
+} from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
@@ -60,6 +65,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public winningPlayerSpecies$: Observable<Species[]>;
   public scoreToggle: boolean = true;
   public regionScoresAnimationVariables: {
+    endEraTitle: animation;
+    playerNamesTitle: animation;
     subTotalDuration?: number;
     regionDuration?: number;
     totalDuration?: number;
@@ -84,6 +91,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
+    private gameService: GameService,
     private gameQuery: GameQuery,
     private tileQuery: TileQuery,
     private tileService: TileService,
@@ -110,12 +118,36 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.activePlayer$ = this.playerQuery.selectActive();
 
     this.animationSwitchSub = this.animSwitchSub;
+
+    this.gameService.countScores();
   }
 
   private get animSwitchSub(): Subscription {
     const game = this.gameQuery.getActive();
     return this.activePlayer$.subscribe((player: Player) => {
       if (player.isAnimationPlaying) {
+        if (player.animationState === 'endEraTitle') {
+          setTimeout(
+            () =>
+              this.playerService.updateActivePlayerAnimationState(
+                'playerNamesTitle'
+              ),
+            (this.regionScoresAnimationVariables.endEraTitle.duration +
+              this.regionScoresAnimationVariables.endEraTitle.delay) *
+              1000
+          );
+        }
+        if (player.animationState === 'playerNamesTitle') {
+          setTimeout(
+            () =>
+              this.playerService.updateActivePlayerAnimationState(
+                'regionScore'
+              ),
+            (this.regionScoresAnimationVariables.playerNamesTitle.duration +
+              this.regionScoresAnimationVariables.playerNamesTitle.delay) *
+              1000
+          );
+        }
         if (player.animationState === 'regionScore') {
           setTimeout(
             () =>
@@ -202,7 +234,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     // Region score variables
     const regionAnimationDuration = 0.7;
     const subTotalDelay = regionAnimationDuration / 2;
+    const firstTitlesDuration = 1;
     this.setRegionScoresAnimationVariables(
+      firstTitlesDuration,
       regionAnimationDuration,
       subTotalDelay
     );
@@ -299,17 +333,28 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   }
 
   private setRegionScoresAnimationVariables(
-    animationDuration: number,
-    subTotalDelay: number
+    firstTitlesDuration: number,
+    regionDuration: number,
+    regionSubTotalDelay: number
   ) {
     this.regionScoresAnimationVariables = {
-      subTotalDuration: animationDuration,
-      regionDuration: animationDuration,
+      endEraTitle: {
+        duration: firstTitlesDuration,
+        delay: 0,
+      },
+      playerNamesTitle: {
+        duration: firstTitlesDuration,
+        delay: firstTitlesDuration,
+      },
+      subTotalDuration: regionDuration,
+      regionDuration: regionDuration,
       playerVariables: [],
       totalDuration: 100000,
     };
 
-    let delayCount = 0;
+    let delayCount =
+      this.regionScoresAnimationVariables.playerNamesTitle.duration +
+      this.regionScoresAnimationVariables.playerNamesTitle.delay;
     const players = this.playerQuery.getAll();
     for (const player of players) {
       let regionScore = {
@@ -332,7 +377,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
             to: regionScore.to,
           };
           delayCount +=
-            this.regionScoresAnimationVariables.regionDuration + subTotalDelay;
+            this.regionScoresAnimationVariables.regionDuration +
+            regionSubTotalDelay;
         }
       }
     }

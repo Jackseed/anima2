@@ -235,109 +235,147 @@
 </article>
 
 <!------------ REGION SCORE -------------->
-<article
+
+<main
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'endEraTitle'
+  "
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  class="visual-overlay"
   fxFlexFill
+>
+  <article class="banner text-box">
+    <h2>Fin de l'ère !</h2>
+  </article>
+</main>
+<main
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'playerNamesTitle'
+  "
+  fxLayout="column"
+  fxLayoutAlign="start center"
+  class="visual-overlay"
+  fxFlexFill
+>
+  <article>
+    <h2 class="player-name green">Nurgle</h2>
+  </article>
+  <article class="banner text-box">
+    <h2>
+      Décompte<br />
+      des points!
+    </h2>
+  </article>
+  <article>
+    <h2 class="player-name red">Jelly0</h2>
+  </article>
+</main>
+<main
   *ngIf="
     (activePlayer$ | async).isAnimationPlaying &&
     (activePlayer$ | async).animationState === 'regionScore'
   "
   class="visual-overlay"
-  fxLayout="column"
-  fxLayoutAlign="start center"
+  fxFlexFill
 >
-  <section
-    fxFlex="16"
-    fxFlexFill
-    fxLayout="column"
-    fxLayoutAlign="center center"
-    *ngFor="let player of players; let i = index"
-    [ngClass]="{
-      'top-position': i === 0,
-      'bottom-position': i === 1
-    }"
-  >
-    <article>
-      <mat-icon
-        svgIcon="anima-empty"
-        fxFlexAlign="start"
-        class="anima-empty relative"
-        fxLayoutAlign="center center"
-      >
-        <span
-          *ngFor="let region of regions; first as isFirst; last as isLast"
-          class="absolute region-score increase-fade-in"
-          style="
+  <main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
+    <section
+      fxFlex="16"
+      fxFlexFill
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      *ngFor="let player of players; let i = index"
+      [ngClass]="{
+        'top-position': i === 0,
+        'bottom-position': i === 1
+      }"
+    >
+      <article>
+        <mat-icon
+          svgIcon="anima-empty"
+          fxFlexAlign="start"
+          class="anima-empty relative"
+          fxLayoutAlign="center center"
+        >
+          <span
+            *ngFor="let region of regions; first as isFirst; last as isLast"
+            class="absolute region-score increase-fade-in"
+            style="
             --color: {{ player.colors.primary }};
             --fade-in-fill-mode: {{ isFirst ? 'forwards' : 'both' }};
             --counter-from: {{
-            regionScoresAnimationVariables.playerVariables[player.id][
-              region.name
-            ].from
-          }};
+              regionScoresAnimationVariables.playerVariables[player.id][
+                region.name
+              ].from
+            }};
             --counter-to: {{
-            regionScoresAnimationVariables.playerVariables[player.id][
-              region.name
-            ].to
-          }};
+              regionScoresAnimationVariables.playerVariables[player.id][
+                region.name
+              ].to
+            }};
             --animation-duration: {{
-            regionScoresAnimationVariables.subTotalDuration
-          }}s;
-            --animation-delay: {{
-            regionScoresAnimationVariables.playerVariables[player.id][
-              region.name
-            ].delay
-          }}s;
-            --fade-out-delay: {{
-            isLast
-              ? 1000000000
-              : regionScoresAnimationVariables.subTotalDuration +
-                regionScoresAnimationVariables.playerVariables[player.id][
-                  region.name
-                ].delay +
-                0.5
-          }}s;
-          "
-          >+</span
-        >
-      </mat-icon>
-    </article>
-  </section>
-
-  <main class="middle-position" fxFlex="63" fxFlexFill>
-    <section
-      class="absolute"
-      fxFlexFill
-      *ngFor="let player of players; let i = index"
-    >
-      <div class="relative" fxFlexFill>
-        <section
-          class="region absolute"
-          id="{{ region.name }}"
-          *ngFor="let region of regions"
-        >
-          <article
-            class="absolute"
-            [ngClass]="{ 'bigger-up': i === 0, 'bigger-down': i === 1 }"
-            style="
-            --animation-duration: {{
-              regionScoresAnimationVariables.regionDuration
+              regionScoresAnimationVariables.subTotalDuration
             }}s;
             --animation-delay: {{
               regionScoresAnimationVariables.playerVariables[player.id][
                 region.name
               ].delay
             }}s;
-        "
+            --fade-out-delay: {{
+              isLast
+                ? 1000000000
+                : regionScoresAnimationVariables.subTotalDuration +
+                  regionScoresAnimationVariables.playerVariables[player.id][
+                    region.name
+                  ].delay +
+                  0.5
+            }}s;
+          "
+            >+</span
           >
-            <h2 id="region-score">+{{ player.regionScores[region.name] }}</h2>
-          </article>
-        </section>
-      </div>
+        </mat-icon>
+      </article>
     </section>
+
+    <main class="middle-position" fxFlex="63" fxFlexFill>
+      <section
+        class="absolute"
+        fxFlexFill
+        *ngFor="let player of players; let i = index"
+      >
+        <div class="relative" fxFlexFill>
+          <section
+            class="region absolute"
+            id="{{ region.name }}"
+            *ngFor="let region of regions"
+          >
+            <article
+              class="absolute"
+              [ngClass]="{ 'bigger-up': i === 0, 'bigger-down': i === 1 }"
+              style="
+            --animation-duration: {{
+                regionScoresAnimationVariables.regionDuration
+              }}s;
+            --animation-delay: {{
+                regionScoresAnimationVariables.playerVariables[player.id][
+                  region.name
+                ].delay
+              }}s;
+        "
+            >
+              <h2 id="region-score">+{{ player.regionScores[region.name] }}</h2>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+    <aside fxFlex="2" fxFlexFill></aside>
+    <aside fxFlexFill fxFlex="1" class="orange footer-position"></aside>
   </main>
-  <aside fxFlex="2" fxFlexFill></aside>
-  <aside fxFlexFill fxFlex="1" class="orange footer-position"></aside>
-</article>
+</main>
 <!------------ ERA SCORE -------------->
 <article
   fxFlexFill
