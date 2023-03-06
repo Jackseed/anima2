@@ -3,7 +3,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 // Rxjs
-import { Observable, Subscription } from 'rxjs';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 
 // States
 import { Colors, GameQuery, StartStage } from 'src/app/games/_state';
@@ -122,58 +122,62 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   }
 
   private get animSwitchSub(): Subscription {
-    const game = this.gameQuery.getActive();
-    return this.activePlayer$.subscribe((player: Player) => {
-      if (player.isAnimationPlaying) {
-        if (player.animationState === 'endEraTitle') {
-          setTimeout(
-            () =>
-              this.playerService.updateActivePlayerAnimationState(
-                'playerNamesTitle'
-              ),
-            (this.regionScoresAnimationVariables.endEraTitle.duration +
-              this.regionScoresAnimationVariables.endEraTitle.delay) *
-              1000
-          );
-        }
-        if (player.animationState === 'playerNamesTitle') {
-          setTimeout(
-            () =>
-              this.playerService.updateActivePlayerAnimationState(
-                'regionScore'
-              ),
-            (this.regionScoresAnimationVariables.playerNamesTitle.duration +
-              this.regionScoresAnimationVariables.playerNamesTitle.delay) *
-              1000
-          );
-        }
-        if (player.animationState === 'regionScore') {
-          setTimeout(
-            () =>
-              this.playerService.updateActivePlayerAnimationState('eraScore'),
-            this.regionScoresAnimationVariables.totalDuration * 1000
-          );
-        }
-        if (player.animationState === 'eraScore') {
-          setTimeout(
-            () =>
-              game.isFinished
-                ? this.playerService.updateActivePlayerAnimationState('victory')
-                : this.playerService.updateisAnimationPlaying(false),
-            this.eraScoresAnimationVariables.totalDuration * 1000
-          );
-        }
-        if (player.animationState === 'victory') {
-          setTimeout(
-            () => this.playerService.updateisAnimationPlaying(false),
-            (this.victoryAnimationVariables.victoryDetails.delay +
-              this.victoryAnimationVariables.victoryDetails.duration +
-              2) *
-              1000
-          );
+    const game$ = this.gameQuery.selectActive();
+    return combineLatest([this.activePlayer$, game$]).subscribe(
+      ([player, game]) => {
+        if (player.isAnimationPlaying) {
+          if (player.animationState === 'endEraTitle') {
+            setTimeout(
+              () =>
+                this.playerService.updateActivePlayerAnimationState(
+                  'playerNamesTitle'
+                ),
+              (this.regionScoresAnimationVariables.endEraTitle.duration +
+                this.regionScoresAnimationVariables.endEraTitle.delay) *
+                1000
+            );
+          }
+          if (player.animationState === 'playerNamesTitle') {
+            setTimeout(
+              () =>
+                this.playerService.updateActivePlayerAnimationState(
+                  'regionScore'
+                ),
+              (this.regionScoresAnimationVariables.playerNamesTitle.duration +
+                this.regionScoresAnimationVariables.playerNamesTitle.delay) *
+                1000
+            );
+          }
+          if (player.animationState === 'regionScore') {
+            setTimeout(
+              () =>
+                this.playerService.updateActivePlayerAnimationState('eraScore'),
+              this.regionScoresAnimationVariables.totalDuration * 1000
+            );
+          }
+          if (player.animationState === 'eraScore') {
+            setTimeout(
+              () =>
+                game.isFinished
+                  ? this.playerService.updateActivePlayerAnimationState(
+                      'victory'
+                    )
+                  : this.playerService.updateisAnimationPlaying(false),
+              this.eraScoresAnimationVariables.totalDuration * 1000
+            );
+          }
+          if (player.animationState === 'victory') {
+            setTimeout(
+              () => this.playerService.updateisAnimationPlaying(false),
+              (this.victoryAnimationVariables.victoryDetails.delay +
+                this.victoryAnimationVariables.victoryDetails.duration +
+                2) *
+                1000
+            );
+          }
         }
       }
-    });
+    );
   }
 
   public validateStartTile() {
