@@ -3,6 +3,7 @@
   fxLayoutAlign="center center"
   *ngIf="{
     isGameStarting: isGameStarting$ | async,
+    isGameFinished: isGameFinished$ | async,
     startStage: startStage$ | async,
     hasTileActive: hasTileActive$ | async,
     isPlayerWaiting: isPlayerWaiting$ | async,
@@ -75,7 +76,8 @@
     *ngIf="
       !observables.isActivePlayerPlaying &&
       !observables.isGameStarting &&
-      !observables.isAnimationPlaying
+      !observables.isAnimationPlaying &&
+      !observables.isGameFinished
     "
     class="top banner text-box"
   >
@@ -205,9 +207,14 @@
 <!------------ UP TO YOU ! -------------->
 <article
   fxFlexFill
-  *ngIf="!(isGameStarting$ | async) && isActivePlayerPlaying$ | async"
+  *ngIf="
+    !(isGameStarting$ | async) &&
+    (isActivePlayerPlaying$ | async) &&
+    !(isAnimationPlaying$ | async) &&
+    !(isGameFinished$ | async)
+  "
   class="fade-in-out visual-overlay"
-  style="--animation-duration: 0s; --animation-delay: 0s"
+  style="--animation-duration: 1s; --animation-delay: 1s"
 >
   <section fxFlexFill class="opacity"></section>
   <section
@@ -693,7 +700,9 @@
         fxLayout="row"
         fxLayoutAlign="center center"
       >
-        <mat-icon class="baby" svgIcon="baby"></mat-icon>
+        <button class="baby" mat-icon-button (click)="openSpeciesList()">
+          <mat-icon svgIcon="baby"></mat-icon>
+        </button>
       </header>
       <aside class="click-through" fxFlexFill fxFlex="67"></aside>
       <footer

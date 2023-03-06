@@ -50,14 +50,9 @@ interface PlayerEraScoresAnimationVariables {
   styleUrls: ['./text-overlay.component.scss'],
 })
 export class TextOverlayComponent implements OnInit, OnDestroy {
+  // Constants
   public regions = Regions;
-  public isGameStarting$: Observable<boolean>;
-  public startStage$: Observable<StartStage>;
-  public hasTileActive$: Observable<boolean>;
-  public isPlayerWaiting$: Observable<boolean>;
-  public isActivePlayerPlaying$: Observable<boolean>;
-  public activeSpecies$: Observable<Species>;
-  public winningPlayerSpecies$: Observable<Species[]>;
+  public players: Player[];
   public scoreToggle: boolean = true;
   public regionScoresAnimationVariables: {
     endEraTitle: animation;
@@ -80,9 +75,19 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     winnerStars?: animation;
     victoryDetails?: animation;
   } = {};
-  private animationSwitchSub: Subscription;
-  public players: Player[];
+  // Observables
+  public isGameStarting$: Observable<boolean>;
+  public isGameFinished$: Observable<boolean>;
+  public startStage$: Observable<StartStage>;
+  public isAnimationPlaying$: Observable<boolean>;
+  public isPlayerWaiting$: Observable<boolean>;
+  public isActivePlayerPlaying$: Observable<boolean>;
   public activePlayer$: Observable<Player>;
+  public hasTileActive$: Observable<boolean>;
+  public activeSpecies$: Observable<Species>;
+  public winningPlayerSpecies$: Observable<Species[]>;
+  // Subscriptions
+  private animationSwitchSub: Subscription;
 
   constructor(
     private router: Router,
@@ -100,6 +105,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isGameStarting$ = this.gameQuery.isStarting$;
+    this.isGameFinished$ = this.gameQuery.isGameFinished$;
     this.startStage$ = this.gameQuery.startStage$;
     this.hasTileActive$ = this.tileQuery.hasActive$;
     this.isPlayerWaiting$ =
@@ -107,6 +113,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.isActivePlayerPlaying$ = this.playerQuery.isActivePlayerPlaying$;
     this.activeSpecies$ = this.speciesQuery.selectActive();
     this.winningPlayerSpecies$ = this.playerQuery.winningPlayerSpecies$;
+    this.isAnimationPlaying$ = this.playerQuery.isAnimationPlaying$;
 
     this.players = this.playerQuery.getAll();
     this.activePlayer$ = this.playerQuery.selectActive();
@@ -202,6 +209,10 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   public leave() {
     this.router.navigate(['/home']);
+  }
+
+  public openSpeciesList(): void {
+    this.playService.openSpeciesList();
   }
 
   // Cancels tile focus when using "esc" on keyboard.

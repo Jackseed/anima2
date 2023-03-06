@@ -455,7 +455,7 @@ export class GameService extends CollectionService<GameState> {
 
       // TODO: what if both players win
       if (playerScores[player.id] >= WINNING_POINTS) {
-        batch = this.updatePlayerVictory(player.id, batch);
+        batch = this.updatePlayerVictory(player.id, false, batch);
       }
     });
 
@@ -466,7 +466,7 @@ export class GameService extends CollectionService<GameState> {
         playerScores[playerIds[0]] >= playerScores[playerIds[1]]
           ? playerScores[playerIds[0]]
           : playerScores[playerIds[1]];
-      batch = this.updatePlayerVictory(winnerId, batch);
+      batch = this.updatePlayerVictory(winnerId, false, batch);
     }
 
     return await batch
@@ -491,6 +491,7 @@ export class GameService extends CollectionService<GameState> {
 
   public updatePlayerVictory(
     playerId: string,
+    isAnnihilation: boolean,
     batch: firebase.firestore.WriteBatch
   ): firebase.firestore.WriteBatch {
     const gameId = this.query.getActiveId();
@@ -500,6 +501,20 @@ export class GameService extends CollectionService<GameState> {
       isFinished: true,
       winnerId: playerId,
     });
+
+    if (isAnnihilation) {
+      const players = this.playerQuery.getAll();
+      for (const player of players) {
+        const playerRef = this.db
+          .collection(`games/${gameId}/players`)
+          .doc(player.id).ref;
+
+        batch.update(playerRef, {
+          isAnimationPlaying: true,
+          animationState: 'victory',
+        });
+      }
+    }
 
     return batch;
   }

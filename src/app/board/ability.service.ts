@@ -681,7 +681,7 @@ export class AbilityService {
     let updatedValues: AssimilationValues = defaultValues;
     const species = this.speciesQuery.getEntity(speciesId);
     // If it's a neutral species, doesn't apply ability.
-    if (species.playerId === 'neutral') return;
+    if (!!!species || species.playerId === 'neutral') return;
 
     // If giantism, updates defense.
     if (this.speciesHasAbility(speciesId, 'giantism'))
