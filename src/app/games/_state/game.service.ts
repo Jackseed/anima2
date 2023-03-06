@@ -369,22 +369,24 @@ export class GameService extends CollectionService<GameState> {
 
     batch.update(gameRef, { turnCount: increment });
 
-    if (game.turnCount === 1) {
-      const playerIds = this.playerQuery.allPlayerIds;
-      await this.playNewSpecies();
-      this.updateIsStarting(true);
-      this.switchStartStage('launching');
-      this.playerQuery.switchReadyState(playerIds);
-    }
+    if (game.turnCount === 10) this.prepareNewSpecies();
 
     // Every 3 turns, a new era begins.
-    if ((game.turnCount + 1) % 3 === 0) {
-      this.countScores();
+    // if ((game.turnCount + 1) % 3 === 0) {
+    this.countScores();
 
-      batch.update(gameRef, { eraCount: increment });
-    }
+    batch.update(gameRef, { eraCount: increment });
+    //}
 
     return batch;
+  }
+
+  private async prepareNewSpecies() {
+    const playerIds = this.playerQuery.allPlayerIds;
+    await this.playNewSpecies();
+    this.updateIsStarting(true);
+    this.switchStartStage('launching');
+    this.playerQuery.switchReadyState(playerIds);
   }
 
   public async playNewSpecies() {
@@ -437,6 +439,8 @@ export class GameService extends CollectionService<GameState> {
         if (this.isPlayerControllingRegion(player, region)) {
           playerRegionScores[region.name] = region.score;
           eraScore += region.score;
+        } else {
+          playerRegionScores[region.name] = 0;
         }
       });
       playerRegionScores.totalEra = eraScore;
@@ -446,7 +450,7 @@ export class GameService extends CollectionService<GameState> {
         score: playerScores[player.id],
         regionScores: playerRegionScores,
         isAnimationPlaying: true,
-        animationState: 'regionScore',
+        animationState: 'endEraTitle',
       });
 
       // TODO: what if both players win

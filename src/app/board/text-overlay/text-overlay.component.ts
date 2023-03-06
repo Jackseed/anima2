@@ -6,12 +6,7 @@ import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 // States
-import {
-  Colors,
-  GameQuery,
-  GameService,
-  StartStage,
-} from 'src/app/games/_state';
+import { Colors, GameQuery, StartStage } from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
@@ -91,7 +86,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private gameService: GameService,
     private gameQuery: GameQuery,
     private tileQuery: TileQuery,
     private tileService: TileService,
@@ -118,8 +112,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.activePlayer$ = this.playerQuery.selectActive();
 
     this.animationSwitchSub = this.animSwitchSub;
-
-    this.gameService.countScores();
   }
 
   private get animSwitchSub(): Subscription {
@@ -352,10 +344,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       totalDuration: 100000,
     };
 
-    let delayCount =
-      this.regionScoresAnimationVariables.playerNamesTitle.duration +
-      this.regionScoresAnimationVariables.playerNamesTitle.delay -
-      0.5;
+    let delayCount = 0.2;
     const players = this.playerQuery.getAll();
     for (const player of players) {
       let regionScore = {

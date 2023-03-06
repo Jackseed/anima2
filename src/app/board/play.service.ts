@@ -151,13 +151,15 @@ export class PlayService {
     const activePlayerId = this.playerQuery.getActiveId();
     const game = this.gameQuery.getActive();
 
+    let i = 0;
     for (const tileChoice of game.tileChoices) {
       const species = this.speciesQuery.getEntity(tileChoice.speciesId);
       await this.speciesService.move({
         movingSpecies: species,
-        quantity: DEFAULT_SPECIES_AMOUNT,
+        quantity: i === 1 ? 2 : DEFAULT_SPECIES_AMOUNT,
         destinationId: tileChoice.tileId,
       });
+      i++;
     }
 
     // Removes 1 action for the first player.
