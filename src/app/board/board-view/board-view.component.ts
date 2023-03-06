@@ -1,5 +1,5 @@
 // Angular
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -24,6 +24,7 @@ import { GameQuery } from 'src/app/games/_state';
   styleUrls: ['./board-view.component.scss'],
 })
 export class BoardViewComponent implements OnInit, OnDestroy {
+  @ViewChild('myPinchZoom', { static: false }) myPinchZoom;
   // Variables
   public playingPlayerId: string;
 
@@ -40,6 +41,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   private startGameSub: Subscription;
   private isPlayerChoosingAbilitySub: Subscription;
   private switchToNextStartStateSub: Subscription;
+  private zoomOutSub: Subscription;
 
   constructor(
     private userQuery: UserQuery,
@@ -74,6 +76,14 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.startGameSub = this.playService.reApplyTileChoiceStateSub;
     this.isPlayerChoosingAbilitySub =
       this.playService.getPlayerChoosingAbilitySub;
+    this.zoomOutSub = this.zoomOutSubscription;
+  }
+
+  private get zoomOutSubscription(): Subscription {
+    return this.isAnimationPlaying$.subscribe((isAnimationPlaying) => {
+      if (isAnimationPlaying && this.myPinchZoom.scale > 1)
+        this.myPinchZoom.toggleZoom();
+    });
   }
 
   // PLAY - Master function
@@ -134,5 +144,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.activeSpeciesSub.unsubscribe();
     this.startGameSub.unsubscribe();
     this.isPlayerChoosingAbilitySub.unsubscribe();
+    this.zoomOutSub.unsubscribe();
   }
 }
