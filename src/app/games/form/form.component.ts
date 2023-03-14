@@ -1,5 +1,6 @@
 // Angular
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   Inject,
@@ -26,7 +27,7 @@ import { GameQuery, GameService } from '../_state';
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss'],
 })
-export class FormComponent implements OnInit, OnDestroy {
+export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('gameNameInput') gameNameInput: ElementRef;
   public gameName: string = '';
   public gameId: string;

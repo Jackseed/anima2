@@ -3,10 +3,12 @@
   fxLayoutAlign="center center"
   *ngIf="{
     isGameStarting: isGameStarting$ | async,
+    isGameFinished: isGameFinished$ | async,
     startStage: startStage$ | async,
     hasTileActive: hasTileActive$ | async,
     isPlayerWaiting: isPlayerWaiting$ | async,
-    isActivePlayerPlaying: isActivePlayerPlaying$ | async
+    isActivePlayerPlaying: isActivePlayerPlaying$ | async,
+    isAnimationPlaying: (activePlayer$ | async).isAnimationPlaying
   } as observables"
 >
   <!------------ GAME START -------------->
@@ -71,7 +73,12 @@
   </article>
   <!------------ OTHER PLAYER PLAYING -------------->
   <article
-    *ngIf="!observables.isActivePlayerPlaying && !observables.isGameStarting"
+    *ngIf="
+      !observables.isActivePlayerPlaying &&
+      !observables.isGameStarting &&
+      !observables.isAnimationPlaying &&
+      !observables.isGameFinished
+    "
     class="top banner text-box"
   >
     <h2>Au tour <br />du joueur adverse...</h2>
@@ -125,7 +132,8 @@
 <article
   fxFlexFill
   *ngIf="(isGameStarting$ | async) && (startStage$ | async) === 'tileChoice'"
-  class="animated visual-overlay"
+  class="fade-in-out visual-overlay"
+  style="--animation-duration: 1.25s; --animation-delay: 0.5s"
 >
   <section fxFlexFill class="full-opacity"></section>
   <main
@@ -199,8 +207,14 @@
 <!------------ UP TO YOU ! -------------->
 <article
   fxFlexFill
-  *ngIf="!(isGameStarting$ | async) && isActivePlayerPlaying$ | async"
-  class="animated visual-overlay"
+  *ngIf="
+    !(isGameStarting$ | async) &&
+    (isActivePlayerPlaying$ | async) &&
+    !(isAnimationPlaying$ | async) &&
+    !(isGameFinished$ | async)
+  "
+  class="fade-in-out visual-overlay"
+  style="--animation-duration: 1s; --animation-delay: 1s"
 >
   <section fxFlexFill class="opacity"></section>
   <section
@@ -225,4 +239,499 @@
       <h2>C'est à vous !</h2>
     </section>
   </section>
+</article>
+
+<!------------ REGION SCORE -------------->
+<!------ A - END ERA TITLE ------>
+<main
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'endEraTitle'
+  "
+  class="visual-overlay"
+  fxFlexFill
+>
+  <section class="medium-opacity" fxFlexFill></section>
+  <main
+    class="absolute"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
+    <article class="banner text-box">
+      <h2 class="box-titles">Fin de l'ère !</h2>
+    </article>
+  </main>
+  <aside fxFlexFill class="orange footer-position"></aside>
+</main>
+<!------ B - PLAYER NAME TITLE ------>
+<main
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'playerNamesTitle'
+  "
+  class="visual-overlay"
+  fxFlexFill
+>
+  <section class="medium-opacity" fxFlexFill></section>
+  <main
+    class="absolute"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
+    <article>
+      <h2 class="player-name green">Nurgle</h2>
+    </article>
+    <article class="banner text-box">
+      <h2 class="box-titles">
+        Décompte<br />
+        des points !
+      </h2>
+    </article>
+    <article>
+      <h2 class="player-name red">Jelly0</h2>
+    </article>
+  </main>
+  <aside fxFlexFill class="orange footer-position"></aside>
+</main>
+<!------ C - REGION SCORE ------>
+<main
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'regionScore'
+  "
+  class="visual-overlay"
+  fxFlexFill
+>
+  <main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
+    <section
+      fxFlex="16"
+      fxFlexFill
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      *ngFor="let player of players$ | async; let i = index"
+      [ngClass]="{
+        'top-position': i === 0,
+        'bottom-position': i === 1
+      }"
+    >
+      <article>
+        <mat-icon
+          svgIcon="anima-empty"
+          fxFlexAlign="start"
+          class="anima-empty relative"
+          fxLayoutAlign="center center"
+        >
+          <span
+            *ngFor="let region of regions; first as isFirst; last as isLast"
+            class="absolute region-score increase-fade-in"
+            style="
+            --color: {{ player.colors.primary }};
+            --fade-in-fill-mode: {{ isFirst ? 'forwards' : 'both' }};
+            --counter-from: {{
+              regionScoresAnimationVariables.playerVariables[player.id][
+                region.name
+              ].from
+            }};
+            --counter-to: {{
+              regionScoresAnimationVariables.playerVariables[player.id][
+                region.name
+              ].to
+            }};
+            --animation-duration: {{
+              regionScoresAnimationVariables.subTotalDuration
+            }}s;
+            --animation-delay: {{
+              regionScoresAnimationVariables.playerVariables[player.id][
+                region.name
+              ].delay
+            }}s;
+            --fade-out-delay: {{
+              isLast
+                ? 1000000000
+                : regionScoresAnimationVariables.subTotalDuration +
+                  regionScoresAnimationVariables.playerVariables[player.id][
+                    region.name
+                  ].delay +
+                  0.5
+            }}s;
+          "
+            >+</span
+          >
+        </mat-icon>
+      </article>
+    </section>
+
+    <main class="middle-position" fxFlex="63" fxFlexFill>
+      <section
+        class="absolute"
+        fxFlexFill
+        *ngFor="let player of players$ | async; let i = index"
+      >
+        <div class="relative" fxFlexFill>
+          <section
+            class="region absolute"
+            id="{{ region.name }}"
+            *ngFor="let region of regions"
+          >
+            <article
+              class="absolute"
+              [ngClass]="{ 'bigger-up': i === 0, 'bigger-down': i === 1 }"
+              style="
+            --animation-duration: {{
+                regionScoresAnimationVariables.regionDuration
+              }}s;
+            --animation-delay: {{
+                regionScoresAnimationVariables.playerVariables[player.id][
+                  region.name
+                ].delay
+              }}s;
+        "
+            >
+              <h2 id="region-score">+{{ player.regionScores[region.name] }}</h2>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+    <aside fxFlex="2" fxFlexFill></aside>
+    <aside fxFlexFill fxFlex="1" class="orange footer-position"></aside>
+  </main>
+</main>
+<!------------ ERA SCORE -------------->
+<article
+  fxFlexFill
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'eraScore'
+  "
+  class="visual-overlay fade-in"
+  style="--animation-duration: 1s; --animation-delay: 0s"
+>
+  <section
+    fxFlexFill
+    class="medium-opacity blank-out"
+    style=" --animation-duration: {{
+      eraScoresAnimationVariables.firstScreenTransition.duration
+    }}s; --animation-delay: {{
+      eraScoresAnimationVariables.firstScreenTransition.delay
+    }}s"
+  ></section>
+  <main
+    *ngIf="players$ | async as players"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    class="absolute"
+  >
+    <article
+      fxFlexFill
+      fxFlex="40"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+    >
+      <h2 class="player-name green margin-aside">Nurgle</h2>
+    </article>
+    <article
+      fxFlexFill
+      fxFlex="19"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+    >
+      <mat-icon
+        svgIcon="anima-empty"
+        fxFlexAlign="start"
+        class="anima-empty relative"
+        fxLayoutAlign="center center"
+      >
+        <span
+          class="absolute green pop-in"
+          style="--animation-duration: {{
+            eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
+              .duration
+          }}s; --animation-delay: {{
+            eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
+              .delay
+          }}s"
+          >+{{ players[0].regionScores.totalEra }}</span
+        >
+      </mat-icon>
+      <section
+        class="orange-border"
+        fxFlexFill
+        fxFlex="45"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+      >
+        <h2
+          class="score increase no-margin green"
+          style="
+            --counter-from: {{
+            players[0].score - players[0].regionScores.totalEra
+          }};
+            --counter-to: {{ players[0].score }};
+            --animation-duration: {{
+            eraScoresAnimationVariables.playerVariables[players[0].id]
+              .playerTotal.duration
+          }}s; --animation-delay: {{
+            eraScoresAnimationVariables.playerVariables[players[0].id]
+              .playerTotal.delay
+          }}s
+          "
+        ></h2>
+        <h3 class="no-margin" id="score-line">-</h3>
+        <h2
+          class="score increase no-margin red"
+          style="
+            --counter-from: {{
+            players[1].score - players[1].regionScores.totalEra
+          }};
+            --counter-to: {{ players[1].score }};
+            --animation-duration: {{
+            eraScoresAnimationVariables.playerVariables[players[1].id]
+              .playerTotal.duration
+          }}s; --animation-delay: {{
+            eraScoresAnimationVariables.playerVariables[players[1].id]
+              .playerTotal.delay
+          }}s
+          "
+        ></h2>
+      </section>
+      <mat-icon
+        svgIcon="anima-empty"
+        fxFlexAlign="start"
+        class="anima-empty relative"
+        fxLayoutAlign="center center"
+      >
+        <span
+          class="pop-in absolute red"
+          style="--animation-duration: {{
+            eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
+              .duration
+          }}s; --animation-delay: {{
+            eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
+              .delay
+          }}s"
+          >+{{ players[1].regionScores.totalEra }}</span
+        >
+      </mat-icon>
+    </article>
+    <article
+      fxFlexFill
+      fxFlex="40"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+    >
+      <h2 class="player-name red margin-aside">Jelly0</h2>
+    </article>
+    <aside fxFlexFill fxFlex="1" class="orange"></aside>
+  </main>
+</article>
+
+<!------------ VICTORY -------------->
+<article
+  fxFlexFill
+  *ngIf="(activePlayer$ | async).animationState === 'victory'"
+  class="visual-overlay"
+>
+  <section *ngIf="scoreToggle" fxFlexFill class="full-opacity"></section>
+  <main
+    *ngIf="scoreToggle; else map"
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    class="absolute"
+  >
+    <article fxFlexFill fxFlex="10"></article>
+    <article
+      fxFlexFill
+      fxFlex="10"
+      class="center victory"
+      [ngClass]="{
+        'cling-slide-down': (activePlayer$ | async).isAnimationPlaying
+      }"
+      style="
+      --animation-duration: {{
+        victoryAnimationVariables.victoryTitle.duration
+      }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryTitle.delay }}s"
+    >
+      <h1>VICTOIRE</h1>
+    </article>
+    <article
+      fxFlexFill
+      fxFlex="10"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+      [ngClass]="{
+        'name-slide-down': (activePlayer$ | async).isAnimationPlaying
+      }"
+      style="
+      --animation-duration: {{
+        victoryAnimationVariables.winnerTitle.duration
+      }}s;
+      --animation-delay: {{ victoryAnimationVariables.winnerTitle.delay }}s"
+    >
+      <mat-icon
+        svgIcon="star"
+        class="star rotate-right"
+        style="--animation-delay: {{
+          !(activePlayer$ | async).isAnimationPlaying
+            ? 0
+            : victoryAnimationVariables.winnerStars.delay
+        }}s"
+      ></mat-icon>
+      <h2
+        class="player-name margin-aside"
+        [ngStyle]="{ color: (winner$ | async).colors.primary }"
+      >
+        Nurgle
+      </h2>
+      <mat-icon
+        svgIcon="star"
+        class="star rotate-left"
+        style="--animation-delay: {{
+          !(activePlayer$ | async).isAnimationPlaying
+            ? 0
+            : victoryAnimationVariables.winnerStars.delay
+        }}s"
+      ></mat-icon>
+    </article>
+    <article
+      fxFlexFill
+      fxFlex="20"
+      fxLayoutAlign="center end"
+      [ngClass]="{
+        'fade-in': (activePlayer$ | async).isAnimationPlaying
+      }"
+      style="
+      --animation-duration: {{
+        victoryAnimationVariables.victoryDetails.duration
+      }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
+    >
+      <mat-icon
+        svgIcon="anima-blur"
+        class="anima relative"
+        fxLayoutAlign="center center"
+        ><span class="absolute victory-score">{{
+          (winner$ | async).score
+        }}</span></mat-icon
+      >
+    </article>
+    <article
+      class="player-species"
+      [ngClass]="{
+        'fade-in': (activePlayer$ | async).isAnimationPlaying
+      }"
+      fxFlexFill
+      fxFlex="20"
+      fxLayout="row"
+      style="
+      --animation-duration: {{
+        victoryAnimationVariables.victoryDetails.duration
+      }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
+    >
+      <div
+        *ngFor="let species of winningPlayerSpecies$ | async"
+        class="species relative small-margin-aside"
+        id="winnerSpecies"
+        style="
+        --primary-color: {{ species.colors.primary }};
+        --secondary-color: {{ species.colors.secondary }}"
+      >
+        <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+        <mat-icon
+          class="species-icon"
+          id="species-title"
+          [svgIcon]="species.abilities[0].id"
+        ></mat-icon>
+      </div>
+    </article>
+    <article
+      *ngIf="loser$ | async as loser"
+      fxFlexFill
+      fxFlex="10"
+      fxLayoutAlign="center end"
+      [ngClass]="{
+        'fade-in': (activePlayer$ | async).isAnimationPlaying
+      }"
+      id="no-margin"
+      style="
+      --animation-duration: {{
+        victoryAnimationVariables.victoryDetails.duration
+      }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
+    >
+      <h2
+        class="player-name no-margin"
+        [ngStyle]="{ color: loser.colors.primary }"
+      >
+        Jelly0
+      </h2>
+      <h3 class="no-margin" id="line">-</h3>
+      <h2
+        class="player-name no-margin"
+        [ngStyle]="{ color: loser.colors.primary }"
+      >
+        {{ loser.score }}
+      </h2>
+    </article>
+    <aside fxFlexFill fxFlex="4"></aside>
+    <footer
+      fxFlexFill
+      fxFlex="16"
+      fxLayout="row"
+      fxLayoutAlign="space-around center"
+      [ngClass]="{
+        'fade-in': (activePlayer$ | async).isAnimationPlaying
+      }"
+      style="
+      --animation-duration: {{
+        victoryAnimationVariables.victoryDetails.duration
+      }}s;
+      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
+    >
+      <button class="nav-button" (click)="toggleScoreToggle()">
+        <h2>Voir la carte</h2>
+      </button>
+      <button class="nav-button" (click)="leave()">
+        <h2>Quitter</h2>
+      </button>
+    </footer>
+    <aside fxFlexFill fxFlex="1" class="orange"></aside>
+  </main>
+  <ng-template #map>
+    <main fxFlexFill fxLayout="column" fxLayoutAlign="space-around center">
+      <header
+        class="grey"
+        fxFlexFill
+        fxFlex="16"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+      >
+        <button class="baby" mat-icon-button (click)="openSpeciesList()">
+          <mat-icon svgIcon="baby"></mat-icon>
+        </button>
+      </header>
+      <aside class="click-through" fxFlexFill fxFlex="67"></aside>
+      <footer
+        fxFlexFill
+        fxFlex="16"
+        fxLayout="row"
+        fxLayoutAlign="space-around center"
+        class="grey"
+      >
+        <button class="nav-button" (click)="toggleScoreToggle()">
+          <h2>Voir les scores</h2>
+        </button>
+        <button class="nav-button" (click)="leave()">
+          <h2>Quitter</h2>
+        </button>
+      </footer>
+      <aside fxFlexFill fxFlex="1" class="orange"></aside>
+    </main>
+  </ng-template>
 </article>

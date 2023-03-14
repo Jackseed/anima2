@@ -101,16 +101,54 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getEntity(this.unplayingPlayerId);
   }
 
-  public get opponentId(): string {
-    const playerIds = this.getAll().map((player) => player.id);
-    const activePlayerId = this.getActiveId();
-    return playerIds.filter((id) => id !== activePlayerId)[0];
+  public getPlayerOpponentId(playerId: string): string {
+    const playerIds = this.allPlayerIds;
+    return playerIds.filter((id) => id !== playerId)[0];
   }
 
   public get opponentMainSpecies(): Species {
+    const activePlayerId = this.getActiveId();
     return this.speciesQuery
       .getAll()
-      .filter((species) => species.playerId === this.opponentId)[0];
+      .filter(
+        (species) =>
+          species.playerId === this.getPlayerOpponentId(activePlayerId)
+      )[0];
+  }
+
+  public get winner$(): Observable<Player> {
+    return this.gameQuery.winnerId$.pipe(
+      map((winnerId) => this.getEntity(winnerId))
+    );
+  }
+
+  public get loser$(): Observable<Player> {
+    return this.gameQuery.selectActive().pipe(
+      map(
+        (game) =>
+          game.playerIds.filter((playerId) => playerId !== game.winnerId)[0]
+      ),
+      map((loserId) => this.getEntity(loserId))
+    );
+  }
+
+  public get winningPlayerSpecies$(): Observable<Species[]> {
+    return this.gameQuery.winnerId$.pipe(
+      map((winnerId) => this.getEntity(winnerId)),
+      map((player) => player.speciesIds),
+      map((speciesIds) =>
+        speciesIds.map((speciesId) => this.speciesQuery.getEntity(speciesId))
+      )
+    );
+  }
+
+  public getPlayerSpeciesTileIds(player: Player): number[] {
+    const playerSpeciesTileIds: number[] = [];
+    player.speciesIds.forEach((speciesId) => {
+      const species = this.speciesQuery.getEntity(speciesId);
+      playerSpeciesTileIds.push(...species.tileIds);
+    });
+    return playerSpeciesTileIds;
   }
 
   public get areAbilityChoicesSet$(): Observable<boolean> {
@@ -131,12 +169,13 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getActive().abilityChoice.activeTileId;
   }
 
-  // Gets player's colors
   public getPlayerColors(playerId: string): Colors {
     if (playerId === 'neutral') return NEUTRAL_COLORS;
+    return this.getEntity(playerId).colors;
+  }
 
-    const player = this.getEntity(playerId);
-    return player.colors;
+  public get isAnimationPlaying$(): Observable<boolean> {
+    return this.selectActive().pipe(map((player) => player.isAnimationPlaying));
   }
 
   // TODO: Should be in player service but here to avoid circular dependency...

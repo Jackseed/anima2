@@ -14,6 +14,9 @@ import firebase from 'firebase/app';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
+// Material
+import { MatDialog } from '@angular/material/dialog';
+
 // States
 import {
   Ability,
@@ -25,10 +28,12 @@ import {
 import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
 import { Tile, TileQuery } from '../../tiles/_state';
-import { GameQuery, MAX_SPECIES_ABILITIES } from 'src/app/games/_state';
-
-// Material
-import { MatDialog } from '@angular/material/dialog';
+import {
+  GameQuery,
+  GameService,
+  MAX_SPECIES_ABILITIES,
+} from 'src/app/games/_state';
+import { PlayerQuery } from '../../players/_state/player.query';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/species' })
@@ -37,7 +42,9 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     store: SpeciesStore,
     private query: SpeciesQuery,
     private gameQuery: GameQuery,
+    private gameService: GameService,
     private tileQuery: TileQuery,
+    private playerQuery: PlayerQuery,
     private routerQuery: RouterQuery,
     public dialog: MatDialog
   ) {
@@ -211,7 +218,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const deletedSpeciesRef: DocumentReference<Species> = this.db.doc<Species>(
       `${gameDoc}/species/${deletedSpecies.id}`
     ).ref;
-
     batch.delete(deletedSpeciesRef);
 
     // Adds deleted species' abilities to the attacking one.
@@ -223,6 +229,13 @@ export class SpeciesService extends CollectionService<SpeciesState> {
           batch
         );
       }
+    }
+
+    // If it's the last player's species, ends the game.
+    const player = this.playerQuery.getEntity(deletedSpecies.playerId);
+    if (player.speciesIds.length === 1) {
+      const winnerId = this.playerQuery.getPlayerOpponentId(player.id);
+      batch = this.gameService.updatePlayerVictory(winnerId, true, batch);
     }
 
     return batch;

@@ -14,11 +14,11 @@ export interface Tile {
 }
 export const regionIds = [
   'rockies',
-  'mountains',
-  'islands',
+  'forests',
   'plains',
   'swamps',
-  'forests',
+  'mountains',
+  'islands',
   'blank',
 ] as const;
 export type RegionType = typeof regionIds[number];
@@ -124,11 +124,11 @@ export interface Region {
 
 export const Regions: Region[] = [
   { name: 'rockies', tileIds: rockiesIds, score: 6 },
-  { name: 'mountains', tileIds: mountainsIds, score: 7 },
-  { name: 'islands', tileIds: islandIds, score: 3 },
+  { name: 'forests', tileIds: forestIds, score: 8 },
   { name: 'plains', tileIds: plainsIds, score: 9 },
   { name: 'swamps', tileIds: swampsIds, score: 6 },
-  { name: 'forests', tileIds: forestIds, score: 8 },
+  { name: 'mountains', tileIds: mountainsIds, score: 7 },
+  { name: 'islands', tileIds: islandIds, score: 3 },
 ];
 
 export function createTile(

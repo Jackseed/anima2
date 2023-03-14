@@ -22,6 +22,8 @@ import {
   RED_PRIMARY_COLOR,
   RED_SECONDARY_COLOR,
   TileChoice,
+  WINNING_POINTS,
+  LAST_ERA,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -30,6 +32,7 @@ import { PlayerQuery } from 'src/app/board/players/_state/player.query';
 import {
   createPlayer,
   Player,
+  RegionScores,
 } from 'src/app/board/players/_state/player.model';
 import {
   ABILITIES,
@@ -38,7 +41,6 @@ import {
   neutrals,
   Species,
 } from 'src/app/board/species/_state/species.model';
-import { SpeciesQuery } from 'src/app/board/species/_state/species.query';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games' })
@@ -48,8 +50,7 @@ export class GameService extends CollectionService<GameState> {
     private query: GameQuery,
     private afAuth: AngularFireAuth,
     private tileService: TileService,
-    private playerQuery: PlayerQuery,
-    private speciesQuery: SpeciesQuery
+    private playerQuery: PlayerQuery
   ) {
     super(store);
   }
@@ -279,16 +280,16 @@ export class GameService extends CollectionService<GameState> {
   }
 
   // Adds a new tile choice or clear the tile choices.
-  public updateTileChoice(tileChoice?: TileChoice) {
+  public async updateTileChoice(tileChoice?: TileChoice) {
     const gameId = this.query.getActiveId();
     const gameDoc = this.db.doc(`games/${gameId}`);
     const tileChoices = tileChoice
       ? firebase.firestore.FieldValue.arrayUnion(tileChoice)
       : [];
 
-    gameDoc.update({ tileChoices }).catch((error) => {
-      console.log('Updating tile choice failed: ', error);
-    });
+    return await gameDoc
+      .update({ tileChoices })
+      .catch((error) => console.log('Updating tile choice failed: ', error));
   }
 
   public async switchStartStage(startStage: StartStage) {
@@ -368,21 +369,24 @@ export class GameService extends CollectionService<GameState> {
 
     batch.update(gameRef, { turnCount: increment });
 
-    if (game.turnCount === 1) {
-      const playerIds = this.playerQuery.allPlayerIds;
-      await this.playNewSpecies();
-      this.updateIsStarting(true);
-      this.switchStartStage('launching');
-      this.playerQuery.switchReadyState(playerIds);
-    }
+    if (game.turnCount === 10) this.prepareNewSpecies();
 
     // Every 3 turns, a new era begins.
-    if ((game.turnCount + 1) % 3 === 0) {
-      batch.update(gameRef, { eraCount: increment });
-      this.countAllScore();
-    }
+    // if ((game.turnCount + 1) % 3 === 0) {
+    this.countScores();
+
+    batch.update(gameRef, { eraCount: increment });
+    //}
 
     return batch;
+  }
+
+  private async prepareNewSpecies() {
+    const playerIds = this.playerQuery.allPlayerIds;
+    await this.playNewSpecies();
+    this.updateIsStarting(true);
+    this.switchStartStage('launching');
+    this.playerQuery.switchReadyState(playerIds);
   }
 
   public async playNewSpecies() {
@@ -418,71 +422,101 @@ export class GameService extends CollectionService<GameState> {
     return batch.update(gameRef, { inGameAbilities: inGameAbilitiesUpdate });
   }
 
-  public countAllScore() {
+  public async countScores() {
     const players = this.playerQuery.getAll();
-    const regionScores = {};
     const playerScores = {};
-    const regions = Regions;
-    const gameId = this.query.getActiveId();
-    const batch = this.db.firestore.batch();
-
-    regions.forEach((region) => {
-      regionScores[region.name] = this.countScore(region);
-      players.forEach((player, index: number) => {
-        // Initializes score.
-        if (!playerScores[player.id]) playerScores[player.id] = 0;
-        // Adds region score if it's controled by player.
-        playerScores[player.id] += regionScores[region.name][index]
-          ? region.score
-          : 0;
-      });
-    });
+    const game = this.query.getActive();
+    let batch = this.db.firestore.batch();
 
     players.forEach((player) => {
       const playerRef = this.db
-        .collection(`games/${gameId}/players`)
+        .collection(`games/${game.id}/players`)
         .doc(player.id).ref;
+      let playerRegionScores: RegionScores = {};
+      let eraScore = 0;
 
-      if (playerScores[player.id])
-        batch.update(playerRef, {
-          score: player.score + playerScores[player.id],
-        });
+      Regions.forEach((region) => {
+        if (this.isPlayerControllingRegion(player, region)) {
+          playerRegionScores[region.name] = region.score;
+          eraScore += region.score;
+        } else {
+          playerRegionScores[region.name] = 0;
+        }
+      });
+      playerRegionScores.totalEra = eraScore;
+      playerScores[player.id] = player.score + eraScore;
+
+      batch.update(playerRef, {
+        score: playerScores[player.id],
+        regionScores: playerRegionScores,
+        isAnimationPlaying: true,
+        animationState: 'endEraTitle',
+      });
+
+      // TODO: what if both players win
+      if (playerScores[player.id] >= WINNING_POINTS) {
+        batch = this.updatePlayerVictory(player.id, false, batch);
+      }
     });
 
-    batch.commit().catch((error) => {
-      console.log('Transaction failed: ', error);
-    });
+    // TODO: what if equality?
+    if (game.eraCount === LAST_ERA) {
+      const playerIds = this.playerQuery.allPlayerIds;
+      const winnerId =
+        playerScores[playerIds[0]] >= playerScores[playerIds[1]]
+          ? playerScores[playerIds[0]]
+          : playerScores[playerIds[1]];
+      batch = this.updatePlayerVictory(winnerId, false, batch);
+    }
+
+    return await batch
+      .commit()
+      .catch((error) => console.log('Updating score failed: ', error));
   }
 
-  public countScore(region: Region) {
-    const players: Player[] = this.playerQuery.getAll();
-    const playerTiles = {};
-    // Iterates on player species to add their tileIds to playerTiles.
-    players.forEach((player) =>
-      player.speciesIds.forEach((speciesId) => {
-        const species = this.speciesQuery.getEntity(speciesId);
-        playerTiles.hasOwnProperty(player.id)
-          ? (playerTiles[player.id] = [
-              ...playerTiles[player.id],
-              ...species.tileIds,
-            ])
-          : (playerTiles[player.id] = species.tileIds);
-      })
-    );
+  public isPlayerControllingRegion(player: Player, region: Region): boolean {
+    const playerSpeciesTileIds =
+      this.playerQuery.getPlayerSpeciesTileIds(player);
+    let isPlayerControllingRegion: boolean = true;
 
-    // Creates a boolean to know if the player control the region.
-    const isPlayerControling = new Array(players.length).fill(true);
-
-    // Iterates on region tiles to check if players control it.
     region.tileIds.forEach((tileId) => {
-      players.forEach((player, index: number) => {
-        if (isPlayerControling[index])
-          playerTiles[player.id].includes(tileId)
-            ? (isPlayerControling[index] = true)
-            : (isPlayerControling[index] = false);
-      });
+      if (isPlayerControllingRegion)
+        playerSpeciesTileIds.includes(tileId)
+          ? (isPlayerControllingRegion = true)
+          : (isPlayerControllingRegion = false);
     });
-    return isPlayerControling;
+
+    return isPlayerControllingRegion;
+  }
+
+  public updatePlayerVictory(
+    playerId: string,
+    isAnnihilation: boolean,
+    batch: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch {
+    const gameId = this.query.getActiveId();
+    const gameRef = this.db.collection('games').doc(gameId).ref;
+
+    batch.update(gameRef, {
+      isFinished: true,
+      winnerId: playerId,
+    });
+
+    if (isAnnihilation) {
+      const players = this.playerQuery.getAll();
+      for (const player of players) {
+        const playerRef = this.db
+          .collection(`games/${gameId}/players`)
+          .doc(player.id).ref;
+
+        batch.update(playerRef, {
+          isAnimationPlaying: true,
+          animationState: 'victory',
+        });
+      }
+    }
+
+    return batch;
   }
 
   public updateUiAdaptationMenuOpen(bool: boolean) {

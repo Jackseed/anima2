@@ -509,7 +509,7 @@ export class AbilityService {
   }
 
   // Moves a species to a random adjacent tile.
-  public intimidate(intimidatedSpecies: TileSpecies, tileId: number) {
+  public async intimidate(intimidatedSpecies: TileSpecies, tileId: number) {
     const activeTileSpecies = this.speciesQuery.activeTileSpecies;
     const intimidateValue = this.getAbilityValue('intimidate');
     const adjacentTileIds = this.tileQuery.getAdjacentTileIds(
@@ -524,14 +524,13 @@ export class AbilityService {
         ? intimidatedSpecies.quantity
         : activeTileSpecies.quantity;
 
-    (
-      this.speciesService.move({
-        movingSpecies: intimidatedSpecies,
-        quantity: movingQuantity,
-        destinationId: randomAdjacentTileId,
-        previousTileId: tileId,
-      }) as Promise<void>
-    ).then((_) => this.gameService.updateRemainingActions());
+    await this.speciesService.move({
+      movingSpecies: intimidatedSpecies,
+      quantity: movingQuantity,
+      destinationId: randomAdjacentTileId,
+      previousTileId: tileId,
+    });
+    this.gameService.updateRemainingActions();
   }
 
   // UTILS - Checks species quantity on a tile.
@@ -681,7 +680,7 @@ export class AbilityService {
     let updatedValues: AssimilationValues = defaultValues;
     const species = this.speciesQuery.getEntity(speciesId);
     // If it's a neutral species, doesn't apply ability.
-    if (species.playerId === 'neutral') return;
+    if (!!!species || species.playerId === 'neutral') return;
 
     // If giantism, updates defense.
     if (this.speciesHasAbility(speciesId, 'giantism'))

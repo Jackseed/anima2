@@ -8,11 +8,17 @@ import firebase from 'firebase/app';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 
 // States
-import { ABILITY_CHOICE_AMOUNT, Game, GameQuery, GameService } from 'src/app/games/_state';
+import {
+  ABILITY_CHOICE_AMOUNT,
+  Game,
+  GameQuery,
+  GameService,
+} from 'src/app/games/_state';
 import { Ability } from '../../species/_state';
 import { PlayerQuery } from './player.query';
 import { PlayerStore, PlayerState } from './player.store';
 import { TileQuery } from '../../tiles/_state';
+import { AnimationState } from './player.model';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'games/:gameId/players' })
@@ -106,5 +112,23 @@ export class PlayerService extends CollectionService<PlayerState> {
       },
     });
     return batch;
+  }
+
+  public updateActivePlayerAnimationState(animationState: AnimationState) {
+    const gameId = this.gameQuery.getActiveId();
+    const activePlayer = this.query.getActive();
+    const activePlayerRef = this.db.doc(
+      `games/${gameId}/players/${activePlayer.id}`
+    ).ref;
+    activePlayerRef.update({ animationState });
+  }
+
+  public updateisAnimationPlaying(isAnimationPlaying: boolean) {
+    const gameId = this.gameQuery.getActiveId();
+    const activePlayer = this.query.getActive();
+    const activePlayerRef = this.db.doc(
+      `games/${gameId}/players/${activePlayer.id}`
+    ).ref;
+    activePlayerRef.update({ isAnimationPlaying });
   }
 }

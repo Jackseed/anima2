@@ -73,7 +73,7 @@ export class BoardModule {
     this.matIconRegistry.addSvgIcon(
       'validate',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/validate-button-2.svg'
+        '../../../assets/menu-buttons/validate-button.svg'
       )
     );
     this.matIconRegistry.addSvgIcon(
@@ -124,6 +124,32 @@ export class BoardModule {
       'question-mark',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/menu-buttons/question-mark.svg'
+      )
+    );
+
+    // VICTORY
+    this.matIconRegistry.addSvgIcon(
+      'anima-blur',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/others/anima-blur.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'anima-empty',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/others/anima-empty.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'star',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/others/star.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'baby',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../../assets/others/baby.svg'
       )
     );
 

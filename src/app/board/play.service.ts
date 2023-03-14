@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 // States
 import {
+  DEFAULT_FIRST_PLAYER_SPECIES_AMOUNT,
   DEFAULT_SPECIES_AMOUNT,
   GameQuery,
   GameService,
@@ -105,7 +106,12 @@ export class PlayService {
       return this.gameService.switchStartStage('tileChoice');
     }
     if (game.startStage === 'tileChoice') {
-      await this.playTileChoices();
+      // Activates it only once to avoid moving several time the same species.
+      if (
+        this.playerQuery.isPlayerPlaying() &&
+        game.tileChoices.length === game.playerIds.length
+      )
+        await this.playTileChoices();
       this.gameService.switchStartStage('tileValidated');
       return this.gameService.updateIsStarting(false);
     }
@@ -146,13 +152,18 @@ export class PlayService {
     const activePlayerId = this.playerQuery.getActiveId();
     const game = this.gameQuery.getActive();
 
+    let i = 0;
     for (const tileChoice of game.tileChoices) {
       const species = this.speciesQuery.getEntity(tileChoice.speciesId);
       await this.speciesService.move({
         movingSpecies: species,
-        quantity: DEFAULT_SPECIES_AMOUNT,
+        quantity:
+          i === 1
+            ? DEFAULT_FIRST_PLAYER_SPECIES_AMOUNT
+            : DEFAULT_SPECIES_AMOUNT,
         destinationId: tileChoice.tileId,
       });
+      i++;
     }
 
     // Removes 1 action for the first player.
@@ -177,17 +188,17 @@ export class PlayService {
   }
 
   // GAME STATE - Tile validation
-  public validateStartTile() {
+  public async validateStartTile() {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
     const activePlayerId = this.playerQuery.getActiveId();
 
-    this.playerQuery.switchReadyState([activePlayerId]);
-
-    this.gameService.updateTileChoice({
+    await this.gameService.updateTileChoice({
       speciesId: newSpeciesId,
       tileId: activeTileId,
     });
+
+    this.playerQuery.switchReadyState([activePlayerId]);
 
     this.tileService.removeActive();
   }

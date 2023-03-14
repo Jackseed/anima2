@@ -1,5 +1,5 @@
 // Angular
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 // Material
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,6 +16,7 @@ import { PlayerQuery } from '../players/_state';
 import { Species, SpeciesQuery } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
+import { GameQuery } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-board-view',
@@ -23,6 +24,7 @@ import { AbilityService } from '../ability.service';
   styleUrls: ['./board-view.component.scss'],
 })
 export class BoardViewComponent implements OnInit, OnDestroy {
+  @ViewChild('myPinchZoom', { static: false }) myPinchZoom;
   // Variables
   public playingPlayerId: string;
 
@@ -31,19 +33,23 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public species$: Observable<Species[]>;
   public hasActiveAbility$: Observable<boolean>;
   public activeAbilityNumber$: Observable<number>;
+  public isAnimationPlaying$: Observable<boolean>;
+  public isGameFinished$: Observable<boolean>;
 
   // Subscriptions
   private activeSpeciesSub: Subscription;
   private startGameSub: Subscription;
   private isPlayerChoosingAbilitySub: Subscription;
   private switchToNextStartStateSub: Subscription;
+  private zoomOutSub: Subscription;
 
   constructor(
     private userQuery: UserQuery,
-    private playerQuery: PlayerQuery,
+    private gameQuery: GameQuery,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
+    private playerQuery: PlayerQuery,
     private playService: PlayService,
     private abilityService: AbilityService,
     private snackbar: MatSnackBar,
@@ -60,6 +66,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.hasActiveAbility$ = this.speciesQuery.hasActiveSpeciesActiveAbility$;
     this.activeAbilityNumber$ =
       this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
+    this.isAnimationPlaying$ = this.playerQuery.isAnimationPlaying$;
+    this.isGameFinished$ = this.gameQuery.isGameFinished$;
 
     // Subscriptions init
     this.switchToNextStartStateSub =
@@ -68,11 +76,22 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.startGameSub = this.playService.reApplyTileChoiceStateSub;
     this.isPlayerChoosingAbilitySub =
       this.playService.getPlayerChoosingAbilitySub;
+    this.zoomOutSub = this.zoomOutSubscription;
+  }
+
+  private get zoomOutSubscription(): Subscription {
+    return this.isAnimationPlaying$.subscribe((isAnimationPlaying) => {
+      if (isAnimationPlaying && this.myPinchZoom.scale > 1)
+        this.myPinchZoom.toggleZoom();
+    });
   }
 
   // PLAY - Master function
   // Chooses click action when clicking on a tile.
   public async play(tileId: number) {
+    // Dismisses clicks on finished games.
+    if (this.gameQuery.getActive().isFinished) return;
+
     // Dismisses clicks on blank tiles.
     if (this.tileQuery.isBlank(tileId)) return;
 
@@ -125,5 +144,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.activeSpeciesSub.unsubscribe();
     this.startGameSub.unsubscribe();
     this.isPlayerChoosingAbilitySub.unsubscribe();
+    this.zoomOutSub.unsubscribe();
   }
 }

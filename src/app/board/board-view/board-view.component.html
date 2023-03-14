@@ -1,13 +1,16 @@
 <!------------ HEADER -------------->
-<header>
+<header *ngIf="!(isAnimationPlaying$ | async) && !(isGameFinished$ | async)">
   <app-header fxFlexFill></app-header>
 </header>
 
 <!------------ TEXT HEADER -------------->
 <app-text-overlay></app-text-overlay>
-
 <!------------ MAP -------------->
-<pinch-zoom [double-tap]="false" disableZoomControl="disable">
+<pinch-zoom
+  [double-tap]="false"
+  disableZoomControl="disable"
+  #myPinchZoom="pinchZoom"
+>
   <main>
     <div class="no-font">
       <!------------ TILE -------------->
@@ -71,12 +74,16 @@
 
 <!------------ FOOTER -------------->
 <footer
-  *ngIf="hasActiveAbility$ | async"
+  *ngIf="
+    (hasActiveAbility$ | async) &&
+    !(isAnimationPlaying$ | async) &&
+    !(isGameFinished$ | async)
+  "
   id="active-bar"
   style="--width-value: {{ 25 * (activeAbilityNumber$ | async) }}%"
 >
   <app-active-bar></app-active-bar>
 </footer>
-<footer>
+<footer *ngIf="!(isAnimationPlaying$ | async) && !(isGameFinished$ | async)">
   <app-footer></app-footer>
 </footer>

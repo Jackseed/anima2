@@ -8,6 +8,11 @@
   opacity: 0.8;
 }
 
+.medium-opacity {
+  background-color: white;
+  opacity: 0.5;
+}
+
 .low-opacity {
   background-color: white;
   opacity: 0.3;
@@ -21,6 +26,11 @@
 
 .banner {
   height: fit-content;
+}
+
+.box-titles {
+  line-height: 45px;
+  font-size: calc(2rem + 1.5vmin);
 }
 
 .top {
@@ -53,15 +63,14 @@
 
 .validation-buttons {
   --s: 4rem + 2vmin;
+}
+
+.mat-icon,
+.mat-icon-button {
+  font-size: calc(var(--s));
   width: calc(var(--s));
   height: calc(var(--s));
   line-height: calc(var(--s));
-  .mat-icon {
-    font-size: calc(var(--s));
-    width: calc(var(--s));
-    height: calc(var(--s));
-    line-height: calc(var(--s));
-  }
 }
 
 #validate {
@@ -76,22 +85,375 @@
   left: 15%;
 }
 
-.animated {
-  animation: opacityOnAndOff 0.5s normal forwards step-end;
+.victory {
+  text-shadow: 0 0 0.1em #f59c27;
+  font-size: calc(3.5rem + 1.5vmin);
+  font-weight: 900;
 }
 
-@keyframes opacityOnAndOff {
+.player-name {
+  font-size: calc(3rem + 1.5vmin);
+  font-weight: 900;
+}
+
+.green {
+  color: #21937d;
+}
+
+.star {
+  --s: 2rem + 1vmin;
+}
+
+.anima {
+  --s: 7rem + 3vmin;
+}
+
+.baby {
+  --s: 80%;
+}
+
+.center {
+  text-align: center;
+}
+
+.player-species {
+  padding-top: 5%;
+  justify-content: center;
+}
+
+.margin-aside {
+  margin: 0 7.5%;
+}
+
+.small-margin-aside {
+  margin: 0 2.5%;
+}
+
+#winnerSpecies {
+  max-height: 90%;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+#line {
+  font-size: calc(2.5rem + 1vmin);
+  margin: 0 2% 1% 2%;
+}
+
+.red {
+  color: #d75b62;
+}
+
+.grey {
+  background-color: rgba(242, 242, 242, 0.6);
+}
+
+.click-through {
+  pointer-events: none;
+}
+
+.orange-border {
+  height: 55% !important;
+  border: 0.4rem solid var(--anima-color);
+  background-color: white;
+  padding-top: 3%;
+  z-index: 2;
+}
+
+.region-score {
+  color: var(--color);
+}
+.top-position {
+  position: absolute;
+  top: 2%;
+}
+.middle-position {
+  position: absolute;
+  top: 18%;
+}
+.bottom-position {
+  position: absolute;
+  top: 83%;
+}
+.footer-position {
+  position: absolute;
+  top: 99%;
+}
+.score {
+  font-size: calc(2.5rem + 1.5vmin);
+  font-weight: 700;
+}
+
+#score-line {
+  font-size: calc(1.5rem + 1vmin);
+  margin: 0 2% -2% 2%;
+}
+
+.anima-empty {
+  --s: 6rem + 3vmin;
+  margin-top: 2%;
+  span {
+    margin-top: 35px;
+    font-size: calc(2rem + 1vmin);
+    line-height: calc(2rem + 1vmin);
+    font-weight: bold;
+  }
+}
+
+.victory-score {
+  padding: 2rem;
+  color: white;
+  margin-top: 35px;
+  font-size: calc(2.5rem + 1vmin);
+  line-height: calc(2.5rem + 1vmin);
+  font-weight: bold;
+}
+
+.region {
+  width: 10%;
+  height: 10%;
+}
+
+#rockies {
+  top: 30%;
+  left: 35%;
+  color: var(--rockies-color);
+}
+#mountains {
+  top: 45%;
+  left: 47%;
+  color: var(--mountains-color);
+}
+#islands {
+  top: 27%;
+  left: 62%;
+  color: var(--islands-color);
+}
+#plains {
+  top: 60%;
+  left: 47%;
+  color: var(--plains-color);
+}
+#swamps {
+  top: 52%;
+  left: 65%;
+  color: var(--swamps-color);
+}
+#forests {
+  top: 50%;
+  left: 22%;
+  color: var(--forests-color);
+}
+#region-score {
+  color: inherit;
+  font-size: calc(2rem + 1vmin);
+  line-height: calc(2rem + 1vmin);
+  font-weight: bold;
+  text-shadow: 2px 0 #fff, -2px 0 #fff, 0 2px #fff, 0 -2px #fff, 1px 1px #fff,
+    -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
+}
+
+// @keyframes duration | easing-function | delay | direction | fill-mode | name
+.fade-in-out {
+  animation: var(--animation-duration) linear forwards fade-in,
+    var(--animation-duration) ease-out var(--animation-delay) reverse forwards
+      fade-in;
+}
+
+.fade-in {
+  animation: var(--animation-duration) ease-in var(--animation-delay) both
+    fade-in;
+}
+
+.bigger-up {
+  animation: var(--animation-duration) ease-out var(--animation-delay) both
+    bigger-out;
+}
+.bigger-down {
+  animation: var(--animation-duration) ease-out var(--animation-delay) both
+    bigger-down;
+}
+
+.name-slide-down {
+  animation: var(--animation-duration) var(--animation-delay) both
+    name-slide-down;
+}
+
+.cling-slide-down {
+  animation: var(--animation-duration) ease-in var(--animation-delay) both
+      victory-slide-down,
+    2s linear infinite alternate neon;
+}
+
+.rotate-left {
+  animation: 2s linear infinite var(--animation-delay) spin-left;
+}
+.rotate-right {
+  animation: 2s linear infinite var(--animation-delay) spin-right;
+}
+
+@property --score {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+.increase-fade-in {
+  animation: 0.001s linear var(--animation-delay) var(--fade-in-fill-mode)
+      fade-in,
+    var(--animation-duration) ease-in-out var(--animation-delay) both counter,
+    0.001s reverse var(--fade-out-delay) forwards fade-in;
+  counter-reset: score var(--score);
+}
+
+.increase {
+  animation: var(--animation-duration) ease-in-out var(--animation-delay) both
+    counter;
+  counter-reset: score var(--score);
+}
+.increase::after,
+.increase-fade-in::after {
+  content: counter(score);
+}
+
+.pop-in {
+  animation: var(--animation-duration) linear var(--animation-delay) both pop-in;
+}
+
+.blank-out {
+  animation: var(--animation-duration) linear var(--animation-delay) forwards
+    blank-out;
+}
+
+// ANIMATIONS
+@keyframes fade-in {
+  from {
+    pointer-events: none;
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bigger-out {
   0% {
     opacity: 0;
+    transform: translateY(0%) scale(1, 1);
   }
   1% {
     opacity: 1;
   }
-  50% {
+  90% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    pointer-events: none;
+    transform: scale(1.5, 1.5) translateY(-35%);
+  }
+}
+
+@keyframes bigger-down {
+  0% {
+    opacity: 0;
+    transform: translateY(0%) scale(1, 1);
+  }
+  1% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5, 1.5) translateY(35%);
+  }
+}
+
+@keyframes victory-slide-down {
+  0% {
+    transform: translateY(-200%);
+  }
+  40% {
+    transform: translateY(10%);
+  }
+  60% {
+    transform: translateY(3%);
+  }
+  70% {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes name-slide-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-40%);
+  }
+  70% {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes spin-left {
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes spin-right {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes neon {
+  from {
+    text-shadow: 0 0 0.1em #f59c27;
+  }
+  to {
+    text-shadow: 0 0 0.7em #f59c27;
+  }
+}
+
+@keyframes counter {
+  from {
+    --score: var(--counter-from);
+  }
+  to {
+    --score: var(--counter-to);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.2, 0.2);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.5, 1.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(0.8, 0.8);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes blank-out {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
   }
 }
