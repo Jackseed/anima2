@@ -242,7 +242,7 @@
 </article>
 
 <!------------ REGION SCORE -------------->
-
+<!------ A - END ERA TITLE ------>
 <main
   *ngIf="
     (activePlayer$ | async).isAnimationPlaying &&
@@ -264,6 +264,7 @@
   </main>
   <aside fxFlexFill class="orange footer-position"></aside>
 </main>
+<!------ B - PLAYER NAME TITLE ------>
 <main
   *ngIf="
     (activePlayer$ | async).isAnimationPlaying &&
@@ -294,6 +295,7 @@
   </main>
   <aside fxFlexFill class="orange footer-position"></aside>
 </main>
+<!------ C - REGION SCORE ------>
 <main
   *ngIf="
     (activePlayer$ | async).isAnimationPlaying &&
@@ -308,7 +310,7 @@
       fxFlexFill
       fxLayout="column"
       fxLayoutAlign="center center"
-      *ngFor="let player of players; let i = index"
+      *ngFor="let player of players$ | async; let i = index"
       [ngClass]="{
         'top-position': i === 0,
         'bottom-position': i === 1
@@ -365,7 +367,7 @@
       <section
         class="absolute"
         fxFlexFill
-        *ngFor="let player of players; let i = index"
+        *ngFor="let player of players$ | async; let i = index"
       >
         <div class="relative" fxFlexFill>
           <section

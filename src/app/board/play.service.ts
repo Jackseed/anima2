@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 // States
 import {
+  DEFAULT_FIRST_PLAYER_SPECIES_AMOUNT,
   DEFAULT_SPECIES_AMOUNT,
   GameQuery,
   GameService,
@@ -156,7 +157,10 @@ export class PlayService {
       const species = this.speciesQuery.getEntity(tileChoice.speciesId);
       await this.speciesService.move({
         movingSpecies: species,
-        quantity: i === 1 ? 2 : DEFAULT_SPECIES_AMOUNT,
+        quantity:
+          i === 1
+            ? DEFAULT_FIRST_PLAYER_SPECIES_AMOUNT
+            : DEFAULT_SPECIES_AMOUNT,
         destinationId: tileChoice.tileId,
       });
       i++;

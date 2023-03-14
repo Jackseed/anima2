@@ -54,6 +54,10 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public regions = Regions;
   public players: Player[];
   public scoreToggle: boolean = true;
+  // Region score variables
+  public regionAnimationDuration = 0.7;
+  public subTotalDelay = this.regionAnimationDuration / 2;
+  public firstTitlesDuration = 1.3;
   public regionScoresAnimationVariables: {
     endEraTitle: animation;
     playerNamesTitle: animation;
@@ -133,15 +137,16 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       ([player, game]) => {
         if (player.isAnimationPlaying) {
           if (player.animationState === 'endEraTitle') {
-            setTimeout(
-              () =>
-                this.playerService.updateActivePlayerAnimationState(
-                  'playerNamesTitle'
-                ),
-              (this.regionScoresAnimationVariables.endEraTitle.duration +
-                this.regionScoresAnimationVariables.endEraTitle.delay) *
-                1000
-            );
+            setTimeout(() => {
+              this.playerService.updateActivePlayerAnimationState(
+                'playerNamesTitle'
+              );
+              this.setRegionScoresAnimationVariables(
+                this.firstTitlesDuration,
+                this.regionAnimationDuration,
+                this.subTotalDelay
+              );
+            }, (this.regionScoresAnimationVariables.endEraTitle.duration + this.regionScoresAnimationVariables.endEraTitle.delay) * 1000);
           }
           if (player.animationState === 'playerNamesTitle') {
             setTimeout(
@@ -245,13 +250,10 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   public initAnimationVariables() {
     // Region score variables
-    const regionAnimationDuration = 0.7;
-    const subTotalDelay = regionAnimationDuration / 2;
-    const firstTitlesDuration = 1.3;
     this.setRegionScoresAnimationVariables(
-      firstTitlesDuration,
-      regionAnimationDuration,
-      subTotalDelay
+      this.firstTitlesDuration,
+      this.regionAnimationDuration,
+      this.subTotalDelay
     );
 
     // Era score variables
