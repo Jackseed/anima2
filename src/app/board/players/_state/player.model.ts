@@ -6,7 +6,6 @@ export interface Player {
   speciesIds: string[];
   score: number;
   regionScores: RegionScores;
-  tileIds?: number[];
   colors: Colors;
   abilityChoice: {
     isChoosingAbility: boolean;
@@ -53,7 +52,6 @@ export function createPlayer(
       swamps: 0,
       forests: 0,
     },
-    tileIds: [],
     colors,
     abilityChoice: {
       isChoosingAbility: false,

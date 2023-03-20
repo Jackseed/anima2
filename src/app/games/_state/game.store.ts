@@ -9,6 +9,7 @@ import {
 import { Game } from './game.model';
 
 export type GameUI = {
+  id: string;
   isAdaptationMenuOpen: boolean;
 };
 
@@ -23,7 +24,17 @@ export class GameStore extends EntityStore<GameState> {
   ui: EntityUIStore<GameUIState>;
   constructor() {
     super();
-    const defaults = { isAdaptationMenuOpen: false };
+    const defaults = (entity) => ({ isAdaptationMenuOpen: false });
     this.createUIStore().setInitialEntityState(defaults);
+  }
+
+  public setDefaultUIStoreAndActivate(storeId: string) {
+    this.ui.set([
+      {
+        id: storeId,
+        isAdaptationMenuOpen: false,
+      },
+    ]);
+    this.ui.setActive(storeId);
   }
 }

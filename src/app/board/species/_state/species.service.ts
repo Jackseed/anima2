@@ -98,7 +98,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     // If species is already there, updates quantity.
     else {
       const speciesIndex = tile.species.findIndex(
-        (specie) => specie.id === speciesId
+        (individualSpecies) => individualSpecies.id === speciesId
       );
       updatedSpecies = JSON.parse(JSON.stringify(tile.species));
       const existingQuantity = updatedSpecies[speciesIndex].quantity;
@@ -123,10 +123,10 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const gameDoc = `games/${gameId}`;
     let batch = existingBatch ? existingBatch : this.db.firestore.batch();
 
-    // First, updates tileIds on the species doc.
+    // Updates tileIds on the species doc.
     batch = this.batchUpdateMovingSpeciesTileIds(gameDoc, batch, moveParams);
 
-    // Then, updates tile docs with new species quantity.
+    // Updates tile docs with new species quantity.
     batch = this.batchUpdateTileWithSpeciesQuantity(
       gameDoc,
       batch,
@@ -136,6 +136,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     );
 
     if (moveParams.previousTileId) {
+      // Updates previous tile if it's a move.
       batch = this.batchUpdateTileWithSpeciesQuantity(
         gameDoc,
         batch,
@@ -145,7 +146,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       );
     }
     if (moveParams.migrationUsed) {
-      // Finally, updates remaining migrations, if it's a move.
+      // Updates remaining migrations if it's a move.
       batch = this.batchUpdateRemainingMigrations(
         gameDoc,
         batch,
@@ -192,14 +193,17 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     // Iterates as much as species to move.
     for (let i = 0; i < Math.abs(moveParams.quantity); i++) {
       // Adds 1 species to the new tile.
-      if (moveParams.quantity > 0) movingSpeciesTileIds.push(moveParams.destinationId);
-      // Removes 1 species to previous tile id or if quantity is negative.
-      if (moveParams.quantity < 0 || moveParams.previousTileId) {
-        const tileId = moveParams.previousTileId
-          ? moveParams.previousTileId
-          : moveParams.destinationId;
-        const index = movingSpeciesTileIds.indexOf(tileId);
-        index !== -1 ? movingSpeciesTileIds.splice(index, 1) : (movingSpeciesTileIds = []);
+      if (moveParams.quantity > 0)
+        movingSpeciesTileIds.push(moveParams.destinationId);
+      // Removes 1 species to previous tile id
+      if (moveParams.previousTileId) {
+        const index = movingSpeciesTileIds.indexOf(moveParams.previousTileId);
+        if (index !== -1) movingSpeciesTileIds.splice(index, 1);
+      }
+      // Removes 1 species if quantity is negative.
+      if (moveParams.quantity < 0) {
+        const index = movingSpeciesTileIds.indexOf(moveParams.destinationId);
+        if (index !== -1) movingSpeciesTileIds.splice(index, 1);
       }
     }
     // Deletes species & adds its abilities if no more individuals.
@@ -231,13 +235,24 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       }
     }
 
-    // If it's the last player's species, ends the game.
-    const player = this.playerQuery.getEntity(deletedSpecies.playerId);
-    if (player.speciesIds.length === 1) {
-      const winnerId = this.playerQuery.getPlayerOpponentId(player.id);
-      batch = this.gameService.updatePlayerVictory(winnerId, true, batch);
+    if (deletedSpecies.playerId !== 'neutral') {
+      // If it's a player's species, removes it from its stack.
+      const playerRef = this.db.doc(
+        `${gameDoc}/players/${deletedSpecies.playerId}`
+      ).ref;
+      const speciesIds = firebase.firestore.FieldValue.arrayRemove(
+        deletedSpecies.id
+      );
+      batch.update(playerRef, {
+        speciesIds,
+      });
+      // If it's the last player's species, ends the game.
+      const player = this.playerQuery.getEntity(deletedSpecies.playerId);
+      if (player.speciesIds.length === 1) {
+        const winnerId = this.playerQuery.getPlayerOpponentId(player.id);
+        batch = this.gameService.updatePlayerVictory(winnerId, true, batch);
+      }
     }
-
     return batch;
   }
 

@@ -13,7 +13,7 @@ import { map } from 'rxjs/operators';
 import { UserQuery } from 'src/app/auth/_state';
 import { PlayService } from '../play.service';
 import { PlayerQuery } from '../players/_state';
-import { Species, SpeciesQuery } from '../species/_state';
+import { SpeciesQuery } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
 import { GameQuery } from 'src/app/games/_state';
@@ -30,7 +30,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   // Observables
   public tiles$: Observable<Tile[]>;
-  public species$: Observable<Species[]>;
   public hasActiveAbility$: Observable<boolean>;
   public activeAbilityNumber$: Observable<number>;
   public isAnimationPlaying$: Observable<boolean>;

@@ -55,7 +55,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public players: Player[];
   public scoreToggle: boolean = true;
   // Region score variables
-  public regionAnimationDuration = 0.7;
+  public regionAnimationDuration = 0.5;
   public subTotalDelay = this.regionAnimationDuration / 2;
   public firstTitlesDuration = 1.3;
   public regionScoresAnimationVariables: {

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 // Rxjs
 import { combineLatest, Subscription } from 'rxjs';
-import { first, map, tap } from 'rxjs/operators';
+import { debounceTime, first, map, tap } from 'rxjs/operators';
 
 // Material
 import { MatDialog } from '@angular/material/dialog';
@@ -49,7 +49,7 @@ export class PlayService {
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
     private abilityService: AbilityService,
-    public dialog: MatDialog
+    private dialog: MatDialog
   ) {}
 
   public get setActiveSpeciesSub(): Subscription {
@@ -92,13 +92,17 @@ export class PlayService {
   private async switchToNextStartStage() {
     const playerIds = this.playerQuery.allPlayerIds;
     const game = this.gameQuery.getActive();
+    const activePlayer = this.playerQuery.getActive();
+
+    // Removes serial launches.
+    if (!activePlayer.isWaitingForNextStartStage) return;
 
     // Switches players as not ready anymore.
     this.playerQuery.switchReadyState(playerIds);
 
     if (game.startStage === 'launching') {
       const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
-      this.gameService.switchStartStage('abilityChoice');
+      await this.gameService.switchStartStage('abilityChoice');
       return this.setupAdaptation(newSpeciesId);
     }
     if (game.startStage === 'abilityChoice') {
@@ -124,7 +128,8 @@ export class PlayService {
         .pipe(
           tap((arePlayerReady) => {
             if (arePlayerReady) this.switchToNextStartStage();
-          })
+          }),
+          debounceTime(500)
         )
         .subscribe();
 
@@ -232,9 +237,7 @@ export class PlayService {
   }
 
   public async openAdaptationMenu(adaptatingSpeciesId: string): Promise<void> {
-    const isGameStarting = this.gameQuery.isStarting;
-    const activePlayerId = this.playerQuery.getActiveId();
-    const dialogRef = this.dialog.open(AdaptationMenuComponent, {
+    this.dialog.open(AdaptationMenuComponent, {
       data: adaptatingSpeciesId,
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
@@ -243,15 +246,6 @@ export class PlayService {
       height: '100%',
       width: '100%',
     });
-
-    // If the game is starting, change the game state on dialog close.
-    if (isGameStarting)
-      dialogRef
-        .afterClosed()
-        .pipe(first())
-        .subscribe(() => {
-          this.playerQuery.switchReadyState([activePlayerId]);
-        });
   }
 
   public setupAssimilation(attackedTileId?: number) {

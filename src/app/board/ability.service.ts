@@ -12,18 +12,18 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 // Material
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
 import {
   ADAPATION_SPECIES_NEEDED,
+  DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
   DEFAULT_REMAINING_MIGRATIONS,
   GameQuery,
   GameService,
   MAX_SPECIES_ABILITIES,
 } from '../games/_state';
-import { PlayerService } from './players/_state';
+import { PlayerQuery, PlayerService } from './players/_state';
 import {
   ABILITIES,
   Ability,
@@ -52,13 +52,13 @@ export class AbilityService {
     private db: AngularFirestore,
     private gameQuery: GameQuery,
     private gameService: GameService,
+    private playerQuery: PlayerQuery,
     private playerService: PlayerService,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
-    private snackbar: MatSnackBar,
-    public dialog: MatDialog
+    private snackbar: MatSnackBar
   ) {}
 
   // MIGRATION
@@ -231,11 +231,9 @@ export class AbilityService {
 
   // ASSIMILATION
   // Removes one species from a tile and adds one to the active species.
-  // TODO: refactor to binds the 2 operations + then
   public async assimilate(removedSpeciesId: string, removedTileId: number) {
     const removedSpecies = this.speciesQuery.getEntity(removedSpeciesId);
     const activeSpecies = this.speciesQuery.getActive();
-    const activeTileId = Number(this.tileQuery.getActiveId());
     const assimilationValues = this.applyAssimilationAbilitiesToSpecies(
       createAssimilationValues(),
       activeSpecies.id
@@ -244,19 +242,25 @@ export class AbilityService {
     this.tileService.removeAttackable();
 
     // Removes the assimilated species.
-    await (this.speciesService.move({
-      movingSpecies: removedSpecies,
-      quantity: assimilationValues.assimilatedQuantity,
-      destinationId: removedTileId,
-      attackingSpecies: activeSpecies,
-    }) as Promise<void>);
-    // Adds quantity to the assimilating species.
-    await (this.speciesService.move({
-      movingSpecies: activeSpecies,
-      quantity: assimilationValues.createdQuantity,
-      destinationId: activeTileId,
-    }) as Promise<void>);
-    this.gameService.updateRemainingActions();
+    (
+      this.speciesService.move({
+        movingSpecies: removedSpecies,
+        quantity: assimilationValues.assimilatedQuantity,
+        destinationId: removedTileId,
+        attackingSpecies: activeSpecies,
+      }) as Promise<void>
+    )
+      // Adds quantity to the assimilating species after getting the updated tile.
+      .then((_) => {
+        const activeTileId = Number(this.tileQuery.getActiveId());
+        (
+          this.speciesService.move({
+            movingSpecies: activeSpecies,
+            quantity: assimilationValues.createdQuantity,
+            destinationId: activeTileId,
+          }) as Promise<void>
+        ).then((_) => this.gameService.updateRemainingActions());
+      });
   }
 
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
@@ -387,9 +391,6 @@ export class AbilityService {
     const adaptingSpecies = this.speciesQuery.getEntity(speciesId);
     const isGameStarting = this.gameQuery.isStarting;
 
-    // Removes adaptation menu.
-    this.gameService.updateUiAdaptationMenuOpen(false);
-
     // Updates game abilities used.
     batch = this.gameService.saveAbilityUsedByBatch(ability, batch);
 
@@ -423,6 +424,9 @@ export class AbilityService {
     batch
       .commit()
       .then(() => {
+        const activePlayerId = this.playerQuery.getActiveId();
+        if (isGameStarting) this.playerQuery.switchReadyState([activePlayerId]);
+        this.gameService.updateUiAdaptationMenuOpen(false);
         this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
           duration: 800,
           panelClass: 'orange-snackbar',
@@ -657,8 +661,15 @@ export class AbilityService {
         // & that the species has less abilities than the max.
         if (action === 'adaptation') {
           const activeSpecies = this.speciesQuery.getActive();
-          if (activeSpecies.abilities.length === MAX_SPECIES_ABILITIES)
+          const game = this.gameQuery.getActive();
+          if (
+            activeSpecies.abilities.length === MAX_SPECIES_ABILITIES ||
+            activeSpecies.tileIds.length <
+              ADAPATION_SPECIES_NEEDED +
+                DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS
+          )
             return false;
+          if (game.inGameAbilities.length === ABILITIES.length) return false;
           return this.isSpeciesQuantityGreatherThan(
             activeTileSpecies.id,
             Number(tile.id),
@@ -680,7 +691,7 @@ export class AbilityService {
     let updatedValues: AssimilationValues = defaultValues;
     const species = this.speciesQuery.getEntity(speciesId);
     // If it's a neutral species, doesn't apply ability.
-    if (!!!species || species.playerId === 'neutral') return;
+    if (!!!species || species.playerId === 'neutral') return updatedValues;
 
     // If giantism, updates defense.
     if (this.speciesHasAbility(speciesId, 'giantism'))

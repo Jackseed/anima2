@@ -1,9 +1,12 @@
 import firebase from 'firebase/app';
-import { Ability } from 'src/app/board/species/_state';
+import { Ability, AbilityId } from 'src/app/board/species/_state';
+
+// TESTING
+export const TESTING_ABILITY: AbilityId | '' = '';
 
 // GAME CONSTANTS
 export const DEFAULT_MOVING_QUANTITY = 1;
-export const DEFAULT_FIRST_PLAYER_SPECIES_AMOUNT = 2;
+export const DEFAULT_FIRST_PLAYER_SPECIES_AMOUNT = 4;
 export const DEFAULT_SPECIES_AMOUNT = 4;
 export const ABILITY_CHOICE_AMOUNT = 2;
 export const MAX_SPECIES_ABILITIES = 3;

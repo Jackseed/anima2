@@ -24,6 +24,7 @@ import {
   TileChoice,
   WINNING_POINTS,
   LAST_ERA,
+  TESTING_ABILITY,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -228,6 +229,8 @@ export class GameService extends CollectionService<GameState> {
   // Needs to receive existing abilities while game creation,
   // gets it from game object afterwards.
   public getRandomAbility(existingAbilities?: Ability[]): Ability {
+    // App testing cheat code
+    const testingAbilityId: string = TESTING_ABILITY;
     const usedAbilities = existingAbilities
       ? existingAbilities
       : this.query.getActive().inGameAbilities;
@@ -239,7 +242,11 @@ export class GameService extends CollectionService<GameState> {
     );
 
     const randomAbility =
-      availableAbilities[Math.floor(Math.random() * availableAbilities.length)];
+      testingAbilityId !== ''
+        ? ABILITIES.filter((ability) => ability.id === testingAbilityId)[0]
+        : availableAbilities[
+            Math.floor(Math.random() * availableAbilities.length)
+          ];
 
     return randomAbility;
   }
@@ -268,10 +275,6 @@ export class GameService extends CollectionService<GameState> {
     await batch
       .commit()
       .catch((error: any) => console.log('Adding a player failed: ', error));
-  }
-
-  public setActive(gameId: string): void {
-    this.store.setActive(gameId);
   }
 
   public removeActive(): void {
@@ -520,6 +523,7 @@ export class GameService extends CollectionService<GameState> {
   }
 
   public updateUiAdaptationMenuOpen(bool: boolean) {
-    this.store.ui.update(null, { isAdaptationMenuOpen: bool });
+    const gameId = this.query.getActiveId();
+    this.store.ui.update(gameId, { isAdaptationMenuOpen: bool });
   }
 }
