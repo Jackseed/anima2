@@ -5,6 +5,9 @@ import { Router } from '@angular/router';
 // AngularFire
 import { AngularFireAuth } from '@angular/fire/auth';
 
+// Akita
+import { resetStores } from '@datorama/akita';
+
 // Rxjs
 import { Observable } from 'rxjs';
 
@@ -16,7 +19,6 @@ import { Game, GameQuery, GameService } from '../_state';
 
 // Components
 import { FormComponent } from '../form/form.component';
-import { PlayerService } from 'src/app/board/players/_state';
 
 @Component({
   selector: 'app-list',
@@ -32,8 +34,7 @@ export class ListComponent implements OnInit {
     private dialog: MatDialog,
     private afAuth: AngularFireAuth,
     private gameQuery: GameQuery,
-    private gameService: GameService,
-    private playerService: PlayerService
+    private gameService: GameService
   ) {}
 
   ngOnInit(): void {
@@ -44,6 +45,8 @@ export class ListComponent implements OnInit {
     const userId = (await this.afAuth.currentUser).uid;
     const isUserAGamePlayer = game.playerIds.includes(userId);
     const isGameFull = this.gameQuery.isGameFull(game.id);
+
+    if (!isUserAGamePlayer && isGameFull) return;
 
     // Links to the game.
     if (isUserAGamePlayer && isGameFull) return this.navigateToGame(game.id);
@@ -58,6 +61,7 @@ export class ListComponent implements OnInit {
 
   private navigateToGame(gameId: string) {
     this.close();
+    resetStores({ exclude: ['game'] });
     this.router.navigate(['games', gameId]);
   }
 

@@ -58,7 +58,8 @@ export class GameQuery extends QueryEntity<GameState> {
   }
 
   public get isAdaptationMenuOpen(): boolean {
-    return this.ui.getAll()[0].isAdaptationMenuOpen;
+    const gameId = this.getActiveId();
+    return this.ui.getEntity(gameId).isAdaptationMenuOpen;
   }
 
   public get remainingActionsArray$(): Observable<number[]> {

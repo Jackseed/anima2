@@ -7,9 +7,6 @@ import { Router } from '@angular/router';
 import { MatIconRegistry } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 
-// Akita
-import { resetStores } from '@datorama/akita';
-
 // States
 import { GameService } from '../_state/game.service';
 
@@ -24,7 +21,6 @@ import { ListComponent } from '../list/list.component';
 })
 export class HomepageComponent implements OnInit {
   constructor(
-    private router: Router,
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     private dialog: MatDialog,
@@ -60,15 +56,5 @@ export class HomepageComponent implements OnInit {
       backdropClass: 'transparent-backdrop',
       autoFocus: false,
     });
-  }
-
-  public async startGame() {
-    resetStores({ exclude: ['game'] });
-    this.gameService
-      .createNewGame('')
-      .then((gameId: string) => {
-        this.router.navigate([`/games/${gameId}`]);
-      })
-      .catch((error: any) => console.log('Game creation failed: ', error));
   }
 }

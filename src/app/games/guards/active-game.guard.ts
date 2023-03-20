@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { GameService, GameState } from '../_state';
+import { GameService, GameState, GameStore } from '../_state';
 import { CollectionGuard, CollectionGuardConfig } from 'akita-ng-fire';
 import { ActivatedRouteSnapshot } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 @CollectionGuardConfig({ awaitSync: true })
 export class ActiveGameGuard extends CollectionGuard<GameState> {
-  constructor(service: GameService) {
+  constructor(service: GameService, private store: GameStore) {
     super(service);
   }
 
-  // Sync and set active
+  // Syncs and sets active both stores.
   sync(next: ActivatedRouteSnapshot) {
-    return this.service.syncActive({ id: next.params.id });
+    const id = next.params.id;
+    this.store.setDefaultUIStoreAndActivate(id);
+    return this.service.syncActive({ id });
   }
 }
