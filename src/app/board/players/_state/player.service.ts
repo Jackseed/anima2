@@ -54,10 +54,12 @@ export class PlayerService extends CollectionService<PlayerState> {
 
         // Gets random abilities and save it as used, to avoid duplicates.
         for (let i = 0; i < ABILITY_CHOICE_AMOUNT; i++) {
-          randomAbilities.push(
-            this.gameService.getRandomAbility(usedAbilities)
-          );
-          usedAbilities.push(randomAbilities[i]);
+          const randomAbility =
+            this.gameService.getRandomAbility(usedAbilities);
+          if (randomAbility) {
+            randomAbilities.push(randomAbility);
+            usedAbilities.push(randomAbility);
+          }
         }
         // Updates player's ability choice
         const playerRef = this.db.doc(

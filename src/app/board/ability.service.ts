@@ -657,8 +657,10 @@ export class AbilityService {
         // & that the species has less abilities than the max.
         if (action === 'adaptation') {
           const activeSpecies = this.speciesQuery.getActive();
+          const game = this.gameQuery.getActive();
           if (activeSpecies.abilities.length === MAX_SPECIES_ABILITIES)
             return false;
+          if (game.inGameAbilities.length === ABILITIES.length) return false;
           return this.isSpeciesQuantityGreatherThan(
             activeTileSpecies.id,
             Number(tile.id),
