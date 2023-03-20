@@ -189,7 +189,6 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     let movingSpeciesTileIds: number[] = JSON.parse(
       JSON.stringify(moveParams.movingSpecies.tileIds)
     );
-    console.log('moving species tileIds: ', movingSpeciesTileIds);
     // Iterates as much as species to move.
     for (let i = 0; i < Math.abs(moveParams.quantity); i++) {
       // Adds 1 species to the new tile.

@@ -18,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 // States
 import {
   ADAPATION_SPECIES_NEEDED,
+  DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
   DEFAULT_REMAINING_MIGRATIONS,
   GameQuery,
   GameService,
@@ -658,7 +659,12 @@ export class AbilityService {
         if (action === 'adaptation') {
           const activeSpecies = this.speciesQuery.getActive();
           const game = this.gameQuery.getActive();
-          if (activeSpecies.abilities.length === MAX_SPECIES_ABILITIES)
+          if (
+            activeSpecies.abilities.length === MAX_SPECIES_ABILITIES ||
+            activeSpecies.tileIds.length <
+              ADAPATION_SPECIES_NEEDED +
+                DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS
+          )
             return false;
           if (game.inGameAbilities.length === ABILITIES.length) return false;
           return this.isSpeciesQuantityGreatherThan(

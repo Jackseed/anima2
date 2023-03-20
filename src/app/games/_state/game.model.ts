@@ -1,5 +1,8 @@
 import firebase from 'firebase/app';
-import { Ability } from 'src/app/board/species/_state';
+import { Ability, AbilityId } from 'src/app/board/species/_state';
+
+// TESTING
+export const TESTING_ABILITY: AbilityId | '' = '';
 
 // GAME CONSTANTS
 export const DEFAULT_MOVING_QUANTITY = 1;

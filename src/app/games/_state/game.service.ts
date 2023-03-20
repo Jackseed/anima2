@@ -24,6 +24,7 @@ import {
   TileChoice,
   WINNING_POINTS,
   LAST_ERA,
+  TESTING_ABILITY,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -229,7 +230,7 @@ export class GameService extends CollectionService<GameState> {
   // gets it from game object afterwards.
   public getRandomAbility(existingAbilities?: Ability[]): Ability {
     // App testing cheat code
-    const testingAbilityId: string = 'range';
+    const testingAbilityId: string = TESTING_ABILITY;
     const usedAbilities = existingAbilities
       ? existingAbilities
       : this.query.getActive().inGameAbilities;

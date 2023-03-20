@@ -98,7 +98,7 @@ export class PlayService {
 
     if (game.startStage === 'launching') {
       const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
-      this.gameService.switchStartStage('abilityChoice');
+      await this.gameService.switchStartStage('abilityChoice');
       return this.setupAdaptation(newSpeciesId);
     }
     if (game.startStage === 'abilityChoice') {
