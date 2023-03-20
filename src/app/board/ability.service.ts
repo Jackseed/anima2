@@ -12,7 +12,6 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 // Material
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // States
@@ -24,7 +23,7 @@ import {
   GameService,
   MAX_SPECIES_ABILITIES,
 } from '../games/_state';
-import { PlayerService } from './players/_state';
+import { PlayerQuery, PlayerService } from './players/_state';
 import {
   ABILITIES,
   Ability,
@@ -53,13 +52,13 @@ export class AbilityService {
     private db: AngularFirestore,
     private gameQuery: GameQuery,
     private gameService: GameService,
+    private playerQuery: PlayerQuery,
     private playerService: PlayerService,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
-    private snackbar: MatSnackBar,
-    public dialog: MatDialog
+    private snackbar: MatSnackBar
   ) {}
 
   // MIGRATION
@@ -235,7 +234,6 @@ export class AbilityService {
   public async assimilate(removedSpeciesId: string, removedTileId: number) {
     const removedSpecies = this.speciesQuery.getEntity(removedSpeciesId);
     const activeSpecies = this.speciesQuery.getActive();
-    const activeTileId = Number(this.tileQuery.getActiveId());
     const assimilationValues = this.applyAssimilationAbilitiesToSpecies(
       createAssimilationValues(),
       activeSpecies.id
@@ -244,22 +242,25 @@ export class AbilityService {
     this.tileService.removeAttackable();
 
     // Removes the assimilated species.
-    const assimilatedPromise = this.speciesService.move({
-      movingSpecies: removedSpecies,
-      quantity: assimilationValues.assimilatedQuantity,
-      destinationId: removedTileId,
-      attackingSpecies: activeSpecies,
-    }) as Promise<void>;
-    // Adds quantity to the assimilating species.
-    const assimilatingPromise = this.speciesService.move({
-      movingSpecies: activeSpecies,
-      quantity: assimilationValues.createdQuantity,
-      destinationId: activeTileId,
-    }) as Promise<void>;
-
-    Promise.all([assimilatedPromise, assimilatingPromise]).then((_) =>
-      this.gameService.updateRemainingActions()
-    );
+    (
+      this.speciesService.move({
+        movingSpecies: removedSpecies,
+        quantity: assimilationValues.assimilatedQuantity,
+        destinationId: removedTileId,
+        attackingSpecies: activeSpecies,
+      }) as Promise<void>
+    )
+      // Adds quantity to the assimilating species after getting the updated tile.
+      .then((_) => {
+        const activeTileId = Number(this.tileQuery.getActiveId());
+        (
+          this.speciesService.move({
+            movingSpecies: activeSpecies,
+            quantity: assimilationValues.createdQuantity,
+            destinationId: activeTileId,
+          }) as Promise<void>
+        ).then((_) => this.gameService.updateRemainingActions());
+      });
   }
 
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
@@ -423,6 +424,8 @@ export class AbilityService {
     batch
       .commit()
       .then(() => {
+        const activePlayerId = this.playerQuery.getActiveId();
+        if (isGameStarting) this.playerQuery.switchReadyState([activePlayerId]);
         this.gameService.updateUiAdaptationMenuOpen(false);
         this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
           duration: 800,

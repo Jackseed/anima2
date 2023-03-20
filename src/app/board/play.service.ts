@@ -49,7 +49,7 @@ export class PlayService {
     private speciesQuery: SpeciesQuery,
     private speciesService: SpeciesService,
     private abilityService: AbilityService,
-    public dialog: MatDialog
+    private dialog: MatDialog
   ) {}
 
   public get setActiveSpeciesSub(): Subscription {
@@ -237,9 +237,7 @@ export class PlayService {
   }
 
   public async openAdaptationMenu(adaptatingSpeciesId: string): Promise<void> {
-    const isGameStarting = this.gameQuery.isStarting;
-    const activePlayerId = this.playerQuery.getActiveId();
-    const dialogRef = this.dialog.open(AdaptationMenuComponent, {
+    this.dialog.open(AdaptationMenuComponent, {
       data: adaptatingSpeciesId,
       backdropClass: 'transparent-backdrop',
       panelClass: 'transparent-menu',
@@ -248,15 +246,6 @@ export class PlayService {
       height: '100%',
       width: '100%',
     });
-
-    // If the game is starting, change the game state on dialog close.
-    if (isGameStarting)
-      dialogRef
-        .afterClosed()
-        .pipe(first())
-        .subscribe(() => {
-          this.playerQuery.switchReadyState([activePlayerId]);
-        });
   }
 
   public setupAssimilation(attackedTileId?: number) {

@@ -2,7 +2,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 
 // Material
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 // Rxjs
 import { Observable } from 'rxjs';
@@ -24,9 +24,9 @@ export class AdaptationMenuComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: string,
-    public dialogRef: MatDialogRef<AdaptationMenuComponent>,
     private playerQuery: PlayerQuery,
-    private abilityService: AbilityService
+    private abilityService: AbilityService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -44,7 +44,7 @@ export class AdaptationMenuComponent implements OnInit {
   }
 
   public validate() {
+    this.dialog.closeAll();
     this.abilityService.adapt(this.activeAbility, this.data);
-    this.dialogRef.close();
   }
 }
