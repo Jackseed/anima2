@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 // Rxjs
 import { combineLatest, Subscription } from 'rxjs';
-import { first, map, pluck, tap } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 
 // Material
 import { MatDialog } from '@angular/material/dialog';

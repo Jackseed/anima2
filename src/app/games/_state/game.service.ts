@@ -369,14 +369,14 @@ export class GameService extends CollectionService<GameState> {
 
     batch.update(gameRef, { turnCount: increment });
 
-    if (game.turnCount === 10) this.prepareNewSpecies();
+    if (game.turnCount === 4) this.prepareNewSpecies();
 
     // Every 3 turns, a new era begins.
-    // if ((game.turnCount + 1) % 3 === 0) {
-    this.countScores();
+    if ((game.turnCount + 1) % 3 === 0) {
+      this.countScores();
 
-    batch.update(gameRef, { eraCount: increment });
-    //}
+      batch.update(gameRef, { eraCount: increment });
+    }
 
     return batch;
   }

@@ -43,7 +43,7 @@ export function createPlayer(
 ): Player {
   return {
     id: id,
-    speciesIds: speciesIds,
+    speciesIds,
     score: 0,
     regionScores: {
       rockies: 0,

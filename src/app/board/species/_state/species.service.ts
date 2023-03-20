@@ -186,27 +186,27 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     const speciesRef: DocumentReference<Species> = this.db.doc<Species>(
       `${gameDoc}/species/${moveParams.movingSpecies.id}`
     ).ref;
-    let tileIds: number[] = JSON.parse(
+    let movingSpeciesTileIds: number[] = JSON.parse(
       JSON.stringify(moveParams.movingSpecies.tileIds)
     );
     // Iterates as much as species to move.
     for (let i = 0; i < Math.abs(moveParams.quantity); i++) {
       // Adds 1 species to the new tile.
-      if (moveParams.quantity > 0) tileIds.push(moveParams.destinationId);
+      if (moveParams.quantity > 0) movingSpeciesTileIds.push(moveParams.destinationId);
       // Removes 1 species to previous tile id or if quantity is negative.
       if (moveParams.quantity < 0 || moveParams.previousTileId) {
         const tileId = moveParams.previousTileId
           ? moveParams.previousTileId
           : moveParams.destinationId;
-        const index = tileIds.indexOf(tileId);
-        index !== -1 ? tileIds.splice(index, 1) : (tileIds = []);
+        const index = movingSpeciesTileIds.indexOf(tileId);
+        index !== -1 ? movingSpeciesTileIds.splice(index, 1) : (movingSpeciesTileIds = []);
       }
     }
     // Deletes species & adds its abilities if no more individuals.
-    if (tileIds.length === 0)
+    if (movingSpeciesTileIds.length === 0)
       return (batch = this.batchDeleteSpecies(gameDoc, batch, moveParams));
 
-    return batch.update(speciesRef, { tileIds });
+    return batch.update(speciesRef, { tileIds: movingSpeciesTileIds });
   }
 
   private batchDeleteSpecies(
