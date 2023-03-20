@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 // Rxjs
 import { combineLatest, Subscription } from 'rxjs';
-import { first, map, tap } from 'rxjs/operators';
+import { debounceTime, first, map, tap } from 'rxjs/operators';
 
 // Material
 import { MatDialog } from '@angular/material/dialog';
@@ -92,6 +92,10 @@ export class PlayService {
   private async switchToNextStartStage() {
     const playerIds = this.playerQuery.allPlayerIds;
     const game = this.gameQuery.getActive();
+    const activePlayer = this.playerQuery.getActive();
+
+    // Removes serial launches.
+    if (!activePlayer.isWaitingForNextStartStage) return;
 
     // Switches players as not ready anymore.
     this.playerQuery.switchReadyState(playerIds);
@@ -124,7 +128,8 @@ export class PlayService {
         .pipe(
           tap((arePlayerReady) => {
             if (arePlayerReady) this.switchToNextStartStage();
-          })
+          }),
+          debounceTime(500)
         )
         .subscribe();
 
