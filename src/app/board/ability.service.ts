@@ -387,9 +387,6 @@ export class AbilityService {
     const adaptingSpecies = this.speciesQuery.getEntity(speciesId);
     const isGameStarting = this.gameQuery.isStarting;
 
-    // Removes adaptation menu.
-    this.gameService.updateUiAdaptationMenuOpen(false);
-
     // Updates game abilities used.
     batch = this.gameService.saveAbilityUsedByBatch(ability, batch);
 
@@ -423,6 +420,7 @@ export class AbilityService {
     batch
       .commit()
       .then(() => {
+        this.gameService.updateUiAdaptationMenuOpen(false);
         this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
           duration: 800,
           panelClass: 'orange-snackbar',

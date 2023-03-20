@@ -189,17 +189,21 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     let movingSpeciesTileIds: number[] = JSON.parse(
       JSON.stringify(moveParams.movingSpecies.tileIds)
     );
+    console.log('moving species tileIds: ', movingSpeciesTileIds);
     // Iterates as much as species to move.
     for (let i = 0; i < Math.abs(moveParams.quantity); i++) {
       // Adds 1 species to the new tile.
-      if (moveParams.quantity > 0) movingSpeciesTileIds.push(moveParams.destinationId);
+      if (moveParams.quantity > 0)
+        movingSpeciesTileIds.push(moveParams.destinationId);
       // Removes 1 species to previous tile id or if quantity is negative.
       if (moveParams.quantity < 0 || moveParams.previousTileId) {
         const tileId = moveParams.previousTileId
           ? moveParams.previousTileId
           : moveParams.destinationId;
         const index = movingSpeciesTileIds.indexOf(tileId);
-        index !== -1 ? movingSpeciesTileIds.splice(index, 1) : (movingSpeciesTileIds = []);
+        index !== -1
+          ? movingSpeciesTileIds.splice(index, 1)
+          : (movingSpeciesTileIds = []);
       }
     }
     // Deletes species & adds its abilities if no more individuals.
@@ -229,6 +233,19 @@ export class SpeciesService extends CollectionService<SpeciesState> {
           batch
         );
       }
+    }
+
+    // If it's a player's species, removes it from its stack.
+    if (deletedSpecies.playerId !== 'neutral') {
+      const playerRef = this.db.doc(
+        `${gameDoc}/players/${deletedSpecies.playerId}`
+      ).ref;
+      const speciesIds = firebase.firestore.FieldValue.arrayRemove(
+        deletedSpecies.id
+      );
+      batch.update(playerRef, {
+        speciesIds,
+      });
     }
 
     // If it's the last player's species, ends the game.

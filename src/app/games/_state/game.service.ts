@@ -516,6 +516,7 @@ export class GameService extends CollectionService<GameState> {
   }
 
   public updateUiAdaptationMenuOpen(bool: boolean) {
-    this.store.ui.update(null, { isAdaptationMenuOpen: bool });
+    const gameId = this.query.getActiveId();
+    this.store.ui.update(gameId, { isAdaptationMenuOpen: bool });
   }
 }
