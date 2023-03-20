@@ -231,7 +231,6 @@ export class AbilityService {
 
   // ASSIMILATION
   // Removes one species from a tile and adds one to the active species.
-  // TODO: refactor to binds the 2 operations + then
   public async assimilate(removedSpeciesId: string, removedTileId: number) {
     const removedSpecies = this.speciesQuery.getEntity(removedSpeciesId);
     const activeSpecies = this.speciesQuery.getActive();
@@ -244,19 +243,22 @@ export class AbilityService {
     this.tileService.removeAttackable();
 
     // Removes the assimilated species.
-    await (this.speciesService.move({
+    const assimilatedPromise = this.speciesService.move({
       movingSpecies: removedSpecies,
       quantity: assimilationValues.assimilatedQuantity,
       destinationId: removedTileId,
       attackingSpecies: activeSpecies,
-    }) as Promise<void>);
+    }) as Promise<void>;
     // Adds quantity to the assimilating species.
-    await (this.speciesService.move({
+    const assimilatingPromise = this.speciesService.move({
       movingSpecies: activeSpecies,
       quantity: assimilationValues.createdQuantity,
       destinationId: activeTileId,
-    }) as Promise<void>);
-    this.gameService.updateRemainingActions();
+    }) as Promise<void>;
+
+    Promise.all([assimilatedPromise, assimilatingPromise]).then((_) =>
+      this.gameService.updateRemainingActions()
+    );
   }
 
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
@@ -680,7 +682,7 @@ export class AbilityService {
     let updatedValues: AssimilationValues = defaultValues;
     const species = this.speciesQuery.getEntity(speciesId);
     // If it's a neutral species, doesn't apply ability.
-    if (!!!species || species.playerId === 'neutral') return;
+    if (!!!species || species.playerId === 'neutral') return updatedValues;
 
     // If giantism, updates defense.
     if (this.speciesHasAbility(speciesId, 'giantism'))

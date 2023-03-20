@@ -68,16 +68,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.isAnimationPlaying$ = this.playerQuery.isAnimationPlaying$;
     this.isGameFinished$ = this.gameQuery.isGameFinished$;
 
-    this.speciesQuery
-      .selectAll()
-      .pipe(
-        map((species) =>
-          species.filter((indivSpecies) => indivSpecies.playerId !== 'neutral')
-        ),
-        map((species) => species.map((indivSpecies) => indivSpecies.tileIds))
-      )
-      .subscribe(console.log);
-
     // Subscriptions init
     this.switchToNextStartStateSub =
       this.playService.switchToNextStartStageWhenPlayersReadySub;

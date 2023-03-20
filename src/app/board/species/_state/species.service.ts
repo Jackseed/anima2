@@ -235,8 +235,8 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       }
     }
 
-    // If it's a player's species, removes it from its stack.
     if (deletedSpecies.playerId !== 'neutral') {
+      // If it's a player's species, removes it from its stack.
       const playerRef = this.db.doc(
         `${gameDoc}/players/${deletedSpecies.playerId}`
       ).ref;
@@ -246,15 +246,13 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       batch.update(playerRef, {
         speciesIds,
       });
+      // If it's the last player's species, ends the game.
+      const player = this.playerQuery.getEntity(deletedSpecies.playerId);
+      if (player.speciesIds.length === 1) {
+        const winnerId = this.playerQuery.getPlayerOpponentId(player.id);
+        batch = this.gameService.updatePlayerVictory(winnerId, true, batch);
+      }
     }
-
-    // If it's the last player's species, ends the game.
-    const player = this.playerQuery.getEntity(deletedSpecies.playerId);
-    if (player.speciesIds.length === 1) {
-      const winnerId = this.playerQuery.getPlayerOpponentId(player.id);
-      batch = this.gameService.updatePlayerVictory(winnerId, true, batch);
-    }
-
     return batch;
   }
 

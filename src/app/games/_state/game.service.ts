@@ -228,6 +228,8 @@ export class GameService extends CollectionService<GameState> {
   // Needs to receive existing abilities while game creation,
   // gets it from game object afterwards.
   public getRandomAbility(existingAbilities?: Ability[]): Ability {
+    // App testing cheat code
+    const testingAbilityId: string = 'range';
     const usedAbilities = existingAbilities
       ? existingAbilities
       : this.query.getActive().inGameAbilities;
@@ -239,7 +241,11 @@ export class GameService extends CollectionService<GameState> {
     );
 
     const randomAbility =
-      availableAbilities[Math.floor(Math.random() * availableAbilities.length)];
+      testingAbilityId !== ''
+        ? ABILITIES.filter((ability) => ability.id === testingAbilityId)[0]
+        : availableAbilities[
+            Math.floor(Math.random() * availableAbilities.length)
+          ];
 
     return randomAbility;
   }
