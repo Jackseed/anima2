@@ -67,37 +67,27 @@ export class AbilityService {
     const previousTileId = Number(this.tileQuery.getActiveId());
     const migrationValues = this.getMigrationValues(destinationId);
     const remainginMigrations = this.remainingMigrations;
-
     this.tileService.removeActive();
     this.tileService.removeReachable();
-    (
-      this.speciesService.move({
-        movingSpecies: activeSpecies,
-        quantity: migrationValues.movingQuantity,
-        destinationId,
-        previousTileId,
-        migrationUsed: migrationValues.migrationUsed,
-      }) as Promise<void>
-    )
-      .then(async () => {
-        this.tileService.selectTile(destinationId);
-        this.snackbar.open('Migration effectuée !', null, {
-          duration: 800,
-          panelClass: 'orange-snackbar',
-        });
-        this.tileService.resetRange();
+    this.speciesService.move({
+      movingSpecies: activeSpecies,
+      quantity: migrationValues.movingQuantity,
+      destinationId,
+      previousTileId,
+      migrationUsed: migrationValues.migrationUsed,
+    });
+    this.tileService.selectTile(destinationId);
+    this.snackbar.open('Migration effectuée !', null, {
+      duration: 800,
+      panelClass: 'orange-snackbar',
+    });
+    this.tileService.resetRange();
 
-        // Updates remainingActions if that's the last remainingAction.
-        if (migrationValues.migrationUsed === remainginMigrations) {
-          this.gameService.updateRemainingActions();
-          this.gameService.updateRemainingMigrations(
-            DEFAULT_REMAINING_MIGRATIONS
-          );
-        }
-      })
-      .catch((error) => {
-        console.log('Migration failed: ', error);
-      });
+    // Updates remainingActions if that's the last remainingAction.
+    if (migrationValues.migrationUsed === remainginMigrations) {
+      this.gameService.updateRemainingActions();
+      this.gameService.updateRemainingMigrations(DEFAULT_REMAINING_MIGRATIONS);
+    }
   }
 
   // MIGRATION - UTILS
@@ -767,6 +757,7 @@ export class AbilityService {
     defaultValues: MigrationValues
   ): MigrationValues {
     const activeSpeciesId = this.speciesQuery.getActiveId();
+    const activeTileSpecies = this.speciesQuery.activeTileSpecies;
     let updatedValues: MigrationValues = defaultValues;
     // If active species is flying, adds available distance.
     if (this.speciesHasAbility(activeSpeciesId, 'flying'))
@@ -776,7 +767,7 @@ export class AbilityService {
     // updates moving quantity, without modifying migration point used.
     if (
       this.speciesHasAbility(activeSpeciesId, 'hounds') &&
-      this.isSpeciesAbilityValid('hounds')
+      this.isSpeciesAbilityValid('hounds', activeTileSpecies)
     )
       updatedValues = {
         ...defaultValues,
@@ -807,7 +798,6 @@ export class AbilityService {
         checkedSpecies.id,
         checkedSpecies.tileId
       );
-
       isAbilityValid = speciesQuantity >= requiredValue;
     }
 
