@@ -14,7 +14,7 @@
     <!---------------- SPECIES -------------->
     <article
       *ngFor="let species of data.speciesToList; index as i"
-      fxFlex="25"
+      [fxFlex]="data.speciesCount === 'global' ? 25 : 33"
       fxLayout="row"
       fxLayoutAlign="center center"
     >
