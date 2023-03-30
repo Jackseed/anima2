@@ -6,6 +6,7 @@ import {
   DEFAULT_MOVING_QUANTITY,
   DEFAULT_PROLIFERATION_CREATED_QUANTITY,
   DEFAULT_PROLIFERATION_NEEDED_INDIVIDUALS,
+  isTesting,
   NEUTRAL_COLORS,
 } from 'src/app/games/_state/game.model';
 
@@ -369,23 +370,71 @@ export const ABILITIES: Ability[] = [
   },
 ];
 
-export const neutrals: Species[] = [
-  {
-    id: 'neutral1',
-    playerId: 'neutral',
-    colors: NEUTRAL_COLORS,
-  },
-  {
-    id: 'neutral2',
-    playerId: 'neutral',
-    colors: NEUTRAL_COLORS,
-  },
-  {
-    id: 'neutral3',
-    playerId: 'neutral',
-    colors: NEUTRAL_COLORS,
-  },
-];
+export const neutrals: Species[] = isTesting
+  ? [
+      {
+        id: 'neutral1',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral2',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral3',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral4',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral5',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral6',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral7',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral8',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral9',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+    ]
+  : [
+      {
+        id: 'neutral1',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral2',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+      {
+        id: 'neutral3',
+        playerId: 'neutral',
+        colors: NEUTRAL_COLORS,
+      },
+    ];
 
 export function createSpecies(
   id: string,
