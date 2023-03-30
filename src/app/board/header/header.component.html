@@ -36,6 +36,7 @@
           <mat-icon [svgIcon]="ability.id + '-ability'"></mat-icon>
         </div>
       </div>
+      <!---------------- REMAINING ACTIONS -------------->
       <div
         fxFlex="7"
         class="background-orange"
@@ -46,9 +47,9 @@
             : 'start center'
         "
       >
-        <!---------------- REMAINING ACTIONS -------------->
         <div
           fxFlexFill
+          fxLayoutAlign="center end"
           *ngFor="let remainingActions of remainingActions$ | async"
           fxFlex="50"
         >
