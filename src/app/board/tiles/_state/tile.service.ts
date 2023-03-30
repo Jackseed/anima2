@@ -40,6 +40,10 @@ export class TileService extends CollectionService<TileState> {
     super(store);
   }
 
+  public updateEntity(id: string, tile: Partial<Tile>) {
+    this.store.update(id, tile);
+  }
+
   // Gets a species and transforms it to get quantity per tile id.
   // Returns {tileId: quantity}[]
   public fromSpeciesToSpeciesQuantityPerTileId(species: Species) {
@@ -185,6 +189,7 @@ export class TileService extends CollectionService<TileState> {
     return item;
   }
 
+  // TODO: fix
   private randomIntegerBetweenMinAndMaxInclusively(
     min: number,
     max: number

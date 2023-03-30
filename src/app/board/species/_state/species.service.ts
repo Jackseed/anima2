@@ -27,7 +27,7 @@ import {
 } from './species.model';
 import { SpeciesStore, SpeciesState } from './species.store';
 import { SpeciesQuery } from './species.query';
-import { Tile, TileQuery } from '../../tiles/_state';
+import { Tile, TileQuery, TileService } from '../../tiles/_state';
 import {
   GameQuery,
   GameService,
@@ -44,6 +44,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
     private gameQuery: GameQuery,
     private gameService: GameService,
     private tileQuery: TileQuery,
+    private tileService: TileService,
     private playerQuery: PlayerQuery,
     private routerQuery: RouterQuery,
     public dialog: MatDialog
@@ -176,6 +177,9 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       quantity,
       species.abilities[0].id
     );
+    this.tileService.updateEntity(tile.id.toString(), {
+      species: updatedSpecies,
+    });
     return batch.update(tileDoc.ref, { species: updatedSpecies });
   }
 
@@ -203,7 +207,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       // Removes 1 species if quantity is negative.
       if (moveParams.quantity < 0) {
         const index = movingSpeciesTileIds.indexOf(moveParams.destinationId);
-        if (index !== -1) movingSpeciesTileIds.splice(index, 1);
+        if (index >= 0) movingSpeciesTileIds.splice(index, 1);
       }
     }
     // Deletes species & adds its abilities if no more individuals.
