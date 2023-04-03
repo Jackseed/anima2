@@ -133,7 +133,7 @@
   fxFlexFill
   *ngIf="(isGameStarting$ | async) && (startStage$ | async) === 'tileChoice'"
   class="fade-in-out visual-overlay"
-  style="--animation-duration: 1.25s; --animation-delay: 0.5s"
+  style="--animation-duration: 3s; --animation-delay: 0.5s"
 >
   <section fxFlexFill class="full-opacity"></section>
   <main
@@ -214,7 +214,7 @@
     !(isGameFinished$ | async)
   "
   class="fade-in-out visual-overlay"
-  style="--animation-duration: 1s; --animation-delay: 1s"
+  style="--animation-duration: 2s; --animation-delay: 1s"
 >
   <section fxFlexFill class="opacity"></section>
   <section

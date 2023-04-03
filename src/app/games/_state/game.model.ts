@@ -3,9 +3,7 @@ import { Ability, AbilityId } from 'src/app/board/species/_state';
 
 // TESTING
 export const isTesting = false;
-export const TESTING_ABILITY: AbilityId | '' = isTesting
-  ? 'spontaneousGeneration'
-  : '';
+export const TESTING_ABILITY: AbilityId | '' = isTesting ? '' : '';
 
 // GAME CONSTANTS
 export const DEFAULT_MOVING_QUANTITY = 1;
@@ -14,7 +12,7 @@ export const DEFAULT_SPECIES_AMOUNT = 4;
 export const ABILITY_CHOICE_AMOUNT = 2;
 export const MAX_SPECIES_ABILITIES = 3;
 export const NEW_SPECIES_ERA = 2;
-export const DEFAULT_ACTION_PER_TURN = isTesting ? 1000 : 2;
+export const DEFAULT_ACTION_PER_TURN = isTesting ? 1 : 2;
 export type StartStage =
   | 'launching'
   | 'abilityChoice'

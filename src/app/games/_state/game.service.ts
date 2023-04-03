@@ -327,7 +327,6 @@ export class GameService extends CollectionService<GameState> {
       ? DEFAULT_ACTION_PER_TURN
       : firebase.firestore.FieldValue.increment(-1);
     batch.update(gameRef, { remainingActions });
-
     if (isLastAction) {
       this.tileService.removeActive();
 
@@ -369,16 +368,18 @@ export class GameService extends CollectionService<GameState> {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const increment = firebase.firestore.FieldValue.increment(1);
-
-    batch.update(gameRef, { turnCount: increment });
-
-    if (game.turnCount === 3) this.prepareNewSpecies();
+    if (game.eraCount === 2 && game.turnCount === 1) this.prepareNewSpecies();
 
     // Every 3 turns, a new era begins.
-    if ((game.turnCount + 1) % 3 === 0) {
+    if (game.turnCount === 3) {
       this.countScores();
 
-      batch.update(gameRef, { eraCount: increment });
+      batch.update(gameRef, {
+        eraCount: increment,
+        turnCount: 1,
+      });
+    } else {
+      batch.update(gameRef, { turnCount: increment });
     }
 
     return batch;

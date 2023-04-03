@@ -386,7 +386,7 @@ export const neutrals: Species[] = isTesting
         id: 'neutral3',
         playerId: 'neutral',
         colors: NEUTRAL_COLORS,
-      },
+      } /*
       {
         id: 'neutral4',
         playerId: 'neutral',
@@ -416,7 +416,7 @@ export const neutrals: Species[] = isTesting
         id: 'neutral9',
         playerId: 'neutral',
         colors: NEUTRAL_COLORS,
-      },
+      }, */,
     ]
   : [
       {

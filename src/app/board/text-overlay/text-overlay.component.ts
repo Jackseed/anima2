@@ -323,6 +323,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       // Initializes the variable.
       if (!this.eraScoresAnimationVariables.playerVariables[player.id])
         this.eraScoresAnimationVariables.playerVariables[player.id] = {};
+        
       const playerTotalDelay = delayCount + eraDuration * 0.3;
       this.eraScoresAnimationVariables.playerVariables[player.id] = {
         eraScore: {
