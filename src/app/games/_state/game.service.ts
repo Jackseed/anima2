@@ -372,7 +372,7 @@ export class GameService extends CollectionService<GameState> {
 
     batch.update(gameRef, { turnCount: increment });
 
-    if (game.turnCount === 4) this.prepareNewSpecies();
+    if (game.turnCount === 3) this.prepareNewSpecies();
 
     // Every 3 turns, a new era begins.
     if ((game.turnCount + 1) % 3 === 0) {

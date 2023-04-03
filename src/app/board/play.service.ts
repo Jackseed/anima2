@@ -73,6 +73,7 @@ export class PlayService {
       .selectActive()
       .pipe(
         map((player) => player.abilityChoice.isChoosingAbility),
+        debounceTime(1000),
         tap((isChoosingAbility) => {
           const isAdaptationMenuOpen = this.gameQuery.isAdaptationMenuOpen;
           // Opens adaptation menu if it's saved as open on Firebase
@@ -91,7 +92,8 @@ export class PlayService {
 
   private async switchToNextStartStage() {
     const playerIds = this.playerQuery.allPlayerIds;
-    const game = this.gameQuery.getActive();
+    // TODO: do this backend side?
+    const game$ = this.gameQuery.selectActive();
     const activePlayer = this.playerQuery.getActive();
 
     // Removes serial launches.
@@ -99,26 +101,32 @@ export class PlayService {
 
     // Switches players as not ready anymore.
     this.playerQuery.switchReadyState(playerIds);
-
-    if (game.startStage === 'launching') {
-      const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
-      await this.gameService.switchStartStage('abilityChoice');
-      return this.setupAdaptation(newSpeciesId);
-    }
-    if (game.startStage === 'abilityChoice') {
-      this.setStartTileChoice();
-      return this.gameService.switchStartStage('tileChoice');
-    }
-    if (game.startStage === 'tileChoice') {
-      // Activates it only once to avoid moving several time the same species.
-      if (
-        this.playerQuery.isPlayerPlaying() &&
-        game.tileChoices.length === game.playerIds.length
+    game$
+      .pipe(
+        tap(async (game) => {
+          if (game.startStage === 'launching') {
+            const newSpeciesId = this.playerQuery.activePlayerLastSpeciesId;
+            await this.gameService.switchStartStage('abilityChoice');
+            return this.setupAdaptation(newSpeciesId);
+          }
+          if (game.startStage === 'abilityChoice') {
+            this.setStartTileChoice();
+            return this.gameService.switchStartStage('tileChoice');
+          }
+          if (game.startStage === 'tileChoice') {
+            // Activates it only once to avoid moving several time the same species.
+            if (
+              this.playerQuery.isPlayerPlaying() &&
+              game.tileChoices.length === game.playerIds.length
+            )
+              await this.playTileChoices();
+            this.gameService.switchStartStage('tileValidated');
+            return this.gameService.updateIsStarting(false);
+          }
+        }),
+        first()
       )
-        await this.playTileChoices();
-      this.gameService.switchStartStage('tileValidated');
-      return this.gameService.updateIsStarting(false);
-    }
+      .subscribe();
   }
 
   // When all players are ready, switches to the next start stage.
@@ -126,10 +134,11 @@ export class PlayService {
     const nextStartStateSub =
       this.playerQuery.areAllPlayersReadyForNextStartStage$
         .pipe(
+          //TODO: remove debounce time, use functions to do this backend?
+          debounceTime(1000),
           tap((arePlayerReady) => {
             if (arePlayerReady) this.switchToNextStartStage();
-          }),
-          debounceTime(500)
+          })
         )
         .subscribe();
 
