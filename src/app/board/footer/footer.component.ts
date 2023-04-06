@@ -12,6 +12,7 @@ import { PlayService } from '../play.service';
 import { TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
 import { BasicAction, BASIC_ACTIONS, SpeciesQuery } from '../species/_state';
+import { PlayerQuery, PlayerService } from '../players/_state';
 
 @Component({
   selector: 'app-footer',
@@ -25,6 +26,8 @@ export class FooterComponent implements OnInit {
   constructor(
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
+    private playerQuery: PlayerQuery,
+    private playerService: PlayerService,
     private playService: PlayService,
     private abilityService: AbilityService,
     public dialog: MatDialog
@@ -51,8 +54,10 @@ export class FooterComponent implements OnInit {
     if (action === 'migration') this.abilityService.startMigration();
     if (action === 'proliferation') this.abilityService.setupProliferation();
     const activeSpeciesId = this.speciesQuery.getActiveId();
-    if (action === 'adaptation')
-      await this.playService.setupAdaptation(activeSpeciesId);
+    if (action === 'adaptation') {
+      const activePlayerId = this.playerQuery.getActiveId();
+      await this.playerService.setRandomAbilityChoice([activePlayerId]);
+    }
   }
 
   public async stopAction(action: BasicAction) {

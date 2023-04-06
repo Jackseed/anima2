@@ -178,8 +178,8 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.selectActive().pipe(map((player) => player.isAnimationPlaying));
   }
 
-  // TODO: Should be in player service but here to avoid circular dependency...
-  public switchReadyState(playerIds: string[]) {
+  // TODO: Should be in player service but here to avoid circular dependency.
+  public async switchReadyState(playerIds: string[]): Promise<void> {
     const batch = this.db.firestore.batch();
     const gameId = this.gameQuery.getActiveId();
     for (const playerId of playerIds) {
@@ -190,7 +190,7 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
       });
     }
 
-    batch
+    return batch
       .commit()
       .catch((error) =>
         console.log('Switching players ready state failed: ', error)
