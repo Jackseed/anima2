@@ -1,4 +1,14 @@
-<h2>Parties en cours</h2>
-<ul *ngFor="let game of games$ | async">
-  <button (click)="join(game)">{{ game.name }}</button>
-</ul>
+<button mat-icon-button id="close-button" (click)="close()">
+  <mat-icon id="close-icon" svgIcon="close"></mat-icon>
+</button>
+<h2 mat-dialog-title>Parties disponibles</h2>
+<div mat-dialog-content>
+  <ul #list>
+    <button *ngFor="let game of games$ | async" (click)="join(game)">
+      <p>{{ game.name }}</p>
+    </button>
+  </ul>
+</div>
+<mat-dialog-actions>
+  <i class="arrow down" *ngIf="isScrollable" #arrow></i>
+</mat-dialog-actions>

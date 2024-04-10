@@ -9,6 +9,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 // Material
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
 
 // Components
 import { FormComponent } from './form/form.component';
@@ -23,6 +24,7 @@ import { ListComponent } from './list/list.component';
     FlexLayoutModule,
     MatIconModule,
     MatButtonModule,
+    MatDialogModule,
   ],
 })
 export class GamesModule {}

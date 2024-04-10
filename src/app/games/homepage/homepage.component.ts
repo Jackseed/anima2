@@ -50,9 +50,9 @@ export class HomepageComponent implements OnInit {
 
   public openGameList() {
     this.dialog.open(ListComponent, {
-      height: '60%',
-      width: '80%',
-      panelClass: ['custom-container', 'no-padding-bottom'],
+      height: '80%',
+      width: '90%',
+      panelClass: ['custom-container', 'overflow-hidden'],
       backdropClass: 'transparent-backdrop',
       autoFocus: false,
     });

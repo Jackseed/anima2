@@ -82,6 +82,10 @@ textarea {
   border-radius: 0px;
 }
 
+.overflow-hidden .mat-dialog-container {
+  overflow: hidden;
+}
+
 .no-padding-bottom .mat-dialog-container {
   padding: 12px 12px 0px 12px;
   overflow: hidden;

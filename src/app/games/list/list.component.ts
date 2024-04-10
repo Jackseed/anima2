@@ -26,6 +26,8 @@ import { FormComponent } from '../form/form.component';
   styleUrls: ['./list.component.scss'],
 })
 export class ListComponent implements OnInit {
+  isScrollable = false;
+
   public games$: Observable<Game[]>;
 
   constructor(
@@ -39,6 +41,7 @@ export class ListComponent implements OnInit {
 
   ngOnInit(): void {
     this.games$ = this.gameQuery.selectAll();
+    if (this.gameQuery.getCount() > 7) this.isScrollable = true;
   }
 
   public async join(game: Game) {
