@@ -4,7 +4,7 @@
 <div fxFlexFill>
   <main fxFlexFill fxLayout="column" fxLayoutAlign="space-evenly center">
     <nav *ngFor="let item of menu">
-      <button class="nav-button">
+      <button class="nav-button" (click)="item.action()">
         <h2>{{ item.cta }}</h2>
       </button>
     </nav>

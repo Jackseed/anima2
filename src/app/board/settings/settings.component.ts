@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 // Angular Material
 import { MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -20,14 +21,23 @@ export class SettingsComponent implements OnInit {
       cta: 'Règles',
     },
     {
-      cta: 'Quittez',
+      cta: 'Quitter',
+      action: this.leave.bind(this),
     },
   ];
-  constructor(public dialogRef: MatDialogRef<SettingsComponent>) {}
+  constructor(
+    public dialogRef: MatDialogRef<SettingsComponent>,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {}
 
   public close() {
     this.dialogRef.close();
+  }
+
+  public leave() {
+    this.close();
+    this.router.navigate(['/home']);
   }
 }
