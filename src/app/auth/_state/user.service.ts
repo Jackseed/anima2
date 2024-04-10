@@ -30,4 +30,9 @@ export class UserService extends CollectionService<UserState> {
     const user = createUser({ id });
     this.db.collection(this.currentPath).doc(id).set(user);
   }
+
+  public logOut() {
+    this.afAuth.signOut();
+    this.router.navigate(['/welcome']);
+  }
 }

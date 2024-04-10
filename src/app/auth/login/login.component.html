@@ -1,6 +1,14 @@
-<div fxLayout="column" fxFill fxLayoutAlign="center center">
-  <h1>ANIMA</h1>
-  <button mat-button color='warn' (click)="logIn()">
-    <span>Enter</span>
-  </button>
+<div class="wrapper">
+  <header>
+    <div class="row">
+      <h1>Anima</h1>
+      <mat-icon svgIcon="adaptation"></mat-icon>
+    </div>
+  </header>
+  <main>
+    <button class="nav-button" (click)="logIn()">
+      <h2>Jouer !</h2>
+    </button>
+  </main>
+  <footer fxFlex="1" class="orange"></footer>
 </div>

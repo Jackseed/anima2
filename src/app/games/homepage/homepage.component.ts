@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 // States
 import { GameService } from '../_state/game.service';
+import { UserService } from 'src/app/auth/_state';
 
 // Components
 import { FormComponent } from '../form/form.component';
@@ -24,7 +25,8 @@ export class HomepageComponent implements OnInit {
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     private dialog: MatDialog,
-    private gameService: GameService
+    private gameService: GameService,
+    private userService: UserService
   ) {
     this.matIconRegistry.addSvgIcon(
       'adaptation',
@@ -56,5 +58,9 @@ export class HomepageComponent implements OnInit {
       backdropClass: 'transparent-backdrop',
       autoFocus: false,
     });
+  }
+
+  public logOut() {
+    this.userService.logOut();
   }
 }
