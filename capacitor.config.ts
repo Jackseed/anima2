@@ -1,9 +1,9 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.anima2',
-  appName: 'anima2',
-  webDir: 'www',
+  appId: 'com.anima',
+  appName: 'anima',
+  webDir: 'public',
   server: {
     androidScheme: 'https'
   }
