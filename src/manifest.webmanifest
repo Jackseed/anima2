@@ -1,7 +1,7 @@
 {
-  "name": "anima2",
-  "short_name": "anima2",
-  "theme_color": "#1976d2",
+  "name": "Anima",
+  "short_name": "Anima",
+  "theme_color": "#f59c27",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
