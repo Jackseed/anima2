@@ -25,6 +25,7 @@
     "@angular/platform-browser": "^11.2.9",
     "@angular/platform-browser-dynamic": "^11.2.9",
     "@angular/router": "^11.2.9",
+    "@capacitor/android": "5.7.4",
     "@capacitor/app": "5.0.7",
     "@capacitor/cli": "5.7.4",
     "@capacitor/core": "5.7.4",
