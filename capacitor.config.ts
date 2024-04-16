@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.anima',
+  appId: 'com.anima2',
   appName: 'anima',
   webDir: 'public',
   server: {
