@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "serve": "NODE_OPTIONS=--openssl-legacy-provider ng serve",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "ionic:build": "npm run build",
+    "ionic:build": "NODE_OPTIONS=--openssl-legacy-provider npm run build",
     "ionic:serve": "npm run start"
   },
   "private": true,
