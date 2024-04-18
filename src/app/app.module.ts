@@ -34,6 +34,7 @@ import { AngularFireAuthGuard } from '@angular/fire/auth-guard';
 
 // Components
 import { AppComponent } from './app.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [AppComponent],
@@ -50,6 +51,12 @@ import { AppComponent } from './app.component';
     AngularFireModule.initializeApp(environment.firebase),
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     BrowserAnimationsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [
     AngularFireAuthGuard,
