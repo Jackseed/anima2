@@ -9,18 +9,6 @@ section {
   height: auto;
 }
 
-input {
-  border-width: 4px 8px 4px 8px;
-  border-color: #2984a0;
-  border-style: solid;
-  border-radius: 20px;
-  padding: 0px 12px 0px 12px;
-}
-
-input:focus {
-  border-color: var(--anima-color);
-}
-
 #hourglass {
   width: 50%;
   height: 20%;
