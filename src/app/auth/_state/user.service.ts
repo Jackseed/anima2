@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
 import { UserStore, UserState } from './user.store';
-import { first } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { createUser } from './user.model';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: 'users' })
@@ -12,22 +12,20 @@ export class UserService extends CollectionService<UserState> {
   constructor(
     store: UserStore,
     private afAuth: AngularFireAuth,
+    private afs: AngularFirestore,
     private router: Router
   ) {
     super(store);
   }
 
-  async anonymousLogin() {
-    await this.afAuth.signInAnonymously();
-    const user = await this.afAuth.authState.pipe(first()).toPromise();
-    if (user) {
-      this.setUser(user.uid);
-    }
-    this.router.navigate(['/home']);
+  async anonymousLogin(username: string) {
+    const credential = await this.afAuth.signInAnonymously();
+    this.setUser(credential.user.uid, username);
+    return this.router.navigate(['/home']);
   }
 
-  private setUser(id: string) {
-    const user = createUser({ id });
+  private setUser(id: string, name: string) {
+    const user = createUser({ id, name });
     this.db.collection(this.currentPath).doc(id).set(user);
   }
 

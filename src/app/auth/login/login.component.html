@@ -6,9 +6,27 @@
     </div>
   </header>
   <main>
-    <button class="nav-button" (click)="logIn()">
-      <h2>Jouer !</h2>
-    </button>
+    <form [formGroup]="loginForm" (ngSubmit)="logIn()" class="form-container">
+      <label class="form-label">
+        <section class="text-box margin-top-40">
+          <h2>Quel est votre pseudo ?</h2>
+        </section>
+        <input
+          formControlName="username"
+          type="text"
+          class="form-input margin-top-10"
+          autofocus
+        />
+      </label>
+
+      <button
+        type="submit"
+        class="nav-button margin-top-30"
+        [disabled]="loginForm.invalid"
+      >
+        <h2>Jouer !</h2>
+      </button>
+    </form>
   </main>
   <footer fxFlex="1" class="orange"></footer>
 </div>

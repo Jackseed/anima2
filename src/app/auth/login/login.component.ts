@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../_state/user.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -7,10 +8,20 @@ import { UserService } from '../_state/user.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  constructor(private service: UserService) {}
+  loginForm: FormGroup;
 
-  ngOnInit(): void {}
+  constructor(private service: UserService, private formBuilder: FormBuilder) {}
+
+  ngOnInit(): void {
+    this.loginForm = this.formBuilder.group({
+      username: ['', Validators.required]
+    });
+  }
+
   public async logIn() {
-    await this.service.anonymousLogin();
+    if (this.loginForm.valid) {
+      const username = this.loginForm.get('username').value;
+      await this.service.anonymousLogin(username);
+    }
   }
 }
