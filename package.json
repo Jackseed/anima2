@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "serve": "NODE_OPTIONS=--openssl-legacy-provider ng serve",
+    "emulators": "firebase emulators:start --only auth,firestore",
     "start": "ng serve",
     "build": "NODE_OPTIONS=--openssl-legacy-provider ng build --prod",
     "test": "ng test",
