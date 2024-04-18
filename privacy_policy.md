@@ -1,4 +1,4 @@
-## Anima : Politique de confidentialité
+**## Anima : Politique de confidentialité**
 
 Bienvenue sur Anima !
 
