@@ -41,48 +41,48 @@ export class PlayerService extends CollectionService<PlayerState> {
   public async setRandomAbilityChoice(playerIds: string[]) {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const gameId = this.gameQuery.getActiveId();
+    const gameRef = this.db.doc(`games/${gameId}`).ref;
+    const gameSnapshot = await gameRef.get();
+    let usedAbilities: Ability[] = (gameSnapshot.data() as Game)
+      .inGameAbilities;
 
-    // TODO: replace transaction with batch as this function does it for both players at once.
+    const batch = this.db.firestore.batch();
+
     for (const playerId of playerIds) {
-      this.db.firestore
-        .runTransaction(async (transaction) => {
-          const gameRef = this.db.doc(`games/${gameId}`).ref;
-          let usedAbilities: Ability[] = (
-            (await transaction.get(gameRef)).data() as Game
-          ).inGameAbilities;
-          let randomAbilities: Ability[] = [];
+      const randomAbilities = this.getRandomAbilities(usedAbilities);
+      usedAbilities = [...usedAbilities, ...randomAbilities];
 
-          // Gets random abilities and save it as used, to avoid duplicates.
-          for (let i = 0; i < ABILITY_CHOICE_AMOUNT; i++) {
-            const randomAbility =
-              this.gameService.getRandomAbility(usedAbilities);
-            if (randomAbility) {
-              randomAbilities.push(randomAbility);
-              usedAbilities.push(randomAbility);
-            }
-          }
-          // Updates player's ability choice
-          const playerRef = this.db.doc(
-            `games/${gameId}/players/${playerId}`
-          ).ref;
-          transaction.update(playerRef, {
-            abilityChoice: {
-              isChoosingAbility: true,
-              abilityChoices: randomAbilities,
-              activeTileId: activeTileId ? activeTileId : null,
-            },
-          });
-
-          // Updates used abilities
-          const inGameAbilities = firebase.firestore.FieldValue.arrayUnion(
-            ...usedAbilities
-          );
-          transaction.update(gameRef, { inGameAbilities });
-        })
-        .catch((error) => {
-          console.log('Updating ability choices failed: ', error);
-        });
+      const playerRef = this.db.doc(`games/${gameId}/players/${playerId}`).ref;
+      batch.update(playerRef, {
+        abilityChoice: {
+          isChoosingAbility: true,
+          abilityChoices: randomAbilities,
+          activeTileId: activeTileId ? activeTileId : null,
+        },
+      });
     }
+
+    batch.update(gameRef, {
+      inGameAbilities: firebase.firestore.FieldValue.arrayUnion(
+        ...usedAbilities
+      ),
+    });
+
+    return batch.commit().catch((error) => {
+      console.log('Updating ability choices failed: ', error);
+    });
+  }
+
+  private getRandomAbilities(usedAbilities: Ability[]): Ability[] {
+    const randomAbilities: Ability[] = [];
+    for (let i = 0; i < ABILITY_CHOICE_AMOUNT; i++) {
+      const randomAbility = this.gameService.getRandomAbility(usedAbilities);
+      if (randomAbility) {
+        randomAbilities.push(randomAbility);
+        usedAbilities = [...usedAbilities, randomAbility];
+      }
+    }
+    return randomAbilities;
   }
 
   public resetAbilityChoicesByBatch(

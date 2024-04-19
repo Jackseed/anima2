@@ -257,9 +257,7 @@
 
 // @keyframes duration | easing-function | delay | direction | fill-mode | name
 .fade-in-out {
-  animation: var(--animation-duration) linear forwards fade-in,
-    var(--animation-duration) ease-out var(--animation-delay) reverse forwards
-      fade-in;
+  animation: fade-in-out var(--animation-duration) ease-in-out both;
 }
 
 .fade-in {
@@ -329,12 +327,26 @@
 
 // ANIMATIONS
 @keyframes fade-in {
-  from {
+  0% {
     pointer-events: none;
     opacity: 0;
   }
-  to {
+  100% {
     opacity: 1;
+  }
+}
+
+@keyframes fade-in-out {
+  0% {
+    pointer-events: none;
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
