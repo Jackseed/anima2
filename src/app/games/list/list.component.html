@@ -5,7 +5,7 @@
 <div mat-dialog-content>
   <ul #list>
     <button *ngFor="let game of games$ | async" (click)="join(game)">
-      <p>{{ game.name }}</p>
+      <p class="subtitle">{{ game.name }}</p>
     </button>
   </ul>
 </div>
