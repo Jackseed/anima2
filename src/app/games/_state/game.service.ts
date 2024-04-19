@@ -314,40 +314,60 @@ export class GameService extends CollectionService<GameState> {
       });
   }
 
+  public async skipTurn() {
+    const game = this.query.getActive();
+    const gameRef = this.db.collection('games').doc(game.id).ref;
+    let batch = this.db.firestore.batch();
+
+    batch = await this.handleLastAction(gameRef, batch);
+
+    batch.commit().catch((error) => {
+      console.log('Skipping turn failed: ', error);
+    });
+  }
+
   public async updateRemainingActions(
     existingBatch?: firebase.firestore.WriteBatch
   ) {
-    let batch = existingBatch ? existingBatch : this.db.firestore.batch();
+    let batch = existingBatch || this.db.firestore.batch();
     const game = this.query.getActive();
     const isLastAction = this.query.isLastAction;
     const gameRef = this.db.collection('games').doc(game.id).ref;
 
-    // Updates game remaining actions.
-    const remainingActions = isLastAction
-      ? DEFAULT_ACTION_PER_TURN
-      : firebase.firestore.FieldValue.increment(-1);
-    batch.update(gameRef, { remainingActions });
     if (isLastAction) {
-      this.tileService.removeActive();
-
-      if (this.playerQuery.isLastActivePlayerSpeciesActive) {
-        batch = this.switchPlayingPlayerAndSpeciesUsingBatch(gameRef, batch);
-        if (this.playerQuery.isLastPlayerPlaying)
-          batch = await this.incrementTurnCount(batch);
-      }
-      // Otherwise activates the next species.
-      else {
-        batch.update(gameRef, {
-          playingSpeciesId: this.playerQuery.activePlayerLastSpeciesId,
-        });
-      }
+      batch = await this.handleLastAction(gameRef, batch);
+    } else {
+      // Updates game remaining actions.
+      const remainingActions = firebase.firestore.FieldValue.increment(-1);
+      batch.update(gameRef, { remainingActions });
     }
-
     if (existingBatch) return batch;
 
     batch.commit().catch((error) => {
       console.log('Updating remaining actions failed: ', error);
     });
+  }
+
+  private async handleLastAction(
+    gameRef: firebase.firestore.DocumentReference,
+    batch: firebase.firestore.WriteBatch
+  ) {
+    const remainingActions = DEFAULT_ACTION_PER_TURN;
+    batch.update(gameRef, { remainingActions });
+    this.tileService.removeActive();
+
+    if (this.playerQuery.isLastActivePlayerSpeciesActive) {
+      batch = this.switchPlayingPlayerAndSpeciesUsingBatch(gameRef, batch);
+      if (this.playerQuery.isLastPlayerPlaying)
+        batch = await this.incrementTurnCount(batch);
+    }
+    // Otherwise activates the next species.
+    else {
+      batch.update(gameRef, {
+        playingSpeciesId: this.playerQuery.activePlayerLastSpeciesId,
+      });
+    }
+    return batch;
   }
 
   private switchPlayingPlayerAndSpeciesUsingBatch(
@@ -368,7 +388,7 @@ export class GameService extends CollectionService<GameState> {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const increment = firebase.firestore.FieldValue.increment(1);
-    if (game.eraCount === 2 && game.turnCount === 1) this.prepareNewSpecies();
+    if (game.eraCount === 1 && game.turnCount === 2) this.prepareNewSpecies();
 
     // Every 3 turns, a new era begins.
     if (game.turnCount === 3) {

@@ -16,7 +16,7 @@ import { Ability, Species, SpeciesQuery } from '../species/_state';
 import { Player, PlayerQuery } from '../players/_state';
 import { PlayService } from '../play.service';
 
-import { GameQuery } from 'src/app/games/_state';
+import { GameQuery, GameService } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-header',
@@ -40,6 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private gameQuery: GameQuery,
+    private gameService: GameService,
     private speciesQuery: SpeciesQuery,
     private playerQuery: PlayerQuery,
     private playService: PlayService
@@ -76,6 +77,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       panelClass: 'custom-container',
       autoFocus: false,
     });
+  }
+
+  public skipTurn() {
+    this.gameService.skipTurn();
   }
 
   ngOnDestroy(): void {

@@ -15,6 +15,10 @@
   height: calc(var(--s));
   line-height: calc(var(--s));
 }
+.turn-button {
+  --s: 2.5rem + 2.5vmin;
+}
+
 .score-button {
   --s: 2.5rem + 2.5vmin;
 }

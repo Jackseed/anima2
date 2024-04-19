@@ -58,16 +58,23 @@
       </div>
     </div>
   </div>
-  <div fxFlex="18"></div>
+  <div fxFlex="10"></div>
+  <!---------------- TURN BUTTON -------------->
+  <div fxFlex="10">
+    <button mat-icon-button class="turn-button" (click)="skipTurn()">
+      <mat-icon svgIcon="hourglass-clean"></mat-icon>
+    </button>
+  </div>
+  <div fxFlex="2"></div>
   <!---------------- SCORE BUTTON -------------->
-  <div fxFlex="15">
+  <div fxFlex="10">
     <button mat-icon-button class="score-button" (click)="openScore()">
       <mat-icon svgIcon="score-button"></mat-icon>
     </button>
   </div>
-  <div fxFlex="1"></div>
+  <div fxFlex="5"></div>
   <!---------------- SETTINGS BUTTON -------------->
-  <div fxFlex="7">
+  <div fxFlex="10">
     <button mat-icon-button class="menu-button" (click)="openSettings()">
       <mat-icon svgIcon="menu-button"></mat-icon>
     </button>
