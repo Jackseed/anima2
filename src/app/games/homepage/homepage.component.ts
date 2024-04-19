@@ -14,6 +14,7 @@ import { UserService } from 'src/app/auth/_state';
 // Components
 import { FormComponent } from '../form/form.component';
 import { ListComponent } from '../list/list.component';
+import { UserViewComponent } from 'src/app/auth/user-view/user-view.component';
 
 @Component({
   selector: 'app-homepage',
@@ -55,6 +56,15 @@ export class HomepageComponent implements OnInit {
       height: '80%',
       width: '90%',
       panelClass: ['custom-container', 'overflow-hidden'],
+      backdropClass: 'transparent-backdrop',
+      autoFocus: false,
+    });
+  }
+  public openUserView() {
+    this.dialog.open(UserViewComponent, {
+      height: '80%',
+      width: '90%',
+      panelClass: ['custom-container', 'no-padding-bottom'],
       backdropClass: 'transparent-backdrop',
       autoFocus: false,
     });

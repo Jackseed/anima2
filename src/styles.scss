@@ -61,6 +61,22 @@ textarea {
   width: 90%;
 }
 
+.mat-dialog-title {
+  padding-top: 20px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: calc(1.5rem + 1.5vmin);
+  color: var(--anima-color);
+  text-align: center;
+}
+
+.subtitle {
+  color: #2984a0;
+  font-weight: 800;
+  font-size: calc(1.2rem + 1.5vmin);
+  text-align: center;
+}
+
 .relative {
   position: relative;
 }

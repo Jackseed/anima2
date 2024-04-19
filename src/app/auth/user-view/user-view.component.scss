@@ -1,0 +1,22 @@
+main {
+  height: 90%;
+  background-image: url("../../../assets/background-flame.png");
+  background-position: center;
+  background-size: 25%;
+  background-repeat: no-repeat;
+}
+
+.mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+p {
+  color: #F4BB3A;
+  font-weight: 800;
+  font-size: calc(1.5rem + 1.5vmin);
+  text-align: center;
+  margin: 0;
+}
