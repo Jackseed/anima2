@@ -735,3 +735,28 @@
     </main>
   </ng-template>
 </article>
+<!------------ NEW SPECIES -------------->
+<article
+  fxFlexFill
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'newSpecies'
+  "
+  class="fade-in-out visual-overlay"
+  style="--animation-duration: 1000s; --animation-delay: 0s"
+>
+  <section fxFlexFill class="opacity"></section>
+  <section
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    class="absolute"
+  >
+    <section>
+      <mat-icon fxFlexFill svgIcon="baby"></mat-icon>
+    </section>
+    <section class="banner text-box">
+      <h2>Vous obtenez votre 2ème espèce !</h2>
+    </section>
+  </section>
+</article>

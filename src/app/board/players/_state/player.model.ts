@@ -22,6 +22,8 @@ export type AnimationState =
   | 'playerNamesTitle'
   | 'regionScore'
   | 'eraScore'
+  | 'newEra'
+  | 'newSpecies'
   | 'victory';
 
 export interface RegionScores {
