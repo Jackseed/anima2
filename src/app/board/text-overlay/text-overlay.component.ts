@@ -18,7 +18,7 @@ import { PlayService } from '../play.service';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
 import { GameAction, Species, SpeciesQuery } from '../species/_state';
 import { Regions, TileQuery, TileService } from '../tiles/_state';
-import { filter, first, tap } from 'rxjs/operators';
+import { filter, first, map, tap } from 'rxjs/operators';
 
 export type animation = {
   duration?: number;
@@ -97,6 +97,12 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public isAnimationPlaying$: Observable<boolean> =
     this.playerQuery.isAnimationPlaying$;
   public players$: Observable<Player[]> = this.playerQuery.selectAll();
+  public player1$: Observable<Player> = this.playerQuery
+    .selectAll()
+    .pipe(map((players) => players[0]));
+  public player2$: Observable<Player> = this.playerQuery
+    .selectAll()
+    .pipe(map((players) => players[1]));
   public isPlayerWaiting$: Observable<boolean> =
     this.playerQuery.isActivePlayerWaitingForNextStartStage$;
   public isActivePlayerPlaying$: Observable<boolean> =
@@ -108,6 +114,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.playerQuery.winningPlayerSpecies$;
   public winner$: Observable<Player> = this.playerQuery.winner$;
   public loser$: Observable<Player> = this.playerQuery.loser$;
+  public game$: Observable<Game> = this.gameQuery.selectActive();
 
   // Subscriptions
   private animationSwitchSub: Subscription = this.animSwitchSub;
@@ -197,6 +204,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
               )
               .subscribe();
           }
+          this.playerService.updateActivePlayerAnimationState('endEraTitle');
           this.playerService.updateisAnimationPlaying(false);
         },
         delay: this.newSpeciesDuration * 1000,
@@ -240,8 +248,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     return this.playerQuery.getPlayerColors(opponentId);
   }
 
-  public getOpponentSpecies(): Species {
-    return this.playerQuery.opponentMainSpecies;
+  public getPlayerSpecies(playerId: string, speciesPosition: 0 | 1): Species {
+    return this.playerQuery.playerSpecies(playerId, speciesPosition);
   }
 
   public toggleScoreToggle() {
@@ -416,6 +424,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.animationSwitchSub.unsubscribe();
-    this.newSpeciesSub.unsubscribe();
+    if (this.newSpeciesSub) this.newSpeciesSub.unsubscribe();
   }
 }

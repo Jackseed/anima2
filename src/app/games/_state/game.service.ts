@@ -405,15 +405,15 @@ export class GameService extends CollectionService<GameState> {
     return batch;
   }
 
-  private async prepareNewSpecies() {
+  public async prepareNewSpecies() {
     const playerIds = this.playerQuery.allPlayerIds;
-    await this.playNewSpecies();
+    await this.createNewSpecies();
     this.updateIsStarting(true);
     this.switchStartStage('launching');
     this.playerQuery.switchReadyState(playerIds);
   }
 
-  public async playNewSpecies() {
+  public async createNewSpecies() {
     const playerIds = this.playerQuery.allPlayerIds;
     let batch = this.db.firestore.batch();
     for (const playerId of playerIds) {

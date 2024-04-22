@@ -151,14 +151,25 @@
       --secondary-color: {{ getActivePlayerColors().secondary }}"
     >
       <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-      <mat-icon
-        class="species-icon"
-        id="species-title"
-        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
-      ></mat-icon>
+      <ng-container *ngIf="player1$ | async as player1">
+        <mat-icon
+          class="species-icon"
+          id="species-title"
+          [svgIcon]="
+            player1.speciesIds.length < 2
+              ? getPlayerSpecies(player1.id, 0).abilities[0].id
+              : getPlayerSpecies(player1.id, 1).abilities[0].id
+          "
+        ></mat-icon>
+      </ng-container>
     </section>
     <section class="banner text-box">
-      <h2>C'est parti !</h2>
+      <h2 *ngIf="(activePlayer$ | async).speciesIds.length == 1">
+        C'est parti !
+      </h2>
+      <h2 *ngIf="(activePlayer$ | async).speciesIds.length > 1">
+        Nouvelles espèces !
+      </h2>
     </section>
     <section
       fxFlex="30"
@@ -168,11 +179,17 @@
         --secondary-color: {{ getOpponentColors().secondary }}"
     >
       <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-      <mat-icon
-        class="species-icon"
-        id="species-title"
-        [svgIcon]="getOpponentSpecies().abilities[0].id"
-      ></mat-icon>
+      <ng-container *ngIf="player2$ | async as player2">
+        <mat-icon
+          class="species-icon"
+          id="species-title"
+          [svgIcon]="
+            player2.speciesIds.length < 2
+              ? getPlayerSpecies(player2.id, 0).abilities[0].id
+              : getPlayerSpecies(player2.id, 1).abilities[0].id
+          "
+        ></mat-icon>
+      </ng-container>
     </section>
   </main>
 </article>
@@ -735,6 +752,150 @@
     </main>
   </ng-template>
 </article>
+
+<!------------ NEW ERA -------------->
+<article
+  fxFlexFill
+  class="fade-in-out visual-overlay"
+  style="--animation-duration: 1000s; --animation-delay: 0s"
+>
+  <div
+    *ngIf="
+      (activePlayer$ | async).isAnimationPlaying &&
+      (activePlayer$ | async).animationState === 'newEra'
+    "
+  ></div>
+  <section fxFlexFill class="full-opacity"></section>
+  <main
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    class="absolute"
+    *ngIf="game$ | async as game"
+  >
+    <section fxFlex="10"></section>
+    <div
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      fxFlex="30"
+      *ngIf="player1$ | async as player1"
+    >
+      <div *ngIf="player1.speciesIds.length > 1; else playerOneOneSpecies">
+        <section fxFlex="7.5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+        --primary-color: {{ getActivePlayerColors().primary }};
+        --secondary-color: {{ getActivePlayerColors().secondary }}"
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="this.getPlayerSpecies(player1.id, 0).abilities[0].id"
+          ></mat-icon>
+        </section>
+        <section fxFlex="5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+      --primary-color: {{ getActivePlayerColors().primary }};
+      --secondary-color: {{ getActivePlayerColors().secondary }}"
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="this.getPlayerSpecies(player1.id, 1).abilities[0].id"
+          ></mat-icon>
+        </section>
+      </div>
+
+      <ng-template #playerOneOneSpecies>
+        <section
+          fxFlexFill
+          class="species relative"
+          style="
+      --primary-color: {{ getOpponentColors().primary }};
+      --secondary-color: {{ getOpponentColors().secondary }}"
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="this.getPlayerSpecies(player1.id, 0).abilities[0].id"
+          ></mat-icon>
+        </section>
+      </ng-template>
+    </div>
+
+    <section class="banner text-box">
+      <ng-container>
+        <h2>{{ game.eraCount }}ème ère !</h2>
+      </ng-container>
+    </section>
+
+    <div
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      fxFlex="30"
+      *ngIf="player2$ | async as player2"
+    >
+      <div *ngIf="player2.speciesIds.length > 1; else playerTwoOneSpecies">
+        <section fxFlex="7.5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+        --primary-color: {{ getActivePlayerColors().primary }};
+        --secondary-color: {{ getActivePlayerColors().secondary }}"
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="this.getPlayerSpecies(player2.id, 0).abilities[0].id"
+          ></mat-icon>
+        </section>
+        <section fxFlex="5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+      --primary-color: {{ getActivePlayerColors().primary }};
+      --secondary-color: {{ getActivePlayerColors().secondary }}"
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="this.getPlayerSpecies(player2.id, 1).abilities[0].id"
+          ></mat-icon>
+        </section>
+      </div>
+
+      <ng-template #playerTwoOneSpecies>
+        <section
+          fxFlexFill
+          class="species relative"
+          style="
+      --primary-color: {{ getOpponentColors().primary }};
+      --secondary-color: {{ getOpponentColors().secondary }}"
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="this.getPlayerSpecies(player2.id, 0).abilities[0].id"
+          ></mat-icon>
+        </section>
+      </ng-template>
+    </div>
+  </main>
+</article>
+
 <!------------ NEW SPECIES -------------->
 <article
   fxFlexFill

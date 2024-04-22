@@ -106,14 +106,17 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return playerIds.filter((id) => id !== playerId)[0];
   }
 
-  public get opponentMainSpecies(): Species {
-    const activePlayerId = this.getActiveId();
-    return this.speciesQuery
-      .getAll()
-      .filter(
-        (species) =>
-          species.playerId === this.getPlayerOpponentId(activePlayerId)
-      )[0];
+  public playerSpecies(playerId: string, speciesPosition: number): Species {
+    const player = this.getEntity(playerId);
+    if (player) {
+      const playerSpeciesId = player.speciesIds[speciesPosition];
+      return this.speciesQuery.getEntity(playerSpeciesId);
+    } else {
+      // If player is not found, return the first species of the player.
+      return this.speciesQuery
+        .getAll()
+        .filter((species) => species.playerId === playerId)[0];
+    }
   }
 
   public get winner$(): Observable<Player> {
