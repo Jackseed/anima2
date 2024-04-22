@@ -1,6 +1,23 @@
 <div fxFlexFill fxLayout="column" fxLayoutAlign="center center">
   <header fxFlex="10" class="text-box">
-    <h2>Choisissez un <br />nouveau trait</h2>
+    <ng-container *ngIf="activePlayer$ | async as activePlayer">
+      <div
+        *ngIf="
+          activePlayer.species[activePlayer.species.length - 1].abilities
+            .length > 0
+        "
+      >
+        <h2>Choisissez un <br />nouveau trait</h2>
+      </div>
+      <div
+        *ngIf="
+          activePlayer.species[activePlayer.species.length - 1].abilities
+            .length === 0
+        "
+      >
+        <h2>Choisissez le trait<br />de votre nouvelle espèce</h2>
+      </div>
+    </ng-container>
   </header>
   <!---------------- ABILITIES -------------->
   <main fxFlex="35" fxFlexFill fxLayout="row" fxLayoutAlign="center center">

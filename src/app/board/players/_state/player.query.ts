@@ -106,7 +106,7 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return playerIds.filter((id) => id !== playerId)[0];
   }
 
-  public activePlayerSuperchargedWithSpecies(): Observable<Player> {
+  public get activePlayerSuperchargedWithSpecies$(): Observable<Player> {
     return this.selectActive().pipe(
       map((player) => {
         let species = [];

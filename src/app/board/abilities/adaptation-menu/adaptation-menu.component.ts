@@ -8,7 +8,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
 // States
-import { PlayerQuery } from '../../players/_state';
+import { Player, PlayerQuery } from '../../players/_state';
 import { Ability } from '../../species/_state';
 import { AbilityService } from '../../ability.service';
 import { Colors } from 'src/app/games/_state';
@@ -21,6 +21,8 @@ import { Colors } from 'src/app/games/_state';
 export class AdaptationMenuComponent implements OnInit {
   public abilityChoices$: Observable<Ability[]>;
   public activeAbility: Ability = undefined;
+  public activePlayer$: Observable<Player> =
+    this.playerQuery.activePlayerSuperchargedWithSpecies$;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: string,

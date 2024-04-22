@@ -110,7 +110,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public isActivePlayerPlaying$: Observable<boolean> =
     this.playerQuery.isActivePlayerPlaying$;
   public activePlayer$: Observable<Player> =
-    this.playerQuery.activePlayerSuperchargedWithSpecies();
+    this.playerQuery.activePlayerSuperchargedWithSpecies$;
   public hasTileActive$: Observable<boolean> = this.tileQuery.hasActive$;
   public activeSpecies$: Observable<Species> = this.speciesQuery.selectActive();
   public winningPlayerSpecies$: Observable<Species[]> =
