@@ -102,20 +102,27 @@
     fxLayout="column"
     fxLayoutAlign="start center"
     class="absolute"
+    *ngIf="activePlayer$ | async as activePlayer"
   >
     <section fxFlex="10"></section>
     <section
       fxFlex="30"
       class="species relative"
       style="
-      --primary-color: {{ getActivePlayerColors().primary }};
-      --secondary-color: {{ getActivePlayerColors().secondary }}"
+      --primary-color: {{
+        activePlayer.species[activePlayer.species.length - 1].colors.primary
+      }};
+      --secondary-color: {{
+        activePlayer.species[activePlayer.species.length - 1].colors.secondary
+      }}"
     >
       <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
       <mat-icon
         class="species-icon"
         id="species-title"
-        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
+        [svgIcon]="
+          activePlayer.species[activePlayer.species.length - 1].abilities[0].id
+        "
       ></mat-icon>
     </section>
     <section fxFlex="5"></section>
@@ -143,26 +150,28 @@
     class="absolute"
   >
     <section fxFlex="10"></section>
-    <section
-      fxFlex="30"
-      class="species relative"
-      style="
-      --primary-color: {{ getActivePlayerColors().primary }};
-      --secondary-color: {{ getActivePlayerColors().secondary }}"
-    >
-      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-      <ng-container *ngIf="player1$ | async as player1">
+    <div fxFlex="30" *ngIf="player1$ | async as player1">
+      <section
+        fxFlexFill
+        class="species relative"
+        style="
+      --primary-color: {{
+          player1.species[player1.species.length - 1].colors.primary
+        }};
+      --secondary-color: {{
+          player1.species[player1.species.length - 1].colors.secondary
+        }}"
+      >
+        <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
         <mat-icon
           class="species-icon"
           id="species-title"
           [svgIcon]="
-            player1.speciesIds.length < 2
-              ? getPlayerSpecies(player1.id, 0).abilities[0].id
-              : getPlayerSpecies(player1.id, 1).abilities[0].id
+            player1.species[player1.species.length - 1].abilities[0].id
           "
         ></mat-icon>
-      </ng-container>
-    </section>
+      </section>
+    </div>
     <section class="banner text-box">
       <h2 *ngIf="(activePlayer$ | async).speciesIds.length == 1">
         C'est parti !
@@ -171,26 +180,28 @@
         Nouvelles espèces !
       </h2>
     </section>
-    <section
-      fxFlex="30"
-      class="species relative"
-      style="
-        --primary-color: {{ getOpponentColors().primary }};
-        --secondary-color: {{ getOpponentColors().secondary }}"
-    >
-      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-      <ng-container *ngIf="player2$ | async as player2">
+
+    <div fxFlex="30" *ngIf="player2$ | async as player2">
+      <section
+        fxFlexFill
+        class="species relative"
+        style="      --primary-color: {{
+          player2.species[player2.species.length - 1].colors.primary
+        }};
+      --secondary-color: {{
+          player2.species[player2.species.length - 1].colors.secondary
+        }}"
+      >
+        <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
         <mat-icon
           class="species-icon"
           id="species-title"
           [svgIcon]="
-            player2.speciesIds.length < 2
-              ? getPlayerSpecies(player2.id, 0).abilities[0].id
-              : getPlayerSpecies(player2.id, 1).abilities[0].id
+            player2.species[player2.species.length - 1].abilities[0].id
           "
         ></mat-icon>
-      </ng-container>
-    </section>
+      </section>
+    </div>
   </main>
 </article>
 
@@ -240,18 +251,64 @@
     fxLayoutAlign="center center"
     class="absolute"
   >
-    <section
-      class="species relative"
-      style="
-      --primary-color: {{ getActivePlayerColors().primary }};
-      --secondary-color: {{ getActivePlayerColors().secondary }}"
+    <div
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      *ngIf="activePlayer$ | async as activePlayer"
     >
-      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-      <mat-icon
-        class="species-icon"
-        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
-      ></mat-icon>
-    </section>
+      <div *ngIf="activePlayer.speciesIds.length > 1; else oneSpecies">
+        <section fxFlex="7.5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ activePlayer.species[0].colors.primary }};
+            --secondary-color: {{ activePlayer.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="activePlayer.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+        <section fxFlex="5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ activePlayer.species[1]?.colors.primary }};
+            --secondary-color: {{ activePlayer.species[1]?.colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="activePlayer.species[1]?.abilities[0]?.id"
+          ></mat-icon>
+        </section>
+      </div>
+
+      <ng-template #oneSpecies>
+        <section
+          fxFlexFill
+          class="species relative"
+          style="
+            --primary-color: {{ activePlayer.species[0].colors.primary }};
+            --secondary-color: {{ activePlayer.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="activePlayer.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+      </ng-template>
+    </div>
     <section class="banner text-box">
       <h2>C'est à vous !</h2>
     </section>
@@ -758,13 +815,11 @@
   fxFlexFill
   class="fade-in-out visual-overlay"
   style="--animation-duration: 1000s; --animation-delay: 0s"
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'newEra'
+  "
 >
-  <div
-    *ngIf="
-      (activePlayer$ | async).isAnimationPlaying &&
-      (activePlayer$ | async).animationState === 'newEra'
-    "
-  ></div>
   <section fxFlexFill class="full-opacity"></section>
   <main
     fxFlexFill
@@ -786,14 +841,15 @@
           fxFlex="40"
           class="species relative"
           style="
-        --primary-color: {{ getActivePlayerColors().primary }};
-        --secondary-color: {{ getActivePlayerColors().secondary }}"
+            --primary-color: {{ player1.species[0].colors.primary }};
+            --secondary-color: {{ player1.species[0].colors.secondary }};
+          "
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
             class="species-icon"
             id="species-title"
-            [svgIcon]="this.getPlayerSpecies(player1.id, 0).abilities[0].id"
+            [svgIcon]="player1.species[0].abilities[0].id"
           ></mat-icon>
         </section>
         <section fxFlex="5"></section>
@@ -801,14 +857,15 @@
           fxFlex="40"
           class="species relative"
           style="
-      --primary-color: {{ getActivePlayerColors().primary }};
-      --secondary-color: {{ getActivePlayerColors().secondary }}"
+            --primary-color: {{ player1.species[1].colors.primary }};
+            --secondary-color: {{ player1.species[1].colors.secondary }};
+          "
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
             class="species-icon"
             id="species-title"
-            [svgIcon]="this.getPlayerSpecies(player1.id, 1).abilities[0].id"
+            [svgIcon]="player1.species[1].abilities[0].id"
           ></mat-icon>
         </section>
       </div>
@@ -818,14 +875,15 @@
           fxFlexFill
           class="species relative"
           style="
-      --primary-color: {{ getOpponentColors().primary }};
-      --secondary-color: {{ getOpponentColors().secondary }}"
+            --primary-color: {{ player1.species[0].colors.primary }};
+            --secondary-color: {{ player1.species[0].colors.secondary }};
+          "
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
             class="species-icon"
             id="species-title"
-            [svgIcon]="this.getPlayerSpecies(player1.id, 0).abilities[0].id"
+            [svgIcon]="player1.species[0].abilities[0].id"
           ></mat-icon>
         </section>
       </ng-template>
@@ -849,14 +907,15 @@
           fxFlex="40"
           class="species relative"
           style="
-        --primary-color: {{ getActivePlayerColors().primary }};
-        --secondary-color: {{ getActivePlayerColors().secondary }}"
+            --primary-color: {{ player2.species[0].colors.primary }};
+            --secondary-color: {{ player2.species[0].colors.secondary }};
+          "
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
             class="species-icon"
             id="species-title"
-            [svgIcon]="this.getPlayerSpecies(player2.id, 0).abilities[0].id"
+            [svgIcon]="player2.species[0].abilities[0].id"
           ></mat-icon>
         </section>
         <section fxFlex="5"></section>
@@ -864,14 +923,15 @@
           fxFlex="40"
           class="species relative"
           style="
-      --primary-color: {{ getActivePlayerColors().primary }};
-      --secondary-color: {{ getActivePlayerColors().secondary }}"
+            --primary-color: {{ player2.species[1].colors.primary }};
+            --secondary-color: {{ player2.species[1].colors.secondary }};
+          "
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
             class="species-icon"
             id="species-title"
-            [svgIcon]="this.getPlayerSpecies(player2.id, 1).abilities[0].id"
+            [svgIcon]="player2.species[1].abilities[0].id"
           ></mat-icon>
         </section>
       </div>
@@ -881,14 +941,15 @@
           fxFlexFill
           class="species relative"
           style="
-      --primary-color: {{ getOpponentColors().primary }};
-      --secondary-color: {{ getOpponentColors().secondary }}"
+            --primary-color: {{ player2.species[0].colors.primary }};
+            --secondary-color: {{ player2.species[0].colors.secondary }};
+          "
         >
           <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
           <mat-icon
             class="species-icon"
             id="species-title"
-            [svgIcon]="this.getPlayerSpecies(player2.id, 0).abilities[0].id"
+            [svgIcon]="player2.species[0].abilities[0].id"
           ></mat-icon>
         </section>
       </ng-template>

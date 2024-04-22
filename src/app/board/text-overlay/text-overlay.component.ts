@@ -97,17 +97,20 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public isAnimationPlaying$: Observable<boolean> =
     this.playerQuery.isAnimationPlaying$;
   public players$: Observable<Player[]> = this.playerQuery.selectAll();
-  public player1$: Observable<Player> = this.playerQuery
-    .selectAll()
-    .pipe(map((players) => players[0]));
-  public player2$: Observable<Player> = this.playerQuery
-    .selectAll()
-    .pipe(map((players) => players[1]));
+  public playersWithSpecies$: Observable<Player[]> =
+    this.playerQuery.allPlayersSuperchargedWithSpecies();
+  public player1$: Observable<Player> = this.playersWithSpecies$.pipe(
+    map((players) => players[0])
+  );
+  public player2$: Observable<Player> = this.playersWithSpecies$.pipe(
+    map((players) => players[1])
+  );
   public isPlayerWaiting$: Observable<boolean> =
     this.playerQuery.isActivePlayerWaitingForNextStartStage$;
   public isActivePlayerPlaying$: Observable<boolean> =
     this.playerQuery.isActivePlayerPlaying$;
-  public activePlayer$: Observable<Player> = this.playerQuery.selectActive();
+  public activePlayer$: Observable<Player> =
+    this.playerQuery.activePlayerSuperchargedWithSpecies();
   public hasTileActive$: Observable<boolean> = this.tileQuery.hasActive$;
   public activeSpecies$: Observable<Species> = this.speciesQuery.selectActive();
   public winningPlayerSpecies$: Observable<Species[]> =
@@ -235,21 +238,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   public isActionActive$(action: GameAction): Observable<boolean> {
     return this.abilityService.isActionOngoing$(action);
-  }
-
-  public getActivePlayerColors(): Colors {
-    const activePlayerId = this.playerQuery.getActiveId();
-    return this.playerQuery.getPlayerColors(activePlayerId);
-  }
-
-  public getOpponentColors(): Colors {
-    const activePlayerId = this.playerQuery.getActiveId();
-    const opponentId = this.playerQuery.getPlayerOpponentId(activePlayerId);
-    return this.playerQuery.getPlayerColors(opponentId);
-  }
-
-  public getPlayerSpecies(playerId: string, speciesPosition: 0 | 1): Species {
-    return this.playerQuery.playerSpecies(playerId, speciesPosition);
   }
 
   public toggleScoreToggle() {
