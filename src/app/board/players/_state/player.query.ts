@@ -106,17 +106,38 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return playerIds.filter((id) => id !== playerId)[0];
   }
 
-  public playerSpecies(playerId: string, speciesPosition: number): Species {
-    const player = this.getEntity(playerId);
-    if (player) {
-      const playerSpeciesId = player.speciesIds[speciesPosition];
-      return this.speciesQuery.getEntity(playerSpeciesId);
-    } else {
-      // If player is not found, return the first species of the player.
-      return this.speciesQuery
-        .getAll()
-        .filter((species) => species.playerId === playerId)[0];
-    }
+  public activePlayerSuperchargedWithSpecies(): Observable<Player> {
+    return this.selectActive().pipe(
+      map((player) => {
+        let species = [];
+        for (const speciesId of player.speciesIds) {
+          const specie = this.speciesQuery.getEntity(speciesId);
+          species.push(specie);
+        }
+        return {
+          ...player,
+          species,
+        };
+      })
+    );
+  }
+
+  public allPlayersSuperchargedWithSpecies(): Observable<Player[]> {
+    return this.selectAll().pipe(
+      map((players) =>
+        players.map((player) => {
+          let species = [];
+          for (const speciesId of player.speciesIds) {
+            const specie = this.speciesQuery.getEntity(speciesId);
+            species.push(specie);
+          }
+          return {
+            ...player,
+            species,
+          };
+        })
+      )
+    );
   }
 
   public get winner$(): Observable<Player> {

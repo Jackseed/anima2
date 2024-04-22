@@ -1,9 +1,10 @@
 import { Colors } from 'src/app/games/_state';
-import { Ability } from '../../species/_state';
+import { Ability, Species } from '../../species/_state/species.model';
 
 export interface Player {
   id: string;
   speciesIds: string[];
+  species?: Species[];
   score: number;
   regionScores: RegionScores;
   colors: Colors;
