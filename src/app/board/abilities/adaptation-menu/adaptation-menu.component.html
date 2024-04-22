@@ -44,9 +44,14 @@
   </main>
   <!---------------- DESCRIPTION -------------->
   <aside fxFlex="40" class="relative">
-    <textarea readonly wrap="hard" rows="3" cols="25">{{
-      activeAbility ? activeAbility.fr.definition : ""
-    }}</textarea>
+    <div fxFlexFill fxLayout="column" fxLayoutAlign="center center">
+      <div class="orange-icons ability">
+        <mat-icon [svgIcon]="activeAbility?.id + '-ability'"></mat-icon>
+      </div>
+      <textarea readonly wrap="hard" rows="3" cols="25">{{
+        activeAbility ? activeAbility.fr.definition : ""
+      }}</textarea>
+    </div>
     <button *ngIf="!!!activeAbility" mat-icon-button id="validate-button">
       <mat-icon id="validate-icon" svgIcon="validate-disable"></mat-icon>
     </button>
