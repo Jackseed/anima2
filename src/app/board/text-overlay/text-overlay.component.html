@@ -354,8 +354,15 @@
     fxLayout="column"
     fxLayoutAlign="center center"
   >
-    <article>
-      <h2 class="player-name green">Nurgle</h2>
+    <article *ngIf="player1$ | async as player1">
+      <h2
+        class="player-name"
+        [ngStyle]="{
+          color: player1.color === 'red' ? red : green
+        }"
+      >
+        {{ player1.name }}
+      </h2>
     </article>
     <article class="banner text-box">
       <h2 class="box-titles">
@@ -363,8 +370,15 @@
         des points !
       </h2>
     </article>
-    <article>
-      <h2 class="player-name red">Jelly0</h2>
+    <article *ngIf="player2$ | async as player2">
+      <h2
+        class="player-name"
+        [ngStyle]="{
+          color: player2.color === 'red' ? red : green
+        }"
+      >
+        {{ player2.name }}
+      </h2>
     </article>
   </main>
   <aside fxFlexFill class="orange footer-position"></aside>
@@ -401,7 +415,7 @@
             *ngFor="let region of regions; first as isFirst; last as isLast"
             class="absolute region-score increase-fade-in"
             style="
-            --color: {{ player.color === 'red' ? 'red' : 'green' }};
+            --color: {{ player.color === 'red' ? red : green }};
             --fade-in-fill-mode: {{ isFirst ? 'forwards' : 'both' }};
             --counter-from: {{
               regionScoresAnimationVariables.playerVariables[player.id][
@@ -505,7 +519,14 @@
       fxLayout="row"
       fxLayoutAlign="center center"
     >
-      <h2 class="player-name green margin-aside">Nurgle</h2>
+      <h2
+        class="player-name margin-aside"
+        [ngStyle]="{
+          color: players[0].color === 'red' ? red : green
+        }"
+      >
+        {{ players[0].name }}
+      </h2>
     </article>
     <article
       fxFlexFill
@@ -520,7 +541,7 @@
         fxLayoutAlign="center center"
       >
         <span
-          class="absolute green pop-in"
+          class="absolute pop-in"
           style="--animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
               .duration
@@ -528,6 +549,9 @@
             eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
               .delay
           }}s"
+          [ngStyle]="{
+            color: players[0].color === 'red' ? red : green
+          }"
           >+{{ players[0].regionScores.totalEra }}</span
         >
       </mat-icon>
@@ -539,7 +563,7 @@
         fxLayoutAlign="center center"
       >
         <h2
-          class="score increase no-margin green"
+          class="score increase no-margin"
           style="
             --counter-from: {{
             players[0].score - players[0].regionScores.totalEra
@@ -553,10 +577,13 @@
               .playerTotal.delay
           }}s
           "
+          [ngStyle]="{
+            color: players[0].color === 'red' ? red : green
+          }"
         ></h2>
         <h3 class="no-margin" id="score-line">-</h3>
         <h2
-          class="score increase no-margin red"
+          class="score increase no-margin"
           style="
             --counter-from: {{
             players[1].score - players[1].regionScores.totalEra
@@ -564,12 +591,15 @@
             --counter-to: {{ players[1].score }};
             --animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[1].id]
-              .playerTotal.duration
+              ?.playerTotal?.duration
           }}s; --animation-delay: {{
             eraScoresAnimationVariables.playerVariables[players[1].id]
-              .playerTotal.delay
+              ?.playerTotal?.delay
           }}s
           "
+          [ngStyle]="{
+            color: players[1].color === 'red' ? red : green
+          }"
         ></h2>
       </section>
       <mat-icon
@@ -579,7 +609,7 @@
         fxLayoutAlign="center center"
       >
         <span
-          class="pop-in absolute red"
+          class="pop-in absolute"
           style="--animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
               .duration
@@ -587,6 +617,9 @@
             eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
               .delay
           }}s"
+          [ngStyle]="{
+            color: players[1].color === 'red' ? red : green
+          }"
           >+{{ players[1].regionScores.totalEra }}</span
         >
       </mat-icon>
@@ -597,7 +630,14 @@
       fxLayout="row"
       fxLayoutAlign="center center"
     >
-      <h2 class="player-name red margin-aside">Jelly0</h2>
+      <h2
+        class="player-name margin-aside"
+        [ngStyle]="{
+          color: players[1].color === 'red' ? red : green
+        }"
+      >
+        {{ players[1].name }}
+      </h2>
     </article>
     <aside fxFlexFill fxFlex="1" class="orange"></aside>
   </main>

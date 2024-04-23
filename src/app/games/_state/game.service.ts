@@ -157,14 +157,15 @@ export class GameService extends CollectionService<GameState> {
     batch: firebase.firestore.WriteBatch;
   }> {
     const batch = existingBatch ? existingBatch : this.db.firestore.batch();
-    const playerId = (await this.afAuth.currentUser).uid;
+    const user = await this.afAuth.currentUser;
+    const playerId = user.uid;
     const playerRef = this.db
       .collection(`games/${gameId}/players`)
       .doc(playerId).ref;
     const speciesId = this.db.createId();
 
     // Creates player doc.
-    const player = createPlayer(playerId, [speciesId], color);
+    const player = createPlayer(playerId, user.displayName, [speciesId], color);
     batch.set(playerRef, player);
 
     // Creates player's species doc.

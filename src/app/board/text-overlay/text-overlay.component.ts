@@ -8,7 +8,6 @@ import { filter, first, map, tap } from 'rxjs/operators';
 
 // States
 import {
-  Colors,
   Game,
   GameQuery,
   GameService,
@@ -49,9 +48,6 @@ export type eraAnimation = {
   playerTotal: animation;
 };
 
-interface PlayerEraScoresAnimationVariables {
-  [playerId: string]: eraAnimation;
-}
 
 @Component({
   selector: 'app-text-overlay',
@@ -83,7 +79,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public eraScoresAnimationVariables: {
     firstScreenTransition?: animation;
     totalDuration?: number;
-    playerVariables: PlayerEraScoresAnimationVariables[];
+    playerVariables: { [playerId: string]: eraAnimation };
   };
   public victoryAnimationVariables: {
     isAnimationDone?: boolean;
@@ -117,8 +113,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.playerQuery.activePlayerSuperchargedWithSpecies$;
   public hasTileActive$: Observable<boolean> = this.tileQuery.hasActive$;
   public activeSpecies$: Observable<Species> = this.speciesQuery.selectActive();
-  public winningPlayerSpecies$: Observable<Species[]> =
-    this.playerQuery.winningPlayerSpecies$;
   public winner$: Observable<Player> = this.playerQuery.winner$;
   public loser$: Observable<Player> = this.playerQuery.loser$;
   public game$: Observable<Game> = this.gameQuery.selectActive();
@@ -335,16 +329,12 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   ) {
     const players = this.playerQuery.getAll();
     this.eraScoresAnimationVariables = {
-      playerVariables: [],
+      playerVariables: {},
       totalDuration: 100000,
     };
     let delayCount = firstDelay;
 
     for (const player of players) {
-      // Initializes the variable.
-      if (!this.eraScoresAnimationVariables.playerVariables[player.id])
-        this.eraScoresAnimationVariables.playerVariables[player.id] = {};
-
       const playerTotalDelay = delayCount + eraDuration * 0.3;
       this.eraScoresAnimationVariables.playerVariables[player.id] = {
         eraScore: {
