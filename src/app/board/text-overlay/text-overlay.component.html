@@ -401,7 +401,7 @@
             *ngFor="let region of regions; first as isFirst; last as isLast"
             class="absolute region-score increase-fade-in"
             style="
-            --color: {{ player.colors.primary }};
+            --color: {{ player.color === 'red' ? 'red' : 'green' }};
             --fade-in-fill-mode: {{ isFirst ? 'forwards' : 'both' }};
             --counter-from: {{
               regionScoresAnimationVariables.playerVariables[player.id][

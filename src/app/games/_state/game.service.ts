@@ -16,15 +16,14 @@ import {
   DEFAULT_ACTION_PER_TURN,
   createGame,
   StartStage,
-  GREEN_PRIMARY_COLOR,
-  GREEN_SECONDARY_COLOR,
-  Colors,
-  RED_PRIMARY_COLOR,
-  RED_SECONDARY_COLOR,
   TileChoice,
   WINNING_POINTS,
   LAST_ERA,
   TESTING_ABILITY,
+  RED_FIRST_COLORS,
+  GREEN_FIRST_COLORS,
+  RED_SECOND_COLORS,
+  GREEN_SECOND_COLORS,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -65,13 +64,11 @@ export class GameService extends CollectionService<GameState> {
     batch = tileBatchCreation.batch;
 
     // Creates 1st player.
-    const colors = {
-      primary: GREEN_PRIMARY_COLOR,
-      secondary: GREEN_SECONDARY_COLOR,
-    };
+    const isGreen = Math.random() < 0.5;
+    const color = isGreen ? 'green' : 'red';
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
-      colors,
+      color,
       batch
     );
 
@@ -152,7 +149,7 @@ export class GameService extends CollectionService<GameState> {
   // Creates player & player's species docs.
   private async createPlayerUsingBatch(
     gameId: string,
-    colors: Colors,
+    color: 'red' | 'green',
     existingBatch?: firebase.firestore.WriteBatch
   ): Promise<{
     playerId: string;
@@ -167,21 +164,22 @@ export class GameService extends CollectionService<GameState> {
     const speciesId = this.db.createId();
 
     // Creates player doc.
-    const player = createPlayer(playerId, [speciesId], colors);
+    const player = createPlayer(playerId, [speciesId], color);
     batch.set(playerRef, player);
 
     // Creates player's species doc.
     const speciesRef = this.db
       .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
-
-    const species = createSpecies(speciesId, playerId, colors);
+    const speciesColors =
+      color === 'red' ? RED_FIRST_COLORS : GREEN_FIRST_COLORS;
+    const species = createSpecies(speciesId, playerId, speciesColors);
     batch.set(speciesRef, species);
 
     return { playerId, speciesId, batch };
   }
 
-  public createNewSpeciesByBatch(
+  public createSecondSpeciesByBatch(
     playerId: string,
     batch: firebase.firestore.WriteBatch
   ): firebase.firestore.WriteBatch {
@@ -193,7 +191,9 @@ export class GameService extends CollectionService<GameState> {
     const speciesRef = this.db
       .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
-    const species = createSpecies(speciesId, player.id, player.colors);
+    const speciesColors =
+      player.color == 'red' ? RED_SECOND_COLORS : GREEN_SECOND_COLORS;
+    const species = createSpecies(speciesId, player.id, speciesColors);
     batch.set(speciesRef, species);
 
     // Updates player doc.
@@ -253,14 +253,13 @@ export class GameService extends CollectionService<GameState> {
 
   // Creates player, player's species & update game docs.
   public async addActiveUserAsPlayer(gameId: string) {
+    const existingPlayers = this.playerQuery.getAll();
     // Creates 2nd player.
-    const colors = {
-      primary: RED_PRIMARY_COLOR,
-      secondary: RED_SECONDARY_COLOR,
-    };
+    const color = existingPlayers[0].color == 'red' ? 'green' : 'red';
+
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
-      colors
+      color
     );
     const firestorePlayerIds = firebase.firestore.FieldValue.arrayUnion(
       playerBatchCreation.playerId
@@ -407,17 +406,17 @@ export class GameService extends CollectionService<GameState> {
 
   public async prepareNewSpecies() {
     const playerIds = this.playerQuery.allPlayerIds;
-    await this.createNewSpecies();
+    await this.createSecondSpecies();
     this.updateIsStarting(true);
     this.switchStartStage('launching');
     this.playerQuery.switchReadyState(playerIds);
   }
 
-  public async createNewSpecies() {
+  public async createSecondSpecies() {
     const playerIds = this.playerQuery.allPlayerIds;
     let batch = this.db.firestore.batch();
     for (const playerId of playerIds) {
-      batch = this.createNewSpeciesByBatch(playerId, batch);
+      batch = this.createSecondSpeciesByBatch(playerId, batch);
     }
 
     await batch.commit().catch((error) => {

@@ -1,23 +1,16 @@
-<div fxFlexFill fxLayout="column" fxLayoutAlign="center center">
+<div
+  fxFlexFill
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  *ngIf="activePlayer$ | async as activePlayer"
+>
   <header fxFlex="10" class="text-box">
-    <ng-container *ngIf="activePlayer$ | async as activePlayer">
-      <div
-        *ngIf="
-          activePlayer.species[activePlayer.species.length - 1].abilities
-            .length > 0
-        "
-      >
-        <h2>Choisissez un <br />nouveau trait</h2>
-      </div>
-      <div
-        *ngIf="
-          activePlayer.species[activePlayer.species.length - 1].abilities
-            .length === 0
-        "
-      >
-        <h2>Choisissez le trait<br />de votre nouvelle espèce</h2>
-      </div>
-    </ng-container>
+    <div *ngIf="!(isNewSpecies$ | async)">
+      <h2>Choisissez un <br />nouveau trait</h2>
+    </div>
+    <div *ngIf="isNewSpecies$ | async">
+      <h2>Choisissez le trait<br />de votre nouvelle espèce</h2>
+    </div>
   </header>
   <!---------------- ABILITIES -------------->
   <main fxFlex="35" fxFlexFill fxLayout="row" fxLayoutAlign="center center">
@@ -34,8 +27,18 @@
         (click)="activate(i)"
         [ngClass]="{ glow: ability === activeAbility }"
         style="
-        --primary-color: {{ getActivePlayerSpeciesColors().primary }};
-        --secondary-color: {{ getActivePlayerSpeciesColors().secondary }}"
+        --primary-color: {{
+          (isNewSpecies$ | async)
+            ? activePlayer.species[activePlayer.species.length - 1].colors
+                .primary
+            : activeSpecies.colors.primary
+        }};
+        --secondary-color: {{
+          (isNewSpecies$ | async)
+            ? activePlayer.species[activePlayer.species.length - 1].colors
+                .secondary
+            : activeSpecies.colors.secondary
+        }}"
       >
         <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
         <mat-icon id="species-icon" [svgIcon]="ability.id"></mat-icon>
@@ -45,7 +48,7 @@
   <!---------------- DESCRIPTION -------------->
   <aside fxFlex="40" class="relative">
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center">
-      <div class="orange-icons ability">
+      <div class="orange-icons ability" *ngIf="activeAbility">
         <mat-icon [svgIcon]="activeAbility?.id + '-ability'"></mat-icon>
       </div>
       <textarea readonly wrap="hard" rows="3" cols="25">{{

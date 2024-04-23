@@ -33,10 +33,30 @@ export const DEFAULT_ASSIMILATION_CREATED_QUANTITY = 1;
 export const DEFAULT_ASSIMILATION_RANGE = 0;
 
 // COLORS
-export const GREEN_PRIMARY_COLOR = '#4cab79';
-export const GREEN_SECONDARY_COLOR = '#378965';
-export const RED_PRIMARY_COLOR = '#d75b62';
-export const RED_SECONDARY_COLOR = '#be4545';
+export const GREEN_FIRST_PRIMARY_COLOR = '#3DAF9A';
+export const GREEN_FIRST_SECONDARY_COLOR = '#21937D';
+export const GREEN_FIRST_COLORS: Colors = {
+  primary: GREEN_FIRST_PRIMARY_COLOR,
+  secondary: GREEN_FIRST_SECONDARY_COLOR,
+};
+export const GREEN_SECOND_PRIMARY_COLOR = '#4EAA78';
+export const GREEN_SECOND_SECONDARY_COLOR = '#3A8965';
+export const GREEN_SECOND_COLORS: Colors = {
+  primary: GREEN_SECOND_PRIMARY_COLOR,
+  secondary: GREEN_SECOND_SECONDARY_COLOR,
+};
+export const RED_FIRST_PRIMARY_COLOR = '#EA665C';
+export const RED_FIRST_SECONDARY_COLOR = '#CF5562';
+export const RED_FIRST_COLORS: Colors = {
+  primary: RED_FIRST_PRIMARY_COLOR,
+  secondary: RED_FIRST_SECONDARY_COLOR,
+};
+export const RED_SECOND_PRIMARY_COLOR = '#DD6236';
+export const RED_SECOND_SECONDARY_COLOR = '#BC4D2F';
+export const RED_SECOND_COLORS: Colors = {
+  primary: RED_SECOND_PRIMARY_COLOR,
+  secondary: RED_SECOND_SECONDARY_COLOR,
+};
 export const NEUTRAL_PRIMARY_COLOR = '#8A8C93';
 export const NEUTRAL_SECONDARY_COLOR = '#6A6E78';
 export const NEUTRAL_COLORS: Colors = {

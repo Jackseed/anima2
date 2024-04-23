@@ -193,11 +193,6 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getActive().abilityChoice.activeTileId;
   }
 
-  public getPlayerColors(playerId: string): Colors {
-    if (playerId === 'neutral') return NEUTRAL_COLORS;
-    return this.getEntity(playerId).colors;
-  }
-
   public get isAnimationPlaying$(): Observable<boolean> {
     return this.selectActive().pipe(map((player) => player.isAnimationPlaying));
   }

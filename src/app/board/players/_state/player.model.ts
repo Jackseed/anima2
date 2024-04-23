@@ -1,4 +1,3 @@
-import { Colors } from 'src/app/games/_state';
 import { Ability, Species } from '../../species/_state/species.model';
 
 export interface Player {
@@ -7,7 +6,7 @@ export interface Player {
   species?: Species[];
   score: number;
   regionScores: RegionScores;
-  colors: Colors;
+  color: 'red' | 'green' | 'neutral';
   abilityChoice: {
     isChoosingAbility: boolean;
     abilityChoices: Ability[];
@@ -40,7 +39,7 @@ export interface RegionScores {
 export function createPlayer(
   id: string,
   speciesIds: string[],
-  colors: Colors,
+  color: 'red' | 'green' | 'neutral',
   params?: Partial<Player>
 ): Player {
   return {
@@ -55,7 +54,7 @@ export function createPlayer(
       swamps: 0,
       forests: 0,
     },
-    colors,
+    color,
     abilityChoice: {
       isChoosingAbility: false,
       abilityChoices: [],

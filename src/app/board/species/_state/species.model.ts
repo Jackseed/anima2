@@ -50,12 +50,12 @@ export const BASIC_ACTIONS = [
 export const ACTIVE_ACTIONS = ['rallying'];
 
 export const GAME_ACTIONS = BASIC_ACTIONS.concat(ACTIVE_ACTIONS);
-export type BasicAction = typeof BASIC_ACTIONS[number];
-export type GameAction = typeof GAME_ACTIONS[number];
+export type BasicAction = (typeof BASIC_ACTIONS)[number];
+export type GameAction = (typeof GAME_ACTIONS)[number];
 
 export const SPECIES_LIST_ACTIONS = ['assimiler', 'intimider'];
 
-export type SpeciesListActions = typeof SPECIES_LIST_ACTIONS[number];
+export type SpeciesListActions = (typeof SPECIES_LIST_ACTIONS)[number];
 
 export interface TileSpeciesWithAssimilationValues
   extends TileSpecies,
@@ -139,7 +139,7 @@ export const ABILITY_IDS = [
   'tunnel',
   'rallying',
 ] as const;
-export type AbilityId = typeof ABILITY_IDS[number];
+export type AbilityId = (typeof ABILITY_IDS)[number];
 export interface Ability {
   id: AbilityId;
   en: {
@@ -166,7 +166,7 @@ export const ABILITIES: Ability[] = [
     fr: {
       name: 'Sporifère',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        "L'espèce peut proliférer dans un rayon de deux cases autour des ceux à l’origine de la prolifération.",
     },
     value: 1,
     type: 'passive',
@@ -181,7 +181,7 @@ export const ABILITIES: Ability[] = [
     fr: {
       name: 'Sociale',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        "Lorsque c'est possible, l'espèce se déplace par groupe de deux au lieu d'un pour le même nombre de points de déplacement.",
     },
     requiredValue: 2,
     value: 2,
@@ -197,7 +197,7 @@ export const ABILITIES: Ability[] = [
     fr: {
       name: 'Bombardière',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        "L'espèce peut assimiler à une case de distance. L'individu créé l'est sur la case d'origine de l'assimilation.",
     },
     value: 1,
     type: 'passive',
@@ -227,7 +227,7 @@ export const ABILITIES: Ability[] = [
     fr: {
       name: 'Fouisseuse',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        'Capacité active: permet de se déplacer à n’importe quel endroit où se trouve une autre espèce active.',
     },
     value: 2,
     type: 'active',
@@ -258,7 +258,7 @@ export const ABILITIES: Ability[] = [
     fr: {
       name: 'Ailée',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        "L'espèce dispose de deux points de déplacements supplémentaires.",
     },
     value: 2,
     type: 'passive',
@@ -273,7 +273,7 @@ export const ABILITIES: Ability[] = [
     fr: {
       name: 'Gigantesque',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        "L’espèce dispose d’un point de résistance supplémentaire lorsqu’elle est menacée d'assimilation.",
     },
     value: 1,
     type: 'passive',
@@ -287,8 +287,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Vorace',
-      definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+      definition: 'L’espèce assimile ses proies par trois au lieu de deux.',
     },
     value: -1,
     type: 'passive',
@@ -318,7 +317,7 @@ export const ABILITIES: Ability[] = [
     fr: {
       name: 'Stridulante',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        'Capacité activée: l’espèce peut déplacer autant d’individus d’une autre espèce qui partage la même position.',
     },
     value: 1,
     type: 'active',
@@ -343,7 +342,7 @@ export const ABILITIES: Ability[] = [
     en: {
       name: 'Carnivore',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        'Lors d’une assimilation, l’espèce crée deux individus au lieu d’un.',
     },
     fr: {
       name: 'Carnassière',
@@ -363,7 +362,7 @@ export const ABILITIES: Ability[] = [
     fr: {
       name: 'Venimeuse',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        'Lorsque l’espèce tente une assimilation, sa force est augmentée d’un point pour l’occasion.',
     },
     value: 1,
     type: 'passive',

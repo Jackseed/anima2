@@ -6,12 +6,11 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 // Rxjs
 import { Observable } from 'rxjs';
-
+import { map } from 'rxjs/operators';
 // States
 import { Player, PlayerQuery } from '../../players/_state';
-import { Ability } from '../../species/_state';
+import { Ability, Species, SpeciesQuery } from '../../species/_state';
 import { AbilityService } from '../../ability.service';
-import { Colors } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-menu',
@@ -23,9 +22,17 @@ export class AdaptationMenuComponent implements OnInit {
   public activeAbility: Ability = undefined;
   public activePlayer$: Observable<Player> =
     this.playerQuery.activePlayerSuperchargedWithSpecies$;
+  public isNewSpecies$: Observable<boolean> = this.activePlayer$.pipe(
+    map(
+      (player) =>
+        player.species[player.species.length - 1].abilities.length === 0
+    )
+  );
+  public activeSpecies: Species = this.speciesQuery.getActive();
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: string,
+    private speciesQuery: SpeciesQuery,
     private playerQuery: PlayerQuery,
     private abilityService: AbilityService,
     private dialog: MatDialog
@@ -33,11 +40,6 @@ export class AdaptationMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.abilityChoices$ = this.playerQuery.abilityChoices$;
-  }
-
-  public getActivePlayerSpeciesColors(): Colors {
-    const playerId = this.playerQuery.getActiveId();
-    return this.playerQuery.getPlayerColors(playerId);
   }
 
   public activate(i: number) {

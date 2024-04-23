@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 // Rxjs
 import { combineLatest, Observable, Subscription } from 'rxjs';
+import { filter, first, map, tap } from 'rxjs/operators';
 
 // States
 import {
@@ -12,13 +13,14 @@ import {
   GameQuery,
   GameService,
   StartStage,
+  RED_FIRST_PRIMARY_COLOR,
+  GREEN_FIRST_PRIMARY_COLOR,
 } from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
 import { GameAction, Species, SpeciesQuery } from '../species/_state';
 import { Regions, TileQuery, TileService } from '../tiles/_state';
-import { filter, first, map, tap } from 'rxjs/operators';
 
 export type animation = {
   duration?: number;
@@ -61,6 +63,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public regions = Regions;
   public players: Player[] = this.playerQuery.getAll();
   public scoreToggle: boolean = true;
+  public red = RED_FIRST_PRIMARY_COLOR;
+  public green = GREEN_FIRST_PRIMARY_COLOR;
 
   // Region score variables
   public regionAnimationDuration = 0.5;
@@ -202,7 +206,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
             this.newSpeciesSub = this.isActivePlayerPlaying$
               .pipe(
                 filter((isActivePlayerPlaying) => isActivePlayerPlaying),
-                tap(() => this.gameService.prepareNewSpecies()),
+                tap(() => this.gameService.prepareSecondSpecies()),
                 first()
               )
               .subscribe();
