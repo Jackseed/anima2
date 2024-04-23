@@ -2,6 +2,7 @@ import { Ability, Species } from '../../species/_state/species.model';
 
 export interface Player {
   id: string;
+  name: string;
   speciesIds: string[];
   species?: Species[];
   score: number;
@@ -38,12 +39,14 @@ export interface RegionScores {
 
 export function createPlayer(
   id: string,
+  name: string,
   speciesIds: string[],
   color: 'red' | 'green' | 'neutral',
   params?: Partial<Player>
 ): Player {
   return {
-    id: id,
+    id,
+    name,
     speciesIds,
     score: 0,
     regionScores: {

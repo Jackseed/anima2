@@ -2,7 +2,7 @@
   <mat-icon id="close-icon" svgIcon="close"></mat-icon>
 </button>
 <main *ngIf="activeUser$ | async as user" class="margin-top-10">
-  <h1 mat-dialog-title>{{ user.username }}</h1>
+  <h1 mat-dialog-title>{{ user.name }}</h1>
   <div mat-dialog-content>
     <h2 class="subtitle">Parties jouées</h2>
     <p>{{ user.matchPlayed }}</p>

@@ -16,9 +16,14 @@ export class UserService extends CollectionService<UserState> {
     super(store);
   }
 
-  async anonymousLogin(username: string) {
+  async anonymousLogin(name: string) {
     const credential = await this.afAuth.signInAnonymously();
-    this.setUser(credential.user.uid, username);
+    if (credential.user) {
+      await credential.user.updateProfile({
+        displayName: name,
+      });
+    }
+    this.setUser(credential.user.uid, name);
     return this.router.navigate(['/home']);
   }
 

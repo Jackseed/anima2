@@ -6,10 +6,10 @@ export interface User {
   matchWon?: number;
 }
 
-export function createUser(params: Partial<User>) {
+export function createUser(params: Partial<User>): User {
   return {
     id: params.id,
-    username: params.name || '',
+    name: params.name || '',
     gamePlayed: [],
     matchPlayed: 0,
     matchWon: 0,

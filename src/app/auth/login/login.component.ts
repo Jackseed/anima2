@@ -14,14 +14,14 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
-      username: ['', Validators.required]
+      name: ['', Validators.required],
     });
   }
 
   public async logIn() {
     if (this.loginForm.valid) {
-      const username = this.loginForm.get('username').value;
-      await this.service.anonymousLogin(username);
+      const name = this.loginForm.get('name').value;
+      await this.service.anonymousLogin(name);
     }
   }
 }
