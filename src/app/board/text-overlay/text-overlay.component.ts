@@ -73,8 +73,12 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     totalDuration?: number;
     playerVariables?: PlayerRegionScoresAnimationVariables[];
   };
-  public newEraDuration = 2;
-  public newSpeciesDuration = 2;
+
+  // Era score variables
+  private eraDuration = 1;
+  private playerTotalDuration = 2;
+  private firstDelay = 0.3;
+  private endingAnimationDuration = 1;
   public eraScoresAnimationVariables: {
     firstScreenTransition?: animation;
     totalDuration?: number;
@@ -88,6 +92,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     winnerStars?: animation;
     victoryDetails?: animation;
   } = {};
+
+  public newEraDuration = 2;
+  public newSpeciesDuration = 2;
 
   // Observables
   public isGameStarting$: Observable<boolean> = this.gameQuery.isStarting$;
@@ -135,7 +142,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.initAnimationVariables();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initAnimationVariables();
+  }
 
   private get animSwitchSub(): Subscription {
     const game$ = this.gameQuery.selectActive();
@@ -155,11 +164,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
           this.playerService.updateActivePlayerAnimationState(
             'playerNamesTitle'
           );
-          this.setRegionScoresAnimationVariables(
-            this.firstTitlesDuration,
-            this.regionAnimationDuration,
-            this.subTotalDelay
-          );
+          this.initAnimationVariables();
         },
         delay:
           (this.regionScoresAnimationVariables.endEraTitle.duration +
@@ -281,15 +286,11 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     );
 
     // Era score variables
-    const eraDuration = 1;
-    const playerTotalDuration = 2;
-    const fistDelay = 0.3;
-    const endingAnimationDuration = 1;
     this.setEraScoresAniamtionVariables(
-      eraDuration,
-      playerTotalDuration,
-      fistDelay,
-      endingAnimationDuration
+      this.eraDuration,
+      this.playerTotalDuration,
+      this.firstDelay,
+      this.endingAnimationDuration
     );
 
     // Base delay value
