@@ -401,7 +401,6 @@ export class GameService extends CollectionService<GameState> {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const increment = firebase.firestore.FieldValue.increment(1);
-    if (game.eraCount === 1 && game.turnCount === 2) this.prepareNewSpecies();
 
     // Every 3 turns, a new era begins.
     if (game.turnCount === 3) {
