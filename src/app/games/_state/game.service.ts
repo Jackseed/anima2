@@ -24,6 +24,7 @@ import {
   GREEN_FIRST_COLORS,
   RED_SECOND_COLORS,
   GREEN_SECOND_COLORS,
+  Game,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -458,36 +459,27 @@ export class GameService extends CollectionService<GameState> {
     return batch.update(gameRef, { inGameAbilities: inGameAbilitiesUpdate });
   }
 
-  public async countScores() {
-    const players = this.playerQuery.getAll();
-    const playerScores = {};
-    const game = this.query.getActive();
+  public async countScores(): Promise<void> {
+    const players: Player[] = this.playerQuery.getAll();
+    const playerScores: { [playerId: string]: number } = {};
+    const game: Game = this.query.getActive();
     let batch = this.db.firestore.batch();
 
-    players.forEach((player) => {
+    players.forEach((player: Player) => {
       const playerRef = this.db
         .collection(`games/${game.id}/players`)
         .doc(player.id).ref;
-      let playerRegionScores: RegionScores = {};
-      let eraScore = 0;
-
-      Regions.forEach((region) => {
-        if (this.isPlayerControllingRegion(player, region)) {
-          playerRegionScores[region.name] = region.score;
-          eraScore += region.score;
-        } else {
-          playerRegionScores[region.name] = 0;
-        }
-      });
-      playerRegionScores.totalEra = eraScore;
+      const { playerRegionScores, eraScore } =
+        this.calculatePlayerRegionScores(player);
       playerScores[player.id] = player.score + eraScore;
 
-      batch.update(playerRef, {
-        score: playerScores[player.id],
-        regionScores: playerRegionScores,
-        isAnimationPlaying: true,
-        animationState: 'endEraTitle',
-      });
+      batch = this.updatePlayerData(
+        batch,
+        playerRef,
+        playerScores,
+        playerRegionScores,
+        player.id
+      );
 
       // TODO: what if both players win
       if (playerScores[player.id] >= WINNING_POINTS) {
@@ -497,11 +489,7 @@ export class GameService extends CollectionService<GameState> {
 
     // TODO: what if equality?
     if (game.eraCount === LAST_ERA) {
-      const playerIds = this.playerQuery.allPlayerIds;
-      const winnerId =
-        playerScores[playerIds[0]] >= playerScores[playerIds[1]]
-          ? playerScores[playerIds[0]]
-          : playerScores[playerIds[1]];
+      const winnerId = this.determineWinner(playerScores);
       batch = this.updatePlayerVictory(winnerId, false, batch);
     }
 
@@ -510,6 +498,50 @@ export class GameService extends CollectionService<GameState> {
       .catch((error) => console.log('Updating score failed: ', error));
   }
 
+  private calculatePlayerRegionScores(player: Player): {
+    playerRegionScores: RegionScores;
+    eraScore: number;
+  } {
+    let playerRegionScores: RegionScores = {};
+    let eraScore = 0;
+
+    Regions.forEach((region) => {
+      if (this.isPlayerControllingRegion(player, region)) {
+        playerRegionScores[region.name] = region.score;
+        eraScore += region.score;
+      } else {
+        playerRegionScores[region.name] = 0;
+      }
+    });
+
+    playerRegionScores.totalEra = eraScore;
+
+    return { playerRegionScores, eraScore };
+  }
+
+  private updatePlayerData(
+    batch: firebase.firestore.WriteBatch,
+    playerRef: firebase.firestore.DocumentReference,
+    playerScores: { [playerId: string]: number },
+    playerRegionScores: RegionScores,
+    playerId: string
+  ): firebase.firestore.WriteBatch {
+    return batch.update(playerRef, {
+      score: playerScores[playerId],
+      regionScores: playerRegionScores,
+      isAnimationPlaying: true,
+      animationState: 'endEraTitle',
+    });
+  }
+
+  private determineWinner(playerScores: {
+    [playerId: string]: number;
+  }): string {
+    const playerIds = this.playerQuery.allPlayerIds;
+    return playerScores[playerIds[0]] >= playerScores[playerIds[1]]
+      ? playerIds[0]
+      : playerIds[1];
+  }
   public isPlayerControllingRegion(player: Player, region: Region): boolean {
     const playerSpeciesTileIds =
       this.playerQuery.getPlayerSpeciesTileIds(player);

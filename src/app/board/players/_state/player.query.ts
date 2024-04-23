@@ -8,7 +8,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { QueryEntity } from '@datorama/akita';
 
 // Rxjs
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 // States
@@ -141,7 +141,20 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
 
   public get winner$(): Observable<Player> {
     return this.gameQuery.winnerId$.pipe(
-      map((winnerId) => this.getEntity(winnerId))
+      map((winnerId) => this.getEntity(winnerId)),
+      filter((winner) => !!winner),
+      map((player) => {
+        let species = [];
+        if (player.speciesIds)
+          for (const speciesId of player.speciesIds) {
+            const specie = this.speciesQuery.getEntity(speciesId);
+            species.push(specie);
+          }
+        return {
+          ...player,
+          species,
+        };
+      })
     );
   }
 
@@ -151,17 +164,20 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
         (game) =>
           game.playerIds.filter((playerId) => playerId !== game.winnerId)[0]
       ),
-      map((loserId) => this.getEntity(loserId))
-    );
-  }
-
-  public get winningPlayerSpecies$(): Observable<Species[]> {
-    return this.gameQuery.winnerId$.pipe(
-      map((winnerId) => this.getEntity(winnerId)),
-      map((player) => player.speciesIds),
-      map((speciesIds) =>
-        speciesIds.map((speciesId) => this.speciesQuery.getEntity(speciesId))
-      )
+      map((loserId) => this.getEntity(loserId)),
+      filter((loser) => !!loser),
+      map((player) => {
+        let species = [];
+        if (player.speciesIds)
+          for (const speciesId of player.speciesIds) {
+            const specie = this.speciesQuery.getEntity(speciesId);
+            species.push(specie);
+          }
+        return {
+          ...player,
+          species,
+        };
+      })
     );
   }
 

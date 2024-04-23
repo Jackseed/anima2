@@ -48,7 +48,6 @@ export type eraAnimation = {
   playerTotal: animation;
 };
 
-
 @Component({
   selector: 'app-text-overlay',
   templateUrl: './text-overlay.component.html',
