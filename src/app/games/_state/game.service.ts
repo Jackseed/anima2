@@ -251,11 +251,23 @@ export class GameService extends CollectionService<GameState> {
     return randomAbility;
   }
 
+  async getColorOfFirstPlayer(gameId: string): Promise<string> {
+    const playersRef = this.db.collection(`games/${gameId}/players`);
+    const playersSnapshot = await playersRef.get().toPromise();
+
+    if (!playersSnapshot.empty) {
+      const firstPlayer = playersSnapshot.docs[0].data() as Player;
+      return firstPlayer.color;
+    }
+
+    return null;
+  }
+
   // Creates player, player's species & update game docs.
   public async addActiveUserAsPlayer(gameId: string) {
-    const existingPlayers = this.playerQuery.getAll();
+    const existingPlayerColor = await this.getColorOfFirstPlayer(gameId);
     // Creates 2nd player.
-    const color = existingPlayers[0].color == 'red' ? 'green' : 'red';
+    const color = existingPlayerColor == 'red' ? 'green' : 'red';
 
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
@@ -404,12 +416,12 @@ export class GameService extends CollectionService<GameState> {
     return batch;
   }
 
-  public async prepareNewSpecies() {
+  public async prepareSecondSpecies() {
     const playerIds = this.playerQuery.allPlayerIds;
     await this.createSecondSpecies();
     this.updateIsStarting(true);
     this.switchStartStage('launching');
-    this.playerQuery.switchReadyState(playerIds);
+    this.playerQuery.switchReadyState(playerIds, true);
   }
 
   public async createSecondSpecies() {

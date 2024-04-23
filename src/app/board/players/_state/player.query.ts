@@ -15,9 +15,8 @@ import { Observable } from 'rxjs';
 import { PlayerStore, PlayerState } from './player.store';
 import { GameQuery } from 'src/app/games/_state/game.query';
 import { Ability, Species } from '../../species/_state/species.model';
-import { Colors, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
 import { SpeciesQuery } from '../../species/_state/species.query';
-import { Player } from './player.model';
+import { AnimationState, Player } from './player.model';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerQuery extends QueryEntity<PlayerState> {
@@ -197,15 +196,25 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.selectActive().pipe(map((player) => player.isAnimationPlaying));
   }
 
+  public get activePlayerAnimationState(): AnimationState {
+    return this.getActive().animationState;
+  }
+
   // TODO: Should be in player service but here to avoid circular dependency.
-  public async switchReadyState(playerIds: string[]): Promise<void> {
+  public async switchReadyState(
+    playerIds: string[],
+    readiness?: boolean
+  ): Promise<void> {
     const batch = this.db.firestore.batch();
     const gameId = this.gameQuery.getActiveId();
     for (const playerId of playerIds) {
       const player = this.getEntity(playerId);
+      const playerReadiness = readiness
+        ? readiness
+        : !player.isWaitingForNextStartStage;
       const playerRef = this.db.doc(`games/${gameId}/players/${playerId}`).ref;
       batch.update(playerRef, {
-        isWaitingForNextStartStage: !player.isWaitingForNextStartStage,
+        isWaitingForNextStartStage: playerReadiness,
       });
     }
 

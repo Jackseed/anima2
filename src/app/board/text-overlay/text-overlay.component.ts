@@ -206,13 +206,18 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
             this.newSpeciesSub = this.isActivePlayerPlaying$
               .pipe(
                 filter((isActivePlayerPlaying) => isActivePlayerPlaying),
-                tap(() => this.gameService.prepareSecondSpecies()),
+                tap(() => {
+                  if (
+                    this.playerQuery.activePlayerAnimationState === 'newSpecies'
+                  )
+                    this.gameService.prepareSecondSpecies();
+                }),
                 first()
               )
               .subscribe();
           }
-          this.playerService.updateActivePlayerAnimationState('endEraTitle');
           this.playerService.updateisAnimationPlaying(false);
+          this.playerService.updateActivePlayerAnimationState('endEraTitle');
         },
         delay: this.newSpeciesDuration * 1000,
       },
