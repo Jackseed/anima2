@@ -28,3 +28,17 @@ aside {
   justify-content: center;
   align-items: center;
 }
+
+.ability {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  --ability-active-display: none;
+  --s: 4rem;
+  .mat-icon {
+    font-size: calc(var(--s));
+    width: calc(var(--s));
+    height: calc(var(--s));
+    line-height: calc(var(--s));
+  }
+}

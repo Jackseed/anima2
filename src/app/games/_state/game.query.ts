@@ -89,6 +89,6 @@ export class GameQuery extends QueryEntity<GameState> {
   }
 
   public get winnerId$(): Observable<string> {
-    return this.selectActive().pipe(map((game) => game.winnerId));
+    return this.selectActive().pipe(map((game) => game?.winnerId));
   }
 }

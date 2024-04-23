@@ -102,20 +102,27 @@
     fxLayout="column"
     fxLayoutAlign="start center"
     class="absolute"
+    *ngIf="activePlayer$ | async as activePlayer"
   >
     <section fxFlex="10"></section>
     <section
       fxFlex="30"
       class="species relative"
       style="
-      --primary-color: {{ getActivePlayerColors().primary }};
-      --secondary-color: {{ getActivePlayerColors().secondary }}"
+      --primary-color: {{
+        activePlayer.species[activePlayer.species.length - 1].colors.primary
+      }};
+      --secondary-color: {{
+        activePlayer.species[activePlayer.species.length - 1].colors.secondary
+      }}"
     >
       <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
       <mat-icon
         class="species-icon"
         id="species-title"
-        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
+        [svgIcon]="
+          activePlayer.species[activePlayer.species.length - 1].abilities[0].id
+        "
       ></mat-icon>
     </section>
     <section fxFlex="5"></section>
@@ -143,37 +150,58 @@
     class="absolute"
   >
     <section fxFlex="10"></section>
-    <section
-      fxFlex="30"
-      class="species relative"
-      style="
-      --primary-color: {{ getActivePlayerColors().primary }};
-      --secondary-color: {{ getActivePlayerColors().secondary }}"
-    >
-      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-      <mat-icon
-        class="species-icon"
-        id="species-title"
-        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
-      ></mat-icon>
-    </section>
+    <div fxFlex="30" *ngIf="player1$ | async as player1">
+      <section
+        fxFlexFill
+        class="species relative"
+        style="
+      --primary-color: {{
+          player1.species[player1.species.length - 1].colors.primary
+        }};
+      --secondary-color: {{
+          player1.species[player1.species.length - 1].colors.secondary
+        }}"
+      >
+        <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+        <mat-icon
+          class="species-icon"
+          id="species-title"
+          [svgIcon]="
+            player1.species[player1.species.length - 1].abilities[0].id
+          "
+        ></mat-icon>
+      </section>
+    </div>
     <section class="banner text-box">
-      <h2>C'est parti !</h2>
+      <h2 *ngIf="(activePlayer$ | async).speciesIds.length == 1">
+        C'est parti !
+      </h2>
+      <h2 *ngIf="(activePlayer$ | async).speciesIds.length > 1">
+        Nouvelles espèces !
+      </h2>
     </section>
-    <section
-      fxFlex="30"
-      class="species relative"
-      style="
-        --primary-color: {{ getOpponentColors().primary }};
-        --secondary-color: {{ getOpponentColors().secondary }}"
-    >
-      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-      <mat-icon
-        class="species-icon"
-        id="species-title"
-        [svgIcon]="getOpponentSpecies().abilities[0].id"
-      ></mat-icon>
-    </section>
+
+    <div fxFlex="30" *ngIf="player2$ | async as player2">
+      <section
+        fxFlexFill
+        class="species relative"
+        style="      --primary-color: {{
+          player2.species[player2.species.length - 1].colors.primary
+        }};
+      --secondary-color: {{
+          player2.species[player2.species.length - 1].colors.secondary
+        }}"
+      >
+        <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+        <mat-icon
+          class="species-icon"
+          id="species-title"
+          [svgIcon]="
+            player2.species[player2.species.length - 1].abilities[0].id
+          "
+        ></mat-icon>
+      </section>
+    </div>
   </main>
 </article>
 
@@ -223,18 +251,64 @@
     fxLayoutAlign="center center"
     class="absolute"
   >
-    <section
-      class="species relative"
-      style="
-      --primary-color: {{ getActivePlayerColors().primary }};
-      --secondary-color: {{ getActivePlayerColors().secondary }}"
+    <div
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      *ngIf="activePlayer$ | async as activePlayer"
     >
-      <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-      <mat-icon
-        class="species-icon"
-        [svgIcon]="(activeSpecies$ | async).abilities[0].id"
-      ></mat-icon>
-    </section>
+      <div *ngIf="activePlayer.speciesIds.length > 1; else oneSpecies">
+        <section fxFlex="7.5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ activePlayer.species[0].colors.primary }};
+            --secondary-color: {{ activePlayer.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="activePlayer.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+        <section fxFlex="5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ activePlayer.species[1]?.colors.primary }};
+            --secondary-color: {{ activePlayer.species[1]?.colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="activePlayer.species[1]?.abilities[0]?.id"
+          ></mat-icon>
+        </section>
+      </div>
+
+      <ng-template #oneSpecies>
+        <section
+          fxFlexFill
+          class="species relative"
+          style="
+            --primary-color: {{ activePlayer.species[0].colors.primary }};
+            --secondary-color: {{ activePlayer.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="activePlayer.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+      </ng-template>
+    </div>
     <section class="banner text-box">
       <h2>C'est à vous !</h2>
     </section>
@@ -280,8 +354,15 @@
     fxLayout="column"
     fxLayoutAlign="center center"
   >
-    <article>
-      <h2 class="player-name green">Nurgle</h2>
+    <article *ngIf="player1$ | async as player1">
+      <h2
+        class="player-name"
+        [ngStyle]="{
+          color: player1.color === 'red' ? red : green
+        }"
+      >
+        {{ player1.name }}
+      </h2>
     </article>
     <article class="banner text-box">
       <h2 class="box-titles">
@@ -289,8 +370,15 @@
         des points !
       </h2>
     </article>
-    <article>
-      <h2 class="player-name red">Jelly0</h2>
+    <article *ngIf="player2$ | async as player2">
+      <h2
+        class="player-name"
+        [ngStyle]="{
+          color: player2.color === 'red' ? red : green
+        }"
+      >
+        {{ player2.name }}
+      </h2>
     </article>
   </main>
   <aside fxFlexFill class="orange footer-position"></aside>
@@ -327,7 +415,7 @@
             *ngFor="let region of regions; first as isFirst; last as isLast"
             class="absolute region-score increase-fade-in"
             style="
-            --color: {{ player.colors.primary }};
+            --color: {{ player.color === 'red' ? red : green }};
             --fade-in-fill-mode: {{ isFirst ? 'forwards' : 'both' }};
             --counter-from: {{
               regionScoresAnimationVariables.playerVariables[player.id][
@@ -431,7 +519,14 @@
       fxLayout="row"
       fxLayoutAlign="center center"
     >
-      <h2 class="player-name green margin-aside">Nurgle</h2>
+      <h2
+        class="player-name margin-aside"
+        [ngStyle]="{
+          color: players[0].color === 'red' ? red : green
+        }"
+      >
+        {{ players[0].name }}
+      </h2>
     </article>
     <article
       fxFlexFill
@@ -446,7 +541,7 @@
         fxLayoutAlign="center center"
       >
         <span
-          class="absolute green pop-in"
+          class="absolute pop-in"
           style="--animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
               .duration
@@ -454,6 +549,9 @@
             eraScoresAnimationVariables.playerVariables[players[0].id].eraScore
               .delay
           }}s"
+          [ngStyle]="{
+            color: players[0].color === 'red' ? red : green
+          }"
           >+{{ players[0].regionScores.totalEra }}</span
         >
       </mat-icon>
@@ -465,7 +563,7 @@
         fxLayoutAlign="center center"
       >
         <h2
-          class="score increase no-margin green"
+          class="score increase no-margin"
           style="
             --counter-from: {{
             players[0].score - players[0].regionScores.totalEra
@@ -479,10 +577,13 @@
               .playerTotal.delay
           }}s
           "
+          [ngStyle]="{
+            color: players[0].color === 'red' ? red : green
+          }"
         ></h2>
         <h3 class="no-margin" id="score-line">-</h3>
         <h2
-          class="score increase no-margin red"
+          class="score increase no-margin"
           style="
             --counter-from: {{
             players[1].score - players[1].regionScores.totalEra
@@ -490,12 +591,15 @@
             --counter-to: {{ players[1].score }};
             --animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[1].id]
-              .playerTotal.duration
+              ?.playerTotal?.duration
           }}s; --animation-delay: {{
             eraScoresAnimationVariables.playerVariables[players[1].id]
-              .playerTotal.delay
+              ?.playerTotal?.delay
           }}s
           "
+          [ngStyle]="{
+            color: players[1].color === 'red' ? red : green
+          }"
         ></h2>
       </section>
       <mat-icon
@@ -505,7 +609,7 @@
         fxLayoutAlign="center center"
       >
         <span
-          class="pop-in absolute red"
+          class="pop-in absolute"
           style="--animation-duration: {{
             eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
               .duration
@@ -513,6 +617,9 @@
             eraScoresAnimationVariables.playerVariables[players[1].id].eraScore
               .delay
           }}s"
+          [ngStyle]="{
+            color: players[1].color === 'red' ? red : green
+          }"
           >+{{ players[1].regionScores.totalEra }}</span
         >
       </mat-icon>
@@ -523,7 +630,14 @@
       fxLayout="row"
       fxLayoutAlign="center center"
     >
-      <h2 class="player-name red margin-aside">Jelly0</h2>
+      <h2
+        class="player-name margin-aside"
+        [ngStyle]="{
+          color: players[1].color === 'red' ? red : green
+        }"
+      >
+        {{ players[1].name }}
+      </h2>
     </article>
     <aside fxFlexFill fxFlex="1" class="orange"></aside>
   </main>
@@ -536,173 +650,186 @@
   class="visual-overlay"
 >
   <section *ngIf="scoreToggle" fxFlexFill class="full-opacity"></section>
-  <main
-    *ngIf="scoreToggle; else map"
-    fxFlexFill
-    fxLayout="column"
-    fxLayoutAlign="start center"
-    class="absolute"
-  >
-    <article fxFlexFill fxFlex="10"></article>
-    <article
-      fxFlexFill
-      fxFlex="10"
-      class="center victory"
-      [ngClass]="{
-        'cling-slide-down': (activePlayer$ | async).isAnimationPlaying
-      }"
-      style="
-      --animation-duration: {{
-        victoryAnimationVariables.victoryTitle.duration
-      }}s;
-      --animation-delay: {{ victoryAnimationVariables.victoryTitle.delay }}s"
-    >
-      <h1>VICTOIRE</h1>
-    </article>
-    <article
-      fxFlexFill
-      fxFlex="10"
-      fxLayout="row"
-      fxLayoutAlign="center center"
-      [ngClass]="{
-        'name-slide-down': (activePlayer$ | async).isAnimationPlaying
-      }"
-      style="
-      --animation-duration: {{
-        victoryAnimationVariables.winnerTitle.duration
-      }}s;
-      --animation-delay: {{ victoryAnimationVariables.winnerTitle.delay }}s"
-    >
-      <mat-icon
-        svgIcon="star"
-        class="star rotate-right"
-        style="--animation-delay: {{
-          !(activePlayer$ | async).isAnimationPlaying
-            ? 0
-            : victoryAnimationVariables.winnerStars.delay
-        }}s"
-      ></mat-icon>
-      <h2
-        class="player-name margin-aside"
-        [ngStyle]="{ color: (winner$ | async).colors.primary }"
+  <ng-container *ngIf="winner$ | async as winner">
+    <ng-container *ngIf="loser$ | async as loser">
+      <main
+        *ngIf="scoreToggle; else map"
+        fxFlexFill
+        fxLayout="column"
+        fxLayoutAlign="start center"
+        class="absolute"
       >
-        Nurgle
-      </h2>
-      <mat-icon
-        svgIcon="star"
-        class="star rotate-left"
-        style="--animation-delay: {{
-          !(activePlayer$ | async).isAnimationPlaying
-            ? 0
-            : victoryAnimationVariables.winnerStars.delay
-        }}s"
-      ></mat-icon>
-    </article>
-    <article
-      fxFlexFill
-      fxFlex="20"
-      fxLayoutAlign="center end"
-      [ngClass]="{
-        'fade-in': (activePlayer$ | async).isAnimationPlaying
-      }"
-      style="
-      --animation-duration: {{
-        victoryAnimationVariables.victoryDetails.duration
-      }}s;
-      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
-    >
-      <mat-icon
-        svgIcon="anima-blur"
-        class="anima relative"
-        fxLayoutAlign="center center"
-        ><span class="absolute victory-score">{{
-          (winner$ | async).score
-        }}</span></mat-icon
-      >
-    </article>
-    <article
-      class="player-species"
-      [ngClass]="{
-        'fade-in': (activePlayer$ | async).isAnimationPlaying
-      }"
-      fxFlexFill
-      fxFlex="20"
-      fxLayout="row"
-      style="
-      --animation-duration: {{
-        victoryAnimationVariables.victoryDetails.duration
-      }}s;
-      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
-    >
-      <div
-        *ngFor="let species of winningPlayerSpecies$ | async"
-        class="species relative small-margin-aside"
-        id="winnerSpecies"
-        style="
-        --primary-color: {{ species.colors.primary }};
-        --secondary-color: {{ species.colors.secondary }}"
-      >
-        <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
-        <mat-icon
-          class="species-icon"
-          id="species-title"
-          [svgIcon]="species.abilities[0].id"
-        ></mat-icon>
-      </div>
-    </article>
-    <article
-      *ngIf="loser$ | async as loser"
-      fxFlexFill
-      fxFlex="10"
-      fxLayoutAlign="center end"
-      [ngClass]="{
-        'fade-in': (activePlayer$ | async).isAnimationPlaying
-      }"
-      id="no-margin"
-      style="
-      --animation-duration: {{
-        victoryAnimationVariables.victoryDetails.duration
-      }}s;
-      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
-    >
-      <h2
-        class="player-name no-margin"
-        [ngStyle]="{ color: loser.colors.primary }"
-      >
-        Jelly0
-      </h2>
-      <h3 class="no-margin" id="line">-</h3>
-      <h2
-        class="player-name no-margin"
-        [ngStyle]="{ color: loser.colors.primary }"
-      >
-        {{ loser.score }}
-      </h2>
-    </article>
-    <aside fxFlexFill fxFlex="4"></aside>
-    <footer
-      fxFlexFill
-      fxFlex="16"
-      fxLayout="row"
-      fxLayoutAlign="space-around center"
-      [ngClass]="{
-        'fade-in': (activePlayer$ | async).isAnimationPlaying
-      }"
-      style="
-      --animation-duration: {{
-        victoryAnimationVariables.victoryDetails.duration
-      }}s;
-      --animation-delay: {{ victoryAnimationVariables.victoryDetails.delay }}s"
-    >
-      <button class="nav-button" (click)="toggleScoreToggle()">
-        <h2>Voir la carte</h2>
-      </button>
-      <button class="nav-button" (click)="leave()">
-        <h2>Quitter</h2>
-      </button>
-    </footer>
-    <aside fxFlexFill fxFlex="1" class="orange"></aside>
-  </main>
+        <article fxFlexFill fxFlex="10"></article>
+        <article
+          fxFlexFill
+          fxFlex="10"
+          class="center victory"
+          [ngClass]="{
+            'cling-slide-down': (activePlayer$ | async).isAnimationPlaying
+          }"
+          style="
+        --animation-duration: {{
+            victoryAnimationVariables.victoryTitle.duration
+          }}s;
+        --animation-delay: {{ victoryAnimationVariables.victoryTitle.delay }}s"
+        >
+          <h1>VICTOIRE</h1>
+        </article>
+        <article
+          fxFlexFill
+          fxFlex="10"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          [ngClass]="{
+            'name-slide-down': (activePlayer$ | async).isAnimationPlaying
+          }"
+          style="
+        --animation-duration: {{
+            victoryAnimationVariables.winnerTitle.duration
+          }}s;
+        --animation-delay: {{ victoryAnimationVariables.winnerTitle.delay }}s"
+        >
+          <mat-icon
+            svgIcon="star"
+            class="star rotate-right"
+            style="--animation-delay: {{
+              !(activePlayer$ | async).isAnimationPlaying
+                ? 0
+                : victoryAnimationVariables.winnerStars.delay
+            }}s"
+          ></mat-icon>
+          <h2
+            class="player-name margin-aside"
+            [ngStyle]="{
+              color: winner.color === 'red' ? red : green
+            }"
+          >
+            {{ winner.name }}
+          </h2>
+          <mat-icon
+            svgIcon="star"
+            class="star rotate-left"
+            style="--animation-delay: {{
+              !(activePlayer$ | async).isAnimationPlaying
+                ? 0
+                : victoryAnimationVariables.winnerStars.delay
+            }}s"
+          ></mat-icon>
+        </article>
+        <article
+          fxFlexFill
+          fxFlex="20"
+          fxLayoutAlign="center end"
+          [ngClass]="{
+            'fade-in': (activePlayer$ | async).isAnimationPlaying
+          }"
+          style="
+        --animation-duration: {{
+            victoryAnimationVariables.victoryDetails.duration
+          }}s;
+        --animation-delay: {{
+            victoryAnimationVariables.victoryDetails.delay
+          }}s"
+        >
+          <mat-icon
+            svgIcon="anima-blur"
+            class="anima relative"
+            fxLayoutAlign="center center"
+            ><span class="absolute victory-score">{{
+              winner.score
+            }}</span></mat-icon
+          >
+        </article>
+        <article
+          class="player-species"
+          [ngClass]="{
+            'fade-in': (activePlayer$ | async).isAnimationPlaying
+          }"
+          fxFlexFill
+          fxFlex="20"
+          fxLayout="row"
+          style="
+        --animation-duration: {{
+            victoryAnimationVariables.victoryDetails.duration
+          }}s;
+        --animation-delay: {{
+            victoryAnimationVariables.victoryDetails.delay
+          }}s"
+        >
+          <div
+            *ngFor="let species of winner.species"
+            class="species relative small-margin-aside"
+            id="winnerSpecies"
+            style="
+          --primary-color: {{ species.colors.primary }};
+          --secondary-color: {{ species.colors.secondary }}"
+          >
+            <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+            <mat-icon
+              class="species-icon"
+              id="species-title"
+              [svgIcon]="species.abilities[0].id"
+            ></mat-icon>
+          </div>
+        </article>
+        <article
+          fxFlexFill
+          fxFlex="10"
+          fxLayoutAlign="center end"
+          [ngClass]="{
+            'fade-in': (activePlayer$ | async).isAnimationPlaying
+          }"
+          id="no-margin"
+          style="
+        --animation-duration: {{
+            victoryAnimationVariables.victoryDetails.duration
+          }}s;
+        --animation-delay: {{
+            victoryAnimationVariables.victoryDetails.delay
+          }}s"
+        >
+          <h2
+            class="player-name no-margin"
+            [ngStyle]="{ color: loser.color === 'red' ? red : green }"
+          >
+            {{ loser.name }}
+          </h2>
+          <h3 class="no-margin" id="line">-</h3>
+          <h2
+            class="player-name no-margin"
+            [ngStyle]="{ color: loser.color === 'red' ? red : green }"
+          >
+            {{ loser.score }}
+          </h2>
+        </article>
+        <aside fxFlexFill fxFlex="4"></aside>
+        <footer
+          fxFlexFill
+          fxFlex="16"
+          fxLayout="row"
+          fxLayoutAlign="space-around center"
+          [ngClass]="{
+            'fade-in': (activePlayer$ | async).isAnimationPlaying
+          }"
+          style="
+        --animation-duration: {{
+            victoryAnimationVariables.victoryDetails.duration
+          }}s;
+        --animation-delay: {{
+            victoryAnimationVariables.victoryDetails.delay
+          }}s"
+        >
+          <button class="nav-button" (click)="toggleScoreToggle()">
+            <h2>Voir la carte</h2>
+          </button>
+          <button class="nav-button" (click)="leave()">
+            <h2>Quitter</h2>
+          </button>
+        </footer>
+        <aside fxFlexFill fxFlex="1" class="orange"></aside></main
+    ></ng-container>
+  </ng-container>
+
   <ng-template #map>
     <main fxFlexFill fxLayout="column" fxLayoutAlign="space-around center">
       <header
@@ -734,4 +861,177 @@
       <aside fxFlexFill fxFlex="1" class="orange"></aside>
     </main>
   </ng-template>
+</article>
+
+<!------------ NEW ERA -------------->
+<article
+  fxFlexFill
+  class="fade-in-out visual-overlay"
+  style="--animation-duration: 1000s; --animation-delay: 0s"
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'newEra'
+  "
+>
+  <section fxFlexFill class="full-opacity"></section>
+  <main
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    class="absolute"
+    *ngIf="game$ | async as game"
+  >
+    <section fxFlex="10"></section>
+    <div
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      fxFlex="30"
+      *ngIf="player1$ | async as player1"
+    >
+      <div *ngIf="player1.speciesIds.length > 1; else playerOneOneSpecies">
+        <section fxFlex="7.5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ player1.species[0].colors.primary }};
+            --secondary-color: {{ player1.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="player1.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+        <section fxFlex="5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ player1.species[1].colors.primary }};
+            --secondary-color: {{ player1.species[1].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="player1.species[1].abilities[0].id"
+          ></mat-icon>
+        </section>
+      </div>
+
+      <ng-template #playerOneOneSpecies>
+        <section
+          fxFlexFill
+          class="species relative"
+          style="
+            --primary-color: {{ player1.species[0].colors.primary }};
+            --secondary-color: {{ player1.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="player1.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+      </ng-template>
+    </div>
+
+    <section class="banner text-box">
+      <ng-container>
+        <h2>{{ game.eraCount }}ème ère !</h2>
+      </ng-container>
+    </section>
+
+    <div
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      fxFlex="30"
+      *ngIf="player2$ | async as player2"
+    >
+      <div *ngIf="player2.speciesIds.length > 1; else playerTwoOneSpecies">
+        <section fxFlex="7.5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ player2.species[0].colors.primary }};
+            --secondary-color: {{ player2.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="player2.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+        <section fxFlex="5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ player2.species[1].colors.primary }};
+            --secondary-color: {{ player2.species[1].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="player2.species[1].abilities[0].id"
+          ></mat-icon>
+        </section>
+      </div>
+
+      <ng-template #playerTwoOneSpecies>
+        <section
+          fxFlexFill
+          class="species relative"
+          style="
+            --primary-color: {{ player2.species[0].colors.primary }};
+            --secondary-color: {{ player2.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="player2.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+      </ng-template>
+    </div>
+  </main>
+</article>
+
+<!------------ NEW SPECIES -------------->
+<article
+  fxFlexFill
+  *ngIf="
+    (activePlayer$ | async).isAnimationPlaying &&
+    (activePlayer$ | async).animationState === 'newSpecies'
+  "
+  class="fade-in-out visual-overlay"
+  style="--animation-duration: 1000s; --animation-delay: 0s"
+>
+  <section fxFlexFill class="opacity"></section>
+  <section
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    class="absolute"
+  >
+    <section>
+      <mat-icon fxFlexFill svgIcon="baby"></mat-icon>
+    </section>
+    <section class="banner text-box">
+      <h2>Vous obtenez votre 2ème espèce !</h2>
+    </section>
+  </section>
 </article>

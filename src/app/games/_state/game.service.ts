@@ -16,15 +16,15 @@ import {
   DEFAULT_ACTION_PER_TURN,
   createGame,
   StartStage,
-  GREEN_PRIMARY_COLOR,
-  GREEN_SECONDARY_COLOR,
-  Colors,
-  RED_PRIMARY_COLOR,
-  RED_SECONDARY_COLOR,
   TileChoice,
   WINNING_POINTS,
   LAST_ERA,
   TESTING_ABILITY,
+  RED_FIRST_COLORS,
+  GREEN_FIRST_COLORS,
+  RED_SECOND_COLORS,
+  GREEN_SECOND_COLORS,
+  Game,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -65,13 +65,11 @@ export class GameService extends CollectionService<GameState> {
     batch = tileBatchCreation.batch;
 
     // Creates 1st player.
-    const colors = {
-      primary: GREEN_PRIMARY_COLOR,
-      secondary: GREEN_SECONDARY_COLOR,
-    };
+    const isGreen = Math.random() < 0.5;
+    const color = isGreen ? 'green' : 'red';
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
-      colors,
+      color,
       batch
     );
 
@@ -152,7 +150,7 @@ export class GameService extends CollectionService<GameState> {
   // Creates player & player's species docs.
   private async createPlayerUsingBatch(
     gameId: string,
-    colors: Colors,
+    color: 'red' | 'green',
     existingBatch?: firebase.firestore.WriteBatch
   ): Promise<{
     playerId: string;
@@ -160,28 +158,30 @@ export class GameService extends CollectionService<GameState> {
     batch: firebase.firestore.WriteBatch;
   }> {
     const batch = existingBatch ? existingBatch : this.db.firestore.batch();
-    const playerId = (await this.afAuth.currentUser).uid;
+    const user = await this.afAuth.currentUser;
+    const playerId = user.uid;
     const playerRef = this.db
       .collection(`games/${gameId}/players`)
       .doc(playerId).ref;
     const speciesId = this.db.createId();
 
     // Creates player doc.
-    const player = createPlayer(playerId, [speciesId], colors);
+    const player = createPlayer(playerId, user.displayName, [speciesId], color);
     batch.set(playerRef, player);
 
     // Creates player's species doc.
     const speciesRef = this.db
       .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
-
-    const species = createSpecies(speciesId, playerId, colors);
+    const speciesColors =
+      color === 'red' ? RED_FIRST_COLORS : GREEN_FIRST_COLORS;
+    const species = createSpecies(speciesId, playerId, speciesColors);
     batch.set(speciesRef, species);
 
     return { playerId, speciesId, batch };
   }
 
-  public createNewSpeciesByBatch(
+  public createSecondSpeciesByBatch(
     playerId: string,
     batch: firebase.firestore.WriteBatch
   ): firebase.firestore.WriteBatch {
@@ -193,7 +193,9 @@ export class GameService extends CollectionService<GameState> {
     const speciesRef = this.db
       .collection(`games/${gameId}/species`)
       .doc(speciesId).ref;
-    const species = createSpecies(speciesId, player.id, player.colors);
+    const speciesColors =
+      player.color == 'red' ? RED_SECOND_COLORS : GREEN_SECOND_COLORS;
+    const species = createSpecies(speciesId, player.id, speciesColors);
     batch.set(speciesRef, species);
 
     // Updates player doc.
@@ -251,16 +253,27 @@ export class GameService extends CollectionService<GameState> {
     return randomAbility;
   }
 
+  async getColorOfFirstPlayer(gameId: string): Promise<string> {
+    const playersRef = this.db.collection(`games/${gameId}/players`);
+    const playersSnapshot = await playersRef.get().toPromise();
+
+    if (!playersSnapshot.empty) {
+      const firstPlayer = playersSnapshot.docs[0].data() as Player;
+      return firstPlayer.color;
+    }
+
+    return null;
+  }
+
   // Creates player, player's species & update game docs.
   public async addActiveUserAsPlayer(gameId: string) {
+    const existingPlayerColor = await this.getColorOfFirstPlayer(gameId);
     // Creates 2nd player.
-    const colors = {
-      primary: RED_PRIMARY_COLOR,
-      secondary: RED_SECONDARY_COLOR,
-    };
+    const color = existingPlayerColor == 'red' ? 'green' : 'red';
+
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
-      colors
+      color
     );
     const firestorePlayerIds = firebase.firestore.FieldValue.arrayUnion(
       playerBatchCreation.playerId
@@ -314,40 +327,60 @@ export class GameService extends CollectionService<GameState> {
       });
   }
 
+  public async skipTurn() {
+    const game = this.query.getActive();
+    const gameRef = this.db.collection('games').doc(game.id).ref;
+    let batch = this.db.firestore.batch();
+
+    batch = await this.handleLastAction(gameRef, batch);
+
+    batch.commit().catch((error) => {
+      console.log('Skipping turn failed: ', error);
+    });
+  }
+
   public async updateRemainingActions(
     existingBatch?: firebase.firestore.WriteBatch
   ) {
-    let batch = existingBatch ? existingBatch : this.db.firestore.batch();
+    let batch = existingBatch || this.db.firestore.batch();
     const game = this.query.getActive();
     const isLastAction = this.query.isLastAction;
     const gameRef = this.db.collection('games').doc(game.id).ref;
 
-    // Updates game remaining actions.
-    const remainingActions = isLastAction
-      ? DEFAULT_ACTION_PER_TURN
-      : firebase.firestore.FieldValue.increment(-1);
-    batch.update(gameRef, { remainingActions });
     if (isLastAction) {
-      this.tileService.removeActive();
-
-      if (this.playerQuery.isLastActivePlayerSpeciesActive) {
-        batch = this.switchPlayingPlayerAndSpeciesUsingBatch(gameRef, batch);
-        if (this.playerQuery.isLastPlayerPlaying)
-          batch = await this.incrementTurnCount(batch);
-      }
-      // Otherwise activates the next species.
-      else {
-        batch.update(gameRef, {
-          playingSpeciesId: this.playerQuery.activePlayerLastSpeciesId,
-        });
-      }
+      batch = await this.handleLastAction(gameRef, batch);
+    } else {
+      // Updates game remaining actions.
+      const remainingActions = firebase.firestore.FieldValue.increment(-1);
+      batch.update(gameRef, { remainingActions });
     }
-
     if (existingBatch) return batch;
 
     batch.commit().catch((error) => {
       console.log('Updating remaining actions failed: ', error);
     });
+  }
+
+  private async handleLastAction(
+    gameRef: firebase.firestore.DocumentReference,
+    batch: firebase.firestore.WriteBatch
+  ) {
+    const remainingActions = DEFAULT_ACTION_PER_TURN;
+    batch.update(gameRef, { remainingActions });
+    this.tileService.removeActive();
+
+    if (this.playerQuery.isLastActivePlayerSpeciesActive) {
+      batch = this.switchPlayingPlayerAndSpeciesUsingBatch(gameRef, batch);
+      if (this.playerQuery.isLastPlayerPlaying)
+        batch = await this.incrementTurnCount(batch);
+    }
+    // Otherwise activates the next species.
+    else {
+      batch.update(gameRef, {
+        playingSpeciesId: this.playerQuery.activePlayerLastSpeciesId,
+      });
+    }
+    return batch;
   }
 
   private switchPlayingPlayerAndSpeciesUsingBatch(
@@ -368,7 +401,6 @@ export class GameService extends CollectionService<GameState> {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const increment = firebase.firestore.FieldValue.increment(1);
-    if (game.eraCount === 2 && game.turnCount === 1) this.prepareNewSpecies();
 
     // Every 3 turns, a new era begins.
     if (game.turnCount === 3) {
@@ -385,19 +417,19 @@ export class GameService extends CollectionService<GameState> {
     return batch;
   }
 
-  private async prepareNewSpecies() {
+  public async prepareSecondSpecies() {
     const playerIds = this.playerQuery.allPlayerIds;
-    await this.playNewSpecies();
+    await this.createSecondSpecies();
     this.updateIsStarting(true);
     this.switchStartStage('launching');
-    this.playerQuery.switchReadyState(playerIds);
+    this.playerQuery.switchReadyState(playerIds, true);
   }
 
-  public async playNewSpecies() {
+  public async createSecondSpecies() {
     const playerIds = this.playerQuery.allPlayerIds;
     let batch = this.db.firestore.batch();
     for (const playerId of playerIds) {
-      batch = this.createNewSpeciesByBatch(playerId, batch);
+      batch = this.createSecondSpeciesByBatch(playerId, batch);
     }
 
     await batch.commit().catch((error) => {
@@ -426,36 +458,27 @@ export class GameService extends CollectionService<GameState> {
     return batch.update(gameRef, { inGameAbilities: inGameAbilitiesUpdate });
   }
 
-  public async countScores() {
-    const players = this.playerQuery.getAll();
-    const playerScores = {};
-    const game = this.query.getActive();
+  public async countScores(): Promise<void> {
+    const players: Player[] = this.playerQuery.getAll();
+    const playerScores: { [playerId: string]: number } = {};
+    const game: Game = this.query.getActive();
     let batch = this.db.firestore.batch();
 
-    players.forEach((player) => {
+    players.forEach((player: Player) => {
       const playerRef = this.db
         .collection(`games/${game.id}/players`)
         .doc(player.id).ref;
-      let playerRegionScores: RegionScores = {};
-      let eraScore = 0;
-
-      Regions.forEach((region) => {
-        if (this.isPlayerControllingRegion(player, region)) {
-          playerRegionScores[region.name] = region.score;
-          eraScore += region.score;
-        } else {
-          playerRegionScores[region.name] = 0;
-        }
-      });
-      playerRegionScores.totalEra = eraScore;
+      const { playerRegionScores, eraScore } =
+        this.calculatePlayerRegionScores(player);
       playerScores[player.id] = player.score + eraScore;
 
-      batch.update(playerRef, {
-        score: playerScores[player.id],
-        regionScores: playerRegionScores,
-        isAnimationPlaying: true,
-        animationState: 'endEraTitle',
-      });
+      batch = this.updatePlayerData(
+        batch,
+        playerRef,
+        playerScores,
+        playerRegionScores,
+        player.id
+      );
 
       // TODO: what if both players win
       if (playerScores[player.id] >= WINNING_POINTS) {
@@ -465,11 +488,7 @@ export class GameService extends CollectionService<GameState> {
 
     // TODO: what if equality?
     if (game.eraCount === LAST_ERA) {
-      const playerIds = this.playerQuery.allPlayerIds;
-      const winnerId =
-        playerScores[playerIds[0]] >= playerScores[playerIds[1]]
-          ? playerScores[playerIds[0]]
-          : playerScores[playerIds[1]];
+      const winnerId = this.determineWinner(playerScores);
       batch = this.updatePlayerVictory(winnerId, false, batch);
     }
 
@@ -478,6 +497,50 @@ export class GameService extends CollectionService<GameState> {
       .catch((error) => console.log('Updating score failed: ', error));
   }
 
+  private calculatePlayerRegionScores(player: Player): {
+    playerRegionScores: RegionScores;
+    eraScore: number;
+  } {
+    let playerRegionScores: RegionScores = {};
+    let eraScore = 0;
+
+    Regions.forEach((region) => {
+      if (this.isPlayerControllingRegion(player, region)) {
+        playerRegionScores[region.name] = region.score;
+        eraScore += region.score;
+      } else {
+        playerRegionScores[region.name] = 0;
+      }
+    });
+
+    playerRegionScores.totalEra = eraScore;
+
+    return { playerRegionScores, eraScore };
+  }
+
+  private updatePlayerData(
+    batch: firebase.firestore.WriteBatch,
+    playerRef: firebase.firestore.DocumentReference,
+    playerScores: { [playerId: string]: number },
+    playerRegionScores: RegionScores,
+    playerId: string
+  ): firebase.firestore.WriteBatch {
+    return batch.update(playerRef, {
+      score: playerScores[playerId],
+      regionScores: playerRegionScores,
+      isAnimationPlaying: true,
+      animationState: 'endEraTitle',
+    });
+  }
+
+  private determineWinner(playerScores: {
+    [playerId: string]: number;
+  }): string {
+    const playerIds = this.playerQuery.allPlayerIds;
+    return playerScores[playerIds[0]] >= playerScores[playerIds[1]]
+      ? playerIds[0]
+      : playerIds[1];
+  }
   public isPlayerControllingRegion(player: Player, region: Region): boolean {
     const playerSpeciesTileIds =
       this.playerQuery.getPlayerSpeciesTileIds(player);

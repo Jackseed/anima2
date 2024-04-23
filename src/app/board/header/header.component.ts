@@ -13,10 +13,9 @@ import { ScoreComponent } from '../score/score.component';
 
 // States
 import { Ability, Species, SpeciesQuery } from '../species/_state';
-import { Player, PlayerQuery } from '../players/_state';
 import { PlayService } from '../play.service';
 
-import { GameQuery } from 'src/app/games/_state';
+import { GameQuery, GameService } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-header',
@@ -30,7 +29,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @HostBinding('style.--secondary-color')
   public secondaryColor: string;
 
-  private activePlayer$: Observable<Player>;
   public activeSpecies$: Observable<Species>;
   public abilities$: Observable<Ability[]>;
   public remainingActions$: Observable<number[]>;
@@ -40,14 +38,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private gameQuery: GameQuery,
+    private gameService: GameService,
     private speciesQuery: SpeciesQuery,
-    private playerQuery: PlayerQuery,
     private playService: PlayService
   ) {}
 
   ngOnInit(): void {
     this.activeSpecies$ = this.speciesQuery.selectActive();
-    this.activePlayer$ = this.playerQuery.selectActive();
     this.abilities$ = this.speciesQuery.activeSpeciesAbilities$;
 
     this.remainingActions$ = this.gameQuery.remainingActionsArray$;
@@ -76,6 +73,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       panelClass: 'custom-container',
       autoFocus: false,
     });
+  }
+
+  public skipTurn() {
+    this.gameService.skipTurn();
   }
 
   ngOnDestroy(): void {

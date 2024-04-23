@@ -8,16 +8,15 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { QueryEntity } from '@datorama/akita';
 
 // Rxjs
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 // States
 import { PlayerStore, PlayerState } from './player.store';
 import { GameQuery } from 'src/app/games/_state/game.query';
 import { Ability, Species } from '../../species/_state/species.model';
-import { Colors, NEUTRAL_COLORS } from 'src/app/games/_state/game.model';
 import { SpeciesQuery } from '../../species/_state/species.query';
-import { Player } from './player.model';
+import { AnimationState, Player } from './player.model';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerQuery extends QueryEntity<PlayerState> {
@@ -106,19 +105,56 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return playerIds.filter((id) => id !== playerId)[0];
   }
 
-  public get opponentMainSpecies(): Species {
-    const activePlayerId = this.getActiveId();
-    return this.speciesQuery
-      .getAll()
-      .filter(
-        (species) =>
-          species.playerId === this.getPlayerOpponentId(activePlayerId)
-      )[0];
+  public get activePlayerSuperchargedWithSpecies$(): Observable<Player> {
+    return this.selectActive().pipe(
+      map((player) => {
+        let species = [];
+        for (const speciesId of player.speciesIds) {
+          const specie = this.speciesQuery.getEntity(speciesId);
+          species.push(specie);
+        }
+        return {
+          ...player,
+          species,
+        };
+      })
+    );
+  }
+
+  public allPlayersSuperchargedWithSpecies(): Observable<Player[]> {
+    return this.selectAll().pipe(
+      map((players) =>
+        players.map((player) => {
+          let species = [];
+          for (const speciesId of player.speciesIds) {
+            const specie = this.speciesQuery.getEntity(speciesId);
+            species.push(specie);
+          }
+          return {
+            ...player,
+            species,
+          };
+        })
+      )
+    );
   }
 
   public get winner$(): Observable<Player> {
     return this.gameQuery.winnerId$.pipe(
-      map((winnerId) => this.getEntity(winnerId))
+      map((winnerId) => this.getEntity(winnerId)),
+      filter((winner) => !!winner),
+      map((player) => {
+        let species = [];
+        if (player.speciesIds)
+          for (const speciesId of player.speciesIds) {
+            const specie = this.speciesQuery.getEntity(speciesId);
+            species.push(specie);
+          }
+        return {
+          ...player,
+          species,
+        };
+      })
     );
   }
 
@@ -128,17 +164,20 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
         (game) =>
           game.playerIds.filter((playerId) => playerId !== game.winnerId)[0]
       ),
-      map((loserId) => this.getEntity(loserId))
-    );
-  }
-
-  public get winningPlayerSpecies$(): Observable<Species[]> {
-    return this.gameQuery.winnerId$.pipe(
-      map((winnerId) => this.getEntity(winnerId)),
-      map((player) => player.speciesIds),
-      map((speciesIds) =>
-        speciesIds.map((speciesId) => this.speciesQuery.getEntity(speciesId))
-      )
+      map((loserId) => this.getEntity(loserId)),
+      filter((loser) => !!loser),
+      map((player) => {
+        let species = [];
+        if (player.speciesIds)
+          for (const speciesId of player.speciesIds) {
+            const specie = this.speciesQuery.getEntity(speciesId);
+            species.push(specie);
+          }
+        return {
+          ...player,
+          species,
+        };
+      })
     );
   }
 
@@ -169,24 +208,29 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return this.getActive().abilityChoice.activeTileId;
   }
 
-  public getPlayerColors(playerId: string): Colors {
-    if (playerId === 'neutral') return NEUTRAL_COLORS;
-    return this.getEntity(playerId).colors;
-  }
-
   public get isAnimationPlaying$(): Observable<boolean> {
     return this.selectActive().pipe(map((player) => player.isAnimationPlaying));
   }
 
+  public get activePlayerAnimationState(): AnimationState {
+    return this.getActive().animationState;
+  }
+
   // TODO: Should be in player service but here to avoid circular dependency.
-  public async switchReadyState(playerIds: string[]): Promise<void> {
+  public async switchReadyState(
+    playerIds: string[],
+    readiness?: boolean
+  ): Promise<void> {
     const batch = this.db.firestore.batch();
     const gameId = this.gameQuery.getActiveId();
     for (const playerId of playerIds) {
       const player = this.getEntity(playerId);
+      const playerReadiness = readiness
+        ? readiness
+        : !player.isWaitingForNextStartStage;
       const playerRef = this.db.doc(`games/${gameId}/players/${playerId}`).ref;
       batch.update(playerRef, {
-        isWaitingForNextStartStage: !player.isWaitingForNextStartStage,
+        isWaitingForNextStartStage: playerReadiness,
       });
     }
 

@@ -415,7 +415,8 @@ export class AbilityService {
       .commit()
       .then(() => {
         const activePlayerId = this.playerQuery.getActiveId();
-        if (isGameStarting) this.playerQuery.switchReadyState([activePlayerId]);
+        if (isGameStarting)
+          this.playerQuery.switchReadyState([activePlayerId], true);
         this.gameService.updateUiAdaptationMenuOpen(false);
         this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
           duration: 800,

@@ -1,12 +1,13 @@
-import { Colors } from 'src/app/games/_state';
-import { Ability } from '../../species/_state';
+import { Ability, Species } from '../../species/_state/species.model';
 
 export interface Player {
   id: string;
+  name: string;
   speciesIds: string[];
+  species?: Species[];
   score: number;
   regionScores: RegionScores;
-  colors: Colors;
+  color: 'red' | 'green' | 'neutral';
   abilityChoice: {
     isChoosingAbility: boolean;
     abilityChoices: Ability[];
@@ -22,6 +23,8 @@ export type AnimationState =
   | 'playerNamesTitle'
   | 'regionScore'
   | 'eraScore'
+  | 'newEra'
+  | 'newSpecies'
   | 'victory';
 
 export interface RegionScores {
@@ -36,12 +39,14 @@ export interface RegionScores {
 
 export function createPlayer(
   id: string,
+  name: string,
   speciesIds: string[],
-  colors: Colors,
+  color: 'red' | 'green' | 'neutral',
   params?: Partial<Player>
 ): Player {
   return {
-    id: id,
+    id,
+    name,
     speciesIds,
     score: 0,
     regionScores: {
@@ -52,7 +57,7 @@ export function createPlayer(
       swamps: 0,
       forests: 0,
     },
-    colors,
+    color,
     abilityChoice: {
       isChoosingAbility: false,
       abilityChoices: [],

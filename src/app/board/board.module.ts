@@ -68,6 +68,12 @@ export class BoardModule {
         '../../../assets/menu-buttons/hourglass.svg'
       )
     );
+    this.matIconRegistry.addSvgIcon(
+      'hourglass-clean',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/hourglass-clean.svg'
+      )
+    );
 
     // VALIDATION BUTTONS
     this.matIconRegistry.addSvgIcon(

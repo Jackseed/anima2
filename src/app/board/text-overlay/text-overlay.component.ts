@@ -4,9 +4,17 @@ import { Router } from '@angular/router';
 
 // Rxjs
 import { combineLatest, Observable, Subscription } from 'rxjs';
+import { filter, first, map, tap } from 'rxjs/operators';
 
 // States
-import { Colors, GameQuery, StartStage } from 'src/app/games/_state';
+import {
+  Game,
+  GameQuery,
+  GameService,
+  StartStage,
+  RED_FIRST_PRIMARY_COLOR,
+  GREEN_FIRST_PRIMARY_COLOR,
+} from 'src/app/games/_state';
 import { AbilityService } from '../ability.service';
 import { PlayService } from '../play.service';
 import { Player, PlayerQuery, PlayerService } from '../players/_state';
@@ -40,10 +48,6 @@ export type eraAnimation = {
   playerTotal: animation;
 };
 
-interface PlayerEraScoresAnimationVariables {
-  [playerId: string]: eraAnimation;
-}
-
 @Component({
   selector: 'app-text-overlay',
   templateUrl: './text-overlay.component.html',
@@ -52,8 +56,11 @@ interface PlayerEraScoresAnimationVariables {
 export class TextOverlayComponent implements OnInit, OnDestroy {
   // Constants
   public regions = Regions;
-  public players: Player[];
+  public players: Player[] = this.playerQuery.getAll();
   public scoreToggle: boolean = true;
+  public red = RED_FIRST_PRIMARY_COLOR;
+  public green = GREEN_FIRST_PRIMARY_COLOR;
+
   // Region score variables
   public regionAnimationDuration = 0.5;
   public subTotalDelay = this.regionAnimationDuration / 2;
@@ -66,10 +73,12 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     totalDuration?: number;
     playerVariables?: PlayerRegionScoresAnimationVariables[];
   };
+  public newEraDuration = 2;
+  public newSpeciesDuration = 2;
   public eraScoresAnimationVariables: {
     firstScreenTransition?: animation;
     totalDuration?: number;
-    playerVariables: PlayerEraScoresAnimationVariables[];
+    playerVariables: { [playerId: string]: eraAnimation };
   };
   public victoryAnimationVariables: {
     isAnimationDone?: boolean;
@@ -79,26 +88,42 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     winnerStars?: animation;
     victoryDetails?: animation;
   } = {};
+
   // Observables
-  public isGameStarting$: Observable<boolean>;
-  public isGameFinished$: Observable<boolean>;
-  public startStage$: Observable<StartStage>;
-  public isAnimationPlaying$: Observable<boolean>;
-  public players$: Observable<Player[]>;
-  public isPlayerWaiting$: Observable<boolean>;
-  public isActivePlayerPlaying$: Observable<boolean>;
-  public activePlayer$: Observable<Player>;
-  public hasTileActive$: Observable<boolean>;
-  public activeSpecies$: Observable<Species>;
-  public winningPlayerSpecies$: Observable<Species[]>;
-  public winner$: Observable<Player>;
-  public loser$: Observable<Player>;
+  public isGameStarting$: Observable<boolean> = this.gameQuery.isStarting$;
+  public isGameFinished$: Observable<boolean> = this.gameQuery.isGameFinished$;
+  public startStage$: Observable<StartStage> = this.gameQuery.startStage$;
+  public isAnimationPlaying$: Observable<boolean> =
+    this.playerQuery.isAnimationPlaying$;
+  public players$: Observable<Player[]> = this.playerQuery.selectAll();
+  public playersWithSpecies$: Observable<Player[]> =
+    this.playerQuery.allPlayersSuperchargedWithSpecies();
+  public player1$: Observable<Player> = this.playersWithSpecies$.pipe(
+    map((players) => players[0])
+  );
+  public player2$: Observable<Player> = this.playersWithSpecies$.pipe(
+    map((players) => players[1])
+  );
+  public isPlayerWaiting$: Observable<boolean> =
+    this.playerQuery.isActivePlayerWaitingForNextStartStage$;
+  public isActivePlayerPlaying$: Observable<boolean> =
+    this.playerQuery.isActivePlayerPlaying$;
+  public activePlayer$: Observable<Player> =
+    this.playerQuery.activePlayerSuperchargedWithSpecies$;
+  public hasTileActive$: Observable<boolean> = this.tileQuery.hasActive$;
+  public activeSpecies$: Observable<Species> = this.speciesQuery.selectActive();
+  public winner$: Observable<Player> = this.playerQuery.winner$;
+  public loser$: Observable<Player> = this.playerQuery.loser$;
+  public game$: Observable<Game> = this.gameQuery.selectActive();
+
   // Subscriptions
-  private animationSwitchSub: Subscription;
+  private animationSwitchSub: Subscription = this.animSwitchSub;
+  private newSpeciesSub: Subscription;
 
   constructor(
     private router: Router,
     private gameQuery: GameQuery,
+    private gameService: GameService,
     private tileQuery: TileQuery,
     private tileService: TileService,
     private speciesQuery: SpeciesQuery,
@@ -110,85 +135,99 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.initAnimationVariables();
   }
 
-  ngOnInit(): void {
-    this.isGameStarting$ = this.gameQuery.isStarting$;
-    this.isGameFinished$ = this.gameQuery.isGameFinished$;
-    this.startStage$ = this.gameQuery.startStage$;
-    this.players$ = this.playerQuery.selectAll();
-    this.hasTileActive$ = this.tileQuery.hasActive$;
-    this.isPlayerWaiting$ =
-      this.playerQuery.isActivePlayerWaitingForNextStartStage$;
-    this.isActivePlayerPlaying$ = this.playerQuery.isActivePlayerPlaying$;
-    this.activeSpecies$ = this.speciesQuery.selectActive();
-    this.winningPlayerSpecies$ = this.playerQuery.winningPlayerSpecies$;
-    this.isAnimationPlaying$ = this.playerQuery.isAnimationPlaying$;
-    this.winner$ = this.playerQuery.winner$;
-    this.loser$ = this.playerQuery.loser$;
-
-    this.players = this.playerQuery.getAll();
-    this.activePlayer$ = this.playerQuery.selectActive();
-
-    this.animationSwitchSub = this.animSwitchSub;
-  }
+  ngOnInit(): void {}
 
   private get animSwitchSub(): Subscription {
     const game$ = this.gameQuery.selectActive();
     return combineLatest([this.activePlayer$, game$]).subscribe(
       ([player, game]) => {
         if (player.isAnimationPlaying) {
-          if (player.animationState === 'endEraTitle') {
-            setTimeout(() => {
-              this.playerService.updateActivePlayerAnimationState(
-                'playerNamesTitle'
-              );
-              this.setRegionScoresAnimationVariables(
-                this.firstTitlesDuration,
-                this.regionAnimationDuration,
-                this.subTotalDelay
-              );
-            }, (this.regionScoresAnimationVariables.endEraTitle.duration + this.regionScoresAnimationVariables.endEraTitle.delay) * 1000);
-          }
-          if (player.animationState === 'playerNamesTitle') {
-            setTimeout(
-              () =>
-                this.playerService.updateActivePlayerAnimationState(
-                  'regionScore'
-                ),
-              (this.regionScoresAnimationVariables.playerNamesTitle.duration +
-                this.regionScoresAnimationVariables.playerNamesTitle.delay) *
-                1000
-            );
-          }
-          if (player.animationState === 'regionScore') {
-            setTimeout(
-              () =>
-                this.playerService.updateActivePlayerAnimationState('eraScore'),
-              this.regionScoresAnimationVariables.totalDuration * 1000
-            );
-          }
-          if (player.animationState === 'eraScore') {
-            setTimeout(
-              () =>
-                game.isFinished
-                  ? this.playerService.updateActivePlayerAnimationState(
-                      'victory'
-                    )
-                  : this.playerService.updateisAnimationPlaying(false),
-              this.eraScoresAnimationVariables.totalDuration * 1000
-            );
-          }
-          if (player.animationState === 'victory') {
-            setTimeout(
-              () => this.playerService.updateisAnimationPlaying(false),
-              (this.victoryAnimationVariables.victoryDetails.delay +
-                this.victoryAnimationVariables.victoryDetails.duration +
-                2) *
-                1000
-            );
-          }
+          this.handleAnimationState(player, game);
         }
       }
     );
+  }
+
+  private handleAnimationState(player: Player, game: Game) {
+    const animationStateActions = {
+      endEraTitle: {
+        action: () => {
+          this.playerService.updateActivePlayerAnimationState(
+            'playerNamesTitle'
+          );
+          this.setRegionScoresAnimationVariables(
+            this.firstTitlesDuration,
+            this.regionAnimationDuration,
+            this.subTotalDelay
+          );
+        },
+        delay:
+          (this.regionScoresAnimationVariables.endEraTitle.duration +
+            this.regionScoresAnimationVariables.endEraTitle.delay) *
+          1000,
+      },
+      playerNamesTitle: {
+        action: () =>
+          this.playerService.updateActivePlayerAnimationState('regionScore'),
+        delay:
+          (this.regionScoresAnimationVariables.playerNamesTitle.duration +
+            this.regionScoresAnimationVariables.playerNamesTitle.delay) *
+          1000,
+      },
+      regionScore: {
+        action: () =>
+          this.playerService.updateActivePlayerAnimationState('eraScore'),
+        delay: this.regionScoresAnimationVariables.totalDuration * 1000,
+      },
+      eraScore: {
+        action: () =>
+          game.isFinished
+            ? this.playerService.updateActivePlayerAnimationState('victory')
+            : this.playerService.updateActivePlayerAnimationState('newEra'),
+        delay: this.eraScoresAnimationVariables.totalDuration * 1000,
+      },
+      newEra: {
+        action: () =>
+          player.speciesIds.length == 1
+            ? this.playerService.updateActivePlayerAnimationState('newSpecies')
+            : this.playerService.updateisAnimationPlaying(false),
+        delay: this.newEraDuration * 1000,
+      },
+      newSpecies: {
+        action: () => {
+          if (!this.newSpeciesSub) {
+            this.newSpeciesSub = this.isActivePlayerPlaying$
+              .pipe(
+                filter((isActivePlayerPlaying) => isActivePlayerPlaying),
+                tap(() => {
+                  if (
+                    this.playerQuery.activePlayerAnimationState === 'newSpecies'
+                  )
+                    this.gameService.prepareSecondSpecies();
+                }),
+                first()
+              )
+              .subscribe();
+          }
+          this.playerService.updateisAnimationPlaying(false);
+          this.playerService.updateActivePlayerAnimationState('endEraTitle');
+        },
+        delay: this.newSpeciesDuration * 1000,
+      },
+      victory: {
+        action: () => this.playerService.updateisAnimationPlaying(false),
+        delay:
+          (this.victoryAnimationVariables.victoryDetails.delay +
+            this.victoryAnimationVariables.victoryDetails.duration +
+            2) *
+          1000,
+      },
+    };
+
+    const animationState = animationStateActions[player.animationState];
+    if (animationState) {
+      setTimeout(animationState.action, animationState.delay);
+    }
   }
 
   public validateStartTile() {
@@ -201,21 +240,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   public isActionActive$(action: GameAction): Observable<boolean> {
     return this.abilityService.isActionOngoing$(action);
-  }
-
-  public getActivePlayerColors(): Colors {
-    const activePlayerId = this.playerQuery.getActiveId();
-    return this.playerQuery.getPlayerColors(activePlayerId);
-  }
-
-  public getOpponentColors(): Colors {
-    const activePlayerId = this.playerQuery.getActiveId();
-    const opponentId = this.playerQuery.getPlayerOpponentId(activePlayerId);
-    return this.playerQuery.getPlayerColors(opponentId);
-  }
-
-  public getOpponentSpecies(): Species {
-    return this.playerQuery.opponentMainSpecies;
   }
 
   public toggleScoreToggle() {
@@ -268,40 +292,30 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       endingAnimationDuration
     );
 
+    // Base delay value
+    const baseDelay = 0.8;
+
     // Victory variables
+    const victoryTitleDuration = 1;
+    const winnerTitleDuration = 0.9;
+    const victoryDetailsDuration = 1;
+
     this.victoryAnimationVariables = {
       isAnimationDone: false,
-    };
-
-    this.victoryAnimationVariables = {
-      ...this.victoryAnimationVariables,
       victoryTitle: {
-        duration: 1,
+        duration: victoryTitleDuration,
         delay: 0,
       },
-    };
-    this.victoryAnimationVariables = {
-      ...this.victoryAnimationVariables,
       winnerTitle: {
-        duration: 0.9,
-        delay:
-          this.victoryAnimationVariables.victoryTitle.delay +
-          this.victoryAnimationVariables.victoryTitle.duration +
-          0.8,
+        duration: winnerTitleDuration,
+        delay: victoryTitleDuration + baseDelay,
       },
-    };
-
-    this.victoryAnimationVariables = {
-      ...this.victoryAnimationVariables,
       winnerStars: {
-        delay: this.victoryAnimationVariables.winnerTitle.delay + 0.7,
+        delay: victoryTitleDuration + winnerTitleDuration + baseDelay + 0.7,
       },
-    };
-    this.victoryAnimationVariables = {
-      ...this.victoryAnimationVariables,
       victoryDetails: {
-        duration: 1,
-        delay: this.victoryAnimationVariables.winnerTitle.delay + 1,
+        duration: victoryDetailsDuration,
+        delay: victoryTitleDuration + winnerTitleDuration + baseDelay + 1,
       },
     };
   }
@@ -309,21 +323,17 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   private setEraScoresAniamtionVariables(
     eraDuration: number,
     playerTotalDuration: number,
-    fistDelay: number,
+    firstDelay: number,
     endingAnimationDuration: number
   ) {
     const players = this.playerQuery.getAll();
     this.eraScoresAnimationVariables = {
-      playerVariables: [],
+      playerVariables: {},
       totalDuration: 100000,
     };
-    let delayCount = fistDelay;
+    let delayCount = firstDelay;
 
     for (const player of players) {
-      // Initializes the variable.
-      if (!this.eraScoresAnimationVariables.playerVariables[player.id])
-        this.eraScoresAnimationVariables.playerVariables[player.id] = {};
-        
       const playerTotalDelay = delayCount + eraDuration * 0.3;
       this.eraScoresAnimationVariables.playerVariables[player.id] = {
         eraScore: {
@@ -400,5 +410,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.animationSwitchSub.unsubscribe();
+    if (this.newSpeciesSub) this.newSpeciesSub.unsubscribe();
   }
 }

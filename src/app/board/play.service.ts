@@ -100,7 +100,7 @@ export class PlayService {
     if (!activePlayer.isWaitingForNextStartStage) return;
 
     // Switches players as not ready anymore.
-    this.playerQuery.switchReadyState(playerIds);
+    this.playerQuery.switchReadyState(playerIds, false);
 
     // Checks if it's active player to do it only once for the 2 players.
     if (game.startStage === 'launching' && this.playerQuery.isPlayerPlaying()) {
@@ -130,7 +130,9 @@ export class PlayService {
       this.playerQuery.areAllPlayersReadyForNextStartStage$
         .pipe(
           tap(async (arePlayerReady) => {
-            if (arePlayerReady) this.switchToNextStartStage();
+            if (arePlayerReady) {
+              this.switchToNextStartStage();
+            }
           })
         )
         .subscribe();
@@ -205,7 +207,7 @@ export class PlayService {
       tileId: activeTileId,
     });
 
-    this.playerQuery.switchReadyState([activePlayerId]);
+    this.playerQuery.switchReadyState([activePlayerId], true);
 
     this.tileService.removeActive();
   }
