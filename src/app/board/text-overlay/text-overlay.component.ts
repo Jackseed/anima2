@@ -381,7 +381,6 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     const players = [green, red];
 
     if (!red || !green) return;
-    console.log(players);
 
     for (const player of players) {
       let regionScore = {

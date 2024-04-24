@@ -2,7 +2,7 @@
 import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
 
 // Rxjs
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, combineLatest } from 'rxjs';
 
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
@@ -16,6 +16,8 @@ import { Ability, Species, SpeciesQuery } from '../species/_state';
 import { PlayService } from '../play.service';
 
 import { GameQuery, GameService } from 'src/app/games/_state';
+import { PlayerQuery } from '../players/_state';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -29,9 +31,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @HostBinding('style.--secondary-color')
   public secondaryColor: string;
 
-  public activeSpecies$: Observable<Species>;
-  public abilities$: Observable<Ability[]>;
-  public remainingActions$: Observable<number[]>;
+  public activeSpecies$: Observable<Species> = this.speciesQuery.selectActive();
+  public abilities$: Observable<Ability[]> =
+    this.speciesQuery.activeSpeciesAbilities$;
+  public remainingActions$: Observable<number[]> =
+    this.gameQuery.remainingActionsArray$;
+  public isActivePlayerPlaying$: Observable<boolean> =
+    this.playerQuery.isActivePlayerPlaying$;
+  public isGameStarting$: Observable<boolean> = this.gameQuery.isStarting$;
+  public isAnimationPlaying$: Observable<boolean> =
+    this.playerQuery.isAnimationPlaying$;
+  public isSkippingTurnEnabled$: Observable<boolean>;
 
   private colorSub: Subscription;
 
@@ -40,19 +50,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private gameQuery: GameQuery,
     private gameService: GameService,
     private speciesQuery: SpeciesQuery,
-    private playService: PlayService
+    private playService: PlayService,
+    private playerQuery: PlayerQuery
   ) {}
 
   ngOnInit(): void {
-    this.activeSpecies$ = this.speciesQuery.selectActive();
-    this.abilities$ = this.speciesQuery.activeSpeciesAbilities$;
-
-    this.remainingActions$ = this.gameQuery.remainingActionsArray$;
-
     this.colorSub = this.activeSpecies$.subscribe((activeSpecies) => {
       this.primaryColor = activeSpecies?.colors.primary;
       this.secondaryColor = activeSpecies?.colors.secondary;
     });
+    this.isSkippingTurnEnabled$ = combineLatest([
+      this.isActivePlayerPlaying$,
+      this.isGameStarting$,
+      this.isAnimationPlaying$,
+    ]).pipe(
+      map(([isActivePlayerPlaying, isGameStarting, isAnimPlaying]) => {
+        return isActivePlayerPlaying && !isGameStarting && !isAnimPlaying;
+      })
+    );
   }
 
   public openSpeciesList(): void {
