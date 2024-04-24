@@ -254,7 +254,7 @@ export class SpeciesService extends CollectionService<SpeciesState> {
       const player = this.playerQuery.getEntity(deletedSpecies.playerId);
       if (player.speciesIds.length === 1) {
         const winnerId = this.playerQuery.getPlayerOpponentId(player.id);
-        batch = this.gameService.updatePlayerVictory(winnerId, true, batch);
+        batch = this.gameService.updatePlayerVictoryWithBatch(winnerId, true, batch);
       }
     }
     return batch;

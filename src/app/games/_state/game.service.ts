@@ -492,14 +492,14 @@ export class GameService extends CollectionService<GameState> {
 
       // TODO: what if both players win
       if (playerScores[player.id] >= WINNING_POINTS) {
-        batch = this.updatePlayerVictory(player.id, false, batch);
+        batch = this.updatePlayerVictoryWithBatch(player.id, false, batch);
       }
     });
 
     // TODO: what if equality?
     if (game.eraCount === LAST_ERA) {
       const winnerId = this.determineWinner(playerScores);
-      batch = this.updatePlayerVictory(winnerId, false, batch);
+      batch = this.updatePlayerVictoryWithBatch(winnerId, false, batch);
     }
 
     return await batch
@@ -566,7 +566,19 @@ export class GameService extends CollectionService<GameState> {
     return isPlayerControllingRegion;
   }
 
-  public updatePlayerVictory(
+  public async updatePlayerVictory(
+    playerId: string,
+    isAnnihilation: boolean
+  ): Promise<void> {
+    let batch = this.db.firestore.batch();
+    batch = this.updatePlayerVictoryWithBatch(playerId, isAnnihilation, batch);
+
+    return batch.commit().catch((error) => {
+      console.log('Updating victory failed: ', error);
+    });
+  }
+
+  public updatePlayerVictoryWithBatch(
     playerId: string,
     isAnnihilation: boolean,
     batch: firebase.firestore.WriteBatch
@@ -579,13 +591,25 @@ export class GameService extends CollectionService<GameState> {
       winnerId: playerId,
     });
 
-    if (isAnnihilation) {
-      const players = this.playerQuery.getAll();
-      for (const player of players) {
+    const players = this.playerQuery.getAll();
+    for (const player of players) {
+      const userRef = this.db.collection('users').doc(player.id).ref;
+
+      // Update gamesPlayed, matchesPlayed, and matchesWon in the user document
+      batch.update(userRef, {
+        gamesPlayed: firebase.firestore.FieldValue.arrayUnion(gameId),
+        matchesPlayed: firebase.firestore.FieldValue.increment(1),
+        matchesWon:
+          player.id === playerId
+            ? firebase.firestore.FieldValue.increment(1)
+            : firebase.firestore.FieldValue.increment(0),
+      });
+
+      if (isAnnihilation) {
         const playerRef = this.db
           .collection(`games/${gameId}/players`)
           .doc(player.id).ref;
-
+        // Activate victory animation
         batch.update(playerRef, {
           isAnimationPlaying: true,
           animationState: 'victory',
