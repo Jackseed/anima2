@@ -330,6 +330,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     };
     let delayCount = firstDelay;
 
+    if (!red || !green) return;
+
     for (const player of players) {
       const playerTotalDelay = delayCount + eraDuration * 0.3;
       this.eraScoresAnimationVariables.playerVariables[player.id] = {
@@ -377,6 +379,10 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     const green = this.playerQuery.green;
     const red = this.playerQuery.red;
     const players = [green, red];
+
+    if (!red || !green) return;
+    console.log(players);
+
     for (const player of players) {
       let regionScore = {
         from: 0,
