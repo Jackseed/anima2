@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 // Rxjs
 import { combineLatest, Observable, Subscription } from 'rxjs';
-import { filter, first, map, tap } from 'rxjs/operators';
+import { filter, first, tap } from 'rxjs/operators';
 
 // States
 import {
@@ -58,8 +58,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public regions = Regions;
   public players: Player[] = this.playerQuery.getAll();
   public scoreToggle: boolean = true;
-  public red = RED_FIRST_PRIMARY_COLOR;
-  public green = GREEN_FIRST_PRIMARY_COLOR;
+  public redColor = RED_FIRST_PRIMARY_COLOR;
+  public greenColor = GREEN_FIRST_PRIMARY_COLOR;
 
   // Region score variables
   public regionAnimationDuration = 0.5;
@@ -103,14 +103,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public isAnimationPlaying$: Observable<boolean> =
     this.playerQuery.isAnimationPlaying$;
   public players$: Observable<Player[]> = this.playerQuery.selectAll();
-  public playersWithSpecies$: Observable<Player[]> =
-    this.playerQuery.allPlayersSuperchargedWithSpecies();
-  public player1$: Observable<Player> = this.playersWithSpecies$.pipe(
-    map((players) => players[0])
-  );
-  public player2$: Observable<Player> = this.playersWithSpecies$.pipe(
-    map((players) => players[1])
-  );
+  public green$: Observable<Player> = this.playerQuery.green$;
+  public red$: Observable<Player> = this.playerQuery.red$;
   public isPlayerWaiting$: Observable<boolean> =
     this.playerQuery.isActivePlayerWaitingForNextStartStage$;
   public isActivePlayerPlaying$: Observable<boolean> =
@@ -327,7 +321,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     firstDelay: number,
     endingAnimationDuration: number
   ) {
-    const players = this.playerQuery.getAll();
+    const green = this.playerQuery.green;
+    const red = this.playerQuery.red;
+    const players = [green, red];
     this.eraScoresAnimationVariables = {
       playerVariables: {},
       totalDuration: 100000,
@@ -378,7 +374,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     };
 
     let delayCount = 0.2;
-    const players = this.playerQuery.getAll();
+    const green = this.playerQuery.green;
+    const red = this.playerQuery.red;
+    const players = [green, red];
     for (const player of players) {
       let regionScore = {
         from: 0,

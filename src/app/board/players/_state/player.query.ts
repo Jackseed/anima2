@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
 // States
 import { PlayerStore, PlayerState } from './player.store';
 import { GameQuery } from 'src/app/games/_state/game.query';
-import { Ability, Species } from '../../species/_state/species.model';
+import { Ability } from '../../species/_state/species.model';
 import { SpeciesQuery } from '../../species/_state/species.query';
 import { AnimationState, Player } from './player.model';
 
@@ -136,6 +136,28 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
           };
         })
       )
+    );
+  }
+
+  public get green$(): Observable<Player> {
+    return this.allPlayersSuperchargedWithSpecies().pipe(
+      map((players) => players.filter((player) => player.color === 'green')),
+      map((greenPlayers) => greenPlayers[0])
+    );
+  }
+
+  public get green(): Player {
+    return this.getAll().find((player) => player.color === 'green');
+  }
+
+  public get red(): Player {
+    return this.getAll().find((player) => player.color === 'red');
+  }
+
+  public get red$(): Observable<Player> {
+    return this.allPlayersSuperchargedWithSpecies().pipe(
+      map((players) => players.filter((player) => player.color === 'red')),
+      map((redPlayers) => redPlayers[0])
     );
   }
 
