@@ -67,6 +67,7 @@ export class GameService extends CollectionService<GameState> {
     // Creates 1st player.
     const isGreen = Math.random() < 0.5;
     const color = isGreen ? 'green' : 'red';
+    const isFirstPlayer = isGreen ? true : false;
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
       color,
@@ -79,6 +80,7 @@ export class GameService extends CollectionService<GameState> {
       name,
       playerBatchCreation.playerId,
       playerBatchCreation.speciesId,
+      isFirstPlayer,
       playerBatchCreation.batch
     );
 
@@ -211,17 +213,18 @@ export class GameService extends CollectionService<GameState> {
   private createGameUsingBatch(
     gameId: string,
     name: string,
-    playingPlayerId: string,
+    playerId: string,
     playingSpeciesId: string,
+    isFirstPlayer: boolean,
     batch: firebase.firestore.WriteBatch
   ): firebase.firestore.WriteBatch {
     const gameRef = this.db.collection('games').doc(gameId).ref;
     const game = createGame({
       id: gameId,
       name,
-      playerIds: [playingPlayerId],
-      playingPlayerId,
-      playingSpeciesId,
+      playerIds: [playerId],
+      playingPlayerId: isFirstPlayer ? playerId : '',
+      playingSpeciesId: isFirstPlayer ? playingSpeciesId : '',
     });
 
     batch.set(gameRef, game);
@@ -270,6 +273,7 @@ export class GameService extends CollectionService<GameState> {
     const existingPlayerColor = await this.getColorOfFirstPlayer(gameId);
     // Creates 2nd player.
     const color = existingPlayerColor == 'red' ? 'green' : 'red';
+    const isFirstPlayer = color === 'green' ? true : false;
 
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
@@ -279,11 +283,17 @@ export class GameService extends CollectionService<GameState> {
       playerBatchCreation.playerId
     );
 
+    const gameUpdateData: any = {
+      playerIds: firestorePlayerIds,
+    };
+
+    if (isFirstPlayer) {
+      gameUpdateData.playingPlayerId = playerBatchCreation.playerId;
+      gameUpdateData.playingSpeciesId = playerBatchCreation.speciesId;
+    }
     // Updates game doc.
     const gameRef = this.db.collection('games').doc(gameId).ref;
-    const batch = playerBatchCreation.batch.update(gameRef, {
-      playerIds: firestorePlayerIds,
-    });
+    const batch = playerBatchCreation.batch.update(gameRef, gameUpdateData);
 
     await batch
       .commit()
