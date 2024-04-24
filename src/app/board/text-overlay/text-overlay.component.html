@@ -382,12 +382,12 @@
 </main>
 <!------ C - REGION SCORE ------>
 <main
+  class="visual-overlay"
+  fxFlexFill
   *ngIf="
     (activePlayer$ | async).isAnimationPlaying &&
     (activePlayer$ | async).animationState === 'regionScore'
   "
-  class="visual-overlay"
-  fxFlexFill
 >
   <main fxFlexFill fxLayout="column" fxLayoutAlign="start center">
     <section
@@ -401,10 +401,22 @@
         'bottom-position': i === 1
       }"
     >
-      <article *ngIf="player$ | async as player">
+      <article
+        *ngIf="player$ | async as player"
+        fxLayout="column"
+        fxLayoutAlign="center center"
+      >
+        <h3
+          class="player-name"
+          [ngStyle]="{
+            color: redColor
+          }"
+          *ngIf="i === 1"
+        >
+          {{ player.name }}
+        </h3>
         <mat-icon
           svgIcon="anima-empty"
-          fxFlexAlign="start"
           class="anima-empty relative"
           fxLayoutAlign="center center"
         >
@@ -445,6 +457,15 @@
             >+</span
           >
         </mat-icon>
+        <h3
+          class="player-name margin-top-10"
+          [ngStyle]="{
+            color: greenColor
+          }"
+          *ngIf="i === 0"
+        >
+          {{ player.name }}
+        </h3>
       </article>
     </section>
 
