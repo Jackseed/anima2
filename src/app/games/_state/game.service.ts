@@ -67,6 +67,7 @@ export class GameService extends CollectionService<GameState> {
     // Creates 1st player.
     const isGreen = Math.random() < 0.5;
     const color = isGreen ? 'green' : 'red';
+    const isFirstPlayer = isGreen ? true : false;
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
       color,
@@ -79,6 +80,7 @@ export class GameService extends CollectionService<GameState> {
       name,
       playerBatchCreation.playerId,
       playerBatchCreation.speciesId,
+      isFirstPlayer,
       playerBatchCreation.batch
     );
 
@@ -211,17 +213,18 @@ export class GameService extends CollectionService<GameState> {
   private createGameUsingBatch(
     gameId: string,
     name: string,
-    playingPlayerId: string,
+    playerId: string,
     playingSpeciesId: string,
+    isFirstPlayer: boolean,
     batch: firebase.firestore.WriteBatch
   ): firebase.firestore.WriteBatch {
     const gameRef = this.db.collection('games').doc(gameId).ref;
     const game = createGame({
       id: gameId,
       name,
-      playerIds: [playingPlayerId],
-      playingPlayerId,
-      playingSpeciesId,
+      playerIds: [playerId],
+      playingPlayerId: isFirstPlayer ? playerId : '',
+      playingSpeciesId: isFirstPlayer ? playingSpeciesId : '',
     });
 
     batch.set(gameRef, game);
@@ -270,6 +273,7 @@ export class GameService extends CollectionService<GameState> {
     const existingPlayerColor = await this.getColorOfFirstPlayer(gameId);
     // Creates 2nd player.
     const color = existingPlayerColor == 'red' ? 'green' : 'red';
+    const isFirstPlayer = color === 'green' ? true : false;
 
     const playerBatchCreation = await this.createPlayerUsingBatch(
       gameId,
@@ -279,11 +283,17 @@ export class GameService extends CollectionService<GameState> {
       playerBatchCreation.playerId
     );
 
+    const gameUpdateData: any = {
+      playerIds: firestorePlayerIds,
+    };
+
+    if (isFirstPlayer) {
+      gameUpdateData.playingPlayerId = playerBatchCreation.playerId;
+      gameUpdateData.playingSpeciesId = playerBatchCreation.speciesId;
+    }
     // Updates game doc.
     const gameRef = this.db.collection('games').doc(gameId).ref;
-    const batch = playerBatchCreation.batch.update(gameRef, {
-      playerIds: firestorePlayerIds,
-    });
+    const batch = playerBatchCreation.batch.update(gameRef, gameUpdateData);
 
     await batch
       .commit()
@@ -479,17 +489,11 @@ export class GameService extends CollectionService<GameState> {
         playerRegionScores,
         player.id
       );
-
-      // TODO: what if both players win
-      if (playerScores[player.id] >= WINNING_POINTS) {
-        batch = this.updatePlayerVictory(player.id, false, batch);
-      }
     });
 
-    // TODO: what if equality?
-    if (game.eraCount === LAST_ERA) {
+    if (this.checkWinConditions(playerScores, game, batch)) {
       const winnerId = this.determineWinner(playerScores);
-      batch = this.updatePlayerVictory(winnerId, false, batch);
+      batch = this.updatePlayerVictoryWithBatch(winnerId, false, batch);
     }
 
     return await batch
@@ -533,14 +537,65 @@ export class GameService extends CollectionService<GameState> {
     });
   }
 
+  private checkWinConditions(
+    playerScores: { [playerId: string]: number },
+    game: Game,
+    batch: firebase.firestore.WriteBatch
+  ): boolean {
+    if (
+      Object.values(playerScores).some((score) => score >= WINNING_POINTS) ||
+      game.eraCount === LAST_ERA
+    )
+      return true;
+
+    return false;
+  }
+
   private determineWinner(playerScores: {
     [playerId: string]: number;
   }): string {
     const playerIds = this.playerQuery.allPlayerIds;
-    return playerScores[playerIds[0]] >= playerScores[playerIds[1]]
-      ? playerIds[0]
-      : playerIds[1];
+    let winnerId: string;
+    if (playerScores[playerIds[0]] > playerScores[playerIds[1]])
+      winnerId = playerIds[0];
+    if (playerScores[playerIds[0]] < playerScores[playerIds[1]])
+      winnerId = playerIds[1];
+    if (playerScores[playerIds[0]] === playerScores[playerIds[1]])
+      winnerId = this.comparePlayersProperty('abilities');
+    if (winnerId === 'draw') winnerId = this.comparePlayersProperty('tileIds');
+
+    // If there's still a draw, randomly select one of the two players
+    if (winnerId === 'draw')
+      winnerId = playerIds[Math.floor(Math.random() * playerIds.length)];
+
+    return winnerId;
   }
+
+  // Compare which player has more abilities or tileIds.
+  public comparePlayersProperty(propertyName: 'abilities' | 'tileIds'): string {
+    const players = this.playerQuery.allPlayersSuperchargedWithSpecies;
+    let maxPropertyCount = 0;
+    let winnerId = '';
+
+    for (const player of players) {
+      const playerSpecies = player.species;
+      let playerPropertyCount = 0;
+
+      for (const species of playerSpecies) {
+        playerPropertyCount += species[propertyName].length;
+      }
+
+      if (playerPropertyCount > maxPropertyCount) {
+        maxPropertyCount = playerPropertyCount;
+        winnerId = player.id;
+      } else if (playerPropertyCount === maxPropertyCount) {
+        winnerId = 'draw';
+      }
+    }
+
+    return winnerId;
+  }
+
   public isPlayerControllingRegion(player: Player, region: Region): boolean {
     const playerSpeciesTileIds =
       this.playerQuery.getPlayerSpeciesTileIds(player);
@@ -556,7 +611,19 @@ export class GameService extends CollectionService<GameState> {
     return isPlayerControllingRegion;
   }
 
-  public updatePlayerVictory(
+  public async updatePlayerVictory(
+    playerId: string,
+    isAnnihilation: boolean
+  ): Promise<void> {
+    let batch = this.db.firestore.batch();
+    batch = this.updatePlayerVictoryWithBatch(playerId, isAnnihilation, batch);
+
+    return batch.commit().catch((error) => {
+      console.log('Updating victory failed: ', error);
+    });
+  }
+
+  public updatePlayerVictoryWithBatch(
     playerId: string,
     isAnnihilation: boolean,
     batch: firebase.firestore.WriteBatch
@@ -569,13 +636,25 @@ export class GameService extends CollectionService<GameState> {
       winnerId: playerId,
     });
 
-    if (isAnnihilation) {
-      const players = this.playerQuery.getAll();
-      for (const player of players) {
+    const players = this.playerQuery.getAll();
+    for (const player of players) {
+      const userRef = this.db.collection('users').doc(player.id).ref;
+
+      // Update gamesPlayed, matchesPlayed, and matchesWon in the user document
+      batch.update(userRef, {
+        gamesPlayed: firebase.firestore.FieldValue.arrayUnion(gameId),
+        matchesPlayed: firebase.firestore.FieldValue.increment(1),
+        matchesWon:
+          player.id === playerId
+            ? firebase.firestore.FieldValue.increment(1)
+            : firebase.firestore.FieldValue.increment(0),
+      });
+
+      if (isAnnihilation) {
         const playerRef = this.db
           .collection(`games/${gameId}/players`)
           .doc(player.id).ref;
-
+        // Activate victory animation
         batch.update(playerRef, {
           isAnimationPlaying: true,
           animationState: 'victory',

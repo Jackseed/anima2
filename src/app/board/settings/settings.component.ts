@@ -1,8 +1,11 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 // Angular Material
 import { MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+// States
+import { GameService } from 'src/app/games/_state';
+import { PlayerQuery } from '../players/_state';
 
 @Component({
   selector: 'app-settings',
@@ -21,13 +24,15 @@ export class SettingsComponent implements OnInit {
       cta: 'Règles',
     },
     {
-      cta: 'Quitter',
+      cta: 'Abandonner',
       action: this.leave.bind(this),
     },
   ];
   constructor(
     public dialogRef: MatDialogRef<SettingsComponent>,
-    private router: Router
+    private router: Router,
+    private playerQuery: PlayerQuery,
+    private gameService: GameService
   ) {}
 
   ngOnInit(): void {}
@@ -36,8 +41,10 @@ export class SettingsComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  public leave() {
+  public async leave() {
+    const activePlayerId = this.playerQuery.getActiveId();
+    const opponentId = this.playerQuery.getPlayerOpponentId(activePlayerId);
+    await this.gameService.updatePlayerVictory(opponentId, true);
     this.close();
-    this.router.navigate(['/home']);
   }
 }

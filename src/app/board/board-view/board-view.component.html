@@ -61,7 +61,19 @@
                 fxFlexFill
                 [svgIcon]="species.mainAbilityId + '-ability'"
               ></mat-icon>
-              <div class="species-quantity">
+              <div
+                class="species-quantity"
+                [ngStyle]="{
+                  'font-size':
+                    species.quantity >= 100 && tile.species.length >= 2
+                      ? '0.15rem'
+                      : species.quantity >= 100
+                      ? '0.20rem'
+                      : tile.species.length >= 3 && species.quantity >= 10
+                      ? '0.20rem'
+                      : null
+                }"
+              >
                 {{ species.quantity }}
               </div>
             </div>

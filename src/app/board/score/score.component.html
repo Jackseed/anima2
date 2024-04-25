@@ -1,23 +1,25 @@
 <h2>Tableau des scores</h2>
 <main *ngIf="game$ | async as game">
-  <h3>Partie</h3>
-  <li>Ère: {{ game.eraCount }}</li>
-  <li>Tours: {{ game.turnCount }}</li>
-  <h3>Tour en cours</h3>
-  <li>Joueur actif: {{ game.playingPlayerId.slice(0, 4) }}</li>
-  <li *ngIf="activeSpecies$ | async as activeSpecies">
-    Traits espèce active:
-    <span *ngFor="let ability of activeSpecies.abilities; let isLast = last"
-      >{{ ability.fr.name }}{{ isLast ? "" : ", " }}</span
-    >
-  </li>
-  <li>Actions restantes: {{ game.remainingActions }}</li>
-  <li>
-    Migration restantes:
-    <span>{{ remainingMigrations$ | async }}</span>
-  </li>
-  <h3>Joueurs</h3>
-  <li *ngFor="let player of players$ | async">
-    {{ player.id.slice(0, 4) }}: {{ player.score }}
-  </li>
+  <ng-container *ngIf="players$ | async as players">
+    <h3>Partie</h3>
+    <li>Ère: {{ game.eraCount }}</li>
+    <li>Tours: {{ game.turnCount }}</li>
+    <h3>Tour en cours</h3>
+    <li>Joueur actif: {{ getPlayerName(game.playingPlayerId) }}</li>
+    <li *ngIf="activeSpecies$ | async as activeSpecies">
+      Traits espèce active:
+      <span *ngFor="let ability of activeSpecies.abilities; let isLast = last"
+        >{{ ability.fr.name }}{{ isLast ? "" : ", " }}</span
+      >
+    </li>
+    <li>Actions restantes: {{ game.remainingActions }}</li>
+    <li>
+      Migration restantes:
+      <span>{{ remainingMigrations$ | async }}</span>
+    </li>
+    <h3>Joueurs</h3>
+    <li *ngFor="let player of players">
+      {{ player.name }}: {{ player.score }}
+    </li>
+  </ng-container>
 </main>

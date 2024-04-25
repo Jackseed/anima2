@@ -277,7 +277,7 @@ export class PlayService {
     this.tileService.markAsAttackable(attackableTileIds);
   }
 
-  public openAssimilationMenu(attackedTileId: number): void {
+  public openAssimilationMenu(attackedTileId: number): Promise<void> {
     this.tileService.removeAttackable();
     const attackedTile = this.tileQuery.getEntity(attackedTileId.toString());
     const attackingTileSpecies = this.speciesQuery.activeTileSpecies;
@@ -286,6 +286,12 @@ export class PlayService {
       attackingTileSpecies,
       0
     );
+    // If only one species is attackable, assimilates it.
+    if (attackableSpecies.length === 1)
+      return this.abilityService.assimilate(
+        attackableSpecies[0].id,
+        Number(attackedTile.id)
+      );
     this.openActiveSpeciesList(attackableSpecies, attackedTileId, 'assimiler');
   }
 

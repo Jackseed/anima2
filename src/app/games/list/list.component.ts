@@ -2,20 +2,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-// AngularFire
-import { AngularFireAuth } from '@angular/fire/auth';
-
 // Akita
 import { resetStores } from '@datorama/akita';
 
 // Rxjs
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 // Material
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 // States
 import { Game, GameQuery, GameService } from '../_state';
+import { UserQuery } from 'src/app/auth/_state';
 
 // Components
 import { FormComponent } from '../form/form.component';
@@ -34,18 +33,29 @@ export class ListComponent implements OnInit {
     public dialogRef: MatDialogRef<ListComponent>,
     private router: Router,
     private dialog: MatDialog,
-    private afAuth: AngularFireAuth,
+    private userQuery: UserQuery,
     private gameQuery: GameQuery,
     private gameService: GameService
   ) {}
 
   ngOnInit(): void {
-    this.games$ = this.gameQuery.selectAll();
+    const userId = this.userQuery.getActiveId();
+    this.games$ = this.gameQuery.selectAll().pipe(
+      map((games) =>
+        games.filter(
+          (game) =>
+            game.playerIds.length === 1 || game.playerIds.includes(userId)
+        )
+      ),
+      map((games) =>
+        games.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis())
+      )
+    );
     if (this.gameQuery.getCount() > 7) this.isScrollable = true;
   }
 
   public async join(game: Game) {
-    const userId = (await this.afAuth.currentUser).uid;
+    const userId = this.userQuery.getActiveId();
     const isUserAGamePlayer = game.playerIds.includes(userId);
     const isGameFull = this.gameQuery.isGameFull(game.id);
 

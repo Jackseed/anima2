@@ -61,8 +61,21 @@
   <div fxFlex="10"></div>
   <!---------------- TURN BUTTON -------------->
   <div fxFlex="10">
-    <button mat-icon-button class="turn-button" (click)="skipTurn()">
-      <mat-icon svgIcon="hourglass-clean"></mat-icon>
+    <button
+      mat-icon-button
+      class="turn-button"
+      (click)="skipTurn()"
+      [disabled]="!(isSkippingTurnEnabled$ | async)"
+      style="color: grey"
+    >
+      <mat-icon
+        *ngIf="isSkippingTurnEnabled$ | async"
+        svgIcon="hourglass-button"
+      ></mat-icon>
+      <mat-icon
+        *ngIf="!(isSkippingTurnEnabled$ | async)"
+        svgIcon="hourglass-disabled"
+      ></mat-icon>
     </button>
   </div>
   <div fxFlex="2"></div>

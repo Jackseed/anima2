@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 // Rxjs
 import { combineLatest, Observable, Subscription } from 'rxjs';
-import { filter, first, map, tap } from 'rxjs/operators';
+import { filter, first, tap } from 'rxjs/operators';
 
 // States
 import {
@@ -58,8 +58,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public regions = Regions;
   public players: Player[] = this.playerQuery.getAll();
   public scoreToggle: boolean = true;
-  public red = RED_FIRST_PRIMARY_COLOR;
-  public green = GREEN_FIRST_PRIMARY_COLOR;
+  public redColor = RED_FIRST_PRIMARY_COLOR;
+  public greenColor = GREEN_FIRST_PRIMARY_COLOR;
 
   // Region score variables
   public regionAnimationDuration = 0.5;
@@ -73,8 +73,12 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     totalDuration?: number;
     playerVariables?: PlayerRegionScoresAnimationVariables[];
   };
-  public newEraDuration = 2;
-  public newSpeciesDuration = 2;
+
+  // Era score variables
+  private eraDuration = 1;
+  private playerTotalDuration = 2;
+  private firstDelay = 0.3;
+  private endingAnimationDuration = 1;
   public eraScoresAnimationVariables: {
     firstScreenTransition?: animation;
     totalDuration?: number;
@@ -89,6 +93,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     victoryDetails?: animation;
   } = {};
 
+  public newEraDuration = 2;
+  public newSpeciesDuration = 2;
+
   // Observables
   public isGameStarting$: Observable<boolean> = this.gameQuery.isStarting$;
   public isGameFinished$: Observable<boolean> = this.gameQuery.isGameFinished$;
@@ -96,14 +103,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public isAnimationPlaying$: Observable<boolean> =
     this.playerQuery.isAnimationPlaying$;
   public players$: Observable<Player[]> = this.playerQuery.selectAll();
-  public playersWithSpecies$: Observable<Player[]> =
-    this.playerQuery.allPlayersSuperchargedWithSpecies();
-  public player1$: Observable<Player> = this.playersWithSpecies$.pipe(
-    map((players) => players[0])
-  );
-  public player2$: Observable<Player> = this.playersWithSpecies$.pipe(
-    map((players) => players[1])
-  );
+  public green$: Observable<Player> = this.playerQuery.green$;
+  public red$: Observable<Player> = this.playerQuery.red$;
   public isPlayerWaiting$: Observable<boolean> =
     this.playerQuery.isActivePlayerWaitingForNextStartStage$;
   public isActivePlayerPlaying$: Observable<boolean> =
@@ -135,7 +136,9 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     this.initAnimationVariables();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initAnimationVariables();
+  }
 
   private get animSwitchSub(): Subscription {
     const game$ = this.gameQuery.selectActive();
@@ -155,11 +158,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
           this.playerService.updateActivePlayerAnimationState(
             'playerNamesTitle'
           );
-          this.setRegionScoresAnimationVariables(
-            this.firstTitlesDuration,
-            this.regionAnimationDuration,
-            this.subTotalDelay
-          );
+          this.initAnimationVariables();
         },
         delay:
           (this.regionScoresAnimationVariables.endEraTitle.duration +
@@ -281,15 +280,11 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     );
 
     // Era score variables
-    const eraDuration = 1;
-    const playerTotalDuration = 2;
-    const fistDelay = 0.3;
-    const endingAnimationDuration = 1;
     this.setEraScoresAniamtionVariables(
-      eraDuration,
-      playerTotalDuration,
-      fistDelay,
-      endingAnimationDuration
+      this.eraDuration,
+      this.playerTotalDuration,
+      this.firstDelay,
+      this.endingAnimationDuration
     );
 
     // Base delay value
@@ -326,12 +321,16 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     firstDelay: number,
     endingAnimationDuration: number
   ) {
-    const players = this.playerQuery.getAll();
+    const green = this.playerQuery.green;
+    const red = this.playerQuery.red;
+    const players = [green, red];
     this.eraScoresAnimationVariables = {
       playerVariables: {},
       totalDuration: 100000,
     };
     let delayCount = firstDelay;
+
+    if (!red || !green) return;
 
     for (const player of players) {
       const playerTotalDelay = delayCount + eraDuration * 0.3;
@@ -377,7 +376,12 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     };
 
     let delayCount = 0.2;
-    const players = this.playerQuery.getAll();
+    const green = this.playerQuery.green;
+    const red = this.playerQuery.red;
+    const players = [green, red];
+
+    if (!red || !green) return;
+
     for (const player of players) {
       let regionScore = {
         from: 0,

@@ -66,6 +66,7 @@ export const NEUTRAL_COLORS: Colors = {
 
 export interface Game {
   id?: string;
+  createdAt: firebase.firestore.Timestamp;
   name?: string;
   playerIds?: string[];
   playingPlayerId?: string;
@@ -95,10 +96,11 @@ export interface Colors {
 export function createGame(params: Partial<Game>): Game {
   return {
     id: params.id,
+    createdAt: params.createdAt || firebase.firestore.Timestamp.now(),
     name: params.name,
     playerIds: params.playerIds,
-    playingPlayerId: params.playingPlayerId,
-    playingSpeciesId: params.playingSpeciesId,
+    playingPlayerId: params.playingPlayerId || '',
+    playingSpeciesId: params.playingSpeciesId || '',
     remainingActions: DEFAULT_ACTION_PER_TURN,
     eraCount: 1,
     turnCount: 1,

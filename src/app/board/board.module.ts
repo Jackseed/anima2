@@ -69,9 +69,15 @@ export class BoardModule {
       )
     );
     this.matIconRegistry.addSvgIcon(
-      'hourglass-clean',
+      'hourglass-button',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/menu-buttons/hourglass-clean.svg'
+        '../../../assets/menu-buttons/hourglass-button.svg'
+      )
+    );
+    this.matIconRegistry.addSvgIcon(
+      'hourglass-disabled',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/menu-buttons/hourglass-disabled.svg'
       )
     );
 
