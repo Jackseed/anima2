@@ -23,8 +23,11 @@
         <button
           fxFlexFill
           mat-icon-button
-          (click)="activate(species)"
-          [disabled]="data.listType === 'passive'"
+          (click)="
+            data.listType === 'passive'
+              ? activate(species, species.abilities[0].id)
+              : activate(species)
+          "
           [ngClass]="{
             active:
               species.id === active.species?.id && active.type === 'species'
