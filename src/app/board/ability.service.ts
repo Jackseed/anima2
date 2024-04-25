@@ -67,6 +67,7 @@ export class AbilityService {
     const previousTileId = Number(this.tileQuery.getActiveId());
     const migrationValues = this.getMigrationValues(destinationId);
     const remainginMigrations = this.remainingMigrations;
+
     this.tileService.removeActive();
     this.tileService.removeReachable();
     this.speciesService.move({
@@ -76,7 +77,6 @@ export class AbilityService {
       previousTileId,
       migrationUsed: migrationValues.migrationUsed,
     });
-    this.tileService.selectTile(destinationId);
     this.snackbar.open('Migration effectuée !', null, {
       duration: 800,
       panelClass: 'orange-snackbar',
