@@ -34,4 +34,8 @@ export class ScoreComponent implements OnInit {
     this.activeSpecies$ = this.speciesQuery.selectActive();
     this.remainingMigrations$ = this.abilityService.remainingMigrations$;
   }
+
+  public getPlayerName(playerId: string): string {
+    return this.playerQuery.getEntity(playerId).name;
+  }
 }
