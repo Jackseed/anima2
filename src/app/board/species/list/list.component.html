@@ -43,7 +43,15 @@
           ></mat-icon>
         </button>
         <div class="absolute circle" fxLayoutAlign="center center">
-          <div class="figures">{{ getSpeciesCount(species) }}</div>
+          <div
+            class="figures"
+            [ngStyle]="{
+              'font-size':
+                getSpeciesCount(species) >= 100 ? 'calc(1rem + 1vmin)' : null
+            }"
+          >
+            {{ getSpeciesCount(species) }}
+          </div>
         </div>
       </div>
       <!---------------- SPECIES ABILITIES -------------->
