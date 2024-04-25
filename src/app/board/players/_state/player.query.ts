@@ -121,7 +121,7 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     );
   }
 
-  public allPlayersSuperchargedWithSpecies(): Observable<Player[]> {
+  public allPlayersSuperchargedWithSpecies$(): Observable<Player[]> {
     return this.selectAll().pipe(
       map((players) =>
         players.map((player) => {
@@ -139,8 +139,22 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     );
   }
 
+  public get allPlayersSuperchargedWithSpecies(): Player[] {
+    return this.getAll().map((player) => {
+      let species = [];
+      for (const speciesId of player.speciesIds) {
+        const specie = this.speciesQuery.getEntity(speciesId);
+        species.push(specie);
+      }
+      return {
+        ...player,
+        species,
+      };
+    });
+  }
+
   public get green$(): Observable<Player> {
-    return this.allPlayersSuperchargedWithSpecies().pipe(
+    return this.allPlayersSuperchargedWithSpecies$().pipe(
       map((players) => players.filter((player) => player.color === 'green')),
       map((greenPlayers) => greenPlayers[0])
     );
@@ -155,7 +169,7 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
   }
 
   public get red$(): Observable<Player> {
-    return this.allPlayersSuperchargedWithSpecies().pipe(
+    return this.allPlayersSuperchargedWithSpecies$().pipe(
       map((players) => players.filter((player) => player.color === 'red')),
       map((redPlayers) => redPlayers[0])
     );

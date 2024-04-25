@@ -489,15 +489,9 @@ export class GameService extends CollectionService<GameState> {
         playerRegionScores,
         player.id
       );
-
-      // TODO: what if both players win
-      if (playerScores[player.id] >= WINNING_POINTS) {
-        batch = this.updatePlayerVictoryWithBatch(player.id, false, batch);
-      }
     });
 
-    // TODO: what if equality?
-    if (game.eraCount === LAST_ERA) {
+    if (this.checkWinConditions(playerScores, game, batch)) {
       const winnerId = this.determineWinner(playerScores);
       batch = this.updatePlayerVictoryWithBatch(winnerId, false, batch);
     }
@@ -543,14 +537,65 @@ export class GameService extends CollectionService<GameState> {
     });
   }
 
+  private checkWinConditions(
+    playerScores: { [playerId: string]: number },
+    game: Game,
+    batch: firebase.firestore.WriteBatch
+  ): boolean {
+    if (
+      Object.values(playerScores).some((score) => score >= WINNING_POINTS) ||
+      game.eraCount === LAST_ERA
+    )
+      return true;
+
+    return false;
+  }
+
   private determineWinner(playerScores: {
     [playerId: string]: number;
   }): string {
     const playerIds = this.playerQuery.allPlayerIds;
-    return playerScores[playerIds[0]] >= playerScores[playerIds[1]]
-      ? playerIds[0]
-      : playerIds[1];
+    let winnerId: string;
+    if (playerScores[playerIds[0]] > playerScores[playerIds[1]])
+      winnerId = playerIds[0];
+    if (playerScores[playerIds[0]] < playerScores[playerIds[1]])
+      winnerId = playerIds[1];
+    if (playerScores[playerIds[0]] === playerScores[playerIds[1]])
+      winnerId = this.comparePlayersProperty('abilities');
+    if (winnerId === 'draw') winnerId = this.comparePlayersProperty('tileIds');
+
+    // If there's still a draw, randomly select one of the two players
+    if (winnerId === 'draw')
+      winnerId = playerIds[Math.floor(Math.random() * playerIds.length)];
+
+    return winnerId;
   }
+
+  // Compare which player has more abilities or tileIds.
+  public comparePlayersProperty(propertyName: 'abilities' | 'tileIds'): string {
+    const players = this.playerQuery.allPlayersSuperchargedWithSpecies;
+    let maxPropertyCount = 0;
+    let winnerId = '';
+
+    for (const player of players) {
+      const playerSpecies = player.species;
+      let playerPropertyCount = 0;
+
+      for (const species of playerSpecies) {
+        playerPropertyCount += species[propertyName].length;
+      }
+
+      if (playerPropertyCount > maxPropertyCount) {
+        maxPropertyCount = playerPropertyCount;
+        winnerId = player.id;
+      } else if (playerPropertyCount === maxPropertyCount) {
+        winnerId = 'draw';
+      }
+    }
+
+    return winnerId;
+  }
+
   public isPlayerControllingRegion(player: Player, region: Region): boolean {
     const playerSpeciesTileIds =
       this.playerQuery.getPlayerSpeciesTileIds(player);
