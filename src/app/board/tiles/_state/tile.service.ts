@@ -274,7 +274,12 @@ export class TileService extends CollectionService<TileState> {
 
   public markTiles(
     tileIds: number[],
-    property: 'isReachable' | 'isAttackable' | 'isProliferable' | 'isRallyable'
+    property:
+      | 'isReachable'
+      | 'isAttackable'
+      | 'isProliferable'
+      | 'isRallyable'
+      | 'isPlayed'
   ) {
     this.store.update(
       tileIds.map((id) => id?.toString()),
@@ -283,7 +288,12 @@ export class TileService extends CollectionService<TileState> {
   }
 
   public removeProperty(
-    property: 'isReachable' | 'isAttackable' | 'isProliferable' | 'isRallyable'
+    property:
+      | 'isReachable'
+      | 'isAttackable'
+      | 'isProliferable'
+      | 'isRallyable'
+      | 'isPlayed'
   ) {
     this.store.update(null, { [property]: false });
   }

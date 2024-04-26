@@ -339,24 +339,24 @@ export class GameService extends CollectionService<GameState> {
       });
   }
 
-  public async skipTurn() {
+  public skipTurn() {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     let batch = this.db.firestore.batch();
 
-    batch = await this.handleLastAction(gameRef, batch);
+    batch = this.handleLastAction(gameRef, batch);
 
     batch.commit().catch((error) => {
       console.log('Skipping turn failed: ', error);
     });
   }
 
-  public async completePlayerAction(
+  public completePlayerAction(
     playerId: string,
     speciesId: string,
     action: GameAction,
     originTileId: number,
-    actionData: ActionData,
+    data: ActionData,
     existingBatch?: firebase.firestore.WriteBatch
   ) {
     let batch = existingBatch || this.db.firestore.batch();
@@ -364,19 +364,16 @@ export class GameService extends CollectionService<GameState> {
     const gameRef = this.db.collection('games').doc(game.id).ref;
 
     // Save the last action details.
-    const lastAction = {
+    batch = this.saveLastAction(
       playerId,
       speciesId,
       action,
       originTileId,
-      actionData,
-    };
-    batch.update(gameRef, { lastAction });
-
-    // Update remaining actions
-    batch = (await this.updateRemainingActions(
+      data,
       batch
-    )) as firebase.firestore.WriteBatch;
+    );
+    // Update remaining actions
+    batch = this.updateRemainingActions(batch);
 
     if (existingBatch) return batch;
 
@@ -385,16 +382,47 @@ export class GameService extends CollectionService<GameState> {
     });
   }
 
-  public async updateRemainingActions(
+  public saveLastAction(
+    playerId: string,
+    speciesId: string,
+    action: GameAction,
+    originTileId: number,
+    data: ActionData,
     existingBatch?: firebase.firestore.WriteBatch
-  ) {
+  ): firebase.firestore.WriteBatch {
+    const game = this.query.getActive();
+    const gameRef = this.db.collection('games').doc(game.id).ref;
+    const batch = existingBatch || this.db.firestore.batch();
+
+    this.tileService.removeProperty('isPlayed');
+
+    const lastAction = {
+      playerId,
+      speciesId,
+      action,
+      originTileId,
+      data,
+    };
+    console.log(lastAction);
+    batch.update(gameRef, { lastAction });
+
+    if (existingBatch) return batch;
+
+    batch.commit().catch((error) => {
+      console.log('Saving last action failed: ', error);
+    });
+  }
+
+  public updateRemainingActions(
+    existingBatch?: firebase.firestore.WriteBatch
+  ): firebase.firestore.WriteBatch {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     let batch = existingBatch || this.db.firestore.batch();
     const isLastAction = this.query.isLastAction;
 
     if (isLastAction) {
-      batch = await this.handleLastAction(gameRef, batch);
+      batch = this.handleLastAction(gameRef, batch);
     } else {
       // Updates game remaining actions.
       const remainingActions = firebase.firestore.FieldValue.increment(-1);
@@ -403,15 +431,15 @@ export class GameService extends CollectionService<GameState> {
 
     if (existingBatch) return batch;
 
-    return batch.commit().catch((error) => {
+    batch.commit().catch((error) => {
       console.log('Update remaining action failed: ', error);
     });
   }
 
-  private async handleLastAction(
+  private handleLastAction(
     gameRef: firebase.firestore.DocumentReference,
     batch: firebase.firestore.WriteBatch
-  ) {
+  ): firebase.firestore.WriteBatch {
     const remainingActions = DEFAULT_ACTION_PER_TURN;
     batch.update(gameRef, { remainingActions });
     this.tileService.removeActive();
@@ -419,7 +447,7 @@ export class GameService extends CollectionService<GameState> {
     if (this.playerQuery.isLastActivePlayerSpeciesActive) {
       batch = this.switchPlayingPlayerAndSpeciesUsingBatch(gameRef, batch);
       if (this.playerQuery.isLastPlayerPlaying)
-        batch = await this.incrementTurnCount(batch);
+        batch = this.incrementTurnCount(batch);
     }
     // Otherwise activates the next species.
     else {
@@ -442,9 +470,9 @@ export class GameService extends CollectionService<GameState> {
     return batch;
   }
 
-  private async incrementTurnCount(
+  private incrementTurnCount(
     batch: firebase.firestore.WriteBatch
-  ): Promise<firebase.firestore.WriteBatch> {
+  ): firebase.firestore.WriteBatch {
     const game = this.query.getActive();
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const increment = firebase.firestore.FieldValue.increment(1);
@@ -705,5 +733,10 @@ export class GameService extends CollectionService<GameState> {
   public updateUiAdaptationMenuOpen(bool: boolean) {
     const gameId = this.query.getActiveId();
     this.store.ui.update(gameId, { isAdaptationMenuOpen: bool });
+  }
+
+  public updateActionMessage(actionMessage: string) {
+    const gameId = this.query.getActiveId();
+    this.store.ui.update(gameId, { actionMessage });
   }
 }

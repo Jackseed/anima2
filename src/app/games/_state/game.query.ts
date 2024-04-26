@@ -62,6 +62,11 @@ export class GameQuery extends QueryEntity<GameState> {
     return this.ui.getEntity(gameId).isAdaptationMenuOpen;
   }
 
+  public get actionMessage$(): Observable<string> {
+    const gameId = this.getActiveId();
+    return this.ui.selectEntity(gameId).pipe(map((ui) => ui.actionMessage));
+  }
+
   public get remainingActionsArray$(): Observable<number[]> {
     return this.selectActive().pipe(
       map((game) => new Array(game.remainingActions))

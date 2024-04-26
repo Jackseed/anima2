@@ -77,6 +77,16 @@ export class AbilityService {
       previousTileId,
       migrationUsed: migrationValues.migrationUsed,
     });
+    this.gameService.saveLastAction(
+      activeSpecies.playerId,
+      activeSpecies.id,
+      'migration',
+      previousTileId,
+      {
+        targetedTileId: destinationId,
+        migrationUsed: migrationValues.migrationUsed,
+      }
+    );
     this.snackbar.open('Migration effectuée !', null, {
       duration: 800,
       panelClass: 'orange-snackbar',
@@ -90,7 +100,10 @@ export class AbilityService {
         activeSpecies.id,
         'migration',
         previousTileId,
-        { targetedTileId: destinationId }
+        {
+          targetedTileId: destinationId,
+          migrationUsed: migrationValues.migrationUsed,
+        }
       );
       this.gameService.updateRemainingMigrations(DEFAULT_REMAINING_MIGRATIONS);
     }
@@ -623,6 +636,11 @@ export class AbilityService {
   public getAbilityFrDefinition(abilityId: AbilityId): string {
     const ability = this.getAbilityWithId(abilityId);
     return ability.fr.definition;
+  }
+
+  public getAbilityFrName(abilityId: AbilityId): string {
+    const ability = this.getAbilityWithId(abilityId);
+    return ability.fr.name;
   }
 
   private getAbilityWithId(abilityId: AbilityId): Ability {

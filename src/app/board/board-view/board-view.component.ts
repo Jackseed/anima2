@@ -39,17 +39,16 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   public isAnimationPlaying$: Observable<boolean> =
     this.playerQuery.isAnimationPlaying$;
   public isGameFinished$: Observable<boolean> = this.gameQuery.isGameFinished$;
-  public lastAction$: Observable<Action> = this.gameQuery.lastAction$;
+  public actionMessage$: Observable<string> = this.gameQuery.actionMessage$;
 
   // Subscriptions
-  private activeSpeciesSub: Subscription = this.playService.setActiveSpeciesSub;
-  private startGameSub: Subscription =
-    this.playService.reApplyTileChoiceStateSub;
-  private isPlayerChoosingAbilitySub: Subscription =
-    this.playService.getPlayerChoosingAbilitySub;
-  private switchToNextStartStateSub: Subscription =
-    this.playService.switchToNextStartStageWhenPlayersReadySub;
-  private zoomOutSub: Subscription = this.zoomOutSubscription;
+  private activeSpeciesSub: Subscription;
+  private startGameSub: Subscription;
+  private isPlayerChoosingAbilitySub: Subscription;
+  private switchToNextStartStateSub: Subscription;
+  private zoomOutSub: Subscription;
+  private activateActionMessageSub: Subscription;
+  private displayActionMessageSub: Subscription;
 
   constructor(
     private userQuery: UserQuery,
@@ -65,7 +64,24 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.lastAction$.subscribe((_) => console.log(_));
+    this.actionMessage$.subscribe((_) => console.log(_));
+    // Subscriptions init
+    this.displayActionMessageSub = this.actionMessage$.subscribe((message) => {
+      if (message) {
+        this.snackbar.open(message, null, {
+          duration: 3000,
+          panelClass: 'orange-snackbar',
+        });
+      }
+    });
+    this.activeSpeciesSub = this.playService.setActiveSpeciesSub;
+    this.startGameSub = this.playService.reApplyTileChoiceStateSub;
+    this.isPlayerChoosingAbilitySub =
+      this.playService.getPlayerChoosingAbilitySub;
+    this.switchToNextStartStateSub =
+      this.playService.switchToNextStartStageWhenPlayersReadySub;
+    this.zoomOutSub = this.zoomOutSubscription;
+    this.activateActionMessageSub = this.playService.messageActionToOpponentSub;
   }
 
   private get zoomOutSubscription(): Subscription {
@@ -92,6 +108,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     if (!this.playerQuery.isPlayerPlaying(this.playingPlayerId))
       return this.snackbar.open("Ce n'est pas votre tour.", null, {
         duration: 3000,
+        panelClass: 'orange-snackbar',
       });
 
     // Migration
@@ -134,5 +151,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.startGameSub.unsubscribe();
     this.isPlayerChoosingAbilitySub.unsubscribe();
     this.zoomOutSub.unsubscribe();
+    this.activateActionMessageSub.unsubscribe();
+    this.displayActionMessageSub.unsubscribe();
   }
 }

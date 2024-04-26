@@ -100,6 +100,7 @@ export interface ActionData {
   sacrificedQuantity?: number;
   assimilatedQuantity?: number;
   movedQuantity?: number;
+  migrationUsed?: number;
 }
 
 export interface TileChoice {
