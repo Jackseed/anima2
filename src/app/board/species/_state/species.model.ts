@@ -47,7 +47,7 @@ export const BASIC_ACTIONS = [
   'proliferation',
   'adaptation',
 ];
-export const ACTIVE_ACTIONS = ['rallying'];
+export const ACTIVE_ACTIONS = ['rallying', 'intimidate'];
 
 export const GAME_ACTIONS = BASIC_ACTIONS.concat(ACTIVE_ACTIONS);
 export type BasicAction = (typeof BASIC_ACTIONS)[number];

@@ -85,7 +85,13 @@ export class AbilityService {
 
     // Updates remainingActions if that's the last remainingAction.
     if (migrationValues.migrationUsed === remainginMigrations) {
-      this.gameService.updateRemainingActions();
+      this.gameService.completePlayerAction(
+        activeSpecies.playerId,
+        activeSpecies.id,
+        'migration',
+        previousTileId,
+        { targetedTileId: destinationId }
+      );
       this.gameService.updateRemainingMigrations(DEFAULT_REMAINING_MIGRATIONS);
     }
   }
@@ -173,9 +179,8 @@ export class AbilityService {
   // Proliferates on active tile or specific tileId if set.
   public async proliferate(tileId?: number) {
     const activeSpecies = this.speciesQuery.getActive();
-    const proliferationTileId = tileId
-      ? tileId
-      : Number(this.tileQuery.getActiveId());
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const proliferationTileId = tileId ? tileId : activeTileId;
     const proliferationValues = this.applyProliferationAbilities(true);
 
     this.tileService.removeActive();
@@ -189,7 +194,16 @@ export class AbilityService {
       }) as Promise<void>
     )
       .then(() => {
-        this.gameService.updateRemainingActions();
+        this.gameService.completePlayerAction(
+          activeSpecies.playerId,
+          activeSpecies.id,
+          'proliferation',
+          activeTileId,
+          {
+            targetedTileId: proliferationTileId,
+            createdQuantity: proliferationValues.createdQuantity,
+          }
+        );
         this.snackbar.open('Prolifération effectuée !', null, {
           duration: 800,
           panelClass: 'orange-snackbar',
@@ -249,7 +263,20 @@ export class AbilityService {
             quantity: assimilationValues.createdQuantity,
             destinationId: activeTileId,
           }) as Promise<void>
-        ).then((_) => this.gameService.updateRemainingActions());
+        ).then((_) =>
+          this.gameService.completePlayerAction(
+            activeSpecies.playerId,
+            activeSpecies.id,
+            'assimilation',
+            activeTileId,
+            {
+              targetedTileId: removedTileId,
+              assimilatedQuantity: assimilationValues.assimilatedQuantity,
+              createdQuantity: assimilationValues.createdQuantity,
+              targetedSpeciesId: removedSpeciesId,
+            }
+          )
+        );
       });
   }
 
@@ -394,7 +421,7 @@ export class AbilityService {
       batch
     );
 
-    // If the game isn't started, count adaptation as an action.
+    // If the game isn't starting, count adaptation as an action.
     if (!isGameStarting) {
       const activeTileId = Number(this.tileQuery.getActiveId());
       // Removes the sacrified species.
@@ -408,7 +435,17 @@ export class AbilityService {
       ) as firebase.firestore.WriteBatch;
 
       // Decounts an action.
-      batch = await this.gameService.updateRemainingActions(batch);
+      batch = await this.gameService.completePlayerAction(
+        adaptingSpecies.playerId,
+        adaptingSpecies.id,
+        'adaptation',
+        activeTileId,
+        {
+          sacrificedQuantity: ADAPATION_SPECIES_NEEDED,
+          targetedAbilityId: ability.id,
+        },
+        batch
+      );
     }
 
     batch
@@ -453,7 +490,13 @@ export class AbilityService {
       }) as Promise<void>
     ).then((_) => {
       // TODO: factorize this
-      this.gameService.updateRemainingActions();
+      this.gameService.completePlayerAction(
+        activeSpecies.playerId,
+        activeSpecies.id,
+        'rallying',
+        ralliedTileId,
+        { targetedTileId: activeTileId, movedQuantity: movingQuantity }
+      );
       this.snackbar.open('Cri de ralliement effectué !', null, {
         duration: 800,
         panelClass: 'orange-snackbar',
@@ -511,8 +554,11 @@ export class AbilityService {
       tileId,
       intimidateValue
     );
-    const randomAdjacentTileId =
+    let randomAdjacentTileId =
       adjacentTileIds[Math.floor(Math.random() * adjacentTileIds.length)];
+    if (randomAdjacentTileId === tileId)
+      return this.intimidate(intimidatedSpecies, tileId);
+
     // Moves the same quantity as the active species.
     const movingQuantity =
       activeTileSpecies.quantity > intimidatedSpecies.quantity
@@ -525,7 +571,17 @@ export class AbilityService {
       destinationId: randomAdjacentTileId,
       previousTileId: tileId,
     });
-    this.gameService.updateRemainingActions();
+    this.gameService.completePlayerAction(
+      activeTileSpecies.playerId,
+      activeTileSpecies.id,
+      'intimidate',
+      tileId,
+      {
+        targetedSpeciesId: intimidatedSpecies.id,
+        targetedTileId: randomAdjacentTileId,
+        movedQuantity: movingQuantity,
+      }
+    );
   }
 
   // UTILS - Checks species quantity on a tile.

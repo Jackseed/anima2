@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 
 // States
 import { GameStore, GameState, GameUIState, GameUI } from './game.store';
-import { StartStage } from '.';
+import { StartStage, Action } from '.';
 
 @Injectable({ providedIn: 'root' })
 export class GameQuery extends QueryEntity<GameState> {
@@ -90,5 +90,9 @@ export class GameQuery extends QueryEntity<GameState> {
 
   public get winnerId$(): Observable<string> {
     return this.selectActive().pipe(map((game) => game?.winnerId));
+  }
+
+  public get lastAction$(): Observable<Action> {
+    return this.selectActive().pipe(map((game) => game?.lastAction));
   }
 }

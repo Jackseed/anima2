@@ -1,5 +1,5 @@
 import firebase from 'firebase/app';
-import { Ability, AbilityId } from 'src/app/board/species/_state';
+import { Ability, AbilityId, GameAction } from 'src/app/board/species/_state';
 
 // TESTING
 export const isTesting = false;
@@ -81,6 +81,25 @@ export interface Game {
   tileChoices: TileChoice[];
   isFinished: boolean;
   winnerId?: string;
+  lastAction?: Action;
+}
+
+export interface Action {
+  playerId: string;
+  speciesId: string;
+  action: GameAction;
+  originTileId: number;
+  data?: ActionData;
+}
+
+export interface ActionData {
+  targetedTileId?: number;
+  targetedSpeciesId?: string;
+  targetedAbilityId?: AbilityId;
+  createdQuantity?: number;
+  sacrificedQuantity?: number;
+  assimilatedQuantity?: number;
+  movedQuantity?: number;
 }
 
 export interface TileChoice {

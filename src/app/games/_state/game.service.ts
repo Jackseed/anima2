@@ -25,6 +25,7 @@ import {
   RED_SECOND_COLORS,
   GREEN_SECOND_COLORS,
   Game,
+  ActionData,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -39,6 +40,7 @@ import {
   ABILITIES,
   Ability,
   createSpecies,
+  GameAction,
   neutrals,
   Species,
 } from 'src/app/board/species/_state/species.model';
@@ -349,13 +351,47 @@ export class GameService extends CollectionService<GameState> {
     });
   }
 
-  public async updateRemainingActions(
+  public async completePlayerAction(
+    playerId: string,
+    speciesId: string,
+    action: GameAction,
+    originTileId: number,
+    actionData: ActionData,
     existingBatch?: firebase.firestore.WriteBatch
   ) {
     let batch = existingBatch || this.db.firestore.batch();
     const game = this.query.getActive();
-    const isLastAction = this.query.isLastAction;
     const gameRef = this.db.collection('games').doc(game.id).ref;
+
+    // Save the last action details.
+    const lastAction = {
+      playerId,
+      speciesId,
+      action,
+      originTileId,
+      actionData,
+    };
+    batch.update(gameRef, { lastAction });
+
+    // Update remaining actions
+    batch = (await this.updateRemainingActions(
+      batch
+    )) as firebase.firestore.WriteBatch;
+
+    if (existingBatch) return batch;
+
+    batch.commit().catch((error) => {
+      console.log('Processing player action failed: ', error);
+    });
+  }
+
+  public async updateRemainingActions(
+    existingBatch?: firebase.firestore.WriteBatch
+  ) {
+    const game = this.query.getActive();
+    const gameRef = this.db.collection('games').doc(game.id).ref;
+    let batch = existingBatch || this.db.firestore.batch();
+    const isLastAction = this.query.isLastAction;
 
     if (isLastAction) {
       batch = await this.handleLastAction(gameRef, batch);
@@ -364,10 +400,11 @@ export class GameService extends CollectionService<GameState> {
       const remainingActions = firebase.firestore.FieldValue.increment(-1);
       batch.update(gameRef, { remainingActions });
     }
+
     if (existingBatch) return batch;
 
-    batch.commit().catch((error) => {
-      console.log('Updating remaining actions failed: ', error);
+    return batch.commit().catch((error) => {
+      console.log('Update remaining action failed: ', error);
     });
   }
 
