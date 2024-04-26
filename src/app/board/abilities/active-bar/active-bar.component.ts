@@ -51,6 +51,6 @@ export class ActiveBarComponent implements OnInit {
   }
 
   public stopRallying() {
-    this.tileService.removeRallyable();
+    this.tileService.removeProperty('isRallyable');
   }
 }

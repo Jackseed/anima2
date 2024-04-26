@@ -69,7 +69,7 @@ export class AbilityService {
     const remainginMigrations = this.remainingMigrations;
 
     this.tileService.removeActive();
-    this.tileService.removeReachable();
+    this.tileService.removeProperty('isReachable');
     this.speciesService.move({
       movingSpecies: activeSpecies,
       quantity: migrationValues.movingQuantity,
@@ -184,7 +184,7 @@ export class AbilityService {
     const proliferationValues = this.applyProliferationAbilities(true);
 
     this.tileService.removeActive();
-    this.tileService.removeProliferable();
+    this.tileService.removeProperty('isProliferable');
 
     (
       this.speciesService.move({
@@ -243,7 +243,7 @@ export class AbilityService {
       activeSpecies.id
     );
 
-    this.tileService.removeAttackable();
+    this.tileService.removeProperty('isAttackable');
 
     // Removes the assimilated species.
     (
@@ -479,7 +479,7 @@ export class AbilityService {
       ralliedTileId
     );
 
-    this.tileService.removeRallyable();
+    this.tileService.removeProperty('isRallyable');
 
     (
       this.speciesService.move({
@@ -510,7 +510,7 @@ export class AbilityService {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const adjacentActiveSpeciesTileIds =
       this.speciesQuery.adjacentActiveSpeciesTileIds(activeTileId, range);
-    this.tileService.markAsRallyable(adjacentActiveSpeciesTileIds);
+    this.tileService.markTiles(adjacentActiveSpeciesTileIds, 'isRallyable');
   }
 
   public isRallyingValid(selectedTileId: number): boolean {
@@ -543,7 +543,7 @@ export class AbilityService {
       ),
     ];
 
-    this.tileService.markAsReachable(activeSpeciesPossibleTileIds);
+    this.tileService.markTiles(activeSpeciesPossibleTileIds, 'isReachable');
   }
 
   // Moves a species to a random adjacent tile.
@@ -803,7 +803,7 @@ export class AbilityService {
       );
       inRangeTileIds.push(activeTileId);
 
-      this.tileService.markAsProliferable(inRangeTileIds);
+      this.tileService.markTiles(inRangeTileIds, 'isProliferable');
     }
 
     return updatedValues;

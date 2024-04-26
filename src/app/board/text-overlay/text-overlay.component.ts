@@ -261,8 +261,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
       const game = this.gameQuery.getActive();
       if (game.startStage === 'tileChoice') return;
       this.tileService.removeActive();
-      this.tileService.removeReachable();
-      this.tileService.removeAttackable();
+      this.tileService.removeProperty('isReachable');
+      this.tileService.removeProperty('isAttackable');
     }
   }
 

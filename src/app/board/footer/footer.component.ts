@@ -61,8 +61,10 @@ export class FooterComponent implements OnInit {
   }
 
   public async stopAction(action: BasicAction) {
-    if (action === 'assimilation') this.tileService.removeAttackable();
-    if (action === 'migration') this.tileService.removeReachable();
-    if (action === 'proliferation') this.tileService.removeProliferable();
+    if (action === 'assimilation')
+      this.tileService.removeProperty('isAttackable');
+    if (action === 'migration') this.tileService.removeProperty('isReachable');
+    if (action === 'proliferation')
+      this.tileService.removeProperty('isProliferable');
   }
 }

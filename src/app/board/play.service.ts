@@ -274,11 +274,11 @@ export class PlayService {
     const attackableTileIds = weakerInRangeSpecies.map(
       (species) => species.tileId
     );
-    this.tileService.markAsAttackable(attackableTileIds);
+    this.tileService.markTiles(attackableTileIds, 'isAttackable');
   }
 
   public openAssimilationMenu(attackedTileId: number): Promise<void> {
-    this.tileService.removeAttackable();
+    this.tileService.removeProperty('isAttackable');
     const attackedTile = this.tileQuery.getEntity(attackedTileId.toString());
     const attackingTileSpecies = this.speciesQuery.activeTileSpecies;
     const attackableSpecies = this.abilityService.getWeakerInRangeSpecies(

@@ -198,8 +198,8 @@ export class TileService extends CollectionService<TileState> {
   }
 
   public selectTile(tileId: number) {
-    this.removeReachable();
-    this.removeAttackable();
+    this.removeProperty('isReachable');
+    this.removeProperty('isAttackable');
     this.setActive(tileId);
   }
 
@@ -218,7 +218,7 @@ export class TileService extends CollectionService<TileState> {
       // Updates tiles UI with their range.
       this.updateRange
     );
-    this.markAsReachable(adjacentReacheableTileIds);
+    this.markTiles(adjacentReacheableTileIds, 'isReachable');
   }
 
   // Gets adjacent tile ids within a given range.
@@ -263,57 +263,29 @@ export class TileService extends CollectionService<TileState> {
     return resultTileIds;
   }
 
-  // TODO: factorize these functions ?
   public markAllTilesReachable(): void {
     const tiles = this.query.getAll({
       filterBy: (tile) => tile.type !== 'blank',
     });
     const tileIds = tiles.map((tile) => tile.id);
-    this.markAsReachable(tileIds);
+
+    this.markTiles(tileIds, 'isReachable');
   }
 
-  public markAsReachable(tileIds: number[]) {
-    this.store.update(
-      tileIds.map((id) => id.toString()),
-      { isReachable: true }
-    );
-  }
-
-  public markAsAttackable(tileIds: number[]) {
+  public markTiles(
+    tileIds: number[],
+    property: 'isReachable' | 'isAttackable' | 'isProliferable' | 'isRallyable'
+  ) {
     this.store.update(
       tileIds.map((id) => id?.toString()),
-      { isAttackable: true }
+      { [property]: true }
     );
   }
 
-  public markAsProliferable(tileIds: number[]) {
-    this.store.update(
-      tileIds.map((id) => id?.toString()),
-      { isProliferable: true }
-    );
-  }
-
-  public markAsRallyable(tileIds: number[]) {
-    this.store.update(
-      tileIds.map((id) => id?.toString()),
-      { isRallyable: true }
-    );
-  }
-
-  public removeReachable() {
-    this.store.update(null, { isReachable: false });
-  }
-
-  public removeAttackable() {
-    this.store.update(null, { isAttackable: false });
-  }
-
-  public removeProliferable() {
-    this.store.update(null, { isProliferable: false });
-  }
-
-  public removeRallyable() {
-    this.store.update(null, { isRallyable: false });
+  public removeProperty(
+    property: 'isReachable' | 'isAttackable' | 'isProliferable' | 'isRallyable'
+  ) {
+    this.store.update(null, { [property]: false });
   }
 
   public updateRange(
