@@ -85,10 +85,12 @@ export interface Game {
 }
 
 export interface Action {
+  id: string;
   playerId: string;
   speciesId: string;
   action: GameAction;
   originTileId: number;
+  isShown: boolean;
   data?: ActionData;
 }
 

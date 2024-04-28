@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 // States
 import {
+  Action,
   DEFAULT_FIRST_PLAYER_SPECIES_AMOUNT,
   DEFAULT_SPECIES_AMOUNT,
   GameQuery,
@@ -348,52 +349,76 @@ export class PlayService {
   }
 
   public get messageActionToOpponentSub(): Subscription {
-    const isPlaying$ = this.playerQuery.isActivePlayerPlaying$;
+    const activePlayerId$ = this.playerQuery.selectActiveId();
     const lastAction$ = this.gameQuery.lastAction$;
+    let messageShown = false;
+    let previousActionId = null;
 
-    return combineLatest([isPlaying$, lastAction$])
+    return combineLatest([activePlayerId$, lastAction$])
       .pipe(
-        tap(([isPlaying, action]) => {
-          if (!isPlaying) {
-            const playedTiles = action.data?.targetedTileId
-              ? [action.originTileId, action.data.targetedTileId]
-              : [action.originTileId];
+        tap(([activePlayerId, action]) => {
+          if (!action || (action.isShown && action.id === previousActionId))
+            return;
 
-            // Mark tiles as played
-            this.tileService.markTiles(playedTiles, 'isPlayed');
-            console.log(action);
-
-            // Send message to opponent
-            let message = '';
-            if (action.action === 'migration') {
-              message = `${action.data.migrationUsed} déplacements effectués`;
-            } else if (action.action === 'assimilation') {
-              const assimilatingSpecies = this.speciesQuery.getEntity(
-                action.speciesId
-              );
-              const assimilatedSpecies = this.speciesQuery.getEntity(
-                action.data.targetedSpeciesId
-              );
-              message = `${action.data.assimilatedQuantity} ${assimilatedSpecies.abilities[0].fr.name} assimilées. ${action.data.createdQuantity} ${assimilatingSpecies.abilities[0].fr.name} créées.`;
-            } else if (action.action === 'proliferation') {
-              message = `${action.data.createdQuantity} âmes créées.`;
-            } else if (action.action === 'adaptation') {
-              const abilityName = this.abilityService.getAbilityFrName(
-                action.data.targetedAbilityId
-              );
-              message = `${abilityName} obtenu`;
-            } else if (action.action === 'rallying') {
-              message = `${action.data.movedQuantity} ralliées`;
-            } else if (action.action === 'intimidate') {
-              const intimidatedSpecies = this.speciesQuery.getEntity(
-                action.data.targetedSpeciesId
-              );
-              message = `${action.data.movedQuantity} ${intimidatedSpecies.abilities[0].fr.name} intimidées`;
-            }
-            this.gameService.updateActionMessage(message);
+          // Reset messageShown if a new action is written
+          if (action.id !== previousActionId) {
+            messageShown = false;
+            previousActionId = action.id;
           }
+          if (activePlayerId == action.playerId || messageShown) return;
+          
+          const playedTiles = action.data.targetedTileId
+            ? [action.originTileId, action.data.targetedTileId]
+            : [action.originTileId];
+
+          // Mark tiles as played
+          this.tileService.markTiles(playedTiles, 'isPlayed');
+
+          // Send message to opponent
+          const message = this.actionMessage(action);
+          this.gameService.updateActionMessage(message);
+
+          // Clear
+          this.gameService.updateLastActionShown(true);
+          messageShown = true;
+
+          setTimeout(() => {
+            this.tileService.removeProperty('isPlayed');
+          }, 3500);
         })
       )
       .subscribe();
+  }
+
+  private actionMessage(action: Action): string {
+    let message = '';
+    if (action.action === 'migration') {
+      message = `${action.data.migrationUsed} déplacements effectués`;
+    } else if (action.action === 'assimilation') {
+      const targetedSpeciesName = this.speciesQuery.getEntity(
+        action.data.targetedSpeciesId
+      ).abilities[0].fr.name;
+      message = `${Math.abs(
+        action.data.assimilatedQuantity
+      )} ${targetedSpeciesName} assimilées.`;
+    } else if (action.action === 'proliferation') {
+      const actionSpeciesName = this.speciesQuery.getEntity(action.speciesId)
+        .abilities[0].fr.name;
+      message = `${action.data.createdQuantity} ${actionSpeciesName} créées.`;
+    } else if (action.action === 'adaptation') {
+      const abilityName = this.abilityService.getAbilityFrName(
+        action.data.targetedAbilityId
+      );
+      message = `${abilityName} obtenu`;
+    } else if (action.action === 'rallying') {
+      message = `${action.data.movedQuantity} ralliées`;
+    } else if (action.action === 'intimidate') {
+      const intimidatedSpecies = this.speciesQuery.getEntity(
+        action.data.targetedSpeciesId
+      );
+      message = `${action.data.movedQuantity} ${intimidatedSpecies.abilities[0].fr.name} intimidées`;
+    }
+
+    return message;
   }
 }

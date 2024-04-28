@@ -64,7 +64,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.actionMessage$.subscribe((_) => console.log(_));
     // Subscriptions init
     this.displayActionMessageSub = this.actionMessage$.subscribe((message) => {
       if (message) {
