@@ -366,7 +366,7 @@ export class PlayService {
             previousActionId = action.id;
           }
           if (activePlayerId == action.playerId || messageShown) return;
-          
+
           const playedTiles = action.data.targetedTileId
             ? [action.originTileId, action.data.targetedTileId]
             : [action.originTileId];
@@ -393,32 +393,87 @@ export class PlayService {
   private actionMessage(action: Action): string {
     let message = '';
     if (action.action === 'migration') {
-      message = `${action.data.migrationUsed} déplacements effectués`;
+      const déplacement = this.getPluralForm(
+        action.data.migrationUsed,
+        'déplacement'
+      );
+
+      const effectué = this.getPluralForm(
+        action.data.migrationUsed,
+        'effectué'
+      );
+      message = `${action.data.migrationUsed} ${déplacement} ${effectué}`;
     } else if (action.action === 'assimilation') {
-      const targetedSpeciesName = this.speciesQuery.getEntity(
+      const targetedSpecies = this.speciesQuery.getEntity(
         action.data.targetedSpeciesId
-      ).abilities[0].fr.name;
+      ).abilities[0];
+      const targetedSpeciesName = targetedSpecies.fr.name;
+      const speciesName = this.getPluralForm(
+        Math.abs(action.data.assimilatedQuantity),
+        targetedSpeciesName
+      );
+      const assimilé = this.getPluralForm(
+        Math.abs(action.data.assimilatedQuantity),
+        this.getGenderedForm('assimilé', targetedSpecies.fr.genre)
+      );
+
       message = `${Math.abs(
         action.data.assimilatedQuantity
-      )} ${targetedSpeciesName} assimilées.`;
+      )} ${speciesName} ${assimilé}.`;
     } else if (action.action === 'proliferation') {
-      const actionSpeciesName = this.speciesQuery.getEntity(action.speciesId)
-        .abilities[0].fr.name;
-      message = `${action.data.createdQuantity} ${actionSpeciesName} créées.`;
+      const actionSpecies = this.speciesQuery.getEntity(action.speciesId)
+        .abilities[0];
+      const actionSpeciesName = actionSpecies.fr.name;
+      const speciesName = this.getPluralForm(
+        action.data.createdQuantity,
+        actionSpeciesName
+      );
+      const créé = this.getPluralForm(
+        action.data.createdQuantity,
+        this.getGenderedForm('créé', actionSpecies.fr.genre)
+      );
+      message = `${action.data.createdQuantity} ${speciesName} ${créé}.`;
     } else if (action.action === 'adaptation') {
       const abilityName = this.abilityService.getAbilityFrName(
         action.data.targetedAbilityId
       );
-      message = `${abilityName} obtenu`;
+      const obtenu = this.getGenderedForm(
+        'obtenu',
+        this.abilityService.getAbilityFrGenre(action.data.targetedAbilityId)
+      );
+      message = `${abilityName} ${obtenu}.`;
     } else if (action.action === 'rallying') {
-      message = `${action.data.movedQuantity} ralliées`;
+      const actionSpecies = this.speciesQuery.getEntity(action.speciesId)
+        .abilities[0];
+      const actionSpeciesName = actionSpecies.fr.name;
+      const rallié = this.getPluralForm(
+        action.data.movedQuantity,
+        this.getGenderedForm('rallié', actionSpecies.fr.genre)
+      );
+      message = `${action.data.movedQuantity} ${actionSpeciesName} ${rallié}`;
     } else if (action.action === 'intimidate') {
       const intimidatedSpecies = this.speciesQuery.getEntity(
         action.data.targetedSpeciesId
+      ).abilities[0];
+      const speciesName = this.getPluralForm(
+        action.data.movedQuantity,
+        intimidatedSpecies.fr.name
       );
-      message = `${action.data.movedQuantity} ${intimidatedSpecies.abilities[0].fr.name} intimidées`;
+      const intimidé = this.getPluralForm(
+        action.data.movedQuantity,
+        this.getGenderedForm('intimidé', intimidatedSpecies.fr.genre)
+      );
+      message = `${action.data.movedQuantity} ${speciesName} ${intimidé}`;
     }
 
     return message;
+  }
+
+  private getPluralForm(quantity: number, word: string): string {
+    return quantity > 1 ? word + 's' : word;
+  }
+
+  private getGenderedForm(word: string, genre: string): string {
+    return genre === 'f' ? word + 'e' : word;
   }
 }

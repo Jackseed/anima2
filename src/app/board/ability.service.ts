@@ -293,8 +293,8 @@ export class AbilityService {
       attackingSpecies: activeSpecies,
     };
     this.speciesService.move(removeParams, batch);
-    // Adds quantity to the assimilating species after getting the updated tile.
 
+    // Adds quantity to the assimilating species after getting the updated tile.
     const activeTileId = Number(this.tileQuery.getActiveId());
     const addParams = {
       movingSpecies: activeSpecies,
@@ -671,6 +671,11 @@ export class AbilityService {
   public getAbilityFrName(abilityId: AbilityId): string {
     const ability = this.getAbilityWithId(abilityId);
     return ability.fr.name;
+  }
+
+  public getAbilityFrGenre(abilityId: AbilityId): string {
+    const ability = this.getAbilityWithId(abilityId);
+    return ability.fr.genre;
   }
 
   private getAbilityWithId(abilityId: AbilityId): Ability {
