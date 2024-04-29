@@ -116,6 +116,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public winner$: Observable<Player> = this.playerQuery.winner$;
   public loser$: Observable<Player> = this.playerQuery.loser$;
   public game$: Observable<Game> = this.gameQuery.selectActive();
+  public opponent$: Observable<Player> =
+    this.playerQuery.opponentSuperchargedWithSpecies$;
 
   // Subscriptions
   private animationSwitchSub: Subscription = this.animSwitchSub;
