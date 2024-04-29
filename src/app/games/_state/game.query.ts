@@ -6,7 +6,7 @@ import { EntityUIQuery, QueryEntity } from '@datorama/akita';
 
 // Rxjs
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 // States
 import { GameStore, GameState, GameUIState, GameUI } from './game.store';
@@ -64,7 +64,10 @@ export class GameQuery extends QueryEntity<GameState> {
 
   public get actionMessage$(): Observable<string> {
     const gameId = this.getActiveId();
-    return this.ui.selectEntity(gameId).pipe(map((ui) => ui.actionMessage));
+    return this.ui.selectEntity(gameId).pipe(
+      map((ui) => ui.actionMessage),
+      distinctUntilChanged()
+    );
   }
 
   public get remainingActionsArray$(): Observable<number[]> {

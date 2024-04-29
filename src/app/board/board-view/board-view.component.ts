@@ -48,7 +48,16 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   private switchToNextStartStateSub: Subscription;
   private zoomOutSub: Subscription;
   private activateActionMessageSub: Subscription;
-  private displayActionMessageSub: Subscription;
+  private displayActionMessageSub: Subscription = this.actionMessage$.subscribe(
+    (message) => {
+      if (message) {
+        this.snackbar.open(message, null, {
+          duration: 3000,
+          panelClass: 'orange-snackbar',
+        });
+      }
+    }
+  );
 
   constructor(
     private userQuery: UserQuery,
@@ -65,14 +74,6 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Subscriptions init
-    this.displayActionMessageSub = this.actionMessage$.subscribe((message) => {
-      if (message) {
-        this.snackbar.open(message, null, {
-          duration: 3000,
-          panelClass: 'orange-snackbar',
-        });
-      }
-    });
     this.activeSpeciesSub = this.playService.setActiveSpeciesSub;
     this.startGameSub = this.playService.reApplyTileChoiceStateSub;
     this.isPlayerChoosingAbilitySub =
