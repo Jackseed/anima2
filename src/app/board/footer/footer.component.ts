@@ -22,6 +22,8 @@ import { PlayerQuery, PlayerService } from '../players/_state';
 export class FooterComponent implements OnInit {
   public remainingMigrations$: Observable<number>;
   public basicActions = BASIC_ACTIONS;
+  public isPlayerPlaying$: Observable<boolean> =
+    this.playerQuery.isActivePlayerPlaying$;
 
   constructor(
     private tileService: TileService,
