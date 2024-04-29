@@ -6,50 +6,64 @@
     fxLayout="row"
     fxLayoutAlign="space-between center"
   >
-    <!------------------- ACTION BUTTON -------------------->
-    <article *ngFor="let action of basicActions">
-      <div
-        class="relative"
-        *ngIf="{
-          canActive:
-            (canActivateAction$(action) | async) &&
-            !(isAnotherActionActive$(action) | async),
-          isActive: (isActionActive$(action) | async)
-        } as activeObservables"
-      >
-        <button
-          class="buttons-with-close"
-          mat-icon-button
-          (click)="activeAction(action)"
-          [disabled]="!activeObservables.canActive"
-        >
-          <mat-icon
-            [svgIcon]="
-              activeObservables.isActive
-                ? action + '-active'
-                : activeObservables.canActive
-                ? action
-                : action + '-disable'
-            "
-          ></mat-icon>
-        </button>
+    <ng-container *ngIf="isPlayerPlaying$ | async; else dots">
+      <!------------------- ACTION BUTTON -------------------->
+      <article *ngFor="let action of basicActions">
         <div
-          *ngIf="activeObservables.canActive && action === 'migration'"
-          class="absolute circle"
-          fxLayoutAlign="center center"
+          class="relative"
+          *ngIf="{
+            canActive:
+              (canActivateAction$(action) | async) &&
+              !(isAnotherActionActive$(action) | async),
+            isActive: (isActionActive$(action) | async)
+          } as activeObservables"
         >
-          <div class="figures">{{ remainingMigrations$ | async }}</div>
+          <button
+            class="buttons-with-close"
+            mat-icon-button
+            (click)="activeAction(action)"
+            [disabled]="!activeObservables.canActive"
+          >
+            <mat-icon
+              [svgIcon]="
+                activeObservables.isActive
+                  ? action + '-active'
+                  : activeObservables.canActive
+                  ? action
+                  : action + '-disable'
+              "
+            ></mat-icon>
+          </button>
+          <div
+            *ngIf="activeObservables.canActive && action === 'migration'"
+            class="absolute circle"
+            fxLayoutAlign="center center"
+          >
+            <div class="figures">{{ remainingMigrations$ | async }}</div>
+          </div>
+          <button
+            *ngIf="activeObservables.canActive && activeObservables.isActive"
+            mat-icon-button
+            class="close-button"
+            (click)="stopAction(action)"
+          >
+            <mat-icon svgIcon="close-blur"></mat-icon>
+          </button>
         </div>
-        <button
-          *ngIf="activeObservables.canActive && activeObservables.isActive"
-          mat-icon-button
-          class="close-button"
-          (click)="stopAction(action)"
-        >
-          <mat-icon svgIcon="close-blur"></mat-icon>
-        </button>
-      </div>
-    </article>
+      </article>
+    </ng-container>
+    <ng-template #dots>
+      <article
+        fxFlexFill
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutGap="10px"
+      >
+        <mat-icon svgIcon="dot"></mat-icon>
+        <mat-icon svgIcon="dot"></mat-icon>
+        <mat-icon svgIcon="dot"></mat-icon>
+      </article>
+    </ng-template>
   </section>
   <aside fxFlexFill fxFlex="5" class="orange"></aside>
 </main>

@@ -47,7 +47,7 @@ export const BASIC_ACTIONS = [
   'proliferation',
   'adaptation',
 ];
-export const ACTIVE_ACTIONS = ['rallying'];
+export const ACTIVE_ACTIONS = ['rallying', 'intimidate'];
 
 export const GAME_ACTIONS = BASIC_ACTIONS.concat(ACTIVE_ACTIONS);
 export type BasicAction = (typeof BASIC_ACTIONS)[number];
@@ -149,6 +149,7 @@ export interface Ability {
   fr: {
     name: string;
     definition: string;
+    genre: 'm' | 'f';
   };
   value: number;
   requiredValue?: number;
@@ -165,6 +166,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Sporifère',
+      genre: 'm',
       definition:
         "L'espèce peut proliférer dans un rayon de deux cases autour des ceux à l’origine de la prolifération.",
     },
@@ -180,6 +182,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Sociale',
+      genre: 'f',
       definition:
         "Lorsque c'est possible, l'espèce se déplace par groupe de deux au lieu d'un pour le même nombre de points de déplacement.",
     },
@@ -196,6 +199,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Bombardière',
+      genre: 'f',
       definition:
         "L'espèce peut assimiler à une case de distance. L'individu créé l'est sur la case d'origine de l'assimilation.",
     },
@@ -217,7 +221,8 @@ export const ABILITIES: Ability[] = [
     value: 1000,
     type: 'passive',
   }, */,
-  {
+  ,
+  /*   {
     id: 'tunnel',
     en: {
       name: 'Tunnel',
@@ -226,12 +231,13 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Fouisseuse',
+      genre: 'f',
       definition:
         'Capacité active: permet de se déplacer à n’importe quel endroit où se trouve une autre espèce active.',
     },
     value: 2,
     type: 'active',
-  } /*
+  }  */ /*
   {
     id: 'nest',
     en: {
@@ -247,8 +253,7 @@ export const ABILITIES: Ability[] = [
     requiredValue: 4,
     value: 1,
     type: 'passive',
-  }, */,
-  {
+  }, */ {
     id: 'flying',
     en: {
       name: 'Flying',
@@ -257,6 +262,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Ailée',
+      genre: 'f',
       definition:
         "L'espèce dispose de deux points de déplacements supplémentaires.",
     },
@@ -272,6 +278,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Gigantesque',
+      genre: 'm',
       definition:
         "L’espèce dispose d’un point de résistance supplémentaire lorsqu’elle est menacée d'assimilation.",
     },
@@ -287,6 +294,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Vorace',
+      genre: 'm',
       definition: 'L’espèce assimile ses proies par trois au lieu de deux.',
     },
     value: -1,
@@ -316,6 +324,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Stridulante',
+      genre: 'f',
       definition:
         'Capacité activée: l’espèce peut déplacer autant d’individus d’une autre espèce qui partage la même position.',
     },
@@ -346,6 +355,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Carnassière',
+      genre: 'f',
       definition:
         "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
     },
@@ -361,6 +371,7 @@ export const ABILITIES: Ability[] = [
     },
     fr: {
       name: 'Venimeuse',
+      genre: 'f',
       definition:
         'Lorsque l’espèce tente une assimilation, sa force est augmentée d’un point pour l’occasion.',
     },

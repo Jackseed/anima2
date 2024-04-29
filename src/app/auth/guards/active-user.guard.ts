@@ -17,8 +17,7 @@ export class ActiveUserGuard extends CollectionGuard<UserState> {
 
   sync() {
     return this.afAuth.user.pipe(
-      tap((user) => this.store.setActive(user.uid)),
-      switchMap((_) => this.service.syncCollection())
+      switchMap((user) => this.service.syncActive({ id: user.uid }))
     );
   }
 }

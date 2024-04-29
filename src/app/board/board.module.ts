@@ -60,6 +60,12 @@ export class BoardModule {
     private domSanitizer: DomSanitizer
   ) {
     // Registrating all board icons
+    this.matIconRegistry.addSvgIcon(
+      'dot',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/others/dot.svg'
+      )
+    );
 
     // HOURGLASS
     this.matIconRegistry.addSvgIcon(

@@ -72,17 +72,6 @@
     <h2>Choisissez une case <br />à rallier</h2>
   </article>
   <!------------ OTHER PLAYER PLAYING -------------->
-  <article
-    *ngIf="
-      !observables.isActivePlayerPlaying &&
-      !observables.isGameStarting &&
-      !observables.isAnimationPlaying &&
-      !observables.isGameFinished
-    "
-    class="top banner text-box"
-  >
-    <h2>Au tour <br />du joueur adverse...</h2>
-  </article>
 </main>
 
 <!------------ VISUAL OVERLAYS -------------->
@@ -308,6 +297,89 @@
     </div>
     <section class="banner text-box">
       <h2>C'est à vous !</h2>
+    </section>
+  </section>
+</article>
+
+<!------------ OPPONENT'S TURN ! -------------->
+<article
+  fxFlexFill
+  *ngIf="
+    !(isGameStarting$ | async) &&
+    !(isActivePlayerPlaying$ | async) &&
+    !(isAnimationPlaying$ | async) &&
+    !(isGameFinished$ | async)
+  "
+  class="fade-in-out visual-overlay"
+  style="--animation-duration: 2s; --animation-delay: 1s"
+>
+  <section fxFlexFill class="opacity"></section>
+  <section
+    fxFlexFill
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    class="absolute"
+  >
+    <div
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      *ngIf="opponent$ | async as opponent"
+    >
+      <div *ngIf="opponent.speciesIds.length > 1; else oneSpecies">
+        <section fxFlex="7.5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ opponent.species[0].colors.primary }};
+            --secondary-color: {{ opponent.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="opponent.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+        <section fxFlex="5"></section>
+        <section
+          fxFlex="40"
+          class="species relative"
+          style="
+            --primary-color: {{ opponent.species[1]?.colors.primary }};
+            --secondary-color: {{ opponent.species[1]?.colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="opponent.species[1]?.abilities[0]?.id"
+          ></mat-icon>
+        </section>
+      </div>
+
+      <ng-template #oneSpecies>
+        <section
+          fxFlexFill
+          class="species relative"
+          style="
+            --primary-color: {{ opponent.species[0].colors.primary }};
+            --secondary-color: {{ opponent.species[0].colors.secondary }};
+          "
+        >
+          <mat-icon fxFlexFill svgIcon="hex"></mat-icon>
+          <mat-icon
+            class="species-icon"
+            id="species-title"
+            [svgIcon]="opponent.species[0].abilities[0].id"
+          ></mat-icon>
+        </section>
+      </ng-template>
+    </div>
+    <section class="banner text-box">
+      <h2>Tour adverse</h2>
     </section>
   </section>
 </article>

@@ -66,28 +66,72 @@ export class AbilityService {
     const activeSpecies = this.speciesQuery.getActive();
     const previousTileId = Number(this.tileQuery.getActiveId());
     const migrationValues = this.getMigrationValues(destinationId);
-    const remainginMigrations = this.remainingMigrations;
+    const remainingMigrations = this.remainingMigrations;
 
-    this.tileService.removeActive();
-    this.tileService.removeReachable();
-    this.speciesService.move({
+    const moveParams = {
       movingSpecies: activeSpecies,
       quantity: migrationValues.movingQuantity,
       destinationId,
       previousTileId,
       migrationUsed: migrationValues.migrationUsed,
-    });
-    this.snackbar.open('Migration effectuée !', null, {
-      duration: 800,
-      panelClass: 'orange-snackbar',
-    });
-    this.tileService.resetRange();
+    };
 
-    // Updates remainingActions if that's the last remainingAction.
-    if (migrationValues.migrationUsed === remainginMigrations) {
-      this.gameService.updateRemainingActions();
-      this.gameService.updateRemainingMigrations(DEFAULT_REMAINING_MIGRATIONS);
+    let batch = this.db.firestore.batch();
+
+    this.prepareMigration();
+
+    this.speciesService.move(moveParams, batch);
+
+    this.completeMigration(
+      migrationValues.migrationUsed,
+      remainingMigrations,
+      activeSpecies,
+      previousTileId,
+      destinationId,
+      batch
+    );
+  }
+
+  private prepareMigration() {
+    this.tileService.removeActive();
+    this.tileService.removeProperty('isReachable');
+  }
+
+  private completeMigration(
+    migrationUsed: number,
+    remainingMigrations: number,
+    activeSpecies: Species,
+    previousTileId: number,
+    destinationId: number,
+    batch: firebase.firestore.WriteBatch
+  ) {
+    const actionParams = {
+      playerId: activeSpecies.playerId,
+      speciesId: activeSpecies.id,
+      action: 'migration',
+      originTileId: previousTileId,
+      data: {
+        targetedTileId: destinationId,
+        migrationUsed: migrationUsed,
+      },
+    };
+
+    if (migrationUsed === remainingMigrations) {
+      this.gameService.updateRemainingMigrations(
+        DEFAULT_REMAINING_MIGRATIONS,
+        batch
+      );
+      this.gameService.completePlayerAction(actionParams, batch);
+    } else {
+      this.gameService.saveLastAction(actionParams, batch);
+      batch.commit().catch((error) => console.log('Migration failed: ', error));
+      this.snackbar.open(`Migration effectuée !`, null, {
+        duration: 800,
+        panelClass: 'orange-snackbar',
+      });
     }
+
+    this.tileService.resetRange();
   }
 
   // MIGRATION - UTILS
@@ -173,31 +217,39 @@ export class AbilityService {
   // Proliferates on active tile or specific tileId if set.
   public async proliferate(tileId?: number) {
     const activeSpecies = this.speciesQuery.getActive();
-    const proliferationTileId = tileId
-      ? tileId
-      : Number(this.tileQuery.getActiveId());
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const proliferationTileId = tileId ? tileId : activeTileId;
     const proliferationValues = this.applyProliferationAbilities(true);
 
-    this.tileService.removeActive();
-    this.tileService.removeProliferable();
+    this.prepareProliferation();
 
-    (
-      this.speciesService.move({
-        movingSpecies: activeSpecies,
-        quantity: proliferationValues.createdQuantity,
-        destinationId: proliferationTileId,
-      }) as Promise<void>
-    )
-      .then(() => {
-        this.gameService.updateRemainingActions();
-        this.snackbar.open('Prolifération effectuée !', null, {
-          duration: 800,
-          panelClass: 'orange-snackbar',
-        });
-      })
-      .catch((error) => {
-        console.log('Proliferate failed: ', error);
-      });
+    const batch = this.db.firestore.batch();
+
+    const moveParams = {
+      movingSpecies: activeSpecies,
+      quantity: proliferationValues.createdQuantity,
+      destinationId: proliferationTileId,
+    };
+
+    this.speciesService.move(moveParams, batch);
+
+    const actionParams = {
+      playerId: activeSpecies.playerId,
+      speciesId: activeSpecies.id,
+      action: 'proliferation',
+      originTileId: activeTileId,
+      data: {
+        targetedTileId: proliferationTileId,
+        createdQuantity: proliferationValues.createdQuantity,
+      },
+    };
+
+    this.gameService.completePlayerAction(actionParams, batch);
+  }
+
+  private prepareProliferation() {
+    this.tileService.removeActive();
+    this.tileService.removeProperty('isProliferable');
   }
 
   // PROLIFERATION - UTILS
@@ -223,34 +275,58 @@ export class AbilityService {
   // Removes one species from a tile and adds one to the active species.
   public async assimilate(removedSpeciesId: string, removedTileId: number) {
     const removedSpecies = this.speciesQuery.getEntity(removedSpeciesId);
+    const removedSpeciesQuantity = this.tileQuery.getTileSpeciesCount(
+      removedSpeciesId,
+      removedTileId
+    );
     const activeSpecies = this.speciesQuery.getActive();
     const assimilationValues = this.applyAssimilationAbilitiesToSpecies(
       createAssimilationValues(),
       activeSpecies.id
     );
+    const assimilatedQuantity =
+      Math.abs(assimilationValues.assimilatedQuantity) >
+      Math.abs(removedSpeciesQuantity)
+        ? -removedSpeciesQuantity
+        : assimilationValues.assimilatedQuantity;
 
-    this.tileService.removeAttackable();
+    this.tileService.removeProperty('isAttackable');
+
+    const batch = this.db.firestore.batch();
 
     // Removes the assimilated species.
-    (
-      this.speciesService.move({
-        movingSpecies: removedSpecies,
-        quantity: assimilationValues.assimilatedQuantity,
-        destinationId: removedTileId,
-        attackingSpecies: activeSpecies,
-      }) as Promise<void>
-    )
-      // Adds quantity to the assimilating species after getting the updated tile.
-      .then((_) => {
-        const activeTileId = Number(this.tileQuery.getActiveId());
-        (
-          this.speciesService.move({
-            movingSpecies: activeSpecies,
-            quantity: assimilationValues.createdQuantity,
-            destinationId: activeTileId,
-          }) as Promise<void>
-        ).then((_) => this.gameService.updateRemainingActions());
-      });
+    const removeParams = {
+      movingSpecies: removedSpecies,
+      quantity: assimilatedQuantity,
+      destinationId: removedTileId,
+      attackingSpecies: activeSpecies,
+    };
+    this.speciesService.move(removeParams, batch);
+
+    // Adds quantity to the assimilating species after getting the updated tile.
+    const activeTileId = Number(this.tileQuery.getActiveId());
+    const addParams = {
+      movingSpecies: activeSpecies,
+      quantity: assimilationValues.createdQuantity,
+      destinationId: activeTileId,
+    };
+
+    this.speciesService.move(addParams, batch);
+
+    const actionParams = {
+      playerId: activeSpecies.playerId,
+      speciesId: activeSpecies.id,
+      action: 'assimilation',
+      originTileId: activeTileId,
+      data: {
+        targetedTileId: removedTileId,
+        assimilatedQuantity,
+        createdQuantity: assimilationValues.createdQuantity,
+        targetedSpeciesId: removedSpeciesId,
+      },
+    };
+
+    this.gameService.completePlayerAction(actionParams, batch);
   }
 
   // ASSIMILATION - UTILS - Checks if it's a valid assimilation.
@@ -382,48 +458,51 @@ export class AbilityService {
     const isGameStarting = this.gameQuery.isStarting;
 
     // Updates game abilities used.
-    batch = this.gameService.saveAbilityUsedByBatch(ability, batch);
+    this.gameService.saveAbilityUsedByBatch(ability, batch);
 
     // Resets ability choices.
-    batch = this.playerService.resetAbilityChoicesByBatch(ability, batch);
+    this.playerService.resetAbilityChoicesByBatch(ability, batch);
 
     // Updates species doc with the new ability.
-    batch = this.speciesService.addAbilityToSpeciesByBatch(
+    this.speciesService.addAbilityToSpeciesByBatch(
       ability,
       adaptingSpecies,
       batch
     );
 
-    // If the game isn't started, count adaptation as an action.
+    // If the game isn't starting, count adaptation as an action.
     if (!isGameStarting) {
       const activeTileId = Number(this.tileQuery.getActiveId());
       // Removes the sacrified species.
-      batch = this.speciesService.move(
-        {
-          movingSpecies: adaptingSpecies,
-          quantity: -ADAPATION_SPECIES_NEEDED,
-          destinationId: activeTileId,
-        },
-        batch
-      ) as firebase.firestore.WriteBatch;
+      const moveParams = {
+        movingSpecies: adaptingSpecies,
+        quantity: -ADAPATION_SPECIES_NEEDED,
+        destinationId: activeTileId,
+      };
+      this.speciesService.move(moveParams, batch);
 
       // Decounts an action.
-      batch = await this.gameService.updateRemainingActions(batch);
-    }
-
-    batch
-      .commit()
-      .then(() => {
-        const activePlayerId = this.playerQuery.getActiveId();
-        if (isGameStarting)
+      const actionParams = {
+        playerId: adaptingSpecies.playerId,
+        speciesId: adaptingSpecies.id,
+        action: 'adaptation',
+        originTileId: activeTileId,
+        data: {
+          sacrificedQuantity: ADAPATION_SPECIES_NEEDED,
+          targetedAbilityId: ability.id,
+        },
+      };
+      this.gameService.completePlayerAction(actionParams, batch);
+    } else {
+      batch
+        .commit()
+        .then(() => {
+          const activePlayerId = this.playerQuery.getActiveId();
           this.playerQuery.switchReadyState([activePlayerId], true);
-        this.gameService.updateUiAdaptationMenuOpen(false);
-        this.snackbar.open(`${ability.fr.name} obtenu !`, null, {
-          duration: 800,
-          panelClass: 'orange-snackbar',
-        });
-      })
-      .catch((error) => console.log('Adapt failed: ', error));
+        })
+        .catch((error) => console.log('Adapt failed: ', error));
+    }
+    this.gameService.updateUiAdaptationMenuOpen(false);
   }
 
   // ACTIVE ABILITIES
@@ -433,6 +512,7 @@ export class AbilityService {
       .pipe(map((_) => this.isSpeciesAbilityValid(abilityId)));
   }
 
+  //TODO: factorize all the actions
   // Moves rallied species to the active tile species.
   public rallying(ralliedTileId: number) {
     const activeTileId = Number(this.tileQuery.getActiveId());
@@ -442,23 +522,31 @@ export class AbilityService {
       ralliedTileId
     );
 
-    this.tileService.removeRallyable();
+    this.tileService.removeProperty('isRallyable');
 
-    (
-      this.speciesService.move({
-        movingSpecies: activeSpecies,
-        quantity: movingQuantity,
-        destinationId: activeTileId,
-        previousTileId: ralliedTileId,
-      }) as Promise<void>
-    ).then((_) => {
-      // TODO: factorize this
-      this.gameService.updateRemainingActions();
-      this.snackbar.open('Cri de ralliement effectué !', null, {
-        duration: 800,
-        panelClass: 'orange-snackbar',
-      });
-    });
+    const batch = this.db.firestore.batch();
+
+    const moveParams = {
+      movingSpecies: activeSpecies,
+      quantity: movingQuantity,
+      destinationId: activeTileId,
+      previousTileId: ralliedTileId,
+    };
+
+    this.speciesService.move(moveParams, batch);
+
+    const actionParams = {
+      playerId: activeSpecies.playerId,
+      speciesId: activeSpecies.id,
+      action: 'rallying',
+      originTileId: ralliedTileId,
+      data: {
+        targetedTileId: activeTileId,
+        movedQuantity: movingQuantity,
+      },
+    };
+
+    this.gameService.completePlayerAction(actionParams, batch);
   }
 
   // Marks adjacent active species rallyable.
@@ -467,7 +555,7 @@ export class AbilityService {
     const activeTileId = Number(this.tileQuery.getActiveId());
     const adjacentActiveSpeciesTileIds =
       this.speciesQuery.adjacentActiveSpeciesTileIds(activeTileId, range);
-    this.tileService.markAsRallyable(adjacentActiveSpeciesTileIds);
+    this.tileService.markTiles(adjacentActiveSpeciesTileIds, 'isRallyable');
   }
 
   public isRallyingValid(selectedTileId: number): boolean {
@@ -500,7 +588,7 @@ export class AbilityService {
       ),
     ];
 
-    this.tileService.markAsReachable(activeSpeciesPossibleTileIds);
+    this.tileService.markTiles(activeSpeciesPossibleTileIds, 'isReachable');
   }
 
   // Moves a species to a random adjacent tile.
@@ -511,21 +599,41 @@ export class AbilityService {
       tileId,
       intimidateValue
     );
-    const randomAdjacentTileId =
+    let randomAdjacentTileId =
       adjacentTileIds[Math.floor(Math.random() * adjacentTileIds.length)];
+    if (randomAdjacentTileId === tileId)
+      return this.intimidate(intimidatedSpecies, tileId);
+
     // Moves the same quantity as the active species.
     const movingQuantity =
       activeTileSpecies.quantity > intimidatedSpecies.quantity
         ? intimidatedSpecies.quantity
         : activeTileSpecies.quantity;
 
-    await this.speciesService.move({
+    const batch = this.db.firestore.batch();
+
+    const moveParams = {
       movingSpecies: intimidatedSpecies,
       quantity: movingQuantity,
       destinationId: randomAdjacentTileId,
       previousTileId: tileId,
-    });
-    this.gameService.updateRemainingActions();
+    };
+
+    this.speciesService.move(moveParams, batch);
+
+    const actionParams = {
+      playerId: activeTileSpecies.playerId,
+      speciesId: activeTileSpecies.id,
+      action: 'intimidate',
+      originTileId: tileId,
+      data: {
+        targetedSpeciesId: intimidatedSpecies.id,
+        targetedTileId: randomAdjacentTileId,
+        movedQuantity: movingQuantity,
+      },
+    };
+
+    this.gameService.completePlayerAction(actionParams, batch);
   }
 
   // UTILS - Checks species quantity on a tile.
@@ -567,6 +675,16 @@ export class AbilityService {
   public getAbilityFrDefinition(abilityId: AbilityId): string {
     const ability = this.getAbilityWithId(abilityId);
     return ability.fr.definition;
+  }
+
+  public getAbilityFrName(abilityId: AbilityId): string {
+    const ability = this.getAbilityWithId(abilityId);
+    return ability.fr.name;
+  }
+
+  public getAbilityFrGenre(abilityId: AbilityId): string {
+    const ability = this.getAbilityWithId(abilityId);
+    return ability.fr.genre;
   }
 
   private getAbilityWithId(abilityId: AbilityId): Ability {
@@ -747,7 +865,7 @@ export class AbilityService {
       );
       inRangeTileIds.push(activeTileId);
 
-      this.tileService.markAsProliferable(inRangeTileIds);
+      this.tileService.markTiles(inRangeTileIds, 'isProliferable');
     }
 
     return updatedValues;

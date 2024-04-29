@@ -26,10 +26,12 @@
           swamps: tile.type === 'swamps',
           forests: tile.type === 'forests',
           selected: isActive(tile.id),
-          reachable: tile?.isReachable,
-          attackable: tile?.isAttackable,
-          proliferable: tile?.isProliferable,
-          rallyable: tile?.isRallyable
+          selectable:
+            tile?.isReachable ||
+            tile?.isAttackable ||
+            tile?.isProliferable ||
+            tile?.isRallyable ||
+            tile?.isPlayed
         }"
         (click)="play(i)"
       >

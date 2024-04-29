@@ -24,6 +24,7 @@ footer {
   bottom: 0;
   right: 0;
   height: 16%;
+  width: 100%;
 }
 
 #active-bar {
@@ -100,10 +101,7 @@ footer {
   position: absolute;
 }
 
-.reachable,
-.attackable,
-.proliferable,
-.rallyable {
+.selectable {
   z-index: 2;
   cursor: pointer;
   background: var(--color) !important;
@@ -114,10 +112,7 @@ footer {
     var(--anima-color) 100%
   ) !important;
 }
-.reachable:hover,
-.attackable:hover,
-.proliferable:hover,
-.rallyable:hover {
+.selectable:hover {
   opacity: 0.5;
 }
 

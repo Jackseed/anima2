@@ -11,6 +11,7 @@ import { Game } from './game.model';
 export type GameUI = {
   id: string;
   isAdaptationMenuOpen: boolean;
+  actionMessage: string;
 };
 
 export interface GameState
@@ -33,6 +34,7 @@ export class GameStore extends EntityStore<GameState> {
       {
         id: storeId,
         isAdaptationMenuOpen: false,
+        actionMessage: '',
       },
     ]);
     this.ui.setActive(storeId);

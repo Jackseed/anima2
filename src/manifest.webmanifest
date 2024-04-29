@@ -30,24 +30,6 @@
       "type": "image/png",
       "sizes": "128x128",
       "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icons/icon-192.webp",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icons/icon-256.webp",
-      "type": "image/png",
-      "sizes": "256x256",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icons/icon-512.webp",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
     }
   ]
 }

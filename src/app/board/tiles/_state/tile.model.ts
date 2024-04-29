@@ -11,6 +11,7 @@ export interface Tile {
   isAttackable?: boolean;
   isProliferable?: boolean;
   isRallyable?: boolean;
+  isPlayed?: boolean;
 }
 export const regionIds = [
   'rockies',
@@ -21,7 +22,7 @@ export const regionIds = [
   'islands',
   'blank',
 ] as const;
-export type RegionType = typeof regionIds[number];
+export type RegionType = (typeof regionIds)[number];
 
 export const cols = 12;
 export const lines = 13;

@@ -6,11 +6,11 @@ import { EntityUIQuery, QueryEntity } from '@datorama/akita';
 
 // Rxjs
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 // States
 import { GameStore, GameState, GameUIState, GameUI } from './game.store';
-import { StartStage } from '.';
+import { StartStage, Action } from '.';
 
 @Injectable({ providedIn: 'root' })
 export class GameQuery extends QueryEntity<GameState> {
@@ -62,6 +62,14 @@ export class GameQuery extends QueryEntity<GameState> {
     return this.ui.getEntity(gameId).isAdaptationMenuOpen;
   }
 
+  public get actionMessage$(): Observable<string> {
+    const gameId = this.getActiveId();
+    return this.ui.selectEntity(gameId).pipe(
+      map((ui) => ui.actionMessage),
+      distinctUntilChanged()
+    );
+  }
+
   public get remainingActionsArray$(): Observable<number[]> {
     return this.selectActive().pipe(
       map((game) => new Array(game.remainingActions))
@@ -90,5 +98,9 @@ export class GameQuery extends QueryEntity<GameState> {
 
   public get winnerId$(): Observable<string> {
     return this.selectActive().pipe(map((game) => game?.winnerId));
+  }
+
+  public get lastAction$(): Observable<Action> {
+    return this.selectActive().pipe(map((game) => game?.lastAction));
   }
 }

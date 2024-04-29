@@ -16,7 +16,7 @@ import { PlayerQuery } from '../players/_state';
 import { SpeciesQuery } from '../species/_state';
 import { Tile, TileQuery, TileService } from '../tiles/_state';
 import { AbilityService } from '../ability.service';
-import { GameQuery } from 'src/app/games/_state';
+import { Action, GameQuery } from 'src/app/games/_state';
 
 @Component({
   selector: 'app-board-view',
@@ -26,14 +26,20 @@ import { GameQuery } from 'src/app/games/_state';
 export class BoardViewComponent implements OnInit, OnDestroy {
   @ViewChild('myPinchZoom', { static: false }) myPinchZoom;
   // Variables
-  public playingPlayerId: string;
+  public playingPlayerId: string = this.userQuery.getActiveId();
 
   // Observables
-  public tiles$: Observable<Tile[]>;
-  public hasActiveAbility$: Observable<boolean>;
-  public activeAbilityNumber$: Observable<number>;
-  public isAnimationPlaying$: Observable<boolean>;
-  public isGameFinished$: Observable<boolean>;
+  public tiles$: Observable<Tile[]> = this.tileQuery
+    .selectAll()
+    .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
+  public hasActiveAbility$: Observable<boolean> =
+    this.speciesQuery.hasActiveSpeciesActiveAbility$;
+  public activeAbilityNumber$: Observable<number> =
+    this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
+  public isAnimationPlaying$: Observable<boolean> =
+    this.playerQuery.isAnimationPlaying$;
+  public isGameFinished$: Observable<boolean> = this.gameQuery.isGameFinished$;
+  public actionMessage$: Observable<string> = this.gameQuery.actionMessage$;
 
   // Subscriptions
   private activeSpeciesSub: Subscription;
@@ -41,6 +47,17 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   private isPlayerChoosingAbilitySub: Subscription;
   private switchToNextStartStateSub: Subscription;
   private zoomOutSub: Subscription;
+  private activateActionMessageSub: Subscription;
+  private displayActionMessageSub: Subscription = this.actionMessage$.subscribe(
+    (message) => {
+      if (message) {
+        this.snackbar.open(message, null, {
+          duration: 3000,
+          panelClass: 'orange-snackbar',
+        });
+      }
+    }
+  );
 
   constructor(
     private userQuery: UserQuery,
@@ -56,26 +73,15 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.playingPlayerId = this.userQuery.getActiveId();
-
-    // Observables init
-    this.tiles$ = this.tileQuery
-      .selectAll()
-      .pipe(map((tiles) => tiles.sort((a, b) => a.id - b.id)));
-    this.hasActiveAbility$ = this.speciesQuery.hasActiveSpeciesActiveAbility$;
-    this.activeAbilityNumber$ =
-      this.speciesQuery.activeSpeciesActiveAbilitiesNumber$;
-    this.isAnimationPlaying$ = this.playerQuery.isAnimationPlaying$;
-    this.isGameFinished$ = this.gameQuery.isGameFinished$;
-
     // Subscriptions init
-    this.switchToNextStartStateSub =
-      this.playService.switchToNextStartStageWhenPlayersReadySub;
     this.activeSpeciesSub = this.playService.setActiveSpeciesSub;
     this.startGameSub = this.playService.reApplyTileChoiceStateSub;
     this.isPlayerChoosingAbilitySub =
       this.playService.getPlayerChoosingAbilitySub;
+    this.switchToNextStartStateSub =
+      this.playService.switchToNextStartStageWhenPlayersReadySub;
     this.zoomOutSub = this.zoomOutSubscription;
+    this.activateActionMessageSub = this.playService.messageActionToOpponentSub;
   }
 
   private get zoomOutSubscription(): Subscription {
@@ -102,6 +108,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     if (!this.playerQuery.isPlayerPlaying(this.playingPlayerId))
       return this.snackbar.open("Ce n'est pas votre tour.", null, {
         duration: 3000,
+        panelClass: 'orange-snackbar',
       });
 
     // Migration
@@ -144,5 +151,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.startGameSub.unsubscribe();
     this.isPlayerChoosingAbilitySub.unsubscribe();
     this.zoomOutSub.unsubscribe();
+    this.activateActionMessageSub.unsubscribe();
+    this.displayActionMessageSub.unsubscribe();
   }
 }

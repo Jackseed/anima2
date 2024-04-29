@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 // States
 import {
+  Action,
   DEFAULT_FIRST_PLAYER_SPECIES_AMOUNT,
   DEFAULT_SPECIES_AMOUNT,
   GameQuery,
@@ -274,11 +275,11 @@ export class PlayService {
     const attackableTileIds = weakerInRangeSpecies.map(
       (species) => species.tileId
     );
-    this.tileService.markAsAttackable(attackableTileIds);
+    this.tileService.markTiles(attackableTileIds, 'isAttackable');
   }
 
   public openAssimilationMenu(attackedTileId: number): Promise<void> {
-    this.tileService.removeAttackable();
+    this.tileService.removeProperty('isAttackable');
     const attackedTile = this.tileQuery.getEntity(attackedTileId.toString());
     const attackingTileSpecies = this.speciesQuery.activeTileSpecies;
     const attackableSpecies = this.abilityService.getWeakerInRangeSpecies(
@@ -345,5 +346,139 @@ export class PlayService {
       autoFocus: false,
       restoreFocus: false,
     });
+  }
+
+  public get messageActionToOpponentSub(): Subscription {
+    const activePlayerId$ = this.playerQuery.selectActiveId();
+    const lastAction$ = this.gameQuery.lastAction$;
+    let messageShown = false;
+    let previousActionId = null;
+
+    return combineLatest([activePlayerId$, lastAction$])
+      .pipe(
+        tap(([activePlayerId, action]) => {
+          if (
+            !action ||
+            action.isShown ||
+            (action.isShown && action.id === previousActionId) ||
+            activePlayerId === action.playerId
+          )
+            return;
+
+          // Reset messageShown if a new action is written
+          if (action.id !== previousActionId) {
+            messageShown = false;
+            previousActionId = action.id;
+          }
+          if (messageShown) return;
+
+          const playedTiles = action.data.targetedTileId
+            ? [action.originTileId, action.data.targetedTileId]
+            : [action.originTileId];
+
+          // Mark tiles as played
+          this.tileService.markTiles(playedTiles, 'isPlayed');
+
+          // Send message to opponent
+          const message = this.actionMessage(action);
+          this.gameService.updateActionMessage(message);
+
+          // Clear
+          this.gameService.updateLastActionShown(true);
+          messageShown = true;
+
+          setTimeout(() => {
+            this.tileService.removeProperty('isPlayed');
+          }, 3500);
+        })
+      )
+      .subscribe();
+  }
+
+  private actionMessage(action: Action): string {
+    let message = '';
+    if (action.action === 'migration') {
+      const déplacement = this.getPluralForm(
+        action.data.migrationUsed,
+        'déplacement'
+      );
+
+      const effectué = this.getPluralForm(
+        action.data.migrationUsed,
+        'effectué'
+      );
+      message = `${action.data.migrationUsed} ${déplacement} ${effectué}`;
+    } else if (action.action === 'assimilation') {
+      const targetedSpecies = this.speciesQuery.getEntity(
+        action.data.targetedSpeciesId
+      ).abilities[0];
+      const targetedSpeciesName = targetedSpecies.fr.name;
+      const speciesName = this.getPluralForm(
+        Math.abs(action.data.assimilatedQuantity),
+        targetedSpeciesName
+      );
+      const assimilé = this.getPluralForm(
+        Math.abs(action.data.assimilatedQuantity),
+        this.getGenderedForm('assimilé', targetedSpecies.fr.genre)
+      );
+
+      message = `${Math.abs(
+        action.data.assimilatedQuantity
+      )} ${speciesName} ${assimilé}.`;
+    } else if (action.action === 'proliferation') {
+      const actionSpecies = this.speciesQuery.getEntity(action.speciesId)
+        .abilities[0];
+      const actionSpeciesName = actionSpecies.fr.name;
+      const speciesName = this.getPluralForm(
+        action.data.createdQuantity,
+        actionSpeciesName
+      );
+      const créé = this.getPluralForm(
+        action.data.createdQuantity,
+        this.getGenderedForm('créé', actionSpecies.fr.genre)
+      );
+      message = `${action.data.createdQuantity} ${speciesName} ${créé}.`;
+    } else if (action.action === 'adaptation') {
+      const abilityName = this.abilityService.getAbilityFrName(
+        action.data.targetedAbilityId
+      );
+      const obtenu = this.getGenderedForm(
+        'obtenu',
+        this.abilityService.getAbilityFrGenre(action.data.targetedAbilityId)
+      );
+      message = `${abilityName} ${obtenu}.`;
+    } else if (action.action === 'rallying') {
+      const actionSpecies = this.speciesQuery.getEntity(action.speciesId)
+        .abilities[0];
+      const actionSpeciesName = actionSpecies.fr.name;
+      const rallié = this.getPluralForm(
+        action.data.movedQuantity,
+        this.getGenderedForm('rallié', actionSpecies.fr.genre)
+      );
+      message = `${action.data.movedQuantity} ${actionSpeciesName} ${rallié}`;
+    } else if (action.action === 'intimidate') {
+      const intimidatedSpecies = this.speciesQuery.getEntity(
+        action.data.targetedSpeciesId
+      ).abilities[0];
+      const speciesName = this.getPluralForm(
+        action.data.movedQuantity,
+        intimidatedSpecies.fr.name
+      );
+      const intimidé = this.getPluralForm(
+        action.data.movedQuantity,
+        this.getGenderedForm('intimidé', intimidatedSpecies.fr.genre)
+      );
+      message = `${action.data.movedQuantity} ${speciesName} ${intimidé}`;
+    }
+
+    return message;
+  }
+
+  private getPluralForm(quantity: number, word: string): string {
+    return quantity > 1 ? word + 's' : word;
+  }
+
+  private getGenderedForm(word: string, genre: string): string {
+    return genre === 'f' ? word + 'e' : word;
   }
 }
