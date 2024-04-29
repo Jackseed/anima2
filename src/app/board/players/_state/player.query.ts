@@ -105,14 +105,8 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
     return playerIds.filter((id) => id !== playerId)[0];
   }
 
-  public get opponentSuperchargedWithSpecies$(): Observable<Player> {
-    const activePlayerId = this.getActiveId();
-    return this.allPlayersSuperchargedWithSpecies$().pipe(
-      map((players) =>
-        players.filter((player) => player.id === activePlayerId)
-      ),
-      map((opponents) => opponents[0])
-    );
+  public get opponentId(): string {
+    return this.getPlayerOpponentId(this.getActiveId());
   }
 
   public get activePlayerSuperchargedWithSpecies$(): Observable<Player> {
@@ -128,6 +122,15 @@ export class PlayerQuery extends QueryEntity<PlayerState> {
           species,
         };
       })
+    );
+  }
+
+  public get opponent$(): Observable<Player> {
+    return this.allPlayersSuperchargedWithSpecies$().pipe(
+      map(
+        (players) =>
+          players.filter((player) => player.id === this.opponentId)[0]
+      )
     );
   }
 
