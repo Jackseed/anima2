@@ -357,7 +357,12 @@ export class PlayService {
     return combineLatest([activePlayerId$, lastAction$])
       .pipe(
         tap(([activePlayerId, action]) => {
-          if (!action || (action.isShown && action.id === previousActionId))
+          if (
+            !action ||
+            action.isShown ||
+            (action.isShown && action.id === previousActionId) ||
+            activePlayerId === action.playerId
+          )
             return;
 
           // Reset messageShown if a new action is written
@@ -365,7 +370,7 @@ export class PlayService {
             messageShown = false;
             previousActionId = action.id;
           }
-          if (activePlayerId == action.playerId || messageShown) return;
+          if (messageShown) return;
 
           const playedTiles = action.data.targetedTileId
             ? [action.originTileId, action.data.targetedTileId]

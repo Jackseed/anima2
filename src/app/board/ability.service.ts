@@ -275,11 +275,20 @@ export class AbilityService {
   // Removes one species from a tile and adds one to the active species.
   public async assimilate(removedSpeciesId: string, removedTileId: number) {
     const removedSpecies = this.speciesQuery.getEntity(removedSpeciesId);
+    const removedSpeciesQuantity = this.tileQuery.getTileSpeciesCount(
+      removedSpeciesId,
+      removedTileId
+    );
     const activeSpecies = this.speciesQuery.getActive();
     const assimilationValues = this.applyAssimilationAbilitiesToSpecies(
       createAssimilationValues(),
       activeSpecies.id
     );
+    const assimilatedQuantity =
+      Math.abs(assimilationValues.assimilatedQuantity) >
+      Math.abs(removedSpeciesQuantity)
+        ? -removedSpeciesQuantity
+        : assimilationValues.assimilatedQuantity;
 
     this.tileService.removeProperty('isAttackable');
 
@@ -288,7 +297,7 @@ export class AbilityService {
     // Removes the assimilated species.
     const removeParams = {
       movingSpecies: removedSpecies,
-      quantity: assimilationValues.assimilatedQuantity,
+      quantity: assimilatedQuantity,
       destinationId: removedTileId,
       attackingSpecies: activeSpecies,
     };
@@ -311,7 +320,7 @@ export class AbilityService {
       originTileId: activeTileId,
       data: {
         targetedTileId: removedTileId,
-        assimilatedQuantity: assimilationValues.assimilatedQuantity,
+        assimilatedQuantity,
         createdQuantity: assimilationValues.createdQuantity,
         targetedSpeciesId: removedSpeciesId,
       },

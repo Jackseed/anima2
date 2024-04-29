@@ -221,7 +221,8 @@ export const ABILITIES: Ability[] = [
     value: 1000,
     type: 'passive',
   }, */,
-  {
+  ,
+  /*   {
     id: 'tunnel',
     en: {
       name: 'Tunnel',
@@ -236,7 +237,7 @@ export const ABILITIES: Ability[] = [
     },
     value: 2,
     type: 'active',
-  } /*
+  }  */ /*
   {
     id: 'nest',
     en: {
@@ -252,8 +253,7 @@ export const ABILITIES: Ability[] = [
     requiredValue: 4,
     value: 1,
     type: 'passive',
-  }, */,
-  {
+  }, */ {
     id: 'flying',
     en: {
       name: 'Flying',
