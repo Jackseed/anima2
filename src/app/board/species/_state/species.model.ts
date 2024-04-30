@@ -357,7 +357,7 @@ export const ABILITIES: Ability[] = [
       name: 'Carnassière',
       genre: 'f',
       definition:
-        "Si vous avez plus de trois boutons d'or, relancez de 4 et rejouez.",
+        'Lors d’une assimilation, l’espèce crée deux individus au lieu d’un.',
     },
     value: 1,
     type: 'passive',

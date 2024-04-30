@@ -60,6 +60,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   public scoreToggle: boolean = true;
   public redColor = RED_FIRST_PRIMARY_COLOR;
   public greenColor = GREEN_FIRST_PRIMARY_COLOR;
+  private areAnimationVariablesInitiated: boolean = false;
 
   // Region score variables
   public regionAnimationDuration = 0.5;
@@ -134,11 +135,11 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     private playService: PlayService,
     private abilityService: AbilityService
   ) {
-    this.initAnimationVariables();
+    if (!this.areAnimationVariablesInitiated) this.initAnimationVariables();
   }
 
   ngOnInit(): void {
-    this.initAnimationVariables();
+    if (!this.areAnimationVariablesInitiated) this.initAnimationVariables();
   }
 
   private get animSwitchSub(): Subscription {
@@ -146,6 +147,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     return combineLatest([this.activePlayer$, game$]).subscribe(
       ([player, game]) => {
         if (player.isAnimationPlaying) {
+          if (!this.areAnimationVariablesInitiated)
+            this.initAnimationVariables();
           this.handleAnimationState(player, game);
         }
       }
@@ -155,12 +158,10 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   private handleAnimationState(player: Player, game: Game) {
     const animationStateActions = {
       endEraTitle: {
-        action: () => {
+        action: () =>
           this.playerService.updateActivePlayerAnimationState(
             'playerNamesTitle'
-          );
-          this.initAnimationVariables();
-        },
+          ),
         delay:
           (this.regionScoresAnimationVariables.endEraTitle.duration +
             this.regionScoresAnimationVariables.endEraTitle.delay) *
@@ -273,6 +274,7 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
   }
 
   public initAnimationVariables() {
+    this.areAnimationVariablesInitiated = true;
     // Region score variables
     this.setRegionScoresAnimationVariables(
       this.firstTitlesDuration,

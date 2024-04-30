@@ -29,6 +29,7 @@ import {
   GREEN_SECOND_COLORS,
   Game,
   ActionData,
+  DEFAULT_REMAINING_MIGRATIONS,
 } from './game.model';
 import { GameQuery } from './game.query';
 import { GameStore, GameState } from './game.store';
@@ -431,7 +432,9 @@ export class GameService extends CollectionService<GameState> {
     const gameRef = this.db.collection('games').doc(game.id).ref;
     const batch = this.db.firestore.batch();
     const remainingActions = DEFAULT_ACTION_PER_TURN;
-    batch.update(gameRef, { remainingActions });
+    const remainingMigrations = DEFAULT_REMAINING_MIGRATIONS;
+
+    batch.update(gameRef, { remainingActions, remainingMigrations });
     this.tileService.removeActive();
 
     if (this.playerQuery.isLastActivePlayerSpeciesActive) {
@@ -469,7 +472,7 @@ export class GameService extends CollectionService<GameState> {
     const increment = firebase.firestore.FieldValue.increment(1);
 
     // Every 3 turns, a new era begins.
-    if (game.turnCount === 3) {
+    if (game.turnCount === 1) {
       this.countScores();
 
       batch.update(gameRef, {
