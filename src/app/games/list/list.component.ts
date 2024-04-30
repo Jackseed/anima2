@@ -2,15 +2,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-// Akita
-import { resetStores } from '@datorama/akita';
+// Material
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 // Rxjs
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-// Material
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+// Akita
+import { resetStores } from '@datorama/akita';
 
 // States
 import { Game, GameQuery, GameService } from '../_state';
@@ -51,7 +51,7 @@ export class ListComponent implements OnInit {
         games.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis())
       )
     );
-    if (this.gameQuery.getCount() > 7) this.isScrollable = true;
+    if (this.gameQuery.getCount() > 5) this.isScrollable = true;
   }
 
   public async join(game: Game) {
