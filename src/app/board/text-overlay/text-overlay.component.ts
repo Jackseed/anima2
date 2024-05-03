@@ -94,8 +94,8 @@ export class TextOverlayComponent implements OnInit, OnDestroy {
     victoryDetails?: animation;
   } = {};
 
-  public newEraDuration = 2;
-  public newSpeciesDuration = 2;
+  public newEraDuration = 3;
+  public newSpeciesDuration = 3;
 
   // Observables
   public isGameStarting$: Observable<boolean> = this.gameQuery.isStarting$;

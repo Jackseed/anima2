@@ -472,7 +472,7 @@ export class GameService extends CollectionService<GameState> {
     const increment = firebase.firestore.FieldValue.increment(1);
 
     // Every 3 turns, a new era begins.
-    if (game.turnCount === 1) {
+    if (game.turnCount === 3) {
       this.countScores();
 
       batch.update(gameRef, {
