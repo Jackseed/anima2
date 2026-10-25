@@ -15,7 +15,7 @@
     <div class="no-font">
       <!------------ TILE -------------->
       <article
-        *ngFor="let tile of tiles$ | async; let i = index"
+        *ngFor="let tile of tileWithSpecies$ | async; let i = index"
         class="hex relative"
         [ngClass]="{
           blank: tile.type === 'blank',

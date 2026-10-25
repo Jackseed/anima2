@@ -40,6 +40,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     this.playerQuery.isAnimationPlaying$;
   public isGameFinished$: Observable<boolean> = this.gameQuery.isGameFinished$;
   public actionMessage$: Observable<string> = this.gameQuery.actionMessage$;
+  public tileWithSpecies$: Observable<Tile[]> =
+    this.speciesQuery.getTileWithSpecies$;
 
   // Subscriptions
   private activeSpeciesSub: Subscription;
@@ -82,6 +84,9 @@ export class BoardViewComponent implements OnInit, OnDestroy {
       this.playService.switchToNextStartStageWhenPlayersReadySub;
     this.zoomOutSub = this.zoomOutSubscription;
     this.activateActionMessageSub = this.playService.messageActionToOpponentSub;
+    this.tileWithSpecies$.subscribe((tiles) => {
+      console.log(tiles);
+    });
   }
 
   private get zoomOutSubscription(): Subscription {

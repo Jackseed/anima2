@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { QueryEntity } from '@datorama/akita';
 
 // Rxjs
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 // States
@@ -19,6 +19,37 @@ export class SpeciesQuery extends QueryEntity<SpeciesState> {
     super(store);
   }
 
+  // Add all species to all the tiles.
+  public get getTileWithSpecies$(): Observable<Tile[]> {
+    // Fetch all tiles as an Observable
+    const tiles$ = this.tileQuery.selectAll();
+
+    // Fetch all species as an Observable
+    const species$ = this.selectAll();
+
+    // Combine the tiles and species into a single Observable
+    return combineLatest([tiles$, species$]).pipe(
+      map(([tiles, species]) => {
+        // Map each tile to a new object with the tile and its species
+        return tiles.map((tile) => {
+          // Get the species for this tile
+          console.log(species);
+          const tileSpecies = species
+            .filter((s) => s.tileIds.includes(tile.id))
+            .map((s) => ({
+              ...s,
+              quantity: s.tileIds.filter((id) => id === tile.id).length,
+              tileId: tile.id,
+            }));
+
+          // Return a new object with the tile and its species
+          return { ...tile, species: tileSpecies };
+        });
+      }),
+      // Order tiles by id
+      map((tiles) => tiles.sort((a, b) => a.id - b.id))
+    );
+  }
   // Gets all the species on a tile.
   public getTileSpecies(tileId: number): Species[] {
     const tile = this.tileQuery.getEntity(tileId.toString());
