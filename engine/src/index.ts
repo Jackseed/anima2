@@ -17,6 +17,8 @@ export {
   opponentOf,
   playerSpecies,
   quantityOn,
+  randomInt,
+  randomItem,
   seededRng,
   speciesOnTile,
   totalQuantity,

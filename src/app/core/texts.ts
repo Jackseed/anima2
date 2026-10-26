@@ -1,0 +1,526 @@
+import type { AbilityId, ErrorCode, RegionId, WinReason } from '@anima/engine';
+
+export type Lang = 'fr' | 'en';
+type Genre = 'm' | 'f';
+
+export interface AbilityText {
+  name: string;
+  genre: Genre;
+  definition: string;
+}
+
+const plural = (count: number, word: string) => (Math.abs(count) > 1 ? `${word}s` : word);
+const agree = (word: string, genre: Genre, count: number) => plural(count, genre === 'f' ? `${word}e` : word);
+
+const frAbilities: Record<AbilityId, AbilityText> = {
+  spontaneousGeneration: {
+    name: 'Sporifère',
+    genre: 'm',
+    definition: "L'espèce peut proliférer sur une case voisine de celle des individus qui prolifèrent.",
+  },
+  hounds: {
+    name: 'Sociale',
+    genre: 'f',
+    definition:
+      "Lorsque c'est possible, l'espèce se déplace par groupe de deux au lieu d'un, pour le même nombre de points de déplacement.",
+  },
+  range: {
+    name: 'Bombardière',
+    genre: 'f',
+    definition: "L'espèce peut assimiler à une case de distance. L'individu créé l'est sur la case d'origine de l'assimilation.",
+  },
+  survival: {
+    name: 'Survivante',
+    genre: 'f',
+    definition: "Un individu isolé, sans congénère sur les cases voisines, ne peut pas être assimilé.",
+  },
+  tunnel: {
+    name: 'Fouisseuse',
+    genre: 'f',
+    definition:
+      "Capacité activée : pour un point de déplacement, un individu rejoint n'importe quelle case où se trouve déjà son espèce.",
+  },
+  nest: {
+    name: 'Nicheuse',
+    genre: 'f',
+    definition: "Quand l'espèce prolifère depuis une case où elle compte au moins quatre individus, elle en crée un de plus.",
+  },
+  flying: {
+    name: 'Ailée',
+    genre: 'f',
+    definition: "L'espèce dispose de deux points de déplacement supplémentaires.",
+  },
+  giantism: {
+    name: 'Gigantesque',
+    genre: 'm',
+    definition: "L'espèce dispose d'un point de résistance supplémentaire lorsqu'elle est menacée d'assimilation.",
+  },
+  gluttony: {
+    name: 'Vorace',
+    genre: 'm',
+    definition: "L'espèce assimile ses proies par trois au lieu de deux.",
+  },
+  rallying: {
+    name: 'Rassembleuse',
+    genre: 'f',
+    definition: "Capacité activée : rassemble sur la case choisie tous les individus de l'espèce d'une case voisine.",
+  },
+  intimidate: {
+    name: 'Stridulante',
+    genre: 'f',
+    definition:
+      "Capacité activée : repousse vers une case voisine autant d'individus d'une autre espèce de la case que l'espèce en compte elle-même.",
+  },
+  hermaphrodite: {
+    name: 'Hermaphrodite',
+    genre: 'f',
+    definition: "L'espèce peut proliférer à partir d'un seul individu.",
+  },
+  carnivore: {
+    name: 'Carnassière',
+    genre: 'f',
+    definition: "Lors d'une assimilation, l'espèce crée deux individus au lieu d'un.",
+  },
+  predator: {
+    name: 'Venimeuse',
+    genre: 'f',
+    definition: "Lorsque l'espèce tente une assimilation, sa force est augmentée d'un point.",
+  },
+};
+
+const enAbilities: Record<AbilityId, AbilityText> = {
+  spontaneousGeneration: {
+    name: 'Spore-bearing',
+    genre: 'm',
+    definition: 'The species can proliferate onto a tile next to the proliferating individuals.',
+  },
+  hounds: {
+    name: 'Social',
+    genre: 'm',
+    definition: 'When possible, the species moves in pairs instead of one by one, for the same movement cost.',
+  },
+  range: {
+    name: 'Bombardier',
+    genre: 'm',
+    definition: 'The species can assimilate one tile away. New individuals appear on the attacking tile.',
+  },
+  survival: {
+    name: 'Survivor',
+    genre: 'm',
+    definition: 'An isolated individual, with no kin on the neighboring tiles, cannot be assimilated.',
+  },
+  tunnel: {
+    name: 'Burrower',
+    genre: 'm',
+    definition: 'Active ability: for one movement point, an individual joins any tile where its species already lives.',
+  },
+  nest: {
+    name: 'Nesting',
+    genre: 'm',
+    definition: 'When proliferating from a tile with at least four individuals, the species creates one more.',
+  },
+  flying: {
+    name: 'Winged',
+    genre: 'm',
+    definition: 'The species gets two extra movement points.',
+  },
+  giantism: {
+    name: 'Giant',
+    genre: 'm',
+    definition: 'The species gets one extra defense point when threatened with assimilation.',
+  },
+  gluttony: {
+    name: 'Voracious',
+    genre: 'm',
+    definition: 'The species assimilates its prey three at a time instead of two.',
+  },
+  rallying: {
+    name: 'Rallier',
+    genre: 'm',
+    definition: 'Active ability: gathers on the chosen tile all the individuals of the species from a neighboring tile.',
+  },
+  intimidate: {
+    name: 'Stridulant',
+    genre: 'm',
+    definition:
+      'Active ability: pushes as many individuals of another species on the tile as the species has there to a neighboring tile.',
+  },
+  hermaphrodite: {
+    name: 'Hermaphrodite',
+    genre: 'm',
+    definition: 'The species can proliferate from a single individual.',
+  },
+  carnivore: {
+    name: 'Carnivore',
+    genre: 'm',
+    definition: 'When assimilating, the species creates two individuals instead of one.',
+  },
+  predator: {
+    name: 'Venomous',
+    genre: 'm',
+    definition: 'The species gets one extra strength point when assimilating.',
+  },
+};
+
+const fr = {
+  abilities: frAbilities,
+  common: {
+    title: 'Anima',
+    play: 'Jouer !',
+    back: 'Retour',
+    cancel: 'Annuler',
+    confirm: 'Confirmer',
+    close: 'Fermer',
+    loading: 'Chargement…',
+    offline: 'Connexion perdue, nouvelle tentative…',
+  },
+  welcome: {
+    nameQuestion: 'Quel est votre pseudo ?',
+    haveAccount: "J'ai déjà un compte",
+    signIn: 'Se connecter',
+    email: 'E-mail',
+    password: 'Mot de passe',
+  },
+  home: {
+    create: 'Créer une partie',
+    join: 'Rejoindre une partie',
+    resume: 'Mes parties',
+    rules: 'Règles',
+    account: 'Compte',
+    quit: 'Se déconnecter',
+    quitWarning:
+      "Votre compte invité sera perdu : sauvegardez-le d'abord avec un e-mail dans « Compte » si vous voulez retrouver vos parties.",
+  },
+  lobby: {
+    gameName: 'Choisissez le nom de votre partie',
+    available: 'Parties disponibles',
+    none: 'Aucune partie en attente. Créez-en une !',
+    mine: 'Mes parties',
+    noneMine: 'Aucune partie en cours.',
+    waitingOpponent: "En attente d'un adversaire…",
+    cancelGame: 'Annuler la partie',
+    versus: (name: string) => `contre ${name}`,
+    waiting: 'en attente',
+    yourTurn: 'à vous de jouer',
+    theirTurn: 'tour adverse',
+    setup: 'mise en place',
+    won: 'gagnée',
+    lost: 'perdue',
+  },
+  account: {
+    played: 'Parties jouées',
+    won: 'Parties gagnées',
+    name: 'Pseudo',
+    rename: 'Changer de pseudo',
+    language: 'Langue',
+    save: 'Sauvegarder mon compte',
+    saveHint: 'Un compte invité est lié à cet appareil. Ajoutez un e-mail pour le retrouver ailleurs.',
+    saved: (email: string) => `Compte sauvegardé avec ${email}`,
+    delete: 'Supprimer mon compte',
+    deleteWarning: 'Votre compte et votre pseudo seront supprimés définitivement.',
+    reauth: 'Pour des raisons de sécurité, reconnectez-vous puis recommencez.',
+  },
+  game: {
+    notYourTurn: "Ce n'est pas votre tour.",
+    yourTurn: "C'est à vous !",
+    theirTurn: 'Tour adverse',
+    letsGo: "C'est parti !",
+    newSpeciesTitle: 'Nouvelles espèces !',
+    chooseStartTile: 'Sélectionnez votre case\nde départ',
+    confirmStartTile: 'Choisir cette case ?',
+    waitingOpponent: "En attente de l'adversaire…",
+    chooseMigration: 'Choisissez une case\nvers laquelle migrer',
+    chooseTunnel: 'Choisissez une case\nà rejoindre',
+    chooseProliferation: 'Choisissez une case\nsur laquelle proliférer',
+    chooseAssimilation: 'Choisissez une case\nà assimiler',
+    chooseRallying: 'Choisissez une case\nà rallier',
+    chooseNewAbility: 'Choisissez un\nnouveau trait',
+    chooseFirstAbility: 'Choisissez le trait\nde votre nouvelle espèce',
+    chooseSpecies: (verb: string) => `Choisissez une espèce\nà ${verb}`,
+    assimilateVerb: 'assimiler',
+    intimidateVerb: 'intimider',
+    confirmSpecies: (verb: string) => `${verb.charAt(0).toUpperCase()}${verb.slice(1)} cette espèce ?`,
+    scoreBoard: 'Tableau des scores',
+    era: (era: number) => `Ère ${era} sur 5`,
+    round: (round: number) => `Manche ${round} sur 3`,
+    remainingActions: 'Actions restantes',
+    remainingMigrations: 'Points de déplacement',
+    activeSpecies: 'Espèce active',
+    players: 'Joueurs',
+    total: 'Total',
+    points: (score: number) => `${score} ${plural(score, 'point')}`,
+    goal: 'Le premier à 30 points à la fin d’une ère gagne. Sinon, le meilleur score après la 5e ère.',
+    endEra: "Fin de l'ère !",
+    countPoints: 'Décompte\ndes points !',
+    eraNumber: (era: number) => (era === 1 ? '1re ère !' : `${era}e ère !`),
+    secondSpecies: 'Vous obtenez votre 2e espèce !',
+    victory: 'VICTOIRE',
+    seeMap: 'Voir la carte',
+    seeScores: 'Voir les scores',
+    leave: 'Quitter',
+    menuRules: 'Règles',
+    menuHome: "Retour à l'accueil",
+    resign: 'Abandonner',
+    resignConfirm: "Abandonner la partie ? Votre adversaire l'emportera.",
+    winReason: {
+      score: 'a atteint 30 points',
+      lastEra: 'meilleur score après la 5e ère',
+      annihilation: "a éliminé toutes les espèces adverses",
+      resignation: 'victoire par abandon',
+    } satisfies Record<WinReason, string>,
+    speciesList: 'Espèces',
+  },
+  actions: {
+    migration: 'Migration',
+    assimilation: 'Assimilation',
+    proliferation: 'Prolifération',
+    adaptation: 'Adaptation',
+    done: (action: string) => `${action} effectuée !`,
+  },
+  messages: {
+    migration: (points: number) => `${points} ${plural(points, 'déplacement')} ${plural(points, 'effectué')}`,
+    tunnel: (quantity: number, name: string, genre: Genre) =>
+      `${quantity} ${plural(quantity, name)} ${agree('passé', genre, quantity)} par la galerie`,
+    assimilation: (quantity: number, name: string, genre: Genre) =>
+      `${quantity} ${plural(quantity, name)} ${agree('assimilé', genre, quantity)}.`,
+    proliferation: (quantity: number, name: string, genre: Genre) =>
+      `${quantity} ${plural(quantity, name)} ${agree('créé', genre, quantity)}.`,
+    adaptation: (ability: string, genre: Genre) => `${ability} ${agree('obtenu', genre, 1)}.`,
+    rallying: (quantity: number, name: string, genre: Genre) =>
+      `${quantity} ${plural(quantity, name)} ${agree('rallié', genre, quantity)}`,
+    intimidation: (quantity: number, name: string, genre: Genre) =>
+      `${quantity} ${plural(quantity, name)} ${agree('intimidé', genre, quantity)}`,
+    endTurn: 'Tour passé',
+    eliminated: (name: string, genre: Genre) => `${name} ${agree('éliminé', genre, 1)} !`,
+  },
+  errors: {
+    generic: 'Action impossible, réessayez.',
+    network: 'Connexion impossible. Vérifiez votre réseau.',
+    gameNotFound: "Cette partie n'existe plus.",
+    wrongPassword: 'E-mail ou mot de passe incorrect.',
+    emailInUse: 'Cet e-mail est déjà utilisé par un autre compte.',
+    weakPassword: 'Le mot de passe doit faire au moins 6 caractères.',
+    invalidEmail: 'Adresse e-mail invalide.',
+    rules: {
+      GAME_NOT_WAITING: "Cette partie a déjà commencé.",
+      GAME_FULL: 'Cette partie est complète.',
+      NOT_YOUR_TURN: "Ce n'est pas votre tour.",
+      MIGRATION_TO_FINISH: "Terminez d'abord votre migration.",
+      NO_ABILITY_AVAILABLE: 'Plus aucun trait disponible.',
+      CONFLICT: "La partie a changé entre-temps, réessayez.",
+    } as Partial<Record<ErrorCode | 'CONFLICT', string>>,
+  },
+  regions: {
+    rockies: 'Rocheuses',
+    forests: 'Forêts',
+    plains: 'Plaines',
+    swamps: 'Marais',
+    mountains: 'Montagnes',
+    islands: 'Îles',
+  } satisfies Record<RegionId, string>,
+  rules: {
+    title: 'Règles du jeu',
+    regionsTitle: 'Les régions',
+    regionTiles: (count: number) => `${count} cases`,
+    abilitiesTitle: 'Les traits',
+    sections: [
+      {
+        title: 'But du jeu',
+        text: "Deux joueurs font évoluer leurs espèces sur une île découpée en six régions. À la fin de chaque ère, chaque joueur marque les points des régions dont il occupe toutes les cases. Le premier à 30 points l'emporte ; sinon, le meilleur score après la 5e ère. Un joueur qui perd toutes ses espèces perd la partie.",
+      },
+      {
+        title: 'Déroulement',
+        text: "Chaque joueur choisit le trait de son espèce puis sa case de départ, où apparaissent 4 individus. Vert joue en premier, avec une seule action au premier tour. Chaque espèce dispose ensuite de 2 actions par tour. Une ère dure 3 manches. Au début de la 2e ère, chaque joueur reçoit une deuxième espèce.",
+      },
+      {
+        title: 'Actions',
+        text: "Migration : 4 points de déplacement à répartir, une case par point. Prolifération : à partir de 2 individus, en crée 2 de plus sur la case. Assimilation : si vos individus sont plus nombreux que ceux d'une autre espèce de la case, retirez-en 2 et créez-en 1. Adaptation : sacrifiez 5 individus d'une case (il en faut 7 en tout) pour gagner un nouveau trait, jusqu'à 3.",
+      },
+      {
+        title: 'Traits',
+        text: "Chaque trait modifie les actions de l'espèce. Les espèces neutres en ont un mais ne l'utilisent pas. Éliminer une espèce vous donne ses traits, dans la limite de 3. Touchez une espèce ou un trait dans la liste des espèces pour lire sa description.",
+      },
+    ],
+  },
+};
+
+type Texts = typeof fr;
+
+const en: Texts = {
+  abilities: enAbilities,
+  common: {
+    title: 'Anima',
+    play: 'Play!',
+    back: 'Back',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    close: 'Close',
+    loading: 'Loading…',
+    offline: 'Connection lost, retrying…',
+  },
+  welcome: {
+    nameQuestion: "What's your name?",
+    haveAccount: 'I already have an account',
+    signIn: 'Sign in',
+    email: 'Email',
+    password: 'Password',
+  },
+  home: {
+    create: 'Create a game',
+    join: 'Join a game',
+    resume: 'My games',
+    rules: 'Rules',
+    account: 'Account',
+    quit: 'Sign out',
+    quitWarning: 'Your guest account will be lost: save it with an email in "Account" first to keep your games.',
+  },
+  lobby: {
+    gameName: 'Name your game',
+    available: 'Open games',
+    none: 'No game waiting. Create one!',
+    mine: 'My games',
+    noneMine: 'No game in progress.',
+    waitingOpponent: 'Waiting for an opponent…',
+    cancelGame: 'Cancel the game',
+    versus: (name: string) => `against ${name}`,
+    waiting: 'waiting',
+    yourTurn: 'your turn',
+    theirTurn: "opponent's turn",
+    setup: 'setting up',
+    won: 'won',
+    lost: 'lost',
+  },
+  account: {
+    played: 'Games played',
+    won: 'Games won',
+    name: 'Name',
+    rename: 'Change name',
+    language: 'Language',
+    save: 'Save my account',
+    saveHint: 'A guest account is tied to this device. Add an email to find it elsewhere.',
+    saved: (email: string) => `Account saved with ${email}`,
+    delete: 'Delete my account',
+    deleteWarning: 'Your account and name will be permanently deleted.',
+    reauth: 'For security reasons, sign in again and retry.',
+  },
+  game: {
+    notYourTurn: "It's not your turn.",
+    yourTurn: 'Your turn!',
+    theirTurn: "Opponent's turn",
+    letsGo: "Let's go!",
+    newSpeciesTitle: 'New species!',
+    chooseStartTile: 'Pick your\nstarting tile',
+    confirmStartTile: 'Start here?',
+    waitingOpponent: 'Waiting for your opponent…',
+    chooseMigration: 'Pick a tile\nto migrate to',
+    chooseTunnel: 'Pick a tile\nto join',
+    chooseProliferation: 'Pick a tile\nto proliferate on',
+    chooseAssimilation: 'Pick a tile\nto assimilate',
+    chooseRallying: 'Pick a tile\nto rally',
+    chooseNewAbility: 'Pick a\nnew trait',
+    chooseFirstAbility: 'Pick the trait\nof your new species',
+    chooseSpecies: (verb: string) => `Pick a species\nto ${verb}`,
+    assimilateVerb: 'assimilate',
+    intimidateVerb: 'intimidate',
+    confirmSpecies: (verb: string) => `${verb.charAt(0).toUpperCase()}${verb.slice(1)} this species?`,
+    scoreBoard: 'Scoreboard',
+    era: (era: number) => `Era ${era} of 5`,
+    round: (round: number) => `Round ${round} of 3`,
+    remainingActions: 'Actions left',
+    remainingMigrations: 'Movement points',
+    activeSpecies: 'Active species',
+    players: 'Players',
+    total: 'Total',
+    points: (score: number) => `${score} ${plural(score, 'point')}`,
+    goal: 'First to 30 points at the end of an era wins. Otherwise, the best score after the 5th era.',
+    endEra: 'End of the era!',
+    countPoints: 'Counting\nthe points!',
+    eraNumber: (era: number) => `Era ${era}!`,
+    secondSpecies: 'You get your 2nd species!',
+    victory: 'VICTORY',
+    seeMap: 'See the map',
+    seeScores: 'See the scores',
+    leave: 'Leave',
+    menuRules: 'Rules',
+    menuHome: 'Back to home',
+    resign: 'Resign',
+    resignConfirm: 'Resign the game? Your opponent will win.',
+    winReason: {
+      score: 'reached 30 points',
+      lastEra: 'best score after the 5th era',
+      annihilation: 'wiped out every opposing species',
+      resignation: 'won by resignation',
+    },
+    speciesList: 'Species',
+  },
+  actions: {
+    migration: 'Migration',
+    assimilation: 'Assimilation',
+    proliferation: 'Proliferation',
+    adaptation: 'Adaptation',
+    done: (action: string) => `${action} done!`,
+  },
+  messages: {
+    migration: (points: number) => `${points} ${plural(points, 'move')} made`,
+    tunnel: (quantity: number, name: string) => `${quantity} ${name} went through the burrow`,
+    assimilation: (quantity: number, name: string) => `${quantity} ${name} assimilated.`,
+    proliferation: (quantity: number, name: string) => `${quantity} ${name} created.`,
+    adaptation: (ability: string) => `${ability} acquired.`,
+    rallying: (quantity: number, name: string) => `${quantity} ${name} rallied`,
+    intimidation: (quantity: number, name: string) => `${quantity} ${name} intimidated`,
+    endTurn: 'Turn skipped',
+    eliminated: (name: string) => `${name} wiped out!`,
+  },
+  errors: {
+    generic: 'Action not possible, try again.',
+    network: 'Cannot connect. Check your network.',
+    gameNotFound: 'This game no longer exists.',
+    wrongPassword: 'Wrong email or password.',
+    emailInUse: 'This email is already used by another account.',
+    weakPassword: 'The password must be at least 6 characters long.',
+    invalidEmail: 'Invalid email address.',
+    rules: {
+      GAME_NOT_WAITING: 'This game has already started.',
+      GAME_FULL: 'This game is full.',
+      NOT_YOUR_TURN: "It's not your turn.",
+      MIGRATION_TO_FINISH: 'Finish your migration first.',
+      NO_ABILITY_AVAILABLE: 'No trait left.',
+      CONFLICT: 'The game changed in the meantime, try again.',
+    },
+  },
+  regions: {
+    rockies: 'Rockies',
+    forests: 'Forests',
+    plains: 'Plains',
+    swamps: 'Swamps',
+    mountains: 'Mountains',
+    islands: 'Islands',
+  },
+  rules: {
+    title: 'Rules',
+    regionsTitle: 'Regions',
+    regionTiles: (count: number) => `${count} tiles`,
+    abilitiesTitle: 'Traits',
+    sections: [
+      {
+        title: 'Goal',
+        text: 'Two players evolve their species on an island split into six regions. At the end of each era, each player scores the regions where they occupy every tile. The first to 30 points wins; otherwise, the best score after the 5th era. A player who loses all their species loses the game.',
+      },
+      {
+        title: 'Flow',
+        text: 'Each player picks the trait of their species, then a starting tile where 4 individuals appear. Green plays first, with a single action on the first turn. Each species then has 2 actions per turn. An era lasts 3 rounds. At the start of the 2nd era, each player gets a second species.',
+      },
+      {
+        title: 'Actions',
+        text: 'Migration: 4 movement points to spend, one tile per point. Proliferation: from 2 individuals, creates 2 more on the tile. Assimilation: if your individuals outnumber another species on the tile, remove 2 of them and create 1. Adaptation: sacrifice 5 individuals from a tile (you need 7 in total) to gain a new trait, up to 3.',
+      },
+      {
+        title: 'Traits',
+        text: 'Each trait changes the actions of the species. Neutral species have one but never use it. Wiping out a species gives you its traits, up to 3. Tap a species or a trait in the species list to read its description.',
+      },
+    ],
+  },
+};
+
+export const TEXTS: Record<Lang, Texts> = { fr, en };
+export type { Texts };

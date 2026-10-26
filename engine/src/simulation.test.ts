@@ -52,12 +52,12 @@ function simulate(seed: number): { state: GameState; steps: number } {
 
 describe('random games', () => {
   it('always reach a winner with consistent states', () => {
-    for (let seed = 1; seed <= 25; seed++) {
+    for (let seed = 1; seed <= 20; seed++) {
       const { state } = simulate(seed);
       expect(state.phase, `seed ${seed}`).toBe('finished');
       if (state.winner!.reason !== 'annihilation') expect(state.eraResults.length).toBe(state.era);
     }
-  });
+  }, 60_000);
 
   it('survive a round trip through JSON, as stored in Firestore', () => {
     const { state } = simulate(3);

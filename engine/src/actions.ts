@@ -221,3 +221,11 @@ export function endTurn(state: GameState, playerId: string, rng: Rng): void {
   log(state, { type: 'endTurn' });
   advanceTurn(state, rng);
 }
+
+// A player can give up at any time before the end: the opponent wins.
+export function resign(state: GameState, playerId: string): void {
+  if (state.phase !== 'setup' && state.phase !== 'playing') fail('NOT_PLAYING');
+  if (!findPlayer(state, playerId)) fail('NOT_A_PLAYER');
+  const opponent = opponentOf(state, playerId) ?? fail('NOT_PLAYING');
+  finishGame(state, opponent.id, 'resignation');
+}

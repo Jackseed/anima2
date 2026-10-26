@@ -337,6 +337,16 @@ describe('active abilities', () => {
   });
 });
 
+describe('resignation', () => {
+  it('gives the victory to the opponent, even outside the turn of the player', () => {
+    const next = play(game({}), RED, { type: 'resign' });
+    expect(next.phase).toBe('finished');
+    expect(next.winner).toEqual({ playerId: GREEN, reason: 'resignation' });
+    expect(rejection(next, GREEN, { type: 'resign' })).toBe('NOT_PLAYING');
+    expect(rejection(game({}), 'stranger', { type: 'resign' })).toBe('NOT_A_PLAYER');
+  });
+});
+
 describe('commands', () => {
   it('are refused outside the turn of the player', () => {
     expect(rejection(game({}), RED, { type: 'proliferate', tileId: A })).toBe('NOT_YOUR_TURN');

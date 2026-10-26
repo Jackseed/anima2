@@ -1,8 +1,101 @@
 rules_version = '2';
+
+// Rules for Anima 2.x. Production still runs the fully open rules of the 1.x app (see git
+// history). These keep the 1.8 app working for signed-in players, so they can be deployed
+// before the 2.x release: `npx firebase deploy --only firestore`.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write;
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    // 2.x games: one document per game, changed through transactions.
+    match /matches/{matchId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && isNewMatch(request.resource.data);
+      allow update: if signedIn()
+        && keepsIdentity(resource.data, request.resource.data)
+        && mirrorsState(request.resource.data)
+        && request.resource.data.version == resource.data.version + 1
+        && request.resource.data.updatedAt == request.time
+        && (isJoin(resource.data, request.resource.data) || isMove(resource.data, request.resource.data));
+      // The creator can cancel a game nobody joined.
+      allow delete: if signedIn() && resource.data.createdBy == uid() && resource.data.isOpen == true;
+    }
+
+    function hasMatchFields(data) {
+      return data.keys().hasOnly(['name', 'createdBy', 'createdAt', 'updatedAt', 'playerIds', 'phase', 'isOpen', 'version', 'state']);
+    }
+
+    // Fields copied from the state for queries must match it.
+    function mirrorsState(data) {
+      return data.phase == data.state.phase
+        && data.isOpen == (data.phase == 'waiting')
+        && data.playerIds.size() == data.state.players.size();
+    }
+
+    function isNewMatch(data) {
+      return hasMatchFields(data)
+        && mirrorsState(data)
+        && data.createdBy == uid()
+        && data.playerIds == [uid()]
+        && data.phase == 'waiting'
+        && data.version == 1
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 30
+        && data.createdAt == request.time
+        && data.updatedAt == request.time
+        && data.state.players[0].id == uid();
+    }
+
+    function keepsIdentity(before, after) {
+      return hasMatchFields(after)
+        && after.name == before.name
+        && after.createdBy == before.createdBy
+        && after.createdAt == before.createdAt;
+    }
+
+    // A second player takes the free seat of an open game.
+    function isJoin(before, after) {
+      return before.isOpen == true
+        && !(uid() in before.playerIds)
+        && after.playerIds.size() == 2
+        && after.playerIds.hasAll(before.playerIds)
+        && uid() in after.playerIds
+        && after.phase == 'setup';
+    }
+
+    // Players act during the placement, and on their own turn afterwards.
+    // Resigning is allowed at any time and gives the victory to the opponent.
+    function isMove(before, after) {
+      return uid() in before.playerIds
+        && after.playerIds == before.playerIds
+        && (before.phase == 'setup'
+          || (before.phase == 'playing' && before.state.turn.playerId == uid())
+          || (before.phase in ['setup', 'playing'] && isResignation(after)));
+    }
+
+    function isResignation(after) {
+      return after.phase == 'finished'
+        && after.state.winner.reason == 'resignation'
+        && after.state.winner.playerId != uid();
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn();
+      allow create, delete: if signedIn() && uid() == userId;
+      // The 1.x app records the end of a game on both players' documents.
+      allow update: if signedIn()
+        && (uid() == userId
+          || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gamesPlayed', 'matchesPlayed', 'matchesWon']));
+    }
+
+    // 1.x games, still played on the 1.8 app: signed-in players only.
+    match /games/{document=**} {
+      allow read, write: if signedIn();
     }
   }
 }

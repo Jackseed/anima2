@@ -65,7 +65,7 @@ export interface EraResult {
   scores: Record<string, PlayerEraScore>;
 }
 
-export type WinReason = 'score' | 'lastEra' | 'annihilation';
+export type WinReason = 'score' | 'lastEra' | 'annihilation' | 'resignation';
 
 export interface Winner {
   playerId: string;
@@ -127,7 +127,8 @@ export type Command =
   | { type: 'adapt'; abilityId: AbilityId }
   | { type: 'intimidate'; tileId: number; targetSpeciesId: string }
   | { type: 'rally'; tileId: number; fromTileId: number }
-  | { type: 'endTurn' };
+  | { type: 'endTurn' }
+  | { type: 'resign' };
 
 export type CommandType = Command['type'];
 

@@ -1,4 +1,15 @@
-import { adapt, assimilate, endTurn, intimidate, migrate, proliferate, rally, startAdaptation, tunnel } from './actions';
+import {
+  adapt,
+  assimilate,
+  endTurn,
+  intimidate,
+  migrate,
+  proliferate,
+  rally,
+  resign,
+  startAdaptation,
+  tunnel,
+} from './actions';
 import { chooseAbility, chooseStartTile } from './setup';
 import { RuleError, type ErrorCode } from './state';
 import type { Command, GameState, Rng } from './types';
@@ -42,6 +53,9 @@ export function applyCommand(previous: GameState, playerId: string, command: Com
         break;
       case 'endTurn':
         endTurn(state, playerId, rng);
+        break;
+      case 'resign':
+        resign(state, playerId);
         break;
     }
   } catch (error) {

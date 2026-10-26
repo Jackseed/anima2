@@ -1,7 +1,0 @@
-{
-  "name": "anima2",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "custom"
-}

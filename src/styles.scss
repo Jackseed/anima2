@@ -1,11 +1,33 @@
-@import "/src/app/global-variables";
+// Global look of the 1.x app: Grandstander titles, orange accents, white boxes.
+:root {
+  --anima-color: #f59c27;
+  --blue-color: #2984a0;
+  --islands-color: #dddeee;
+  --rockies-color: #fee0b8;
+  --mountains-color: #fcdcd8;
+  --forests-color: #b5e4f3;
+  --swamps-color: #dae8b6;
+  --plains-color: #fdeda9;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
 
 html,
 body {
   margin: 0;
   height: 100%;
-  touch-action: none;
+  overflow: hidden;
+  background: white;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
+
 body,
 h1,
 h2,
@@ -14,8 +36,9 @@ h4,
 p,
 span,
 textarea,
-input {
-  font-family: "Grandstander", "Helvetica Neue", sans-serif;
+input,
+button {
+  font-family: 'Grandstander', 'Helvetica Neue', sans-serif;
 }
 
 h1 {
@@ -27,6 +50,7 @@ h1 {
 h2 {
   color: white;
   font-size: calc(1rem + 1.5vmin);
+  white-space: pre-line;
 }
 
 h3 {
@@ -42,36 +66,15 @@ h4 {
   font-size: calc(0.8rem + 1.5vmin);
 }
 
-p,
-textarea {
+p {
   color: var(--anima-color);
   font-size: calc(1rem + 1vmin);
   font-weight: 600;
-  line-height: 16px;
-}
-
-textarea {
-  text-align: center;
-  border: none;
-  background-color: transparent;
-  resize: none;
-  outline: none;
-  border-radius: 0;
-  height: 90%;
-  width: 90%;
-}
-
-.mat-dialog-title {
-  padding-top: 20px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: calc(1.5rem + 1.5vmin);
-  color: var(--anima-color);
-  text-align: center;
+  line-height: 1.3;
 }
 
 .subtitle {
-  color: #2984a0;
+  color: var(--blue-color);
   font-weight: 800;
   font-size: calc(1.2rem + 1.5vmin);
   text-align: center;
@@ -89,160 +92,180 @@ textarea {
   background-color: var(--anima-color);
 }
 
+.orange-bar {
+  background-color: var(--anima-color);
+  height: 1%;
+  min-height: 6px;
+  width: 100%;
+}
+
 .orange-icons {
   color: var(--anima-color);
 }
 
-.custom-container .mat-dialog-container {
-  border: 4px var(--anima-color) solid;
-  border-radius: 0px;
+.fill,
+.mat-icon.fill {
+  width: 100%;
+  height: 100%;
 }
 
-.overflow-hidden .mat-dialog-container {
-  overflow: hidden;
-}
-
-.no-padding-bottom .mat-dialog-container {
-  padding: 12px 12px 0px 12px;
-  overflow: hidden;
-}
-
-.transparent-menu .mat-dialog-container {
-  background: transparent;
-  box-shadow: none;
+// Buttons wrapping a single SVG icon, without any default styling.
+.icon-button {
+  background: none;
+  border: none;
   padding: 0;
-  overflow: hidden;
-}
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
 
-.cdk-overlay-pane.transparent-menu {
-  max-width: 100% !important;
-}
+  &:disabled {
+    cursor: default;
+  }
 
-.transparent-backdrop {
-  background: rgba(255, 255, 255, 0.75);
-}
-.cdk-overlay-pane.custom-container {
-  position: relative !important;
+  .mat-icon {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .nav-button {
-  background-color: #2984a0;
-  border-left: 20px #2984a0 solid;
-  border-right: 20px #2984a0 solid;
+  background-color: var(--blue-color);
+  border-left: 20px var(--blue-color) solid;
+  border-right: 20px var(--blue-color) solid;
   border-top: none;
   border-bottom: none;
   border-radius: 30px;
   white-space: nowrap;
   height: fit-content;
+  cursor: pointer;
+
+  h2 {
+    margin: 0.5em 0;
+  }
+
+  &:disabled {
+    background-color: grey;
+    border-color: grey;
+    cursor: default;
+  }
+
+  &.danger {
+    background-color: #c0453c;
+    border-color: #c0453c;
+  }
 }
 
 input {
-  border-width: 4px 8px 4px 8px;
-  border-color: #2984a0;
+  border-width: 4px 8px;
+  border-color: var(--blue-color);
   border-style: solid;
   border-radius: 20px;
-  padding: 0px 12px 0px 12px;
+  padding: 4px 12px;
+  font-size: calc(1rem + 1vmin);
+  outline: none;
+  text-align: center;
+  user-select: text;
+  -webkit-user-select: text;
+  max-width: 80vw;
 }
 
 input:focus {
   border-color: var(--anima-color);
 }
 
-#close-button {
-  position: absolute;
-  top: 0;
-  right: 50%;
-  transform: translate(50%, -50%);
-  width: calc(2rem + 6vmin);
-  height: calc(2rem + 6vmin);
-}
-
-#close-icon {
-  font-size: calc(2rem + 6vmin);
-  width: calc(2rem + 6vmin);
-  height: calc(2rem + 6vmin);
-  line-height: calc(2rem + 6vmin);
-}
-
-#validate-button {
-  position: absolute;
-  bottom: 0;
-  transform: translate(0%, 50%);
-  height: calc(2rem + 10vh);
-  width: calc(2rem + 10vh);
-}
-
-#validate-icon {
-  font-size: calc(2rem + 10vh);
-  width: calc(2rem + 10vh);
-  height: calc(2rem + 10vh);
-  line-height: calc(2rem + 10vh);
-}
-
-.orange-snackbar {
-  background: var(--anima-color);
-  text-align: center;
-  color: white;
-  font-weight: 600;
-  border-radius: 30px !important;
-  width: 200px !important;
-  height: 80px !important;
-  position: absolute;
-  top: 70%;
-  left: 20%;
-}
-
-snack-bar-container > div {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.mat-simple-snackbar > span {
-  width: 150px;
-}
-
-.orange-snackbar .mat-simple-snackbar {
-  font-size: calc(1rem + 1.5vmin);
-}
-
-.sidebar {
-  background-color: rgba(242, 242, 242, 0.6);
-  padding-left: 5%;
-  padding-right: 5%;
-}
-
-// TODO: remove height, width & margins
 .text-box {
-  height: 50%;
   width: 80%;
-  line-height: 25px;
-  background-color: #2984a0;
-  margin-top: 10%;
-  margin-bottom: 5%;
+  max-width: 600px;
+  line-height: 1.4;
+  background-color: var(--blue-color);
+  padding: 0.5rem 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
+
+  h2 {
+    margin: 0.4em 0;
+  }
 }
 
-.margin-top-10 {
-  margin-top: 10%;
+.definition {
+  color: var(--anima-color);
+  font-size: calc(1rem + 1vmin);
+  font-weight: 600;
+  text-align: center;
+  padding: 0 8%;
+  white-space: pre-line;
 }
 
-.margin-top-20 {
-  margin-top: 20%;
+// Full screen panel above the board (menus, lists, overlays).
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
 }
 
-.margin-top-25 {
-  margin-top: 25%;
+.screen.translucent {
+  background: rgba(255, 255, 255, 0.75);
 }
 
-.margin-top-30 {
-  margin-top: 30%;
+.screen.opaque {
+  background: white;
 }
 
-.margin-top-40 {
-  margin-top: 40%;
+// Bordered box, as the dialogs of the 1.x app.
+.panel {
+  position: relative;
+  background: white;
+  border: 4px var(--anima-color) solid;
+  width: min(90vw, 640px);
+  max-height: 86vh;
+  margin: auto;
+  padding: 2.5rem 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.flame-background {
+  background-image: url('/assets/background-flame.png');
+  background-position: center;
+  background-size: 25%;
+  background-repeat: no-repeat;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(2rem + 6vmin);
+  height: calc(2rem + 6vmin);
+  z-index: 1;
+}
+
+.panel-wrapper {
+  position: relative;
+  margin: auto;
+}
+
+.validate-button {
+  width: calc(2rem + 10vh);
+  height: calc(2rem + 10vh);
+}
+
+.dots {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
 }

@@ -1,27 +1,56 @@
-# Anima2
+# Anima
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.2.0.
+Jeu de stratégie en 1 contre 1 sur une île hexagonale : faites évoluer vos espèces, contrôlez les régions, marquez 30 points.
 
-## Development server
+Application Angular 22 + Firebase (Auth anonyme ou e-mail, Firestore), empaquetée pour Android et iOS avec Capacitor 8.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Organisation
 
-## Code scaffolding
+| Dossier | Contenu |
+| --- | --- |
+| `engine/` | Règles du jeu en TypeScript pur, avec leurs tests (voir [engine/README.md](engine/README.md)). |
+| `src/app/core/` | Firebase, connexion, accès aux parties, textes FR/EN. |
+| `src/app/game/` | Écran de jeu : plateau, actions, menus, animations de fin d'ère. |
+| `src/app/home/`, `welcome/`, `rules/` | Accueil, connexion, règles. |
+| `public/assets/` | Icônes et images. |
+| `tests/` | Règles Firestore et partie complète entre deux clients, sur les émulateurs. |
+| `android/`, `ios/` | Projets natifs Capacitor. |
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Une partie est un seul document Firestore `matches/{id}` qui contient tout l'état du jeu. Chaque coup est calculé par le moteur dans une transaction : les deux joueurs ne peuvent pas désynchroniser la partie, et les règles Firestore refusent les coups hors tour. Les parties de l'app 1.x (`games/…`) ne sont pas reprises.
 
-## Build
+## Développement
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Prérequis : Node 22.22+ (ou 24), Java 21 pour les émulateurs Firebase et Android.
 
-## Running unit tests
+```bash
+npm install
+npm install --prefix engine
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Dans deux terminaux :
 
-## Running end-to-end tests
+```bash
+npm run emulators
+```
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+```bash
+npm start
+```
 
-## Further help
+`ng serve` pointe vers les émulateurs (projet `demo-anima`), jamais vers la production. Pour jouer seul contre un robot, créez une partie puis lancez `BOT_MATCH=<id de la partie> npm run bot` (l'id est dans l'URL).
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Tests
+
+```bash
+npm run test:engine
+npm run test:rules
+npm run test:e2e
+```
+
+`test:rules` et `test:e2e` démarrent eux-mêmes les émulateurs.
+
+## Mise en production
+
+- Web : `npm run build` puis `npx firebase deploy --only hosting`.
+- Règles et index Firestore : `npx firebase deploy --only firestore`. Elles restent compatibles avec l'app 1.8 encore installée chez les joueurs.
+- Mobile : voir [docs/release.md](docs/release.md).

@@ -1,0 +1,341 @@
+<!------------ BANNERS ------------>
+@if (!step() && !victoryVisible()) {
+  @if (store.mySetup(); as setup) {
+    @if (setup.abilityId && setup.tileId === null) {
+      <article class="top text-box">
+        @if (store.pendingStartTileId() === null) {
+          <h2>{{ t().game.chooseStartTile }}</h2>
+        } @else {
+          <h2>{{ t().game.confirmStartTile }}</h2>
+          <div class="validation-row">
+            <button type="button" class="icon-button validation-button" (click)="store.pendingStartTileId.set(null)">
+              <mat-icon svgIcon="close-blur" />
+            </button>
+            <button type="button" class="icon-button validation-button" [disabled]="store.busy()" (click)="store.confirmStartTile()">
+              <mat-icon svgIcon="validate" />
+            </button>
+          </div>
+        }
+      </article>
+    }
+  }
+  @switch (store.mode()) {
+    @case ('migration') {
+      <article class="top text-box"><h2>{{ t().game.chooseMigration }}</h2></article>
+    }
+    @case ('tunnel') {
+      <article class="top text-box"><h2>{{ t().game.chooseTunnel }}</h2></article>
+    }
+    @case ('proliferation') {
+      <article class="top text-box"><h2>{{ t().game.chooseProliferation }}</h2></article>
+    }
+    @case ('assimilation') {
+      <article class="top text-box"><h2>{{ t().game.chooseAssimilation }}</h2></article>
+    }
+    @case ('rallying') {
+      <article class="top text-box"><h2>{{ t().game.chooseRallying }}</h2></article>
+    }
+  }
+}
+
+<!------------ WAITING ------------>
+@if (store.phase() === 'waiting') {
+  <article class="visual-overlay">
+    <section class="fill opacity"></section>
+    <main class="absolute fill column center">
+      <mat-icon class="hourglass" svgIcon="hourglass" />
+      <section class="text-box"><h2>{{ t().lobby.waitingOpponent }}</h2></section>
+      @if (store.match()?.createdBy === store.uid()) {
+        <button type="button" class="nav-button" (click)="cancelGame()"><h2>{{ t().lobby.cancelGame }}</h2></button>
+      }
+      <button type="button" class="nav-button" (click)="leave()"><h2>{{ t().game.menuHome }}</h2></button>
+    </main>
+  </article>
+}
+@if (store.phase() === 'setup' && store.mySetup()?.tileId !== null && store.mySetup()?.tileId !== undefined && !flash()) {
+  <article class="visual-overlay">
+    <section class="fill low-opacity"></section>
+    <main class="absolute fill column center">
+      <mat-icon class="hourglass" svgIcon="hourglass" />
+      <section class="text-box"><h2>{{ t().game.waitingOpponent }}</h2></section>
+    </main>
+  </article>
+}
+
+<!------------ FLASHES ------------>
+@if (flash() === 'start') {
+  <article class="visual-overlay fade-in-out" style="--animation-duration: 3s">
+    <section class="fill full-opacity"></section>
+    <main class="absolute fill column start">
+      <div class="gap-10"></div>
+      <div class="hex-row">
+        @if (newSpeciesIcons()[0]; as icon) {
+          <app-species-hex class="species" [abilityId]="icon.abilityId" [colors]="icon.colors" />
+        }
+      </div>
+      <section class="text-box">
+        <h2>{{ store.state()!.era === 1 ? t().game.letsGo : t().game.newSpeciesTitle }}</h2>
+      </section>
+      <div class="hex-row">
+        @if (newSpeciesIcons()[1]; as icon) {
+          <app-species-hex class="species" [abilityId]="icon.abilityId" [colors]="icon.colors" />
+        }
+      </div>
+    </main>
+  </article>
+}
+@if (flashPlayer(); as player) {
+  <article class="visual-overlay fade-in-out" style="--animation-duration: 2s">
+    <section class="fill opacity"></section>
+    <main class="absolute fill column center">
+      <div class="hex-row">
+        @for (icon of iconsOf(player); track icon.id) {
+          <app-species-hex class="species" [abilityId]="icon.abilityId" [colors]="icon.colors" />
+        }
+      </div>
+      <section class="text-box">
+        <h2>{{ flash() === 'yourTurn' ? t().game.yourTurn : t().game.theirTurn }}</h2>
+      </section>
+    </main>
+  </article>
+}
+
+<!------------ END OF ERA ------------>
+@switch (step()) {
+  @case ('endEraTitle') {
+    <main class="visual-overlay">
+      <section class="fill medium-opacity"></section>
+      <main class="absolute fill column center">
+        <article class="text-box"><h2 class="box-titles">{{ t().game.endEra }}</h2></article>
+      </main>
+      <aside class="orange footer-position"></aside>
+    </main>
+  }
+  @case ('playerNamesTitle') {
+    <main class="visual-overlay">
+      <section class="fill medium-opacity"></section>
+      <main class="absolute fill column center">
+        <h2 class="player-name" [style.color]="greenColor">{{ store.green()?.name }}</h2>
+        <article class="text-box"><h2 class="box-titles">{{ t().game.countPoints }}</h2></article>
+        <h2 class="player-name" [style.color]="redColor">{{ store.red()?.name }}</h2>
+      </main>
+      <aside class="orange footer-position"></aside>
+    </main>
+  }
+  @case ('regionScore') {
+    <main class="visual-overlay">
+      @for (player of orderedPlayers(); track player.id; let i = $index) {
+        <section class="column center" [class.top-position]="i === 0" [class.bottom-position]="i === 1">
+          @if (i === 1) {
+            <h3 class="player-name" [style.color]="redColor">{{ player.name }}</h3>
+          }
+          <div class="anima-empty relative">
+            <mat-icon class="fill" svgIcon="anima-empty" />
+            @for (region of regions; track region.id; let first = $first; let last = $last) {
+              <span
+                class="absolute region-score increase-fade-in"
+                [style.--color]="nameColor(player)"
+                [style.--fade-in-fill-mode]="first ? 'forwards' : 'both'"
+                [style.--counter-from]="regionVariables().variables[player.id][region.id].from"
+                [style.--counter-to]="regionVariables().variables[player.id][region.id].to"
+                [style.--animation-duration.s]="0.5"
+                [style.--animation-delay.s]="regionVariables().variables[player.id][region.id].delay"
+                [style.--fade-out-delay.s]="last ? 1000000 : 1 + regionVariables().variables[player.id][region.id].delay"
+                >+</span
+              >
+            }
+          </div>
+          @if (i === 0) {
+            <h3 class="player-name" [style.color]="greenColor">{{ player.name }}</h3>
+          }
+        </section>
+      }
+      <main class="middle-position">
+        @for (player of orderedPlayers(); track player.id; let i = $index) {
+          <section class="absolute fill">
+            @for (region of regions; track region.id) {
+              <section class="region absolute" [id]="region.id">
+                <article
+                  class="absolute"
+                  [class.bigger-up]="i === 0"
+                  [class.bigger-down]="i === 1"
+                  [style.--animation-duration.s]="0.5"
+                  [style.--animation-delay.s]="regionVariables().variables[player.id][region.id].delay"
+                >
+                  <h2 class="region-points">+{{ eraOf(player)?.regions?.[region.id] ?? 0 }}</h2>
+                </article>
+              </section>
+            }
+          </section>
+        }
+      </main>
+      <aside class="orange footer-position"></aside>
+    </main>
+  }
+  @case ('eraScore') {
+    @if (store.green(); as green) {
+      @if (store.red(); as red) {
+        <article class="visual-overlay fade-in" style="--animation-duration: 1s; --animation-delay: 0s">
+          <section
+            class="fill medium-opacity blank-out"
+            style="--animation-duration: 1s"
+            [style.--animation-delay.s]="eraVariables().transitionDelay"
+          ></section>
+          <main class="absolute fill column start">
+            <article class="era-row name-row">
+              <h2 class="player-name" [style.color]="greenColor">{{ green.name }}</h2>
+            </article>
+            <article class="era-row">
+              <div class="anima-empty small relative">
+                <mat-icon class="fill" svgIcon="anima-empty" />
+                <span
+                  class="absolute pop-in"
+                  [style.color]="greenColor"
+                  [style.--animation-duration.s]="1"
+                  [style.--animation-delay.s]="eraVariables().variables[green.id].eraScore.delay"
+                  >+{{ eraOf(green)?.eraPoints ?? 0 }}</span
+                >
+              </div>
+              <section class="orange-border">
+                <h2
+                  class="score increase"
+                  [style.color]="greenColor"
+                  [style.--counter-from]="(eraOf(green)?.total ?? 0) - (eraOf(green)?.eraPoints ?? 0)"
+                  [style.--counter-to]="eraOf(green)?.total ?? 0"
+                  [style.--animation-duration.s]="2"
+                  [style.--animation-delay.s]="eraVariables().variables[green.id].playerTotal.delay"
+                ></h2>
+                <h3 class="score-line">-</h3>
+                <h2
+                  class="score increase"
+                  [style.color]="redColor"
+                  [style.--counter-from]="(eraOf(red)?.total ?? 0) - (eraOf(red)?.eraPoints ?? 0)"
+                  [style.--counter-to]="eraOf(red)?.total ?? 0"
+                  [style.--animation-duration.s]="2"
+                  [style.--animation-delay.s]="eraVariables().variables[red.id].playerTotal.delay"
+                ></h2>
+              </section>
+              <div class="anima-empty small relative">
+                <mat-icon class="fill" svgIcon="anima-empty" />
+                <span
+                  class="absolute pop-in"
+                  [style.color]="redColor"
+                  [style.--animation-duration.s]="1"
+                  [style.--animation-delay.s]="eraVariables().variables[red.id].eraScore.delay"
+                  >+{{ eraOf(red)?.eraPoints ?? 0 }}</span
+                >
+              </div>
+            </article>
+            <article class="era-row name-row">
+              <h2 class="player-name" [style.color]="redColor">{{ red.name }}</h2>
+            </article>
+            <aside class="orange-bar"></aside>
+          </main>
+        </article>
+      }
+    }
+  }
+  @case ('newEra') {
+    <article class="visual-overlay">
+      <section class="fill full-opacity"></section>
+      <main class="absolute fill column start">
+        <div class="gap-10"></div>
+        <div class="hex-row">
+          @for (icon of iconsOf(store.green()); track icon.id) {
+            <app-species-hex class="species" [abilityId]="icon.abilityId" [colors]="icon.colors" />
+          }
+        </div>
+        <section class="text-box">
+          <h2>{{ t().game.eraNumber(store.state()!.era) }}</h2>
+        </section>
+        <div class="hex-row">
+          @for (icon of iconsOf(store.red()); track icon.id) {
+            <app-species-hex class="species" [abilityId]="icon.abilityId" [colors]="icon.colors" />
+          }
+        </div>
+      </main>
+    </article>
+  }
+  @case ('newSpecies') {
+    <article class="visual-overlay">
+      <section class="fill opacity"></section>
+      <main class="absolute fill column center">
+        <mat-icon class="baby-icon" svgIcon="baby" />
+        <section class="text-box"><h2>{{ t().game.secondSpecies }}</h2></section>
+      </main>
+    </article>
+  }
+}
+
+<!------------ VICTORY ------------>
+@if (victoryVisible()) {
+  <article class="visual-overlay" [class.click-through]="!showScores()">
+    @if (showScores()) {
+      <section class="fill full-opacity"></section>
+      @if (winner(); as winner) {
+        <main class="absolute fill column start">
+          <div class="gap-10"></div>
+          <article
+            class="center victory"
+            [class.cling-slide-down]="!victoryAnimated()"
+            [style.--animation-duration.s]="victoryTitle.duration"
+            [style.--animation-delay.s]="victoryTitle.delay"
+          >
+            <h1>{{ t().game.victory }}</h1>
+          </article>
+          <article
+            class="row center"
+            [class.name-slide-down]="!victoryAnimated()"
+            [style.--animation-duration.s]="victoryName.duration"
+            [style.--animation-delay.s]="victoryName.delay"
+          >
+            <mat-icon svgIcon="star" class="star rotate-right" [style.--animation-delay.s]="victoryAnimated() ? 0 : victoryStarsDelay" />
+            <h2 class="player-name margin-aside" [style.color]="nameColor(winner)">{{ winner.name }}</h2>
+            <mat-icon svgIcon="star" class="star rotate-left" [style.--animation-delay.s]="victoryAnimated() ? 0 : victoryStarsDelay" />
+          </article>
+          <div
+            class="details column center"
+            [class.fade-in]="!victoryAnimated()"
+            [style.--animation-duration.s]="victoryDetails.duration"
+            [style.--animation-delay.s]="victoryDetails.delay"
+          >
+            <p class="reason">{{ t().game.winReason[store.state()!.winner!.reason] }}</p>
+            <div class="anima relative">
+              <mat-icon class="fill" svgIcon="anima-blur" />
+              <span class="absolute victory-score">{{ winner.score }}</span>
+            </div>
+            <div class="hex-row player-species">
+              @for (icon of iconsOf(winner); track icon.id) {
+                <app-species-hex class="species" [abilityId]="icon.abilityId" [colors]="icon.colors" />
+              }
+            </div>
+            @if (loser(); as loser) {
+              <div class="row center">
+                <h2 class="player-name small-name" [style.color]="nameColor(loser)">{{ loser.name }}</h2>
+                <h3 class="line">-</h3>
+                <h2 class="player-name small-name" [style.color]="nameColor(loser)">{{ loser.score }}</h2>
+              </div>
+            }
+            <footer class="row buttons">
+              <button type="button" class="nav-button" (click)="toggleScores()"><h2>{{ t().game.seeMap }}</h2></button>
+              <button type="button" class="nav-button" (click)="leave()"><h2>{{ t().game.leave }}</h2></button>
+            </footer>
+          </div>
+          <aside class="orange-bar end"></aside>
+        </main>
+      }
+    } @else {
+      <main class="absolute fill column space-between">
+        <header class="grey row center clickable">
+          <button type="button" class="icon-button baby" (click)="openSpeciesList.emit()" [attr.aria-label]="t().game.speciesList">
+            <mat-icon svgIcon="baby" />
+          </button>
+        </header>
+        <footer class="grey row buttons clickable">
+          <button type="button" class="nav-button" (click)="toggleScores()"><h2>{{ t().game.seeScores }}</h2></button>
+          <button type="button" class="nav-button" (click)="leave()"><h2>{{ t().game.leave }}</h2></button>
+        </footer>
+      </main>
+    }
+  </article>
+}
