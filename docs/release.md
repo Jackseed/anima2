@@ -9,7 +9,7 @@ npx firebase login
 ```
 
 - **Connexion par e-mail** : dans la console Firebase, Authentication > Sign-in method, activez « Adresse e-mail/Mot de passe ». Sans ça, « Sauvegarder mon compte » échoue (la connexion invitée continue de marcher).
-- **Règles et index Firestore** : `npx firebase deploy --only firestore`. Les nouvelles règles ferment la base aux visiteurs non connectés et protègent les parties 2.x ; l'app 1.8 encore installée continue de fonctionner. Les index se construisent en quelques minutes : tant qu'ils ne sont pas prêts, les listes « Rejoindre une partie » et « Mes parties » restent vides.
+- **Règles et index Firestore** : `npx firebase deploy --only firestore`. Elles empêchent de jouer à la place de l'adversaire ou de modifier ses choix, mais ne revérifient pas les règles du jeu : un client modifié pourrait tricher pendant son propre tour. Une Cloud Function qui rejoue le moteur côté serveur fermerait cette porte ; elle demande le forfait Blaze de Firebase. Les nouvelles règles ferment la base aux visiteurs non connectés et protègent les parties 2.x ; l'app 1.8 encore installée continue de fonctionner. Les index se construisent en quelques minutes : tant qu'ils ne sont pas prêts, les listes « Rejoindre une partie » et « Mes parties » restent vides.
 - **Version web** : `npm run build` puis `npx firebase deploy --only hosting`.
 
 ## 2. Android (Google Play)
@@ -34,7 +34,7 @@ Les parties en cours dans l'app 1.x ne sont pas reprises dans la 2.0 ; le compte
 
 ## 3. iOS (App Store)
 
-Prérequis : un compte Apple Developer (99 €/an).
+Prérequis : un compte Apple Developer (99 €/an). Sur ce Mac, Xcode n'a pas encore terminé son installation : lancez une fois `sudo xcodebuild -runFirstLaunch` (mot de passe administrateur), sinon les builds et le simulateur restent bloqués.
 
 1. `npm run build && npx cap sync ios`, puis `npx cap open ios`.
 2. Dans Xcode, cible App > Signing & Capabilities : choisissez votre équipe. L'identifiant `com.anima2` doit être libre sur l'App Store ; sinon, changez `appId` dans `capacitor.config.ts` et le Bundle Identifier dans Xcode.
