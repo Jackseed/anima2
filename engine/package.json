@@ -1,0 +1,17 @@
+{
+  "name": "@anima/engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pure Anima game engine: state, rules and scoring, with no framework dependency.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~6.0",
+    "vitest": "^5.0.5"
+  }
+}
