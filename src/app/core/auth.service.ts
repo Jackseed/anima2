@@ -61,7 +61,10 @@ export class AuthService {
   async saveAccount(email: string, password: string): Promise<void> {
     const user = auth.currentUser;
     if (!user) throw new Error('Not signed in');
+    const name = this.name();
     const result = await linkWithCredential(user, EmailAuthProvider.credential(email.trim(), password));
+    // Some backends (the Auth emulator) drop the display name when linking.
+    if (!result.user.displayName && name) await updateProfile(result.user, { displayName: name });
     this.user.set(result.user);
   }
 
@@ -92,10 +95,19 @@ export class AuthService {
     await signOut(auth);
   }
 
+  // The user document goes first (the rules need the account to delete it), and comes back if
+  // Firebase refuses to delete the account (e.g. it asks for a recent sign-in).
   async deleteAccount(): Promise<void> {
     const user = auth.currentUser;
     if (!user) return;
-    await deleteDoc(doc(db, 'users', user.uid));
-    await deleteUser(user);
+    const userDoc = doc(db, 'users', user.uid);
+    const saved = (await getDoc(userDoc)).data();
+    await deleteDoc(userDoc);
+    try {
+      await deleteUser(user);
+    } catch (error) {
+      if (saved) await setDoc(userDoc, saved);
+      throw error;
+    }
   }
 }

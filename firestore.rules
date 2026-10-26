@@ -3,6 +3,10 @@ rules_version = '2';
 // Rules for Anima 2.x. Production still runs the fully open rules of the 1.x app (see git
 // history). These keep the 1.8 app working for signed-in players, so they can be deployed
 // before the 2.x release: `npx firebase deploy --only firestore`.
+//
+// The rules control who may write and keep the players and their placement choices intact.
+// They cannot replay the game rules: a modified client could still play an illegal move on
+// its own turn. Validating moves needs the engine on a server (Cloud Function).
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() {
@@ -33,9 +37,13 @@ service cloud.firestore {
 
     // Fields copied from the state for queries must match it.
     function mirrorsState(data) {
+      let players = data.state.players;
       return data.phase == data.state.phase
         && data.isOpen == (data.phase == 'waiting')
-        && data.playerIds.size() == data.state.players.size();
+        && data.playerIds.size() == players.size()
+        && players[0].id in data.playerIds
+        && (players.size() == 1 || players[1].id in data.playerIds)
+        && (data.phase != 'playing' || data.state.turn.playerId in data.playerIds);
     }
 
     function isNewMatch(data) {
@@ -73,9 +81,21 @@ service cloud.firestore {
     function isMove(before, after) {
       return uid() in before.playerIds
         && after.playerIds == before.playerIds
-        && (before.phase == 'setup'
+        && after.state.players[0].id == before.state.players[0].id
+        && after.state.players[1].id == before.state.players[1].id
+        && ((before.phase == 'setup' && keepsOpponentChoice(before, after))
           || (before.phase == 'playing' && before.state.turn.playerId == uid())
           || (before.phase in ['setup', 'playing'] && isResignation(after)));
+    }
+
+    function opponentId(data) {
+      return data.playerIds[0] == uid() ? data.playerIds[1] : data.playerIds[0];
+    }
+
+    // During the placement, a player only fills in their own choices.
+    function keepsOpponentChoice(before, after) {
+      return after.phase != 'setup'
+        || after.state.setup.choices[opponentId(before)] == before.state.setup.choices[opponentId(before)];
     }
 
     function isResignation(after) {
@@ -87,10 +107,15 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if signedIn();
       allow create, delete: if signedIn() && uid() == userId;
-      // The 1.x app records the end of a game on both players' documents.
-      allow update: if signedIn()
-        && (uid() == userId
-          || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gamesPlayed', 'matchesPlayed', 'matchesWon']));
+      allow update: if signedIn() && (uid() == userId || isLegacyGameRecord(resource.data, request.resource.data));
+    }
+
+    // The 1.x app records the end of a game on both players' documents: one more game played,
+    // and at most one more won.
+    function isLegacyGameRecord(before, after) {
+      return after.diff(before).affectedKeys().hasOnly(['gamesPlayed', 'matchesPlayed', 'matchesWon'])
+        && after.get('matchesPlayed', 0) == before.get('matchesPlayed', 0) + 1
+        && after.get('matchesWon', 0) - before.get('matchesWon', 0) in [0, 1];
     }
 
     // 1.x games, still played on the 1.8 app: signed-in players only.

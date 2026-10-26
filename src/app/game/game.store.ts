@@ -105,6 +105,8 @@ export class GameStore {
     return (uid && this.state()?.setup?.choices[uid]) || null;
   });
   readonly pendingAdaptation = computed(() => (this.isMyTurn() ? this.state()?.turn?.pendingAdaptation ?? null : null));
+  // Scoring animations only follow what Firestore confirmed, never a preview.
+  readonly confirmedState = computed(() => this.match()?.state ?? null);
 
   // Local selection.
   readonly selectedTileId = signal<number | null>(null);
@@ -155,10 +157,10 @@ export class GameStore {
   constructor() {
     const destroyRef = inject(DestroyRef);
     let unsubscribe: (() => void) | undefined;
-    effect(() => {
-      const id = this.matchId();
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    // A Firestore listener stops for good after an error: subscribe again a bit later.
+    const listen = (id: string) => {
       unsubscribe?.();
-      if (!id) return;
       unsubscribe = this.matches.watch(
         id,
         (match) => {
@@ -167,10 +169,28 @@ export class GameStore {
           const optimistic = untracked(this.optimistic);
           if (optimistic && match && match.version >= optimistic.version) this.optimistic.set(null);
         },
-        () => this.connectionError.set(true),
+        () => {
+          this.connectionError.set(true);
+          clearTimeout(retryTimer);
+          retryTimer = setTimeout(() => listen(id), 3000);
+        },
       );
+    };
+    effect(() => {
+      const id = this.matchId();
+      clearTimeout(retryTimer);
+      unsubscribe?.();
+      if (id) listen(id);
     });
-    destroyRef.onDestroy(() => unsubscribe?.());
+    destroyRef.onDestroy(() => {
+      clearTimeout(retryTimer);
+      unsubscribe?.();
+    });
+
+    effect(() => {
+      const setup = this.mySetup();
+      if (!setup || setup.tileId !== null) untracked(() => this.pendingStartTileId.set(null));
+    });
 
     // Drops a selection that no longer makes sense (turn passed, individuals gone).
     effect(() => {
@@ -389,9 +409,13 @@ export class GameStore {
       return false;
     }
     this.busy.set(true);
-    this.optimistic.set({ version: match.version + 1, state: preview.state });
+    // The preview follows the state on screen, which can be ahead of the last snapshot.
+    const shownVersion = Math.max(match.version, this.optimistic()?.version ?? 0);
+    this.optimistic.set({ version: shownVersion + 1, state: preview.state });
     try {
-      await this.matches.send(match.id, command, seed);
+      const written = await this.matches.send(match.id, command, seed);
+      // Keeps what was written (a concurrent move may have changed it) until its snapshot arrives.
+      if ((this.match()?.version ?? 0) < written.version) this.optimistic.set(written);
       return true;
     } catch (error) {
       this.optimistic.set(null);

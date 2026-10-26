@@ -23,7 +23,7 @@ Node 22 ou plus.
 - Chaque joueur choisit une capacité parmi 2, puis une case de départ (4 individus). Vert joue toujours en premier, avec une seule action à son premier tour.
 - Chaque espèce joue 2 actions par tour. Une manche = toutes les espèces de tous les joueurs ; une ère = 3 manches. À la fin de chaque ère, chaque joueur marque les régions dont il occupe toutes les cases.
 - Au début de l'ère 2, chaque joueur reçoit une deuxième espèce (même mise en place).
-- Fin de partie : 30 points à la fin d'une ère, fin de l'ère 5, ou plus aucune espèce pour un joueur. Égalité : plus de capacités, puis plus d'individus, puis tirage au sort.
+- Fin de partie : 30 points à la fin d'une ère, fin de l'ère 5, plus aucune espèce pour un joueur, ou abandon. Égalité : plus de capacités, puis plus d'individus, puis tirage au sort.
 - Actions : migration (4 points de déplacement par action, répartissables sur plusieurs mouvements), prolifération, assimilation, adaptation (sacrifie 5 individus, il faut en avoir 7), et les capacités actives intimidation, ralliement, galerie.
 - Une espèce qui en élimine une autre récupère ses capacités, dans la limite de 3.
 

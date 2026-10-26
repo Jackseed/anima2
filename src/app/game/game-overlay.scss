@@ -16,6 +16,10 @@ button,
   inset: 0;
 }
 
+.visual-overlay.below-header {
+  top: calc(16vh + var(--safe-top));
+}
+
 .column {
   display: flex;
   flex-direction: column;
@@ -127,9 +131,27 @@ button,
   align-self: flex-start;
 }
 
+// The victory titles keep their size; the details take the remaining space.
+.victory,
+.victory + .row {
+  flex-shrink: 0;
+}
+
 .details {
   gap: 1.5vh;
   width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  justify-content: flex-start;
+  padding-top: 2vh;
+
+  .hex-row {
+    flex: 0 0 auto;
+
+    .species {
+      height: min(16vh, 28vw);
+    }
+  }
 }
 
 .reason {

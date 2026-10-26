@@ -41,6 +41,26 @@ describe('actionMessage', () => {
     expect(message.startsWith(`2 ${name}s assimilé`)).toBe(true);
   });
 
+  it('names a species wiped out from the previous state', () => {
+    const neutral = state.species.find((species) => species.id === 'neutral1')!;
+    const name = TEXTS.fr.abilities[neutral.abilityIds[0]].name;
+    const after = { ...state, species: state.species.filter((species) => species.id !== 'neutral1') };
+    const message = actionMessage(
+      entry({ type: 'assimilation', targetSpeciesId: 'neutral1', quantity: 1, eliminatedSpeciesId: 'neutral1' }),
+      after,
+      TEXTS.fr,
+      state,
+    );
+    expect(message.split('\n')[0]).toContain(`1 ${name} assimilé`);
+    expect(message.split('\n')[1]).toContain(`${name} éliminé`);
+  });
+
+  it('pluralizes English messages', () => {
+    expect(actionMessage(entry({ type: 'proliferation', speciesId: 'neutral1', createdQuantity: 2 }), state, TEXTS.en)).toMatch(
+      / individuals created\.$/,
+    );
+  });
+
   it('announces a species wiped out, named after the traits taken from it', () => {
     const message = actionMessage(
       entry({ type: 'assimilation', targetSpeciesId: 'gone', quantity: 1, gainedAbilityIds: ['flying'], eliminatedSpeciesId: 'gone' }),

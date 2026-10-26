@@ -1,10 +1,13 @@
 import { findSpecies, type ActionLogEntry, type GameState } from '@anima/engine';
 import type { Texts } from '../core/texts';
 
-// Message shown to the opponent after an action, as in the 1.x app.
-export function actionMessage(entry: ActionLogEntry, state: GameState, texts: Texts): string {
+// Message shown to the opponent after an action, as in the 1.x app. A species wiped out by the
+// action is only in the previous state.
+export function actionMessage(entry: ActionLogEntry, state: GameState, texts: Texts, previous?: GameState | null): string {
   const nameOf = (speciesId: string | null) => {
-    const species = speciesId ? findSpecies(state, speciesId) : undefined;
+    const species = speciesId
+      ? (findSpecies(state, speciesId) ?? (previous ? findSpecies(previous, speciesId) : undefined))
+      : undefined;
     const ability = species?.abilityIds[0];
     return ability ? texts.abilities[ability] : { name: '?', genre: 'm' as const };
   };
@@ -41,9 +44,9 @@ export function actionMessage(entry: ActionLogEntry, state: GameState, texts: Te
       break;
   }
   if (entry.eliminatedSpeciesId) {
-    // The species is gone from the state: its name comes from the abilities the attacker took.
+    // Without the previous state, the name comes from the traits the attacker took.
     const ability = entry.gainedAbilityIds[0];
-    const eliminated = ability ? texts.abilities[ability] : target;
+    const eliminated = target.name !== '?' || !ability ? target : texts.abilities[ability];
     message += `\n${messages.eliminated(eliminated.name, eliminated.genre)}`;
   }
   return message;

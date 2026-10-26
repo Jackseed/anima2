@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, input, signal, untracked, viewChild } from '@angular/core';
+import type { GameState } from '@anima/engine';
 import { I18n } from '../core/i18n.service';
 import { ToastService } from '../core/toast.service';
 import { AbilityMenu } from './ability-menu';
@@ -110,9 +111,12 @@ export class GamePage {
 
     // Tells the player what the opponent just did.
     let lastSeenAction: number | null = null;
+    let previousState: GameState | null = null;
     effect(() => {
       const state = this.store.state();
       if (!state) return;
+      const previous = previousState;
+      previousState = state;
       const entry = state.lastAction;
       if (lastSeenAction === null) {
         lastSeenAction = entry?.id ?? 0;
@@ -122,7 +126,7 @@ export class GamePage {
       lastSeenAction = entry.id;
       if (entry.playerId === this.store.uid()) return;
       untracked(() => {
-        this.toast.show(actionMessage(entry, state, this.t()), 3000);
+        this.toast.show(actionMessage(entry, state, this.t(), previous), 3000);
         this.store.showPlayedTiles(playedTiles(entry));
       });
     });

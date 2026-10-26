@@ -130,7 +130,8 @@ export class MatchService {
   }
 
   // Runs the command in a transaction, so concurrent writes are replayed on the latest state.
-  async send(matchId: string, command: Command, seed = newSeed()): Promise<GameState> {
+  // Returns the state written and its version.
+  async send(matchId: string, command: Command, seed = newSeed()): Promise<{ state: GameState; version: number }> {
     const uid = this.requireUid();
     const ref = doc(db, MATCHES, matchId);
     return withRetry(() => runTransaction(db, async (transaction) => {
@@ -145,7 +146,7 @@ export class MatchService {
         version: match.version + 1,
         updatedAt: serverTimestamp(),
       });
-      return result.state;
+      return { state: result.state, version: match.version + 1 };
     }));
   }
 

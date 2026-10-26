@@ -53,7 +53,8 @@
   </article>
 }
 @if (store.phase() === 'setup' && store.mySetup()?.tileId !== null && store.mySetup()?.tileId !== undefined && !flash()) {
-  <article class="visual-overlay">
+  <!-- Leaves the header usable: the menu lets the player leave or resign while waiting. -->
+  <article class="visual-overlay below-header">
     <section class="fill low-opacity"></section>
     <main class="absolute fill column center">
       <mat-icon class="hourglass" svgIcon="hourglass" />
@@ -246,7 +247,7 @@
           }
         </div>
         <section class="text-box">
-          <h2>{{ t().game.eraNumber(store.state()!.era) }}</h2>
+          <h2>{{ t().game.eraNumber((result()?.era ?? 0) + 1) }}</h2>
         </section>
         <div class="hex-row">
           @for (icon of iconsOf(store.red()); track icon.id) {

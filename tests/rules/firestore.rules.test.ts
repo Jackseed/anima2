@@ -114,6 +114,26 @@ describe('matches', () => {
     await assertFails(updateDoc(doc(db('carol'), 'matches/m1'), update(bob, 5)));
   });
 
+  it("refuse a placement move that changes the opponent's choices", async () => {
+    const state = await seedJoined('m1');
+    const forBob = command(state, 'bob', { type: 'chooseAbility', abilityId: state.setup!.choices['bob'].abilityChoices[1] });
+    await assertFails(updateDoc(doc(db('alice'), 'matches/m1'), update(forBob, 3)));
+  });
+
+  it('refuse a move that swaps a player for someone else', async () => {
+    const state = placed(await seedJoined('m1'));
+    await env.withSecurityRulesDisabled(async (context) => {
+      await updateDoc(doc(context.firestore() as unknown as Firestore, 'matches/m1'), { state, ...mirrors(state), version: 10 });
+    });
+    const onTurn = state.turn!.playerId;
+    const swapped = structuredClone(state);
+    const other = swapped.players.find((p) => p.id !== onTurn)!;
+    other.id = 'mallory';
+    await assertFails(updateDoc(doc(db(onTurn), 'matches/m1'), update(swapped, 11)));
+    const locked = { ...structuredClone(state), turn: { ...state.turn!, playerId: 'mallory' } };
+    await assertFails(updateDoc(doc(db(onTurn), 'matches/m1'), update(locked, 11)));
+  });
+
   it('only accept moves from the player on turn afterwards', async () => {
     const state = placed(await seedJoined('m1'));
     await env.withSecurityRulesDisabled(async (context) => {
@@ -155,11 +175,13 @@ describe('matches', () => {
 });
 
 describe('users', () => {
-  it('can only be written by their owner, except the 1.x game stats', async () => {
+  it('can only be written by their owner, except one more 1.x game record', async () => {
     await assertSucceeds(setDoc(doc(db('alice'), 'users/alice'), { id: 'alice', name: 'Alice' }));
     await assertFails(setDoc(doc(db('bob'), 'users/alice'), { id: 'alice', name: 'Bob' }));
     await assertFails(updateDoc(doc(db('bob'), 'users/alice'), { name: 'Hacked' }));
     await assertSucceeds(updateDoc(doc(db('bob'), 'users/alice'), { matchesPlayed: 1, matchesWon: 0, gamesPlayed: ['g1'] }));
+    await assertFails(updateDoc(doc(db('bob'), 'users/alice'), { matchesPlayed: 50, matchesWon: 50 }));
+    await assertFails(updateDoc(doc(db('bob'), 'users/alice'), { matchesPlayed: 2, matchesWon: 2 }));
     await assertFails(getDoc(doc(db(), 'users/alice')));
   });
 });

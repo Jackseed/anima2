@@ -101,14 +101,14 @@ export class GameOverlay {
   // The header and footer are hidden while a scoring animation plays, as in the 1.x app.
   readonly isAnimating = computed(() => this.step() !== null);
   readonly victoryVisible = computed(
-    () => this.store.phase() === 'finished' && !this.sequenceRunning() && this.pendingEras() === 0,
+    () => this.store.confirmedState()?.phase === 'finished' && !this.sequenceRunning() && this.pendingEras() === 0,
   );
   readonly hidesBoardControls = computed(() => this.isAnimating() || this.victoryVisible());
 
   private readonly seenEras = signal<number | null>(null);
   private readonly pendingEras = computed(() => {
     const seen = this.seenEras();
-    const count = this.store.state()?.eraResults.length ?? 0;
+    const count = this.store.confirmedState()?.eraResults.length ?? 0;
     return seen === null ? 0 : Math.max(0, count - seen);
   });
 
@@ -200,7 +200,7 @@ export class GameOverlay {
     // Eras already scored when the game is first opened are not replayed.
     effect(() => {
       const id = this.store.matchId();
-      const state = this.store.state();
+      const state = this.store.confirmedState();
       if (!id || !state || untracked(this.seenEras) !== null) return;
       const seen = readSeen(id) ?? state.eraResults.length;
       writeSeen(id, seen);
@@ -243,7 +243,7 @@ export class GameOverlay {
 
   // End of era sequence: titles, region scores, era totals, then the next era or the victory.
   private playNextEra(): void {
-    const state = this.store.state();
+    const state = this.store.confirmedState();
     const seen = this.seenEras();
     if (!state || seen === null) return;
     const result = state.eraResults[seen];
