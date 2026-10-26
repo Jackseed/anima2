@@ -114,6 +114,7 @@ export class AccountPanel implements OnInit {
   protected password = '';
 
   async ngOnInit(): Promise<void> {
+    if (!this.name) this.name = await this.auth.loadName().catch(() => '');
     try {
       const [legacy, current] = await Promise.all([this.auth.legacyStats(), this.matches.finishedStats()]);
       this.stats.set({ played: legacy.played + current.played, won: legacy.won + current.won });

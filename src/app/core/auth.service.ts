@@ -17,8 +17,9 @@ export const MAX_NAME_LENGTH = 20;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // undefined while Firebase restores the session.
-  readonly user = signal<User | null | undefined>(undefined);
+  // undefined while Firebase restores the session. Firebase updates the User object in place
+  // (linking an email, renaming), so every set must notify.
+  readonly user = signal<User | null | undefined>(undefined, { equal: () => false });
   readonly uid = computed(() => this.user()?.uid ?? null);
   readonly name = signal('');
   readonly isAnonymous = computed(() => this.user()?.isAnonymous ?? true);
@@ -31,6 +32,7 @@ export class AuthService {
       onAuthStateChanged(auth, (user) => {
         this.user.set(user);
         this.name.set(user?.displayName ?? '');
+        if (user && !user.displayName) void this.loadName();
         resolve(user);
       });
     });
@@ -65,6 +67,16 @@ export class AuthService {
 
   async signInWithEmail(email: string, password: string): Promise<void> {
     await signInWithEmailAndPassword(auth, email.trim(), password);
+  }
+
+  // The profile name can be missing after linking an account: the user document keeps it.
+  async loadName(): Promise<string> {
+    const user = auth.currentUser;
+    if (!user) return '';
+    const snapshot = await getDoc(doc(db, 'users', user.uid));
+    const name = String(snapshot.data()?.['name'] ?? '');
+    if (name && auth.currentUser?.uid === user.uid) this.name.set(name);
+    return name;
   }
 
   // Stats recorded by the 1.x app on the user document.

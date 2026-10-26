@@ -82,6 +82,10 @@ function mirrors(state: GameState) {
 export class MatchService {
   private readonly auth = inject(AuthService);
 
+  private async playerName(): Promise<string> {
+    return this.auth.name() || (await this.auth.loadName()) || 'Anima';
+  }
+
   private requireUid(): string {
     const uid = this.auth.uid();
     if (!uid) throw new Error('Not signed in');
@@ -91,7 +95,7 @@ export class MatchService {
   async create(name: string): Promise<string> {
     const uid = this.requireUid();
     const ref = doc(collection(db, MATCHES));
-    const state = createGame({ id: uid, name: this.auth.name() }, seededRng(newSeed()));
+    const state = createGame({ id: uid, name: await this.playerName() }, seededRng(newSeed()));
     await setDoc(ref, {
       name: name.trim().slice(0, MAX_GAME_NAME_LENGTH),
       createdBy: uid,
@@ -108,6 +112,7 @@ export class MatchService {
     const uid = this.requireUid();
     const ref = doc(db, MATCHES, matchId);
     const seed = newSeed();
+    const name = await this.playerName();
     await withRetry(() => runTransaction(db, async (transaction) => {
       const snapshot = await transaction.get(ref);
       if (!snapshot.exists()) throw new CommandRejected('NOT_PLAYING');
@@ -115,7 +120,7 @@ export class MatchService {
       if (match.playerIds.includes(uid)) return;
       let state: GameState;
       try {
-        state = joinGame(match.state, { id: uid, name: this.auth.name() }, seededRng(seed));
+        state = joinGame(match.state, { id: uid, name }, seededRng(seed));
       } catch (error) {
         if (error instanceof RuleError) throw new CommandRejected(error.code);
         throw error;
